@@ -15,8 +15,6 @@
     <p class="alert"><%= alert %></p>
     <% if user_signed_in? %>
       <%= render partial: 'shared/navbar' %>
-      <div> Welcome <%= current_user.email %> </div>
-      <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
     <% end %>
     <%= yield %>
   </body>
