@@ -1,11 +1,13 @@
 <nav class="navbar bg-body-tertiary">
   <div class="container-fluid justify-content-between">
     <%= link_to image_tag('prela_logotipo-1.png'), root_path, class: "navbar-brand"%>
-    <%= button_to(
-        "Cerrar Sesion",
-        destroy_user_session_path,
-        method: :delete,
-        class: "btn btn-sm btn-outline-secondary"
-      ) %>
+    <% if user_signed_in? %>
+      <%= button_to(
+          "Cerrar Sesion",
+          destroy_user_session_path,
+          method: :delete,
+          class: "btn btn-sm btn-outline-secondary"
+        ) %>
+    <% end %>
   </div>
 </nav>

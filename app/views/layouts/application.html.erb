@@ -11,10 +11,12 @@
   </head>
 
   <body>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
-    <% if user_signed_in? %>
-      <%= render partial: 'shared/navbar' %>
+    <%= render partial: 'shared/navbar' %>
+    <% flash.each do |key, value| %>
+      <div class="<%= flash_class(key) %> alert-dismissible fade show" role="alert">
+        <%= value %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
     <% end %>
     <%= yield %>
   </body>
