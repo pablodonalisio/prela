@@ -1,12 +1,16 @@
 <div class="container mt-3">
-  <%= turbo_frame_tag "client_#{@client.id}" do %>
+  <%= turbo_frame_tag @client do %>
     <%= render @client %>
 
     <div>
       <%= link_to "Editar cliente", edit_client_path(@client), class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" %> |
-      <%= link_to "Volver al listado", clients_path, class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" %>
+      <%= link_to "Volver al listado", clients_path,
+                                       class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover",
+                                       data: { turbo_frame: "_top"} %>
 
-      <%= button_to @client, method: :delete, class: "btn btn-danger mt-2" do %>
+      <%= button_to @client, method: :delete,
+                             class: "btn btn-danger mt-2",
+                             form: { data: { turbo_frame: "_top" } } do %>
         <i class="fa-solid fa-trash"></i>
       <% end %>
     </div>

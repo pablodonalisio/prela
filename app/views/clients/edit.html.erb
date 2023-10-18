@@ -1,6 +1,6 @@
 <h1>Editar cliente</h1>
 
-<%= turbo_frame_tag "client_#{@client.id}" do %>
+<%= turbo_frame_tag @client do %>
   <%= render "form", client: @client %>
 
   <br>

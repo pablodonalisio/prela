@@ -1,7 +1,7 @@
 <%= form_with(model: client) do |form| %>
   <% if client.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(client.errors.count, "errors") %>:</h2>
+      <p><%= pluralize(client.errors.count, "errors") %>:</p>
 
       <ul>
         <% client.errors.each do |error| %>
@@ -26,6 +26,6 @@
   </div>
 
   <div class="mt-2">
-    <%= form.submit 'Actualizar', class: "btn btn-outline-secondary" %>
+    <%= form.submit 'Aceptar', class: "btn btn-outline-secondary" %>
   </div>
 <% end %>
