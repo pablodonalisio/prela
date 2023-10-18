@@ -1,10 +1,11 @@
-<h1>Editing client</h1>
+<h1>Editar cliente</h1>
 
-<%= render "form", client: @client %>
+<%= turbo_frame_tag "client_#{@client.id}" do %>
+  <%= render "form", client: @client %>
 
-<br>
+  <br>
 
-<div>
-  <%= link_to "Show this client", @client %> |
-  <%= link_to "Back to clients", clients_path %>
-</div>
+  <div>
+    <%= link_to "Cancelar", @client, class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" %>
+  </div>
+<% end %>
