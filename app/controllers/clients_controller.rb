@@ -26,7 +26,7 @@ class ClientsController < ApplicationController
   end
 
   def update
-    if @client.save
+    if @client.update(client_params)
       redirect_to client_url(@client), notice: "El cliente ha sido actualizado."
     else
       render :edit, status: :unprocessable_entity
