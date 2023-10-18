@@ -1,12 +1,10 @@
 <div id="<%= dom_id client %>">
+  <% if client.avatar.attached?%>
+    <%= image_tag client.avatar.variant(resize_to_limit: [100, 100]) %>
+  <% end %>
+
   <p>
-    <strong>Name:</strong>
+    <strong>Cliente:</strong>
     <%= client.name %>
   </p>
-
-  <p>
-    <strong>Avatar:</strong>
-    <%= link_to client.avatar.filename, client.avatar if client.avatar.attached? %>
-  </p>
-
 </div>
