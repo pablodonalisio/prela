@@ -1,14 +1,22 @@
-<p style="color: green"><%= notice %></p>
+<div class="container mt-3 mx-auto col-sm-4">
+  <div>
+    <h1 class="text-center">Clientes</h1>
+    <%= link_to "Agregar cliente", new_client_path, class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" %>
 
-<h1>Clients</h1>
-
-<div id="clients">
-  <% @clients.each do |client| %>
-    <%= render client %>
-    <p>
-      <%= link_to "Show this client", client %>
-    </p>
-  <% end %>
+    <div id="clients" class="list-group mt-3">
+      <% @clients.each do |client| %>
+        <%= link_to client_path(client), class: 'list-group-item list-group-item-action text-center ' do %>
+          <div class="d-flex align-items-center justify-content-around" style="height: 50px">
+            <div>
+              <% if client.avatar.attached? %>
+                <%= image_tag client.avatar.variant(resize_to_limit: [50, 50]) %>
+              <% else %>
+                <%= client.name %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
 </div>
-
-<%= link_to "New client", new_client_path %>
