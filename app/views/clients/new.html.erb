@@ -2,10 +2,8 @@
 
 <%= turbo_frame_tag @client do %>
   <%= render "form", client: @client %>
-<% end %>
-
-<br>
 
 <div>
-  <%= link_to "Volver al listado", clients_path %>
+  <%= link_to "Cancelar", clients_path, class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" %>
 </div>
+<% end %>
