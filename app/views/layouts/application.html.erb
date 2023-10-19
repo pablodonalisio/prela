@@ -12,12 +12,9 @@
 
   <body>
     <%= render partial: 'shared/navbar' %>
-    <% flash.each do |key, value| %>
-      <div class="<%= flash_class(key) %> alert-dismissible fade show" role="alert">
-        <%= value %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <% end %>
+    <div id="flash">
+      <% render "layouts/flash"%>
+    </div>
     <%= yield %>
   </body>
 </html>
