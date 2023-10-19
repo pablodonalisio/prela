@@ -1,0 +1,7 @@
+<%= turbo_stream.update nested_dom_id(@client, Location.new), "" %>
+
+<%= turbo_stream.append nested_dom_id(@client, "locations") do %>
+  <%= render @location, client: @client %>
+<% end %>
+
+<%= turbo_stream.prepend "flash", partial: "layouts/flash" %>

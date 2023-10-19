@@ -1,25 +1,21 @@
 class LocationsController < ApplicationController
-  before_action :set_location, only: %i[show edit update destroy]
-
-  def index
-    @locations = Location.all
-  end
-
-  def show
-  end
+  before_action :set_location, only: [:edit, :update, :destroy]
 
   def new
-    @location = Location.new
+    @location = client.locations.build
   end
 
   def edit
   end
 
   def create
-    @location = Location.new(location_params)
+    @location = client.locations.build(location_params)
 
     if @location.save
-      redirect_to location_url(@location), notice: "Location was successfully created."
+      respond_to do |format|
+        format.html { redirect_to client_path(client), notice: "Se ha creado la sede." }
+        format.turbo_stream { flash.now[:notice] = "Se ha creado la sede." }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -27,25 +23,32 @@ class LocationsController < ApplicationController
 
   def update
     if @location.update(location_params)
-      redirect_to location_url(@location), notice: "Location was successfully updated."
+      respond_to do |format|
+        format.html { redirect_to client_path(client), notice: "Se ha actualizado la sede." }
+        format.turbo_stream { flash.now[:notice] = "Se ha actualizado la sede." }
+      end
     else
-      render :edit, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @location.destroy!
+    @location.destroy
 
-    redirect_to locations_url, notice: "Location was successfully destroyed."
+    redirect_to client_path(client), notice: "La sede ha sido eliminada."
   end
 
   private
 
-  def set_location
-    @location = Location.find(params[:id])
-  end
-
   def location_params
     params.require(:location).permit(:name, :client_id)
+  end
+
+  def client
+    @client ||= Client.find(params[:client_id])
+  end
+
+  def set_location
+    @location = client.locations.find(params[:id])
   end
 end

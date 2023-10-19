@@ -1,4 +1,5 @@
 <div class="container mt-3">
+  <div class="container border border-info border-opacity-50 rounded p-2">
   <%= turbo_frame_tag @client do %>
     <%= render @client %>
 
@@ -15,4 +16,18 @@
       <% end %>
     </div>
   <% end %>
+  </div>
+  <div class="container border border-info border-opacity-50 rounded p-2 mt-3">
+    <h2 class="text-center">Sedes</h2>
+    <%= link_to "Agregar sede", [:new, @client, :location],
+                                class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover",
+                                data: { turbo_frame: nested_dom_id(@client, Location.new)} %>
+    <%= turbo_frame_tag nested_dom_id(@client, Location.new) %>
+
+    <%= turbo_frame_tag nested_dom_id(@client, "locations") do %>
+      <div class="mt-4">
+        <%= render @client.locations, client: @client %>
+      </div>
+    <% end %>
+  </div>
 </div>

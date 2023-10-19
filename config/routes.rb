@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :locations
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -11,5 +10,7 @@ Rails.application.routes.draw do
   root "home#index"
 
   get "home/index"
-  resources :clients
+  resources :clients do
+    resources :locations, except: [:index, :show]
+  end
 end

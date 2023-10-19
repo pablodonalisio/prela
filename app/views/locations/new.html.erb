@@ -1,9 +1,5 @@
-<h1>New location</h1>
+<h2>Crear nueva sede</h2>
+<%= turbo_frame_tag nested_dom_id(@client, Location.new) do %>
+  <%= render "form", client: @client, location: @location %>
+<% end %>
 
-<%= render "form", location: @location %>
-
-<br>
-
-<div>
-  <%= link_to "Back to locations", locations_path %>
-</div>

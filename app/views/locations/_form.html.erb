@@ -1,8 +1,6 @@
-<%= form_with(model: location) do |form| %>
+<%= form_with(model: [ client, location ]) do |form| %>
   <% if location.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(location.errors.count, "error") %> prohibited this location from being saved:</h2>
-
       <ul>
         <% location.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,17 +9,17 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
-  </div>
+  <div class="d-flex">
+    <div>
+      <%= form.text_field :name, placeholder: "Nombre de la sede", class: "form-control" %>
+    </div>
 
-  <div>
-    <%= form.label :client_id, style: "display: block" %>
-    <%= form.text_field :client_id %>
-  </div>
+    <div class="btn-group">
+      <%= form.submit "Ok", class: "btn btn-success" %>
 
-  <div>
-    <%= form.submit %>
+      <%= link_to client_path(client), class: "btn btn-danger" do %>
+        <i class="fa-solid fa-x"></i>
+      <% end %>
+    </div>
   </div>
 <% end %>
