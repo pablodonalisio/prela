@@ -1,0 +1,2 @@
+<%= turbo_stream.append "clients", partial: "clients/client_link", locals: { client: @client } %>
+<%= turbo_stream.update Client.new, "" %>

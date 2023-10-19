@@ -11,21 +11,23 @@
     </div>
   <% end %>
 
-  <div class="row">
-    <%= form.label :avatar, "Logo:", class: "col-sm-2 col-form-label" %>
-    <div class="col-md-6">
-      <%= form.file_field :avatar, class: "form-control form-control-sm" %>
+  <div class="container p-2 border">
+    <div class="row">
+      <%= form.label :avatar, "Logo:", class: "col-sm-2 col-form-label" %>
+      <div>
+        <%= form.file_field :avatar, class: "form-control form-control-sm" %>
+      </div>
     </div>
-  </div>
 
-  <div class="row">
-    <%= form.label :name, "Nombre: ", class: "col-sm-2 col-form-label" %>
-    <div class="col-md-6">
-      <%= form.text_field :name, class: "form-control form-control-sm" %>
+    <div class="row">
+      <%= form.label :name, "Nombre: ", class: "col-sm-2 col-form-label" %>
+      <div>
+        <%= form.text_field :name, class: "form-control form-control-sm" %>
+      </div>
     </div>
-  </div>
 
-  <div class="mt-2">
-    <%= form.submit 'Aceptar', class: "btn btn-outline-secondary" %>
+    <div class="mt-2">
+      <%= form.submit 'Aceptar', class: "btn btn-outline-secondary" %>
+    </div>
   </div>
 <% end %>

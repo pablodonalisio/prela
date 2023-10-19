@@ -1,0 +1,12 @@
+<%= link_to client_path(client), class: 'list-group-item list-group-item-action text-center',
+                                 data: { turbo_frame: "_top" } do %>
+  <div class="d-flex align-items-center justify-content-around" style="height: 50px">
+    <div>
+      <% if client.avatar.attached? %>
+        <%= image_tag client.avatar.variant(resize_to_limit: [50, 50]) %>
+      <% else %>
+        <%= client.name %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

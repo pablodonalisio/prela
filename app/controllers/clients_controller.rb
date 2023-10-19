@@ -19,7 +19,10 @@ class ClientsController < ApplicationController
     @client = Client.new(client_params)
 
     if @client.save
-      redirect_to client_url(@client), notice: "El cliente fue creado con éxito."
+      respond_to do |format|
+        format.html { redirect_to clients_path, notice: "El cliente fue creado con éxito." }
+        format.turbo_stream
+      end
     else
       render :new, status: :unprocessable_entity
     end
