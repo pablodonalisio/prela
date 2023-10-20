@@ -1,3 +1,5 @@
 <h2>Crear nueva sede</h2>
-<%= render "form", client: @client, location: @location %>
+<%= turbo_frame_tag @location do %>
+  <%= render "form", client: @client, location: @location %>
+<% end %>
 

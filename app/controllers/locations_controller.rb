@@ -28,14 +28,17 @@ class LocationsController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "Se ha actualizado la sede." }
       end
     else
-      render :new, status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
     @location.destroy
 
-    redirect_to client_path(client), notice: "La sede ha sido eliminada."
+    respond_to do |format|
+      format.html { redirect_to client_path(client), notice: "La sede ha sido eliminada." }
+      format.turbo_stream { flash.now[:notice] = "La sede ha sido eliminada." }
+    end
   end
 
   private

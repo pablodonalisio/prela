@@ -1,13 +1,15 @@
-<div id="<%= dom_id location %>" class="border text-center p-3 d-flex">
-    <div class="flex-grow-1">
-      <%= location.name %>
-    </div>
-    <div class="dropdown">
-      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <%= link_to "Editar", [:edit, client, location], class: "dropdown-item text-center" %>
-        <%= button_to "Borrar", [ client, location ], method: :delete, class: "dropdown-item text-center text-bg-danger" %>
-      </ul>
-    </div>
-</div>
+<%= turbo_frame_tag location do %>
+  <div class="border text-center p-3 d-flex">
+      <div class="flex-grow-1">
+        <%= location.name %>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <%= link_to "Editar", [:edit, client, location], class: "dropdown-item text-center" %>
+          <%= button_to "Borrar", [ client, location ], method: :delete, class: "dropdown-item text-center text-bg-danger" %>
+        </ul>
+      </div>
+  </div>
+<% end %>
