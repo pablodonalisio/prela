@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_20_174756) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_20_191646) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -60,10 +60,19 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_20_174756) do
     t.string "manual"
     t.text "details"
     t.string "serial_number"
-    t.bigint "location_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["location_id"], name: "index_equipment_on_location_id"
+  end
+
+  create_table "location_equipments", force: :cascade do |t|
+    t.string "zone"
+    t.integer "floor"
+    t.bigint "location_id", null: false
+    t.bigint "equipment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
+    t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -88,6 +97,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_20_174756) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "equipment", "locations"
+  add_foreign_key "location_equipments", "equipment"
+  add_foreign_key "location_equipments", "locations"
   add_foreign_key "locations", "clients"
 end
