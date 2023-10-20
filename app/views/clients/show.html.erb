@@ -30,4 +30,10 @@
       </div>
     <% end %>
   </div>
+  <div class="container border border-info border-opacity-50 rounded p-2 mt-3">
+    <h2 class="text-center">Sedes</h2>
+    <%= link_to "Agregar equipo", [:new, @client, :location_equipment],
+                                  class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" %>
+    <%= render @location_equipments %>
+  </div>
 </div>
