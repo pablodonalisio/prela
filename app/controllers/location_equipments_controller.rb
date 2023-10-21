@@ -1,15 +1,16 @@
 class LocationEquipmentsController < ApplicationController
   def new
-    @location = LocationEquipment.new
+    @location_equipment = LocationEquipment.new
     @equipments = Equipment.all
+    client
   end
 
   def create
-    @location = LocationEquipment.new(location_params)
+    @location_equipment = LocationEquipment.new(location_equipment_params)
 
-    if @location.save
+    if @location_equipment.save
       respond_to do |format|
-        # format.html { redirect_to client_path(client), notice: "Se ha agregado un nuevo equipo a la sede." }
+        format.html { redirect_to client_path(client), notice: "Se ha agregado un nuevo equipo a la sede." }
         format.turbo_stream { flash.now[:notice] = "Se ha agregado un nuevo equipo a la sede." }
       end
     else
@@ -20,7 +21,7 @@ class LocationEquipmentsController < ApplicationController
   private
 
   def location_equipment_params
-    params.require(:location).permit(:zone, :floor, :location_id, :equipment_id)
+    params.require(:location_equipment).permit(:zone, :floor, :location_id, :equipment_id)
   end
 
   def client
