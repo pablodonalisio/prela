@@ -1,0 +1,7 @@
+<h1>Editar equipo de la sede</h1>
+
+<%= turbo_frame_tag @location_equipment do %>
+  <%= render "form", location_equipment: @location_equipment,
+                     client: @client,
+                     equipments: @equipments %>
+<% end %>

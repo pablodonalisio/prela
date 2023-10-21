@@ -35,10 +35,10 @@
     <%= link_to "Agregar equipo", [:new, @client, :location_equipment],
                                   class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover",
                                   data: { turbo_frame: dom_id(LocationEquipment.new)} %>
-    <%= turbo_frame_tag LocationEquipment.new%>
+    <%= turbo_frame_tag LocationEquipment.new %>
 
     <%= turbo_frame_tag "location_equipments" do %>
-      <%= render @location_equipments %>
+      <%= render @location_equipments, client: @client %>
     <% end %>
   </div>
 </div>
