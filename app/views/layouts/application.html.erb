@@ -10,11 +10,16 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body style="height: 100vh">
     <%= render partial: 'shared/navbar' %>
     <div id="flash">
       <% render "layouts/flash"%>
     </div>
-    <%= yield %>
+    <main class="d-flex" style="min-height: 100vh;">
+      <%= render partial: 'shared/sidebar' %>
+      <div class="row">
+        <%= yield %>
+      </div>
+    </main>
   </body>
 </html>
