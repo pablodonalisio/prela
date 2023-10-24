@@ -1,15 +1,4 @@
 <%= form_with(model: client) do |form| %>
-  <% if client.errors.any? %>
-    <div style="color: red">
-      <p><%= pluralize(client.errors.count, "errors") %>:</p>
-
-      <ul>
-        <% client.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
 
   <div class="container p-2 border">
     <div class="row">
@@ -24,10 +13,17 @@
       <div>
         <%= form.text_field :name, class: "form-control form-control-sm" %>
       </div>
+      <div style="color: red">
+        <% if client.errors.include?(:name) %>
+            <% client.errors.full_messages_for(:name).each do |error_message| %>
+              <%= error_message %>.
+            <% end %>
+        <% end %>
+      </div>
     </div>
 
-    <div class="mt-2">
-      <%= form.submit 'Aceptar', class: "btn btn-outline-secondary" %>
+    <div class="mt-4">
+      <%= form.submit 'Aceptar', class: "btn btn-success" %>
     </div>
   </div>
 <% end %>

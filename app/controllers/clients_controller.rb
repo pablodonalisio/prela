@@ -19,13 +19,14 @@ class ClientsController < ApplicationController
   def create
     @client = Client.new(client_params)
 
-    if @client.save
-      respond_to do |format|
+    respond_to do |format|
+      if @client.save
         format.html { redirect_to clients_path, notice: "El cliente fue creado con éxito." }
         format.turbo_stream
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :form_update, status: :unprocessable_entity }
       end
-    else
-      render :new, status: :unprocessable_entity
     end
   end
 

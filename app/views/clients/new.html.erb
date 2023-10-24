@@ -1,9 +1,9 @@
 <h1>Nuevo Cliente</h1>
 
 <%= turbo_frame_tag @client do %>
-  <%= render "form", client: @client %>
+  <%= render "remote_modal", title: "Nuevo Cliente" do %>
 
-<div>
-  <%= link_to "Cancelar", clients_path, class: "link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" %>
-</div>
+    <%= render "form", client: @client %>
+
+  <% end %>
 <% end %>
