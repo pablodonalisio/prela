@@ -1,0 +1,11 @@
+# config/locales/ja.yml
+
+es:
+  activerecord:
+    attributes:
+      client:
+        name: "Nombre"
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: "no puede estar en blanco"
