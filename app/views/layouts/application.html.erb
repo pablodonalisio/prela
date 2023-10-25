@@ -15,11 +15,13 @@
     <div id="flash">
       <% render "layouts/flash"%>
     </div>
-    <main class="d-flex" style="min-height: 100vh;">
-      <%= render partial: 'shared/sidebar' %>
-      <div class="container">
-        <%= yield %>
-        <%= turbo_frame_tag "remote_modal", target: "_top" %>
+    <main class="container-fluid g-0 h-100">
+      <div class="row h-100">
+        <%= render partial: 'shared/sidebar' %>
+        <div class="container col h-100">
+          <%= yield %>
+          <%= turbo_frame_tag "remote_modal", target: "_top" %>
+        </div>
       </div>
     </main>
   </body>
