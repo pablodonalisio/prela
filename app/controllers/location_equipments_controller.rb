@@ -1,10 +1,14 @@
 class LocationEquipmentsController < ApplicationController
   before_action :equipments, only: %i[new edit update destroy]
-  before_action :client
+  before_action :client, except: :index
   before_action :location_equipment, only: %i[edit update destroy]
 
   def new
     @location_equipment = LocationEquipment.new
+  end
+
+  def index
+    @location_equipments = LocationEquipment.includes(:equipment, location: :client)
   end
 
   def edit

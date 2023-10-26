@@ -1,0 +1,18 @@
+<%= render "shared/content_header", title: "Equipos" do %>
+  <%= render "shared/button_link", text: "Agregar",
+                                   path: new_location_equipment_path %>
+<% end %>
+
+<div class="container mt-4">
+  <% @location_equipments.each do |le| %>
+    <div class="card mb-3 bg-secondary">
+      <div class="row g-0">
+        <div class="card-body">
+          <h5 class="card-title"><%= le.equipment.brand %> - <%= le.equipment.model %></h5>
+          <p class="card-text"><%= le.location.client.name %> - <%= le.location.name %></p>
+          <p class="card-text"><small class="text-body-secondary"><%= le.zone %> - Piso: <%= le.floor %></small></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
