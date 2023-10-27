@@ -1,0 +1,4 @@
+<%= turbo_stream.append "equipment", @equipment %>
+<%= turbo_stream.update Equipment.new, "" %>
+
+<%= turbo_stream.prepend "flash", partial: "layouts/flash" %>

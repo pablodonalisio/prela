@@ -17,8 +17,10 @@ class EquipmentController < ApplicationController
     respond_to do |format|
       if @equipment.save
         format.html { redirect_to equipment_index_path, notice: "El equipo ha sido creado con exito!" }
+        format.turbo_stream { flash.now[:notice] = "El equipo ha sido creado con exito!" }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :form_update, status: :unprocessable_entity }
       end
     end
   end
@@ -27,8 +29,10 @@ class EquipmentController < ApplicationController
     respond_to do |format|
       if equipment.update(equipment_params)
         format.html { redirect_to equipment_index_path, notice: "El equipo ha sido actualizado con exito!" }
+        format.turbo_stream { flash.now[:notice] = "El equipo ha sido actualizado con exito!" }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :form_update, status: :unprocessable_entity }
       end
     end
   end
@@ -38,6 +42,7 @@ class EquipmentController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to equipment_index_path, notice: "El equipo ha sido eliminado" }
+      format.turbo_stream { flash.now[:notice] = "El equipo ha sido eliminado" }
     end
   end
 
