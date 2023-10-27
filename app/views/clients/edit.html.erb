@@ -1,7 +1,7 @@
 <h1>Editar cliente</h1>
 
 <%= turbo_frame_tag @client do %>
-  <%= render "remote_modal", title: "Editar Cliente" do %>
+  <%= render "shared/remote_modal", title: "Editar Cliente" do %>
 
     <%= render "form", client: @client %>
 
