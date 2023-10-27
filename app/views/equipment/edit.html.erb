@@ -1,0 +1,9 @@
+<h1>Editar equipo</h1>
+
+<%= turbo_frame_tag @equipment do %>
+  <%= render "shared/remote_modal", title: "Editar Equipo" do %>
+
+    <%= render "form", equipment: @equipment %>
+
+  <% end %>
+<% end %>
