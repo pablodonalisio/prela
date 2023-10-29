@@ -1,4 +1,6 @@
 class EquipmentController < ApplicationController
+  before_action :set_equipment, except: %i[new index create]
+
   def new
     @equipment = Equipment.new
   end
@@ -7,8 +9,10 @@ class EquipmentController < ApplicationController
     @equipment = Equipment.all
   end
 
+  def show
+  end
+
   def edit
-    equipment
   end
 
   def create
@@ -27,7 +31,7 @@ class EquipmentController < ApplicationController
 
   def update
     respond_to do |format|
-      if equipment.update(equipment_params)
+      if @equipment.update(equipment_params)
         format.html { redirect_to equipment_index_path, notice: "El equipo ha sido actualizado con exito!" }
         format.turbo_stream { flash.now[:notice] = "El equipo ha sido actualizado con exito!" }
       else
@@ -38,7 +42,7 @@ class EquipmentController < ApplicationController
   end
 
   def destroy
-    equipment.destroy!
+    @equipment.destroy!
 
     respond_to do |format|
       format.html { redirect_to equipment_index_path, notice: "El equipo ha sido eliminado" }
@@ -53,7 +57,7 @@ class EquipmentController < ApplicationController
       :kva, :battery_qty, :battery_type, :battery_info, :manual, :details)
   end
 
-  def equipment
+  def set_equipment
     @equipment = Equipment.find(params[:id])
   end
 end

@@ -1,11 +1,17 @@
-<%= turbo_frame_tag equipment do %>
-  <div class="card bg-secondary">
-    <div class="card-body d-flex">
-      <%= link_to "#{equipment.brand.upcase} #{equipment.model.upcase}", equipment_path(equipment), class: "me-auto text-white" %>
-      <%= render "shared/dropdown" do %>
-        <li><%= link_to "Editar", edit_equipment_path(equipment), class: "btn btn-primary me-2 dropdown-item" %></li>
-        <li><%= button_to "Eliminar", equipment_path(equipment), method: :delete, class: "bg-danger dropdown-item" %></li>
-      <% end %>
+<div class="container">
+  <% equipment.attributes.each do |attribute, value| %>
+    <% next if %w[id created_at updated_at serial_number].include? attribute %>
+    <div class="mb-3">
+      <p>
+        <strong class="text-bg-primary p-1 rounded me-2">
+          <%=  Equipment.human_attribute_name(attribute) %>
+        </strong>
+        <% if attribute.eql? "manual" %>
+          <%= link_to "ver", value, target: "_blank" %>
+        <% else %>
+          <%= value %>
+        <% end %>
+      </p>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>

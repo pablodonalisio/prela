@@ -1,4 +1,4 @@
-<%= turbo_stream.append "equipment", @equipment %>
+<%= turbo_stream.append "equipment", partial: "equipment/equipment_link", locals: { equipment_link: @equipment } %>
 <%= turbo_stream.update Equipment.new, "" %>
 
 <%= turbo_stream.prepend "flash", partial: "layouts/flash" %>

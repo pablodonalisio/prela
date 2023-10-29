@@ -5,6 +5,17 @@ es:
     attributes:
       client:
         name: "Nombre"
+      equipment:
+        kind: "Tipo"
+        brand: "Marca"
+        model: "Modelo"
+        technical_model: "Modelo Técnico"
+        kva: "KVA"
+        battery_qty: "Cantidad de baterías"
+        battery_type: "Tipo de batería"
+        battery_info: "Informacion de la batería"
+        manual: "Manual"
+        details: "Detalles"
   errors:
     format: "%{attribute} %{message}"
     messages:
