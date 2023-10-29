@@ -1,10 +1,10 @@
 <nav class="bg-secondary p-4 col-sm-4 col-md-3">
   <div class="nav flex-column nav-pills p-0" id="pills-tabs" role="tablist">
-    <%= link_to  "Clientes", clients_path,
-                             class: "nav-link active text-white text-center" %>
-    <%= link_to "Mantenimiento", location_equipments_path,
-                           class: "nav-link text-white text-center" %>
-    <%= link_to "Equipos", equipment_index_path,
-                           class: "nav-link text-white text-center" %>
+    <% [{ text: "Clientes", path: clients_path },
+        { text: "Mantenimiento", path: location_equipments_path },
+        { text: "Equipos", path: equipment_index_path }].each do |link| %>
+      <%= link_to  link[:text], link[:path],
+                              class: "nav-link text-white text-center " + active_class(link[:path]) %>
+    <% end %>
   </div>
 </nav>
