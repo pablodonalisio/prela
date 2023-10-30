@@ -1,5 +1,7 @@
 <h2>Crear nueva sede</h2>
 <%= turbo_frame_tag @location do %>
-  <%= render "form", client: @client, location: @location %>
+  <%= render "shared/remote_modal", title: "Editar Sede" do %>
+    <%= render "form", client: @client, location: @location %>
+  <% end %>
 <% end %>
 

@@ -15,7 +15,7 @@
       <%= render "shared/button_link", text: "Agregar",
                                        path: [:new, @client, :location] %>
     <% end %>
-    <div class="mt-4">
+    <div class="mt-4" id="locations">
       <%= render @client.locations, client: @client%>
     </div>
   </div>

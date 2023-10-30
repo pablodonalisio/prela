@@ -1,5 +1,7 @@
 <h2>Crear nueva sede</h2>
 <%= turbo_frame_tag nested_dom_id(@client, Location.new) do %>
-  <%= render "form", client: @client, location: @location %>
+  <%= render "shared/remote_modal", title: "Nueva Sede" do %>
+    <%= render "form", client: @client, location: @location %>
+  <% end %>
 <% end %>
 

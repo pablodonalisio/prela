@@ -1,28 +1,5 @@
-<%= form_with(model: [ client, location ]) do |form| %>
-
-
-  <div class="container p-3 border">
-    <div class="row justify-content-center">
-    <% if location.errors.any? %>
-      <div style="color: red" class="col-auto">
-        <ul>
-          <% location.errors.each do |error| %>
-            <li><%= error.full_message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-      <div class="col-auto">
-        <%= form.text_field :name, placeholder: "Nombre de la sede", class: "form-control text-center" %>
-      </div>
-
-      <div class="btn-group col-auto">
-        <%= form.submit "Ok", class: "btn btn-success" %>
-
-        <%= link_to client_path(client), class: "btn btn-danger" do %>
-          <i class="fa-solid fa-x"></i>
-        <% end %>
-      </div>
-    </div>
-  </div>
+<%= simple_form_for [ client, location ] do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
+
