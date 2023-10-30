@@ -1,4 +1,10 @@
-<%= render "shared/content_header", title: "#{@equipment.brand.upcase} #{@equipment.model.upcase}" %>
+<%= render "shared/content_header", title: "#{@equipment.brand.upcase} #{@equipment.model.upcase}" do %>
+  <%= render "shared/dropdown" do %>
+    <%= render "shared/button_box", edit_path: edit_equipment_path(@equipment),
+                                    delete_path: equipment_path(@equipment),
+                                    confirm: "Seguro queres borrar el Equipo?" %>
+  <% end %>
+<% end %>
 
 <div class="container mt-3">
   <%= render @equipment %>
