@@ -6,7 +6,6 @@ class ClientsController < ApplicationController
   end
 
   def show
-    @location_equipments = LocationEquipment.where(location: @client.locations)
   end
 
   def new

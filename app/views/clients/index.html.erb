@@ -1,9 +1,11 @@
-<%= render "shared/content_header", title: "Clientes" do %>
-  <%= render "shared/button_link", text: "Agregar",
-                                   path: new_client_path %>
-<% end %>
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "shared/content_header", title: "Clientes" do %>
+    <%= render "shared/button_link", text: "Agregar",
+                                     path: new_client_path %>
+  <% end %>
 
 
-<%= turbo_frame_tag "clients", class: "list-group mt-5 col-md- mx-auto" do %>
-  <%= render @clients%>
+  <%= turbo_frame_tag "clients", class: "list-group mt-5 col-md- mx-auto" do %>
+    <%= render @clients%>
+  <% end %>
 <% end %>

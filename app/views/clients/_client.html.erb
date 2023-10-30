@@ -1,6 +1,6 @@
 <%= turbo_frame_tag client do %>
   <div class="align-items-center list-group-item list-group-item-action">
-    <%= link_to client_path(client), data: { turbo_frame: "_top" },
+    <%= link_to client_path(client), data: { turbo_frame: "main_content" },
                                     class: "flex-grow-1 text-center text-light link-underline-dark" do %>
       <div class="d-flex w-100 align-items-center" style="height: 70px;">
         <% if client.avatar.attached? %>
