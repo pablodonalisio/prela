@@ -10,17 +10,9 @@
         <% end %>
 
         <%= render "shared/dropdown" do %>
-          <li>
-            <%= link_to "Editar", edit_client_path(client),
-                                  class: "dropdown-item text-center",
-                                  data: { turbo_frame: "remote_modal" } %>
-          </li>
-          <li>
-            <%= button_to "Eliminar", client_path(client),
-                                      method: :delete,
-                                      class: "dropdown-item text-center bg-danger",
-                                      form: { data: {turbo_confirm: "Seguro queres borrar el Cliente?"} } %>
-          </li>
+          <%= render "shared/button_box", edit_path: edit_client_path(client),
+                                          delete_path: client_path(client),
+                                          confirm: "Seguro queres borrar el Cliente?" %>
         <% end %>
       </div>
     <% end %>

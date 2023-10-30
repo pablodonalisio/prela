@@ -5,8 +5,9 @@
                                                                                    class: "me-auto text-white",
                                                                                    data: { turbo_frame: "_top" } %>
       <%= render "shared/dropdown" do %>
-        <li><%= link_to "Editar", edit_equipment_path(equipment_link), class: "btn btn-primary me-2 dropdown-item", data: { turbo_frame: "remote_modal" } %></li>
-        <li><%= button_to "Eliminar", equipment_path(equipment_link), method: :delete, class: "bg-danger dropdown-item" %></li>
+        <%= render "shared/button_box", edit_path: edit_equipment_path(equipment_link),
+                                        delete_path: equipment_path(equipment_link),
+                                        confirm: "Seguro queres borrar el Equipo?" %>
       <% end %>
     </div>
   </div>

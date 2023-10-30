@@ -1,0 +1,7 @@
+<li><%= link_to "Editar", edit_path,
+                          class: "dropdown-item text-center",
+                          data: { turbo_frame: "remote_modal" } %></li>
+<li><%= button_to "Eliminar", delete_path,
+                              method: :delete,
+                              class: "bg-danger dropdown-item text-center",
+                              form: { data: {turbo_confirm: confirm} } %></li>
