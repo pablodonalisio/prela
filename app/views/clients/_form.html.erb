@@ -1,29 +1,6 @@
-<%= form_with(model: client) do |form| %>
-
-  <div class="container p-2 border">
-    <div class="row">
-      <%= form.label :avatar, "Logo:", class: "col-sm-2 col-form-label" %>
-      <div>
-        <%= form.file_field :avatar, class: "form-control form-control-sm" %>
-      </div>
-    </div>
-
-    <div class="row">
-      <%= form.label :name, "Nombre: ", class: "col-sm-2 col-form-label" %>
-      <div>
-        <%= form.text_field :name, class: "form-control form-control-sm" %>
-      </div>
-      <div style="color: red">
-        <% if client.errors.include?(:name) %>
-            <% client.errors.full_messages_for(:name).each do |error_message| %>
-              <%= error_message %>.
-            <% end %>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="mt-4">
-      <%= form.submit 'Aceptar', class: "btn btn-success", data: { bs_dismiss: "modal"} %>
-    </div>
-  </div>
+<%= simple_form_for client do |f| %>
+  <%= f.input :avatar, label: "Logo" %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
+
