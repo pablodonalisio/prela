@@ -6,7 +6,7 @@
         <strong class="text-bg-primary p-1 rounded me-2">
           <%=  Equipment.human_attribute_name(attribute) %>
         </strong>
-        <% if attribute.eql? "manual" %>
+        <% if attribute.eql?("manual") && value.present?  %>
           <%= link_to "ver", value, target: "_blank" %>
         <% else %>
           <%= value %>
