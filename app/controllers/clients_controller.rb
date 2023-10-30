@@ -53,7 +53,7 @@ class ClientsController < ApplicationController
   private
 
   def set_client
-    @client = Client.includes(locations: :location_equipments).find(params[:id])
+    @client = Client.includes(:locations).find(params[:id])
   end
 
   def client_params
