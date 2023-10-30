@@ -1,10 +1,12 @@
-<%= render "shared/content_header", title: "Equipos" do %>
-  <%= render "shared/button_link", text: "Agregar",
-                                   path: new_equipment_path %>
-<% end %>
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "shared/content_header", title: "Equipos" do %>
+    <%= render "shared/button_link", text: "Agregar",
+                                    path: new_equipment_path %>
+  <% end %>
 
-<div class="container mt-4">
-  <div id="equipment" class="row row-cols-1 g-4">
-    <%= render partial: "equipment_link", collection: @equipment %>
+  <div class="container mt-4">
+    <div id="equipment" class="row row-cols-1 g-4">
+      <%= render partial: "equipment_link", collection: @equipment %>
+    </div>
   </div>
-</div>
+<% end %>
