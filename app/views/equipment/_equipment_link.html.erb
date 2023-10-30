@@ -2,7 +2,7 @@
   <div class="card bg-secondary">
     <div class="card-body d-flex">
       <%= link_to "#{equipment_link.brand.upcase} #{equipment_link.model.upcase}", equipment_path(equipment_link),
-                                                                                   class: "me-auto text-white link-underline-secondary",
+                                                                                   class: "me-auto text-white link-underline-secondary text-wrap text-truncate",
                                                                                    data: { turbo_frame: "main_content" } %>
       <%= render "shared/dropdown" do %>
         <%= render "shared/button_box", edit_path: edit_equipment_path(equipment_link),
