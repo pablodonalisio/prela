@@ -1,4 +1,7 @@
 <div class="container">
+  <%= link_to equipment_index_path do %>
+    <i class="fa-solid fa-chevron-left mb-3"></i>
+  <% end %>
   <% equipment.attributes.each do |attribute, value| %>
     <% next if %w[id created_at updated_at serial_number].include? attribute %>
     <div class="mb-3">
