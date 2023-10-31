@@ -1,9 +1,10 @@
 class LocationEquipmentsController < ApplicationController
   before_action :location_equipment, only: %i[edit update destroy]
+  before_action :set_locations, only: %i[edit]
 
   def new
     @location_equipment = LocationEquipment.new
-    @client_id = params[:client_id]
+    @locations = Location.where(client_id: params[:client_id])
   end
 
   def index
@@ -22,7 +23,7 @@ class LocationEquipmentsController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "Se ha agregado un nuevo equipo a la sede." }
       end
     else
-      @client_id = @location_equipment.location&.client_id
+      set_locations
       render :new, status: :unprocessable_entity
     end
   end
@@ -34,7 +35,8 @@ class LocationEquipmentsController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "Se ha actualizado el equipo de la sede." }
       end
     else
-      render :new, status: :unprocessable_entity
+      set_locations
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -55,5 +57,9 @@ class LocationEquipmentsController < ApplicationController
 
   def location_equipment
     @location_equipment ||= LocationEquipment.find(params[:id])
+  end
+
+  def set_locations
+    @locations = Location.where(client_id: @location_equipment.location&.client_id)
   end
 end

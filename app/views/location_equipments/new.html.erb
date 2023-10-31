@@ -2,7 +2,7 @@
 
 <%= turbo_frame_tag @location_equipment do %>
   <%= render "shared/remote_modal", title: "Nuevo Equipo de Sede" do %>
-    <% if @client_id.blank? %>
+    <% if @locations.blank? %>
       <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           Seleccione un cliente
@@ -17,7 +17,7 @@
       </div>
     <% else %>
       <%= render "form", location_equipment: @location_equipment,
-                         locations: Location.where(client_id: @client_id) %>
+                         locations: @locations %>
     <% end %>
   <% end %>
 <% end %>

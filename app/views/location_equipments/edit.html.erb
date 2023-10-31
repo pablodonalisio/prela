@@ -1,7 +1,8 @@
 <h1>Editar equipo de la sede</h1>
 
 <%= turbo_frame_tag @location_equipment do %>
-  <%= render "form", location_equipment: @location_equipment,
-                     client: @client,
-                     equipments: @equipments %>
+  <%= render "shared/remote_modal", title: "Editar Equipo de Sede" do %>
+    <%= render "form", location_equipment: @location_equipment,
+                      locations: @locations %>
+  <% end %>
 <% end %>
