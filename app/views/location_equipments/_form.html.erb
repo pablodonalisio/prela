@@ -1,41 +1,11 @@
-<%= form_with(model: [client, location_equipment]) do |form| %>
-  <div class="container p-3 border">
-    <div class="row justify-content-center">
-    <% if location_equipment.errors.any? %>
-      <div style="color: red" class="col-auto">
-        <ul>
-          <% location_equipment.errors.each do |error| %>
-            <li><%= error.full_message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-      <%= form.label :location_id, "Sede" %>
-      <%= form.collection_select :location_id, client.locations,
-                                               :id,
-                                               :name,
-                                               class: "form-select" %>
-
-      <%= form.label :zone, "Sala" %>
-      <%= form.text_field :zone, class: "form-control" %>
-
-      <%= form.label :floor, "Piso" %>
-      <%= form.number_field :floor, class: "form-control" %>
-
-      <%= form.label :equipment_id, "Equipo" %>
-      <%= form.collection_select :equipment_id, equipments,
-                                                :id,
-                                                :model,
-                                                class: "form-select" %>
-
-
-      <div class="btn-group col-auto">
-        <%= form.submit "Ok", class: "btn btn-success" %>
-
-        <%= link_to client_path(client), class: "btn btn-danger" do %>
-          <i class="fa-solid fa-x"></i>
-        <% end %>
-      </div>
-    </div>
-  </div>
+<%= simple_form_for location_equipment do |f| %>
+  <%= f.input :location_id, label: "Sede",
+                            collection: locations.pluck(:name, :id),
+                            prompt: "Seleccione una sede" %>
+  <%= f.input :zone, label: "Sala" %>
+  <%= f.input :floor, label: "Piso" %>
+  <%= f.input :equipment_id, label: "Equipo",
+                              collection: Equipment.pluck(:model, :id),
+                              prompt: "Seleccione un equipo" %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

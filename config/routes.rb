@@ -12,7 +12,6 @@ Rails.application.routes.draw do
   get "home/index"
   resources :clients do
     resources :locations, except: [:index, :show]
-    resources :location_equipments, except: %i[index show]
   end
   resources :location_equipments
   resources :equipment

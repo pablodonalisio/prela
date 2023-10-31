@@ -16,7 +16,11 @@ es:
         battery_info: "Informacion de la batería"
         manual: "Manual"
         details: "Detalles"
+      location_equipment:
+        location: "Sede"
+        equipment: "Equipo"
   errors:
     format: "%{attribute} %{message}"
     messages:
       blank: "no puede estar en blanco"
+      required: "es requerido"

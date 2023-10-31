@@ -1,10 +1,10 @@
 class LocationEquipmentsController < ApplicationController
   before_action :equipments, only: %i[new edit update destroy]
-  before_action :client, except: :index
   before_action :location_equipment, only: %i[edit update destroy]
 
   def new
     @location_equipment = LocationEquipment.new
+    @client_id = params[:client_id]
   end
 
   def index
@@ -23,6 +23,7 @@ class LocationEquipmentsController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "Se ha agregado un nuevo equipo a la sede." }
       end
     else
+      @client_id = @location_equipment.location&.client_id
       render :new, status: :unprocessable_entity
     end
   end
