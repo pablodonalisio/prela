@@ -52,7 +52,7 @@ class LocationEquipmentsController < ApplicationController
   private
 
   def location_equipment_params
-    params.require(:location_equipment).permit(:zone, :floor, :location_id, :equipment_id)
+    params.require(:location_equipment).permit(:zone, :floor, :location_id, :equipment_id, :serial_number)
   end
 
   def location_equipment

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_20_191646) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_01_115904) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,7 +59,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_20_191646) do
     t.string "battery_info"
     t.string "manual"
     t.text "details"
-    t.string "serial_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -71,6 +70,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_20_191646) do
     t.bigint "equipment_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "serial_number"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end
