@@ -1,0 +1,7 @@
+<%= simple_form_for location_equipment do |f| %>
+  <%= f.input :last_service, label: "Ultimo service" %>
+  <%= f.input :next_service, label: "Proximo service" %>
+  <%= f.input :last_battery_change, label: "Ultimo cambio de bateria" %>
+  <%= f.input :next_battery_change, label: "Proximo cambio de bateria" %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

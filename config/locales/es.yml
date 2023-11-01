@@ -19,8 +19,15 @@ es:
       location_equipment:
         location: "Sede"
         equipment: "Equipo"
+        last_service: "Ultimo service"
+        next_service: "Proximo service"
+        last_battery_change: "Ultimo cambio de bateria"
+        next_battery_change: "Proximo cambio de bateria"
   errors:
     format: "%{attribute} %{message}"
     messages:
       blank: "no puede estar en blanco"
       required: "es requerido"
+  date:
+    formats:
+      month_year_concise: "%b %Y"

@@ -12,4 +12,14 @@ module LocationEquipmentsHelper
       floor
     end
   end
+
+  def service_date_color(date)
+    if date < Date.today.months_since(1)
+      "text-danger"
+    elsif date < Date.today.months_since(3)
+      "text-warning"
+    else
+      "text-success"
+    end
+  end
 end

@@ -12,6 +12,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def edit
+    @edition = params[:edition]
   end
 
   def create
@@ -52,7 +53,9 @@ class LocationEquipmentsController < ApplicationController
   private
 
   def location_equipment_params
-    params.require(:location_equipment).permit(:zone, :floor, :location_id, :equipment_id, :serial_number)
+    params.require(:location_equipment)
+      .permit(:zone, :floor, :location_id, :equipment_id, :serial_number,
+        :last_service, :next_service, :last_battery_change, :next_battery_change)
   end
 
   def location_equipment

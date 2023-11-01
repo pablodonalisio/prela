@@ -5,6 +5,9 @@
         <div class="d-flex">
           <h5 class="card-title me-auto"><%= location_equipment.equipment.brand %> - <%= location_equipment.equipment.model %></h5>
           <%= render "shared/dropdown" do %>
+            <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
+                                              class: "dropdown-item text-center",
+                                              data: { turbo_frame: "remote_modal" } %></li>
             <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
                                             delete_path: location_equipment_path(location_equipment),
                                             confirm: "Seguro queres borrar este equipo?" %>
@@ -13,7 +16,7 @@
         <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>
         <div class="container p-0">
           <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-6 mb-3">
               <p class="card-text m-0">
                 <small class="text-body-secondary">
                   Sala: <%= location_equipment.zone %> - Piso: <%= humanize_floor(location_equipment.floor) %>
@@ -24,16 +27,10 @@
               </p>
             </div>
             <div class="col-lg-6">
-              <p class="card-text m-0">
-                <small class="text-body-secondary">
-                  Service: <%= "Ultimo #{location_equipment.last_service} | Prox #{location_equipment.next_service}" %>
-                </small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">
-                  Cambio batería: <%= "Ultimo #{location_equipment.last_battery_change} | Prox #{location_equipment.next_battery_change}" %>
-                </small>
-              </p>
+              <% %i[last_service next_service last_battery_change next_battery_change].each do |attribute| %>
+                <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
+                                           date: location_equipment.send(attribute) %>
+              <% end %>
             </div>
           </div>
         </div>
