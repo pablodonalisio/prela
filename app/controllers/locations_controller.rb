@@ -14,7 +14,7 @@ class LocationsController < ApplicationController
     if @location.save
       respond_to do |format|
         format.html { redirect_to client_path(client), notice: "Se ha creado la sede." }
-        format.turbo_stream { flash.now[:notice] = "Se ha creado la sede." }
+        format.turbo_stream {}
       end
     else
       render :new, status: :unprocessable_entity
@@ -25,7 +25,7 @@ class LocationsController < ApplicationController
     if @location.update(location_params)
       respond_to do |format|
         format.html { redirect_to client_path(client), notice: "Se ha actualizado la sede." }
-        format.turbo_stream { flash.now[:notice] = "Se ha actualizado la sede." }
+        format.turbo_stream {}
       end
     else
       render :edit, status: :unprocessable_entity
@@ -37,7 +37,7 @@ class LocationsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to client_path(client), notice: "La sede ha sido eliminada." }
-      format.turbo_stream { flash.now[:notice] = "La sede ha sido eliminada." }
+      format.turbo_stream {}
     end
   end
 

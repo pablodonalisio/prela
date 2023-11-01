@@ -1,4 +1,2 @@
 <%= turbo_stream.append "clients", @client %>
 <%= turbo_stream.update Client.new, "" %>
-
-<%= turbo_stream.prepend "flash", partial: "layouts/flash" %>

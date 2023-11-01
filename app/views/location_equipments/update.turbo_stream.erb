@@ -1,5 +1,3 @@
 <%= turbo_stream.replace @location_equipment do %>
   <%= render @location_equipment, client: @client %>
 <% end %>
-
-<%= turbo_stream.prepend "flash", partial: "layouts/flash" %>

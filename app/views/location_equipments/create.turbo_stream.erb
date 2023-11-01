@@ -1,5 +1,3 @@
 <%= turbo_stream.append "location_equipments" do %>
   <%= render @location_equipment %>
 <% end %>
-
-<%= turbo_stream.prepend "flash", partial: "layouts/flash" %>

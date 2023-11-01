@@ -20,8 +20,8 @@ class ClientsController < ApplicationController
 
     respond_to do |format|
       if @client.save
-        format.html { redirect_to clients_path, notice: "El cliente fue creado con éxito." }
-        format.turbo_stream { flash.now[:notice] = "El cliente fue creado con éxito" }
+        format.html { redirect_to clients_path }
+        format.turbo_stream {}
       else
         format.html { render :new, status: :unprocessable_entity }
         format.turbo_stream { render :form_update, status: :unprocessable_entity }
@@ -33,7 +33,7 @@ class ClientsController < ApplicationController
     respond_to do |format|
       if @client.update(client_params)
         format.html { redirect_to client_url(@client), notice: "El cliente ha sido actualizado." }
-        format.turbo_stream { flash.now[:notice] = "El cliente ha sido actualizado" }
+        format.turbo_stream {}
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.turbo_stream { render :form_update, status: :unprocessable_entity }
@@ -46,7 +46,7 @@ class ClientsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to clients_url, notice: "El cliente ha sido eliminado" }
-      format.turbo_stream { flash.now[:notice] = "El cliente ha sido eliminado" }
+      format.turbo_stream {}
     end
   end
 

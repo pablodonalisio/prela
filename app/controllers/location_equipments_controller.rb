@@ -21,7 +21,7 @@ class LocationEquipmentsController < ApplicationController
     if @location_equipment.save
       respond_to do |format|
         format.html { redirect_to location_equipments_path, notice: "Se ha agregado un nuevo equipo a la sede." }
-        format.turbo_stream { flash.now[:notice] = "Se ha agregado un nuevo equipo a la sede." }
+        format.turbo_stream {}
       end
     else
       set_locations
@@ -33,7 +33,7 @@ class LocationEquipmentsController < ApplicationController
     if @location_equipment.update(location_equipment_params)
       respond_to do |format|
         format.html { redirect_to location_equipments_path, notice: "Se ha actualizado el equipo de la sede." }
-        format.turbo_stream { flash.now[:notice] = "Se ha actualizado el equipo de la sede." }
+        format.turbo_stream {}
       end
     else
       set_locations
@@ -46,7 +46,7 @@ class LocationEquipmentsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to location_equipments_path, notice: "El equipo de la sede ha sido eliminado." }
-      format.turbo_stream { flash.now[:notice] = "El equipo de la sede ha sido eliminado." }
+      format.turbo_stream {}
     end
   end
 
