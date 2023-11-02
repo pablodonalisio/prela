@@ -10,35 +10,33 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body style="height: 100vh">
+  <body>
     <%= render partial: 'shared/navbar' %>
     <div id="flash" class="fixed-top bg-light">
       <% render "layouts/flash"%>
     </div>
-    <main class="container-fluid g-0 h-100">
-      <div class="row h-100">
-        <% if user_signed_in?%>
-          <%= render partial: 'shared/sidebar' %>
-          <div class="container h-100 col-sm-8">
-            <%= yield %>
-            <div class="modal fade"
-                  id="shareRecipeModal"
-                  tabindex="-1"
-                  aria-labelledby="newClientRemoteModalLabel"
-                  aria-hidden="true"
-                  data-controller="remote-modal"
-                  data-action="turbo:frame-load->remote-modal#open turbo:submit-end->remote-modal#close">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content" id="modal_content">
-                    <%= turbo_frame_tag "remote_modal" %>
-                  </div>
-              </div>
+    <% if user_signed_in?%>
+      <div class="d-flex">
+        <%= render partial: 'shared/sidebar' %>
+        <main class="d-flex h-100 col-sm-8">
+          <%= yield %>
+          <div class="modal fade"
+                id="shareRecipeModal"
+                tabindex="-1"
+                aria-labelledby="newClientRemoteModalLabel"
+                aria-hidden="true"
+                data-controller="remote-modal"
+                data-action="turbo:frame-load->remote-modal#open turbo:submit-end->remote-modal#close">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" id="modal_content">
+                  <%= turbo_frame_tag "remote_modal" %>
+                </div>
             </div>
           </div>
-        <% else %>
-          <%= yield %>
-        <% end %>
+        </main>
       </div>
-    </main>
+    <% else %>
+      <%= yield %>
+    <% end %>
   </body>
 </html>
