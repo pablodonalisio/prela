@@ -1,10 +1,19 @@
 <%= simple_form_for location_equipment do |f| %>
-  <% %i[last_service next_service last_battery_change next_battery_change].each do |attribute| %>
-    <%= f.input attribute, label: LocationEquipment.human_attribute_name(attribute),
-                           discard_day: true %>
-    <% if attribute.eql? :next_service%>
-      <hr>
-    <% end %>
-  <% end %>
+  <%= f.input :last_service, label: LocationEquipment.human_attribute_name(:last_service),
+                              as: :date, end_year: Date.today.year - 90,
+                              start_year: Date.today.year, discard_day: true,
+                              order: [:month, :year], include_blank: true %>
+  <%= f.input :next_service, label: LocationEquipment.human_attribute_name(:next_service),
+                              as: :date, end_year: Date.today.year + 90,
+                              start_year: Date.today.year, discard_day: true,
+                              order: [:month, :year], include_blank: true %>
+  <%= f.input :last_battery_change, label: LocationEquipment.human_attribute_name(:last_battery_change),
+                                    as: :date, end_year: Date.today.year - 90,
+                                    start_year: Date.today.year, discard_day: true,
+                                    order: [:month, :year], include_blank: true %>
+  <%= f.input :next_battery_change, label: LocationEquipment.human_attribute_name(:next_battery_change),
+                                    as: :date, end_year: Date.today.year + 90,
+                                    start_year: Date.today.year, discard_day: true,
+                                    order: [:month, :year], include_blank: true %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
