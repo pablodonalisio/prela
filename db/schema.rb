@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_01_134750) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_02_141720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -58,7 +58,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_01_134750) do
     t.string "battery_type"
     t.string "battery_info"
     t.string "manual"
-    t.text "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -75,6 +74,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_01_134750) do
     t.date "next_service"
     t.date "last_battery_change"
     t.date "next_battery_change"
+    t.text "details"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end

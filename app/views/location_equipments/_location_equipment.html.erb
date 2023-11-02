@@ -33,6 +33,9 @@
               <p class="card-text m-0">
                 <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
               </p>
+              <p class="card-text m-0">
+                <small class="text-body-secondary">Detalles: <%= location_equipment.details %></small>
+              </p>
             </div>
             <div class="col-lg-6">
               <% %i[last_service next_service last_battery_change next_battery_change].each do |attribute| %>
