@@ -21,4 +21,12 @@ module ApplicationHelper
       ""
     end
   end
+
+  def sidebar_links
+    [
+      {text: "Mantenimiento", path: location_equipments_path, icon: "fa-wrench"},
+      {text: "Clientes", path: clients_path, icon: "fa-building"},
+      {text: "Equipos", path: equipment_index_path, icon: "fa-bolt"}
+    ]
+  end
 end

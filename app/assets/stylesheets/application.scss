@@ -5,3 +5,25 @@ $body-color-dark: white;
 
 @import "bootstrap";
 @import "font-awesome";
+
+@media (min-width: 576px) {
+  .sidebar {
+    padding: 1.5rem;
+    position: sticky;
+    top: 10vh;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    a {
+      flex-grow: 0 !important;
+      display: flex;
+      align-items: center;
+      i {
+        margin-right: 15px;
+      }
+      p {
+        font-size: 0.9rem !important;
+      }
+    }
+  }
+}

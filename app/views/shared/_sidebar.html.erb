@@ -1,10 +1,8 @@
-<nav class="bg-secondary p-4 col-sm-4 col-md-3 position-sticky" style="top: 10vh; height: 90vh">
-  <div class="nav flex-column nav-pills p-0" id="pills-tabs" role="tablist">
-    <% [{ text: "Mantenimiento", path: location_equipments_path },
-        { text: "Clientes", path: clients_path },
-        { text: "Equipos", path: equipment_index_path }].each do |link| %>
-      <%= link_to  link[:text], link[:path],
-                              class: "nav-link text-white text-center " + active_class(link[:path]) %>
+<nav class="sidebar bg-secondary fixed-bottom nav nav-pills nav-justified border-top">
+  <% sidebar_links.each do |link| %>
+    <%= link_to link[:path], class: "nav-link text-white #{active_class(link[:path])}" do %>
+      <i class="fa-solid <%= link[:icon] %>"></i>
+      <p class="m-0" style="font-size: 0.6rem"><%= link[:text] %></p>
     <% end %>
-  </div>
-</nav>
+  <% end %>
+</nav
