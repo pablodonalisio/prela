@@ -18,21 +18,21 @@
     <% if user_signed_in?%>
       <div class="d-flex">
         <%= render partial: 'shared/sidebar' %>
-        <main class="d-flex h-100 col-sm-8">
-          <%= yield %>
-          <div class="modal fade"
-                id="shareRecipeModal"
-                tabindex="-1"
-                aria-labelledby="newClientRemoteModalLabel"
-                aria-hidden="true"
-                data-controller="remote-modal"
-                data-action="turbo:frame-load->remote-modal#open turbo:submit-end->remote-modal#close">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+        <main class="d-flex h-100 container-fluid">
+            <%= yield %>
+            <div class="modal fade"
+                  id="shareRecipeModal"
+                  tabindex="-1"
+                  aria-labelledby="newClientRemoteModalLabel"
+                  aria-hidden="true"
+                  data-controller="remote-modal"
+                  data-action="turbo:frame-load->remote-modal#open turbo:submit-end->remote-modal#close">
+              <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content" id="modal_content">
                   <%= turbo_frame_tag "remote_modal" %>
                 </div>
+              </div>
             </div>
-          </div>
         </main>
       </div>
     <% else %>
