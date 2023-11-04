@@ -1,4 +1,5 @@
-<nav class="sidebar bg-secondary fixed-bottom nav nav-pills nav-justified border-top">
+<nav class="sidebar bg-secondary fixed-bottom nav nav-pills nav-justified border-top"
+     style="height: 60px;">
   <% sidebar_links.each do |link| %>
     <%= link_to link[:path], class: "nav-link text-white #{active_class(link[:path])}" do %>
       <i class="fa-solid <%= link[:icon] %>"></i>
