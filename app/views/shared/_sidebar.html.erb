@@ -1,9 +1,31 @@
-<nav class="sidebar bg-secondary fixed-bottom nav nav-pills nav-justified border-top"
-     style="height: 60px;">
-  <% sidebar_links.each do |link| %>
-    <%= link_to link[:path], class: "nav-link text-white #{active_class(link[:path])}" do %>
-      <i class="fa-solid <%= link[:icon] %>"></i>
-      <p class="m-0" style="font-size: 0.6rem"><%= link[:text] %></p>
+<div class="bg-secondary sidebar fixed-bottom border-top" style="height: 60px;">
+  <nav class="nav nav-pills nav-justified">
+    <% sidebar_links.each do |link| %>
+      <%= link_to link[:path], class: "nav-link text-white #{active_class(link[:path])}" do %>
+        <i class="fa-solid <%= link[:icon] %>"></i>
+        <p class="m-0" style="font-size: 0.6rem"><%= link[:text] %></p>
+      <% end %>
     <% end %>
+  </nav>
+
+  <% if @filters %>
+    <button class="btn btn-primary d-sm-none"
+            style="position: fixed; bottom: 70px; right: 30px; z-index: 2"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#filters"
+            aria-controls="filters">
+      <i class="fa-solid fa-filter"></i>
+    </button>
+
+    <hr>
+    <div class="offcanvas-sm offcanvas-start" tabindex="-1" id="filters" aria-labelledby="filtersLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="filtersLabel">Filtros</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column">
+      </div>
+    </div>
   <% end %>
-</nav>
+</div>
