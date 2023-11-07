@@ -25,9 +25,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-        <%= form_with(url: url_for, method: :get) do |f| %>
-          <%= render "filter_form", f: f, filter_params: @filter_params%>
-        <% end %>
+          <%= render "filter_form", filter_params: @filter_params%>
       </div>
     </div>
   <% end %>

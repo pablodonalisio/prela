@@ -1,11 +1,36 @@
-<h6>Cliente</h6>
-<%= f.collection_check_boxes :client_ids, Client.order(:name), :id, :name do |b| %>
-  <div class="form-check">
-    <%= b.check_box class: "form-check-input"  %>
-    <small>
-      <%= b.label(class: "form-check-label") %>
-    </small>
-  </div>
+<%= turbo_frame_tag "filters" do%>
+  <%= form_with(url: url_for, method: :get, data: { turbo_stream: true }) do |f| %>
+    <div class="container">
+      <div class="mb-3">
+        <h6>Cliente</h6>
+        <%= f.collection_check_boxes :client_ids, Client.order(:name), :id, :name do |b| %>
+          <div class="form-check">
+            <%= b.check_box checked: filter_params[:client_ids]&.include?(b.value.to_s),
+                            class: "form-check-input"  %>
+            <small>
+              <%= b.label(class: "form-check-label") %>
+            </small>
+          </div>
+        <% end %>
+      </div>
+      <div class="mb-3">
+        <% if filter_params[:client_ids].present? %>
+          <h6>Sede</h6>
+          <%= f.collection_check_boxes :location_ids,
+                                      Location.where(client_id: filter_params[:client_ids]),
+                                      :id,
+                                      :name do |b| %>
+            <div class="form-check">
+              <%= b.check_box class: "form-check-input"  %>
+              <small>
+                <%= b.label(class: "form-check-label") %>
+              </small>
+            </div>
+          <% end %>
+        <% end %>
+
+        <%= f.submit "Filtrar", class: "btn btn-primary btn-sm mt-3" %>
+      </div>
+    </div>
+  <% end %>
 <% end %>
-<%= f.submit "Filtrar", class: "btn btn-primary btn-sm mt-3",
-                        data: { turbo_frame: "location_equipments" } %>
