@@ -8,7 +8,7 @@
     <% end %>
   </nav>
 
-  <% if @filters %>
+  <% if @filter_params %>
     <button class="btn btn-primary d-sm-none"
             style="position: fixed; bottom: 70px; right: 30px; z-index: 2"
             type="button"
@@ -24,7 +24,10 @@
         <h5 class="offcanvas-title" id="filtersLabel">Filtros</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="offcanvas-body d-flex flex-column">
+      <div class="offcanvas-body">
+        <%= form_with(url: url_for, method: :get) do |f| %>
+          <%= render "filter_form", f: f, filter_params: @filter_params%>
+        <% end %>
       </div>
     </div>
   <% end %>

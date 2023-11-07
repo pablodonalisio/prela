@@ -8,7 +8,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def index
-    @location_equipments = LocationEquipment.includes(:equipment, location: :client)
+    @location_equipments = LocationEquipment.filter(filter_params).includes(:equipment, location: :client)
   end
 
   def edit
@@ -64,5 +64,9 @@ class LocationEquipmentsController < ApplicationController
 
   def set_locations
     @locations = Location.where(client_id: @location_equipment.location&.client_id)
+  end
+
+  def filter_params
+    @filter_params = params.slice(:client_ids)
   end
 end
