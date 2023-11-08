@@ -67,6 +67,8 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def filter_params
-    @filter_params = params.slice(:client_ids)
+    filters = %i[client_ids]
+    filters << :location_ids if params[:client_ids]&.compact_blank!.present?
+    @filter_params = params.slice(*filters)
   end
 end

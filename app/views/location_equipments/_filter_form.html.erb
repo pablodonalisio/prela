@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "filters" do%>
+<%= turbo_frame_tag "location_equipment_filters" do%>
   <%= form_with(url: url_for, method: :get, data: { turbo_stream: true }) do |f| %>
     <div class="container">
       <div class="mb-3">
@@ -21,7 +21,8 @@
                                       :id,
                                       :name do |b| %>
             <div class="form-check">
-              <%= b.check_box class: "form-check-input"  %>
+              <%= b.check_box checked: filter_params[:location_ids]&.include?(b.value.to_s),
+                              class: "form-check-input"  %>
               <small>
                 <%= b.label(class: "form-check-label") %>
               </small>
