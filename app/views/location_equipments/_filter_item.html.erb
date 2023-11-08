@@ -1,0 +1,13 @@
+<div class="mb-3">
+  <h6><%= title %></h6>
+  <%= f.collection_check_boxes attribute, collection, value, label do |b| %>
+    <div class="form-check">
+      <%= b.check_box checked: selected_filters&.include?(b.value.to_s),
+                      class: "form-check-input",
+                      onchange: "this.form.requestSubmit()"  %>
+      <small>
+        <%= b.label(class: "form-check-label") %>
+      </small>
+    </div>
+  <% end %>
+</div>
