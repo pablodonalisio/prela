@@ -22,7 +22,7 @@
     <div class="offcanvas-sm offcanvas-start" tabindex="-1" id="filters" aria-labelledby="filtersLabel">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="filtersLabel">Filtros</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#filters" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
           <%= render "filter_form", filter_params: @filter_params%>

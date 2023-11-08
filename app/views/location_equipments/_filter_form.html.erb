@@ -30,7 +30,11 @@
           <% end %>
         <% end %>
 
-        <%= f.submit "Filtrar", class: "btn btn-primary btn-sm mt-3" %>
+        <%= f.submit "Filtrar", class: "btn btn-primary btn-sm mt-3",
+                                data: {
+                                  bs_dismiss: "offcanvas",
+                                  bs_target: "#filters"
+                                } %>
       </div>
     </div>
   <% end %>
