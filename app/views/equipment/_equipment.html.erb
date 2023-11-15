@@ -3,7 +3,7 @@
     <i class="fa-solid fa-chevron-left mb-3"></i>
   <% end %>
   <% equipment.attributes.each do |attribute, value| %>
-    <% next if %w[id created_at updated_at serial_number].include? attribute %>
+    <% next if %w[id created_at updated_at].include? attribute %>
     <div class="mb-3">
       <p>
         <strong class="text-bg-primary p-1 rounded me-2">

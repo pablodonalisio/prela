@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "main_content" do %>
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
   <%= render "shared/content_header", title: "Equipos" do %>
     <%= render "shared/button_link", text: "Agregar",
                                     path: new_equipment_path %>
