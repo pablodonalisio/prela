@@ -23,6 +23,10 @@ es:
         next_service: "Proximo service"
         last_battery_change: "Ultimo cambio de bateria"
         next_battery_change: "Proximo cambio de bateria"
+      battery:
+        model: "Modelo"
+        voltage: "Voltaje"
+        amps: "Amperes"
   errors:
     format: "%{attribute} %{message}"
     messages:
