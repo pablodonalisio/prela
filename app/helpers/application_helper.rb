@@ -26,7 +26,8 @@ module ApplicationHelper
     [
       {text: "Mantenimiento", path: location_equipments_path, icon: "fa-wrench"},
       {text: "Clientes", path: clients_path, icon: "fa-building"},
-      {text: "Equipos", path: equipment_index_path, icon: "fa-bolt"}
+      {text: "Equipos", path: equipment_index_path, icon: "fa-bolt"},
+      {text: "Insumos", path: supplies_path, icon: "fa-car-battery"}
     ]
   end
 end

@@ -15,4 +15,5 @@ Rails.application.routes.draw do
   end
   resources :location_equipments
   resources :equipment
+  resources :supplies, only: [:index]
 end
