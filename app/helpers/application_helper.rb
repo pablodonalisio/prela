@@ -30,4 +30,10 @@ module ApplicationHelper
       {text: "Insumos", path: supplies_path, icon: "fa-car-battery"}
     ]
   end
+
+  def image_for(resource, img_attribute, size)
+    return "placeholder-img.jpeg" unless resource.send(img_attribute).attached?
+
+    resource.send(img_attribute).variant(resize: size)
+  end
 end

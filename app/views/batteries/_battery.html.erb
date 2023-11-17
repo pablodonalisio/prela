@@ -1,5 +1,17 @@
-<div class="container border rounded">
-  <p>Modelo <%= battery.model%></p>
-  <p>Voltaje <%= battery.voltage%></p>
-  <p>Amperes <%= battery.amps%></p>
+<div class="col-md-6 col-xl-4">
+  <div class="card overflow-hidden bg-secondary" style="height: 100px">
+    <div class="row g-0">
+      <div class="col" style="max-width: 100px">
+        <%= image_tag image_for(battery, :avatar, ""),
+                      alt: "Imagen de Bateria",
+                      class:"img-fluid rounded-start" %>
+      </div>
+      <div class="col">
+        <div class="card-body">
+          <h6 class="card-title"><%= battery.model.upcase %></h6>
+          <p class="card-text"><small><%= battery.voltage%>V <%= battery.amps %>Ah</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
