@@ -1,17 +1,28 @@
-<div class="col-md-6 col-xl-4">
-  <div class="card overflow-hidden bg-secondary" style="height: 100px">
-    <div class="row g-0">
-      <div class="col" style="max-width: 100px">
-        <%= image_tag image_for(battery, :avatar, ""),
-                      alt: "Imagen de Bateria",
-                      class:"img-fluid rounded-start" %>
-      </div>
-      <div class="col">
-        <div class="card-body">
-          <h6 class="card-title"><%= battery.model.upcase %></h6>
-          <p class="card-text"><small><%= battery.voltage%>V <%= battery.amps %>Ah</small></p>
+<%= turbo_frame_tag battery do %>
+  <div class="col-md-6 col-xl-4">
+    <div class="card bg-secondary" style="height: 100px">
+      <div class="row g-0">
+        <div class="col" style="max-width: 100px">
+          <%= image_tag image_for(battery, :avatar, ""),
+                        alt: "Imagen de Bateria",
+                        class:"img-fluid rounded-start" %>
+        </div>
+        <div class="col">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <h6 class="card-title"><%= battery.model.upcase %></h6>
+
+              <%= render "shared/dropdown" do %>
+                <%= render "shared/button_box", edit_path: edit_battery_path(battery),
+                                                delete_path: battery_path(battery),
+                                                confirm: "Seguro queres borrar esta batería?" %>
+              <% end %>
+            </div>
+
+            <p class="card-text"><small><%= battery.voltage%>V <%= battery.amps %>Ah</small></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+<% end %>

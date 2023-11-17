@@ -10,13 +10,11 @@
                                           path: new_battery_path %>
         </div>
 
-        <%= turbo_frame_tag "batteries", class: "list-group mt-5 mx-auto" do %>
-          <div class="container">
-            <div class="row g-2">
-              <%= render @batteries%>
-            </div>
-          </div>
-        <% end %>
+        <div class="container">
+          <%= turbo_frame_tag "batteries", class: "list-group mt-5 mx-auto row g-2" do %>
+            <%= render @batteries%>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
