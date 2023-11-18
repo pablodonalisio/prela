@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "main_content" do %>
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
   <%= render "shared/content_header", title: "#{@equipment.brand.upcase} #{@equipment.model.upcase}" do %>
     <%= render "shared/dropdown" do %>
       <%= render "shared/button_box", edit_path: edit_equipment_path(@equipment),

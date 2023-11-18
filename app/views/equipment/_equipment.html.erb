@@ -17,4 +17,18 @@
       </p>
     </div>
   <% end %>
+
+  <div class="row mt-4">
+    <h4>Insumos por defecto</h4>
+    <div class="row">
+      <div class="w-auto">
+        <h5 class="text-center">Bateria</h5>
+        <% if equipment.battery.present? %>
+          <%= render "supply", supply: equipment.battery %>
+        <% else %>
+          <%= render "supply_placeholder", path: edit_equipment_path(equipment.id) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>
