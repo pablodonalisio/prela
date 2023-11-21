@@ -4,9 +4,7 @@
                                     path: new_equipment_path %>
   <% end %>
 
-  <div class="container mt-4">
-    <div id="equipment" class="row row-cols-1 g-4">
-      <%= render partial: "equipment_link", collection: @equipment %>
-    </div>
+  <div id="equipment" class="row g-3 my-3 mx-2">
+    <%= render partial: "equipment_card", collection: @equipment %>
   </div>
 <% end %>
