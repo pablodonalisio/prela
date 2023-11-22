@@ -4,9 +4,5 @@
                                      path: new_location_equipment_path %>
   <% end %>
 
-  <div class="container mt-4">
-    <%= turbo_frame_tag "location_equipments" do %>
-      <%= render @location_equipments %>
-    <% end %>
-  </div>
+  <%= render "shared/items", collection: @location_equipments %>
 <% end %>

@@ -1,10 +1,13 @@
-<%= turbo_frame_tag item, class: "col-6 col-md-4 col-xl-2" do %>
+<%= turbo_frame_tag item, class: "col-sm-6 col-md-4 col-xl-3" do %>
   <div class="card">
     <%= image_tag image_for(item, :avatar, ""),
                   alt: "Imagen de Item",
                   class:"img-fluid rounded-top" %>
     <div class="card-body">
       <h6 class="card-title" style="height: 40px;"><%= item.model %></h6>
+      <% if lookup_context.template_exists?("item_info", item.class.to_s.underscore.pluralize, true)%>
+        <%= render partial: "#{item.class.to_s.underscore.pluralize}/item_info", locals: {item: item} %>
+      <% end %>
       <%= link_to "Ver", url_for(item),
                          class: "btn btn-primary",
                          data: { turbo_frame: "main_content" } %>

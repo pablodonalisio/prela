@@ -1,5 +1,5 @@
 <%= turbo_stream.update "location_equipments" do %>
-  <%= render @location_equipments %>
+  <%= render "shared/items", collection: @location_equipments %>
 <% end %>
 <%= turbo_stream.update "location_equipment_filters",
                         partial: "location_equipments/filter_form",
