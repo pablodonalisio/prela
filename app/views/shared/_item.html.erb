@@ -1,0 +1,13 @@
+<%= turbo_frame_tag item, class: "col-6 col-md-4 col-xl-2" do %>
+  <div class="card">
+    <%= image_tag image_for(item, :avatar, ""),
+                  alt: "Imagen de Item",
+                  class:"img-fluid rounded-top" %>
+    <div class="card-body">
+      <h6 class="card-title" style="height: 40px;"><%= item.model %></h6>
+      <%= link_to "Ver", url_for(item),
+                         class: "btn btn-primary",
+                         data: { turbo_frame: "main_content" } %>
+    </div>
+  </div>
+<% end %>
