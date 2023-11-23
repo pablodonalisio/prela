@@ -1,11 +1,14 @@
 <%= turbo_frame_tag location_equipment do %>
-  <div class="card mb-3 bg-secondary">
+  <div class="card bg-secondary">
+    <%= image_tag image_for(location_equipment, :avatar, ""),
+                  alt: "Imagen de Item",
+                  class:"img-fluid rounded-top" %>
     <div class="row g-0">
       <div class="card-body">
         <div class="d-flex">
           <h5 class="card-title me-auto">
             <%= link_to location_equipment.equipment.full_name, equipment_path(location_equipment.equipment),
-                                                                data: { turbo_frame: "main_content" } %>
+                                                                data: { turbo_frame: "_top" } %>
           </h5>
           <%= render "shared/dropdown" do %>
             <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),

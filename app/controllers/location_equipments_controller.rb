@@ -11,6 +11,10 @@ class LocationEquipmentsController < ApplicationController
     @location_equipments = LocationEquipment.filter(filter_params).includes(:equipment, location: :client)
   end
 
+  def show
+    @location_equipment = LocationEquipment.find(params[:id])
+  end
+
   def edit
     @edition = params[:edition]
   end
