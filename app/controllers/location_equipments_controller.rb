@@ -20,7 +20,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def create
-    @location_equipment = LocationEquipment.new(location_equipment_params)
+    create_location_equipment
 
     if @location_equipment.save
       respond_to do |format|
@@ -74,5 +74,10 @@ class LocationEquipmentsController < ApplicationController
     filters = %i[client_ids]
     filters << :location_ids if params[:client_ids]&.compact_blank!.present?
     @filter_params = params.slice(*filters)
+  end
+
+  def create_location_equipment
+    @location_equipment = LocationEquipment.new(location_equipment_params)
+    @location_equipment.battery = @location_equipment.equipment.battery
   end
 end

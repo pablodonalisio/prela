@@ -1,26 +1,28 @@
 <%= turbo_frame_tag location_equipment do %>
-  <div class="card bg-secondary">
-    <%= image_tag image_for(location_equipment, :avatar, ""),
-                  alt: "Imagen de Item",
-                  class:"img-fluid rounded-top" %>
+  <div class="card bg-secondary mt-3">
     <div class="row g-0">
-      <div class="card-body">
-        <div class="d-flex">
-          <h5 class="card-title me-auto">
-            <%= link_to location_equipment.equipment.full_name, equipment_path(location_equipment.equipment),
-                                                                data: { turbo_frame: "_top" } %>
-          </h5>
-          <%= render "shared/dropdown" do %>
-            <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
-                                              class: "dropdown-item text-center",
-                                              data: { turbo_frame: "remote_modal" } %></li>
-            <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
-                                            delete_path: location_equipment_path(location_equipment),
-                                            confirm: "Seguro queres borrar este equipo?" %>
-          <% end %>
-        </div>
-        <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>
-        <div class="container p-0">
+      <div class="col-md-2" style="min-width: 210px;">
+        <%= image_tag image_for(location_equipment, :avatar, ""),
+                      alt: "Imagen de Item",
+                      class:"img-fluid rounded w-100" %>
+      </div>
+      <div class="col">
+        <div class="card-body">
+          <div class="d-flex">
+            <h5 class="card-title me-auto">
+              <%= link_to location_equipment.equipment.full_name, equipment_path(location_equipment.equipment),
+                                                                  data: { turbo_frame: "_top" } %>
+            </h5>
+            <%= render "shared/dropdown" do %>
+              <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
+                                                class: "dropdown-item text-center",
+                                                data: { turbo_frame: "remote_modal" } %></li>
+              <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
+                                              delete_path: location_equipment_path(location_equipment),
+                                              confirm: "Seguro queres borrar este equipo?" %>
+            <% end %>
+          </div>
+          <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>
           <div class="row">
             <div class="col-lg-6 mb-3">
               <p class="card-text m-0">
@@ -43,11 +45,15 @@
             <div class="col-lg-6">
               <% %i[last_service next_service last_battery_change next_battery_change].each do |attribute| %>
                 <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                           date: location_equipment.send(attribute) %>
+                                            date: location_equipment.send(attribute) %>
               <% end %>
             </div>
           </div>
         </div>
+      </div>
+      <div class="col-md-12 m-3">
+        <%= render "shared/supplies", equipment: location_equipment,
+                                      title: "Insumos" %>
       </div>
     </div>
   </div>

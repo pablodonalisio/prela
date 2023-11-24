@@ -1,3 +1,3 @@
 <%= turbo_stream.append "location_equipments" do %>
-  <%= render @location_equipment %>
+  <%= render "shared/item", item: @location_equipment %>
 <% end %>
