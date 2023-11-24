@@ -1,0 +1,9 @@
+<%= simple_form_for equipment_supply do |f| %>
+  <%= f.hidden_field :equipmentable_id, value: equipment_supply.equipmentable_id %>
+  <%= f.hidden_field :equipmentable_type, value: equipment_supply.equipmentable_type %>
+  <%= f.hidden_field :suppliable_type, value: equipment_supply.suppliable_type %>
+  <%= f.input :suppliable_id, label: "Insumo",
+                              collection: equipment_supply.suppliable_type.constantize.pluck(:model, :id),
+                              prompt: "Seleccione un insumo" %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

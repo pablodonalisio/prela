@@ -3,6 +3,7 @@ class LocationEquipment < ApplicationRecord
 
   belongs_to :location
   belongs_to :equipment
+  has_many :equipment_supplies, dependent: :destroy
   has_one :equipment_battery, dependent: :destroy, as: :equipmentable, class_name: "EquipmentSupply"
   has_one :battery, through: :equipment_battery, source: :suppliable, source_type: "Battery"
 

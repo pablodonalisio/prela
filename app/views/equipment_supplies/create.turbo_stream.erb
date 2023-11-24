@@ -1,0 +1,4 @@
+<%= turbo_stream.remove dom_id(EquipmentSupply.new, :new_battery) %>
+<%= turbo_stream.append "equipment_battery" do %>
+  <%= render "shared/supply", supply: @equipment_supply.suppliable %>
+<% end %>

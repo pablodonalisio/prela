@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :locations, except: [:index, :show]
   end
   resources :location_equipments
+  resources :equipment_supplies, only: %i[new create]
   resources :equipment
   resources :batteries, except: %i[index show]
   resources :supplies, only: [:index]
