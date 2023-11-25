@@ -1,0 +1,10 @@
+<%= turbo_stream.remove @equipment_supply %>
+<%= turbo_stream.append "equipment_#{@equipment_supply.suppliable_type.underscore}" do %>
+  <%= turbo_frame_tag dom_id(EquipmentSupply.new, :new_battery) do %>
+    <%= render "equipment_supplies/equipment_supply_placeholder",
+               add_supply_path: new_equipment_supply_path(equipment_supply: {
+                  equipmentable_id: @equipment_supply.equipmentable.id,
+                  equipmentable_type: @equipment_supply.equipmentable.class,
+                  suppliable_type: @equipment_supply.suppliable_type }) %>
+  <% end %>
+<% end %>

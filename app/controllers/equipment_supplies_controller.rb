@@ -1,5 +1,5 @@
 class EquipmentSuppliesController < ApplicationController
-  before_action :set_equipment_supply, only: %i[edit update]
+  before_action :set_equipment_supply, only: %i[edit update destroy]
 
   def new
     @equipment_supply = EquipmentSupply.new(equipment_supply_params)
@@ -30,6 +30,10 @@ class EquipmentSuppliesController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    @equipment_supply.destroy
   end
 
   private

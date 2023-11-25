@@ -3,10 +3,14 @@
                 alt: "Imagen de Bateria",
                 class:"img-fluid rounded-top" %>
   <div class="card-body">
-    <h5 class="card-title"><%= equipment_supply.model.upcase %></h5>
+    <div class="d-flex justify-content-between">
+      <h5 class="card-title text-truncate"><%= equipment_supply.model.upcase %></h5>
+      <%= render "shared/dropdown" do %>
+        <%= render "shared/button_box", edit_path: edit_equipment_supply_path(equipment_supply),
+                                        delete_path: equipment_supply_path(equipment_supply),
+                                        confirm: "Seguro queres borrar el Insumo?" %>
+      <% end %>
+    </div>
     <p class="card-text"><%= equipment_supply.voltage %>V <%= equipment_supply.amps %>Ah</p>
-    <%= link_to "Cambiar", edit_equipment_supply_path(equipment_supply),
-                           class: "btn btn-primary",
-                           data: { turbo_frame: "remote_modal" } %>
   </div>
 <% end %>
