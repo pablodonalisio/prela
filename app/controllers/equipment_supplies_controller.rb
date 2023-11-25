@@ -1,6 +1,11 @@
 class EquipmentSuppliesController < ApplicationController
+  before_action :set_equipment_supply, only: %i[edit update]
+
   def new
     @equipment_supply = EquipmentSupply.new(equipment_supply_params)
+  end
+
+  def edit
   end
 
   def create
@@ -16,10 +21,25 @@ class EquipmentSuppliesController < ApplicationController
     end
   end
 
+  def update
+    if @equipment_supply.update(equipment_supply_params)
+      respond_to do |format|
+        format.html { redirect_to url_for(@equipment_supply.equipmentable), notice: "Se ha agregado el insumo al equipo." }
+        format.turbo_stream {}
+      end
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def equipment_supply_params
     params.require(:equipment_supply).permit(:equipmentable_id, :equipmentable_type, :suppliable_id,
       :suppliable_type, :quantity)
+  end
+
+  def set_equipment_supply
+    @equipment_supply = EquipmentSupply.find(params[:id])
   end
 end

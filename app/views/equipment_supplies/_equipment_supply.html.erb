@@ -1,9 +1,12 @@
-<div class="card" style="width: 12rem; height: 20rem">
+<%= turbo_frame_tag equipment_supply, class:"card", style:"width: 12rem; min-height: 20rem" do %>
   <%= image_tag image_for(equipment_supply, :avatar, ""),
                 alt: "Imagen de Bateria",
                 class:"img-fluid rounded-top" %>
   <div class="card-body">
     <h5 class="card-title"><%= equipment_supply.model.upcase %></h5>
     <p class="card-text"><%= equipment_supply.voltage %>V <%= equipment_supply.amps %>Ah</p>
+    <%= link_to "Cambiar", edit_equipment_supply_path(equipment_supply),
+                           class: "btn btn-primary",
+                           data: { turbo_frame: "remote_modal" } %>
   </div>
-</div>
+<% end %>
