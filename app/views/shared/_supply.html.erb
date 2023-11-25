@@ -1,9 +1,0 @@
-<div class="card" style="width: 12rem; height: 20rem">
-  <%= image_tag image_for(supply, :avatar, ""),
-                alt: "Imagen de Bateria",
-                class:"img-fluid rounded-top" %>
-  <div class="card-body">
-    <h5 class="card-title"><%= supply.model.upcase %></h5>
-    <p class="card-text"><%= supply.voltage %>V <%= supply.amps %>Ah</p>
-  </div>
-</div>

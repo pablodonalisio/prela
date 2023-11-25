@@ -1,0 +1,9 @@
+<div class="card" style="width: 12rem; height: 20rem">
+  <%= image_tag image_for(equipment_supply, :avatar, ""),
+                alt: "Imagen de Bateria",
+                class:"img-fluid rounded-top" %>
+  <div class="card-body">
+    <h5 class="card-title"><%= equipment_supply.model.upcase %></h5>
+    <p class="card-text"><%= equipment_supply.voltage %>V <%= equipment_supply.amps %>Ah</p>
+  </div>
+</div>

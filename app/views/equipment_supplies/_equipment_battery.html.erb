@@ -1,0 +1,11 @@
+<% if equipment.equipment_supplies.batteries.any? %>
+  <%= render equipment.equipment_supplies.batteries %>
+<% else %>
+  <%= turbo_frame_tag dom_id(EquipmentSupply.new, :new_battery) do %>
+    <%= render "equipment_supplies/equipment_supply_placeholder",
+               add_supply_path: new_equipment_supply_path(equipment_supply: {
+                                                            equipmentable_id: equipment.id,
+                                                            equipmentable_type: equipment.class,
+                                                            suppliable_type: "Battery" }) %>
+  <% end %>
+<% end %>
