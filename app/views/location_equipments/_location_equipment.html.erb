@@ -17,6 +17,11 @@
               <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
                                                 class: "dropdown-item text-center",
                                                 data: { turbo_frame: "remote_modal" } %></li>
+              <% if location_equipment.form_link.present? %>
+                <li><%= link_to "Formulario", location_equipment.form_link,
+                                              class: "dropdown-item text-center",
+                                              target: "_blank" %></li>
+              <% end %>
               <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
                                               delete_path: location_equipment_path(location_equipment),
                                               confirm: "Seguro queres borrar este equipo?" %>
@@ -37,6 +42,9 @@
               </p>
               <p class="card-text m-0">
                 <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
+              </p>
+              <p class="card-text m-0">
+                <small class="text-body-secondary">Código: <%= location_equipment.code %></small>
               </p>
               <p class="card-text m-0">
                 <small class="text-body-secondary">Detalles: <%= location_equipment.details %></small>

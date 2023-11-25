@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_15_183006) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_25_193534) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -92,6 +92,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_15_183006) do
     t.date "last_battery_change"
     t.date "next_battery_change"
     t.text "details"
+    t.string "form_link"
+    t.string "code"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end

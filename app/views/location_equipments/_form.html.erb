@@ -8,6 +8,8 @@
                               collection: Equipment.pluck(:model, :id),
                               prompt: "Seleccione un equipo" %>
   <%= f.input :serial_number, label: "Numero de serie" %>
+  <%= f.input :code, label: "Codigo" %>
+  <%= f.input :form_link, label: "Link Formulario" %>
   <%= f.input :details, label: "Detalles" %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
