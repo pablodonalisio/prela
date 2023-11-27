@@ -10,6 +10,6 @@
                         collection: Battery.all,
                         label_method: :model,
                         include_blank: true,
-                        selected: equipment.battery.id  %>
+                        selected: equipment.battery&.id  %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
