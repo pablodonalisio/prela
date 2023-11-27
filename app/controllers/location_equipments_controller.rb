@@ -1,6 +1,7 @@
 class LocationEquipmentsController < ApplicationController
   before_action :location_equipment, only: %i[edit update destroy]
   before_action :set_locations, only: %i[edit]
+  before_action :set_order, only: :index
 
   def new
     @location_equipment = LocationEquipment.new
@@ -8,7 +9,9 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def index
-    @location_equipments = LocationEquipment.filter(filter_params).includes(:equipment, location: :client)
+    @location_equipments = LocationEquipment.filter(filter_params)
+      .includes(equipment: :avatar_blob, location: :client)
+      .order(@order)
   end
 
   def show
@@ -79,5 +82,9 @@ class LocationEquipmentsController < ApplicationController
   def create_location_equipment
     @location_equipment = LocationEquipment.new(location_equipment_params)
     @location_equipment.battery = @location_equipment.equipment.battery
+  end
+
+  def set_order
+    @order = params[:order] || "next_service"
   end
 end

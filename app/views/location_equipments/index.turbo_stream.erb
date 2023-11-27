@@ -1,6 +1,6 @@
 <%= turbo_stream.replace "location_equipments" do %>
   <%= render "shared/items", collection: @location_equipments %>
 <% end %>
-<%= turbo_stream.update "location_equipment_filters",
+<%= turbo_stream.replace "location_equipment_filters",
                         partial: "location_equipments/filter_form",
-                        locals: { filter_params: @filter_params } %>
+                        locals: { filter_params: @filter_params, order: @order } %>

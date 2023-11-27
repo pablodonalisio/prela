@@ -1,3 +1,3 @@
-<%= turbo_frame_tag collection.first.class.to_s.underscore.pluralize, class:"row g-3 my-3 mx-2" do %>
+<%= turbo_frame_tag collection.name.underscore.pluralize, class:"row g-3 my-3 mx-2" do %>
   <%= render partial: "shared/item", collection: collection, as: :item  %>
 <% end %>

@@ -1,23 +1,26 @@
 <%= turbo_frame_tag "location_equipment_filters" do %>
   <%= form_with(url: url_for, method: :get, data: { turbo_stream: true }) do |f| %>
-    <div class="container">
-      <%= render "filter_item", title: "Cliente",
+    <%= f.label :order, "Ordenar por", class: "form-label" %>
+    <%= f.select :order,
+                 [["Prox Service", "next_service"], ["Prox Cambio de batería", "next_battery_change"]],
+                 {selected: order, prompt: "Ordenar por"},
+                 {onchange: "this.form.requestSubmit()", class: "form-select form-select-sm mb-2"} %>
+    <%= render "filter_item", title: "Cliente",
+                              f: f,
+                              attribute: :client_ids,
+                              collection: Client.order(:name),
+                              value: :id,
+                              label: :name,
+                              selected_filters: filter_params[:client_ids] %>
+    <% if filter_params[:client_ids].present? &&
+          (locations = Location.where(client_id: filter_params[:client_ids])).present? %>
+      <%= render "filter_item", title: "Sede",
                                 f: f,
-                                attribute: :client_ids,
-                                collection: Client.order(:name),
+                                attribute: :location_ids,
+                                collection: locations,
                                 value: :id,
                                 label: :name,
-                                selected_filters: filter_params[:client_ids] %>
-      <% if filter_params[:client_ids].present? &&
-            (locations = Location.where(client_id: filter_params[:client_ids])).present? %>
-        <%= render "filter_item", title: "Sede",
-                                  f: f,
-                                  attribute: :location_ids,
-                                  collection: locations,
-                                  value: :id,
-                                  label: :name,
-                                  selected_filters: filter_params[:location_ids] %>
-      <% end %>
-    </div>
+                                selected_filters: filter_params[:location_ids] %>
+    <% end %>
   <% end %>
 <% end %>
