@@ -1,4 +1,4 @@
-<%= turbo_stream.update "location_equipments" do %>
+<%= turbo_stream.replace "location_equipments" do %>
   <%= render "shared/items", collection: @location_equipments %>
 <% end %>
 <%= turbo_stream.update "location_equipment_filters",
