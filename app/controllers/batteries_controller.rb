@@ -1,11 +1,14 @@
 class BatteriesController < ApplicationController
-  before_action :set_battery, only: %i[edit update destroy]
+  before_action :set_battery, only: %i[show edit update destroy]
 
   def new
     @battery = Battery.new
   end
 
   def edit
+  end
+
+  def show
   end
 
   def create

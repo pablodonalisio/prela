@@ -1,0 +1,13 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <%= render "shared/content_header", title: @battery.model.upcase do %>
+    <%= render "shared/dropdown" do %>
+      <%= render "shared/button_box", edit_path: edit_battery_path(@battery),
+                                      delete_path: battery_path(@battery),
+                                      confirm: "Seguro queres borrar la Bateria?" %>
+    <% end %>
+  <% end %>
+
+  <%= turbo_frame_tag @battery do %>
+    <%= render @battery%>
+  <% end %>
+<% end %>

@@ -1,21 +1,15 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
   <%= render "shared/content_header", title: "Insumos" %>
 
-  <div class="container">
-    <div class="row">
-      <div class="border rounded mt-5 p-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <h2 class="m-0 text-wrap text-truncate">Baterías</h2>
-          <%= render "shared/button_link", text: "Agregar",
-                                          path: new_battery_path %>
-        </div>
-
-        <div class="container">
-          <%= turbo_frame_tag "batteries", class: "list-group mt-5 mx-auto row g-2" do %>
-            <%= render @batteries%>
-          <% end %>
-        </div>
+  <div class="row mx-2">
+    <div class="border rounded mt-5 p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="m-0 text-wrap text-truncate">Baterías</h2>
+        <%= render "shared/button_link", text: "Agregar",
+                                        path: new_battery_path %>
       </div>
+
+      <%= render "shared/items", collection: @batteries %>
     </div>
   </div>
 <% end %>

@@ -16,24 +16,33 @@
       <% render "layouts/flash"%>
     </div>
     <% if user_signed_in?%>
-      <div class="d-flex">
-        <%= render partial: 'shared/sidebar' %>
-        <main class="d-flex h-100 container-fluid" style="padding-bottom: 60px;">
-          <%= yield %>
-          <div class="modal fade"
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12 col-md-3 bg-secondary border-top order-2 order-md-1 position-fixed bottom-0 start-0 end-0 d-sm-block d-md-none px-0 border-top"
+               style="z-index: 1030;">
+            <%= render partial: 'shared/sidebar' %>
+          </div>
+          <div class="col-12 col-md-3 bg-secondary border-top order-2 order-md-1 d-none d-md-block position-sticky"
+               style="top: 95px; height: calc(100vh - 95px)">
+            <%= render partial: 'shared/sidebar' %>
+          </div>
+          <main class="col-12 col-md-9 order-1 order-md-2 mb-5 mb-md-0">
+            <%= yield %>
+            <div class="modal fade"
                 id="shareRecipeModal"
                 tabindex="-1"
                 aria-labelledby="newClientRemoteModalLabel"
                 aria-hidden="true"
                 data-controller="remote-modal"
                 data-action="turbo:frame-load->remote-modal#open turbo:submit-end->remote-modal#close">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content" id="modal_content">
                 <%= turbo_frame_tag "remote_modal" %>
               </div>
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     <% else %>
       <%= yield %>
