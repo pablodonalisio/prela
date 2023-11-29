@@ -34,6 +34,11 @@ class EquipmentSuppliesController < ApplicationController
 
   def destroy
     @equipment_supply.destroy
+
+    respond_to do |format|
+      format.html { redirect_to url_for(@equipment_supply.equipmentable), notice: "El insumo ha sido eliminado del equipo" }
+      format.turbo_stream {}
+    end
   end
 
   private
