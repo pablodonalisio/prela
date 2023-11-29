@@ -24,17 +24,24 @@ RSpec.describe "/clients", type: :request do
   before { sign_in create(:user) }
 
   describe "GET /index" do
-    it "renders a successful response" do
-      create :client
-      get clients_url
-      expect(response).to be_successful
+    let!(:client1) { create(:client) }
+    let!(:client2) { create(:client) }
+
+    it "returns a successful response and displays clients" do
+      get clients_path
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(client1.name)
+      expect(response.body).to include(client2.name)
     end
   end
 
   describe "GET /show" do
-    it "renders a successful response" do
-      get client_url(create(:client))
-      expect(response).to be_successful
+    let(:client) { create(:client) }
+
+    it "returns a successful response and displays the client" do
+      get client_path(client)
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(client.name)
     end
   end
 
@@ -62,7 +69,13 @@ RSpec.describe "/clients", type: :request do
 
       it "redirects to the created client" do
         post clients_url, params: {client: valid_attributes}
-        expect(response).to redirect_to(client_url(Client.last))
+        expect(response).to redirect_to(clients_url)
+      end
+
+      it "creates a new Client and responds with turbo_stream" do
+        post clients_path, params: {client: valid_attributes}, as: :turbo_stream
+        expect(response.media_type).to eq Mime[:turbo_stream]
+        expect(response.body).to include("turbo-stream action=\"append\" target=\"clients\"")
       end
     end
 
@@ -77,20 +90,27 @@ RSpec.describe "/clients", type: :request do
         post clients_url, params: {client: invalid_attributes}
         expect(response).to have_http_status(:unprocessable_entity)
       end
+
+      it "does not create a new Client and responds with turbo_stream" do
+        post clients_path, params: {client: invalid_attributes}, as: :turbo_stream
+        expect(response.media_type).to eq Mime[:turbo_stream]
+        expect(response.body).to include("turbo-stream action=\"update\" target=\"remote_modal_body\"")
+      end
     end
   end
 
   describe "PATCH /update" do
+    let(:client) { create(:client) }
+
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        {name: "New name"}
       }
 
       it "updates the requested client" do
-        client = Client.create! valid_attributes
         patch client_url(client), params: {client: new_attributes}
         client.reload
-        skip("Add assertions for updated state")
+        expect(client.name).to eq("New name")
       end
 
       it "redirects to the client" do
@@ -98,6 +118,12 @@ RSpec.describe "/clients", type: :request do
         patch client_url(client), params: {client: new_attributes}
         client.reload
         expect(response).to redirect_to(client_url(client))
+      end
+
+      it "updates the requested client and responds with turbo_stream" do
+        patch client_path(client), params: {client: valid_attributes}, as: :turbo_stream
+        expect(response.media_type).to eq Mime[:turbo_stream]
+        expect(response.body).to include("turbo-stream action=\"replace\" target=\"client_#{client.id}\"")
       end
     end
 
@@ -107,19 +133,37 @@ RSpec.describe "/clients", type: :request do
         patch client_url(client), params: {client: invalid_attributes}
         expect(response).to have_http_status(:unprocessable_entity)
       end
+
+      it "does not update the client and responds with turbo_stream" do
+        patch client_path(client), params: {client: invalid_attributes}, as: :turbo_stream
+        expect(response.media_type).to eq Mime[:turbo_stream]
+        expect(response.body).to include("turbo-stream action=\"update\" target=\"remote_modal_body\"")
+      end
     end
   end
 
   describe "DELETE /destroy" do
-    it "destroys the requested client" do
+    let!(:client) { create(:client) }
+
+    it "redirects to the clients list" do
       client = Client.create! valid_attributes
+      delete client_url(client)
+      expect(response).to redirect_to(clients_url)
+    end
+
+    it "destroys the requested client" do
       expect {
         delete client_url(client)
       }.to change(Client, :count).by(-1)
     end
 
+    it "destroys the requested client and responds with turbo_stream" do
+      delete client_url(client), as: :turbo_stream
+      expect(response.media_type).to eq Mime[:turbo_stream]
+      expect(response.body).to include("turbo-stream action=\"remove\" target=\"client_#{client.id}\"")
+    end
+
     it "redirects to the clients list" do
-      client = Client.create! valid_attributes
       delete client_url(client)
       expect(response).to redirect_to(clients_url)
     end
