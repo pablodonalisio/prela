@@ -7,7 +7,7 @@ class LocationEquipment < ApplicationRecord
   has_one :equipment_battery, dependent: :destroy, as: :equipmentable, class_name: "EquipmentSupply"
   has_one :battery, through: :equipment_battery, source: :suppliable, source_type: "Battery"
 
-  scope :by_client_ids, ->(client_id) { where(location: {client_id:}) }
+  scope :by_client_ids, ->(client_id) { joins(:location).where(location: {client_id:}) }
   scope :by_location_ids, ->(location_id) { where(location_id:) }
 
   delegate :avatar, :model, to: :equipment
