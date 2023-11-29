@@ -1,2 +1,4 @@
-<%= turbo_stream.append "equipment", partial: "equipment/equipment_link", locals: { equipment_link: @equipment } %>
+<%= turbo_stream.append "equipment" do %>
+  <%= render "shared/item", item: @equipment %>
+<% end %>
 <%= turbo_stream.update Equipment.new, "" %>
