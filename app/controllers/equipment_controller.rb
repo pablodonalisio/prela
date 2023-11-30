@@ -53,12 +53,8 @@ class EquipmentController < ApplicationController
   private
 
   def equipment_params
-    permited_params = params.require(:equipment).permit(:avatar, :kind, :brand, :model, :technical_model,
+    params.require(:equipment).permit(:avatar, :kind, :brand, :model, :technical_model,
       :kva, :manual, :details, :battery)
-
-    permited_params[:battery] = Battery.find(permited_params[:battery]) if permited_params[:battery]
-
-    permited_params
   end
 
   def set_equipment

@@ -6,10 +6,5 @@
   <%= f.input :technical_model, label: "Modelo Técnico" %>
   <%= f.input :kva, label: "KVA" %>
   <%= f.input :manual %>
-  <%= f.input :battery, label: "Batería",
-                        collection: Battery.all,
-                        label_method: :model,
-                        include_blank: true,
-                        selected: equipment.battery&.id  %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
