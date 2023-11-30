@@ -17,69 +17,57 @@ RSpec.describe "/locations", type: :request do
   # Location. As you add validations to Location, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    {name: "Pilar", client_id: create(:client).id}
+    {name: "Pilar"}
   }
 
   let(:invalid_attributes) {
-    {name: "", client_id: nil}
+    {name: ""}
   }
+
+  let(:location) { create(:location) }
 
   before { sign_in create(:user) }
 
-  describe "GET /index" do
-    it "renders a successful response" do
-      Location.create! valid_attributes
-      get locations_url
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET /show" do
-    it "renders a successful response" do
-      location = Location.create! valid_attributes
-      get location_url(location)
-      expect(response).to be_successful
-    end
-  end
-
   describe "GET /new" do
     it "renders a successful response" do
-      get new_location_url
+      get new_client_location_url(create(:client))
       expect(response).to be_successful
     end
   end
 
   describe "GET /edit" do
     it "renders a successful response" do
-      location = Location.create! valid_attributes
-      get edit_location_url(location)
+      location = create(:location, **valid_attributes)
+      get edit_client_location_url(location.client, location)
       expect(response).to be_successful
     end
   end
 
   describe "POST /create" do
+    let(:client) { create(:client) }
+
     context "with valid parameters" do
       it "creates a new Location" do
         expect {
-          post locations_url, params: {location: valid_attributes}
+          post client_locations_url(client), params: {location: valid_attributes}
         }.to change(Location, :count).by(1)
       end
 
       it "redirects to the created location" do
-        post locations_url, params: {location: valid_attributes}
-        expect(response).to redirect_to(location_url(Location.last))
+        post client_locations_url(client), params: {location: valid_attributes}
+        expect(response).to redirect_to(client_path(Location.last.client))
       end
     end
 
     context "with invalid parameters" do
       it "does not create a new Location" do
         expect {
-          post locations_url, params: {location: invalid_attributes}
+          post client_locations_url(client), params: {location: invalid_attributes}
         }.to change(Location, :count).by(0)
       end
 
       it "renders a response with 422 status (i.e. to display the 'new' template)" do
-        post locations_url, params: {location: invalid_attributes}
+        post client_locations_url(client), params: {location: invalid_attributes}
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -92,24 +80,21 @@ RSpec.describe "/locations", type: :request do
       }
 
       it "updates the requested location" do
-        location = Location.create! valid_attributes
-        patch location_url(location), params: {location: new_attributes}
+        patch client_location_url(location.client, location), params: {location: new_attributes}
         location.reload
         expect(location.name).to eq "Rio cuarto"
       end
 
       it "redirects to the location" do
-        location = Location.create! valid_attributes
-        patch location_url(location), params: {location: new_attributes}
+        patch client_location_url(location.client, location), params: {location: new_attributes}
         location.reload
-        expect(response).to redirect_to(location_url(location))
+        expect(response).to redirect_to(client_url(location.client))
       end
     end
 
     context "with invalid parameters" do
       it "renders a response with 422 status (i.e. to display the 'edit' template)" do
-        location = Location.create! valid_attributes
-        patch location_url(location), params: {location: invalid_attributes}
+        patch client_location_url(location.client, location), params: {location: invalid_attributes}
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -117,16 +102,15 @@ RSpec.describe "/locations", type: :request do
 
   describe "DELETE /destroy" do
     it "destroys the requested location" do
-      location = Location.create! valid_attributes
+      location
       expect {
-        delete location_url(location)
+        delete client_location_url(location.client, location)
       }.to change(Location, :count).by(-1)
     end
 
     it "redirects to the locations list" do
-      location = Location.create! valid_attributes
-      delete location_url(location)
-      expect(response).to redirect_to(locations_url)
+      delete client_location_url(location.client, location)
+      expect(response).to redirect_to(client_url(location.client))
     end
   end
 end

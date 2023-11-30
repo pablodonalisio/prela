@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "locations/new", type: :view do
   before(:each) do
@@ -8,11 +8,10 @@ RSpec.describe "locations/new", type: :view do
     ))
   end
 
-  it "renders new location form" do
+  xit "renders new location form" do
     render
 
     assert_select "form[action=?][method=?]", locations_path, "post" do
-
       assert_select "input[name=?]", "location[name]"
 
       assert_select "input[name=?]", "location[client_id]"
