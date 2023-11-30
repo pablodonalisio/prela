@@ -81,7 +81,7 @@ class LocationEquipmentsController < ApplicationController
 
   def create_location_equipment
     @location_equipment = LocationEquipment.new(location_equipment_params)
-    @location_equipment.battery = @location_equipment.equipment.battery
+    @location_equipment.battery = @location_equipment.equipment&.battery
   end
 
   def set_order
