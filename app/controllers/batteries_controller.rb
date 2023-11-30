@@ -40,10 +40,7 @@ class BatteriesController < ApplicationController
   def destroy
     @battery.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to supplies_url, notice: "La batería ha sido eliminada" }
-      format.turbo_stream {}
-    end
+    redirect_to supplies_url, notice: "La batería ha sido eliminada"
   end
 
   private

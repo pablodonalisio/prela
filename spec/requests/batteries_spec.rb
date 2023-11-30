@@ -108,15 +108,5 @@ RSpec.describe "Batteries", type: :request do
 
       expect(response).to redirect_to(supplies_url)
     end
-
-    it "destroys the requested Battery and responds with turbo_stream" do
-      battery
-      expect {
-        delete battery_path(battery), as: :turbo_stream
-      }.to change(Battery, :count).by(-1)
-
-      expect(response.media_type).to eq Mime[:turbo_stream]
-      expect(response.body).to include("turbo-stream action=\"remove\" target=\"battery_#{battery.id}\"")
-    end
   end
 end
