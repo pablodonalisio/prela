@@ -1,2 +1,3 @@
-<%= turbo_stream.append "batteries", @battery %>
-<%= turbo_stream.update Battery.new, "" %>
+<%= turbo_stream.append "batteries" do %>
+  <%= render partial: "shared/item", locals: { item: @battery }  %>
+<% end %>
