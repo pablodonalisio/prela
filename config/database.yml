@@ -17,7 +17,7 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  username: pablodonalisio
+  username: <%= ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
@@ -82,5 +82,5 @@ test:
 production:
   <<: *default
   database: prela_production
-  username: prela
+  username: <%= ENV["PRELA_DATABASE_USERNAME"] %>
   password: <%= ENV["PRELA_DATABASE_PASSWORD"] %>
