@@ -45,6 +45,7 @@ gem "bootsnap", require: false
 gem "image_processing", "~> 1.2"
 
 gem "bootstrap", "~> 5.3.1"
+gem "dartsass-sprockets"
 
 gem "devise", "~> 4.9"
 gem "font-awesome-sass", "~> 6.4.2"
@@ -78,3 +79,9 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "dockerfile-rails", ">= 1.5", group: :development
+
+gem "sentry-ruby", "~> 5.14"
+
+gem "sentry-rails", "~> 5.14"
