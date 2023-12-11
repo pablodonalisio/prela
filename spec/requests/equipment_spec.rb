@@ -58,28 +58,41 @@ RSpec.describe "/equipments", type: :request do
     end
 
     context "with invalid parameters" do
-      it "does not create a new Equipment and responds with HTML" do
-        post equipment_index_url, params: {equipment: invalid_attributes}
-        expect(response).to have_http_status(:unprocessable_entity)
+      context "when required parameters are missing" do
+        it "does not create a new Equipment and responds with HTML" do
+          post equipment_index_url, params: {equipment: invalid_attributes}
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "does not create a new Equipment and responds with turbo_stream" do
+          post equipment_index_url, params: {equipment: invalid_attributes}, as: :turbo_stream
+          expect(response.media_type).to eq Mime[:turbo_stream]
+          expect(response.body).to include("turbo-stream action=\"update\" target=\"remote_modal_body\"")
+        end
       end
 
-      it "does not create a new Equipment and responds with turbo_stream" do
-        post equipment_index_url, params: {equipment: invalid_attributes}, as: :turbo_stream
-        expect(response.media_type).to eq Mime[:turbo_stream]
-        expect(response.body).to include("turbo-stream action=\"update\" target=\"remote_modal_body\"")
+      context "when kind is not as expected" do
+        let(:invalid_attributes) {
+          {kind: "invalid kind", brand: "valid brand", model: "valid model"}
+        }
+
+        it "does not create a new Equipment and responds with HTML" do
+          post equipment_index_url, params: {equipment: invalid_attributes}
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
       end
     end
   end
 
   describe "PATCH /update" do
     let(:equipment) { create(:equipment) }
-    let(:new_attributes) { {kind: "new kind"} }
+    let(:new_attributes) { {model: "new model"} }
 
     context "with valid parameters" do
       it "updates the requested equipment and responds with HTML" do
         patch equipment_url(equipment), params: {equipment: new_attributes}
         equipment.reload
-        expect(equipment.kind).to eq("new kind")
+        expect(equipment.model).to eq("new model")
         expect(response).to redirect_to(equipment_index_path)
       end
 

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :equipment do
-    kind { "ups" }
+    kind { "UPS" }
     brand { "APC" }
     model { "Smart-RT 10000" }
     technical_model { "SURT10000XL" }
