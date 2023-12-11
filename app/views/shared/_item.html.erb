@@ -1,8 +1,16 @@
 <%= turbo_frame_tag item, class: "col-sm-6 col-md-4 col-xl-3" do %>
   <div class="card">
-    <%= image_tag image_for(item, :avatar, ""),
-                  alt: "Imagen de Item",
-                  class:"img-fluid rounded-top" %>
+    <% if item.avatar.attached? %>
+      <%= image_tag item.avatar.variant(resize_and_pad: [300, 300]),
+                    alt: "Imagen de Item",
+                    class:"img-fluid rounded-top bg-light",
+                    style: "height: 300px;" %>
+    <% else %>
+      <%= image_tag "placeholder-img.jpeg",
+                    alt: "Imagen de Item",
+                    class:"img-fluid rounded-top",
+                    style: "height: 300px;" %>
+    <% end %>
     <div class="card-body">
       <h6 class="card-title" style="height: 40px;"><%= item.model %></h6>
       <% if lookup_context.template_exists?("item_info", item.class.to_s.underscore.pluralize, true)%>
