@@ -22,6 +22,23 @@ RSpec.describe "/location_equipments", type: :request do
         expect(response.body).to include(location_equipment.zone)
       end
     end
+
+    context "with filter params" do
+      it "filter by client" do
+        get location_equipments_url, params: {client_ids: [location_equipments.first.location.client_id]}
+        expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
+        expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
+      end
+
+      it "filter by client and location" do
+        location_equipments.last.location.client = location_equipments.first.client
+        location_equipments.last.save
+        params = {location_ids: [location_equipments.first.location_id], client_ids: [location_equipments.first.location.client_id]}
+        get location_equipments_url, params: params
+        expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
+        expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
+      end
+    end
   end
 
   describe "GET /show" do

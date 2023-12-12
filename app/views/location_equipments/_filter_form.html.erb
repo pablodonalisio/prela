@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "location_equipment_filters" do %>
+<%= turbo_frame_tag "", class: "location_equipment_filters" do %>
   <%= form_with(url: url_for, method: :get, data: { turbo_stream: true }) do |f| %>
     <%= f.label :order, "Ordenar por", class: "form-label" %>
     <%= f.select :order,
