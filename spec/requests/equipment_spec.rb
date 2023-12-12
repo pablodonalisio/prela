@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "/equipments", type: :request do
-  let(:valid_attributes) { {kind: "UPS", brand: "some brand", model: "some model"} }
+  let(:valid_attributes) { {kind: "UPS", brand: "some brand", model: "some model", more_info: "some info"} }
   let(:invalid_attributes) { {kind: ""} }
 
   before { sign_in create(:user) }
@@ -47,6 +47,7 @@ RSpec.describe "/equipments", type: :request do
     context "with valid parameters" do
       it "creates a new Equipment and responds with HTML" do
         post equipment_index_url, params: {equipment: valid_attributes}
+        expect(Equipment.last.more_info).to eq("some info")
         expect(response).to redirect_to(equipment_index_path)
       end
 
