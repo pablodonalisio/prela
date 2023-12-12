@@ -11,11 +11,8 @@ es:
         model: "Modelo"
         technical_model: "Modelo Técnico"
         kva: "KVA"
-        battery_qty: "Cantidad de baterías"
-        battery_type: "Tipo de batería"
-        battery_info: "Informacion de la batería"
         manual: "Manual"
-        details: "Detalles"
+        more_info: "Mas info"
       location_equipment:
         location: "Sede"
         equipment: "Equipo"
@@ -23,6 +20,7 @@ es:
         next_service: "Proximo service"
         last_battery_change: "Ultimo cambio de bateria"
         next_battery_change: "Proximo cambio de bateria"
+        details: "Detalles"
       battery:
         model: "Modelo"
         voltage: "Voltaje"
