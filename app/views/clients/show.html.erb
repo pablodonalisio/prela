@@ -2,9 +2,6 @@
   <%= render "shared/content_header", title: @client.name %>
 
   <div class="col mt-3">
-    <%= link_to clients_path do %>
-      <i class="fa-solid fa-chevron-left mb-3"></i>
-    <% end %>
     <%= render "shared/content_header", title: "Sedes" do %>
       <%= render "shared/button_link", text: "Agregar",
                                       path: [:new, @client, :location] %>
