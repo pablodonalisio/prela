@@ -1,0 +1,7 @@
+<h1>Nuevo Informe</h1>
+
+<%= turbo_frame_tag @report do %>
+  <%= render "shared/remote_modal", title: "Nuevo Informe" do %>
+    <%= render "form", report: @report, location_equipment: @location_equipment %>
+  <% end %>
+<% end %>

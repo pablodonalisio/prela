@@ -1,0 +1,22 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <%= render "shared/content_header", title: "Informes" do %>
+    <%= render "shared/button_link", text: "Nuevo Informe",
+                                    path: new_location_equipment_report_path(@location_equipment) %>
+  <% end %>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <table class="table mt-4">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="reports">
+          <%= render partial: "report_table_row", collection: @reports, as: :report, locals: { location_equipment: @location_equipment } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
