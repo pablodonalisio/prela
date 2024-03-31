@@ -1,1 +1,1 @@
-<%= turbo_stream.remove @report %>
+<%= turbo_stream.replace "reports", partial: "reports_table", locals: { reports: @location_equipment.reports.order(created_at: :desc), location_equipment: @location_equipment } %>

@@ -6,15 +6,6 @@ RSpec.describe "Reports", type: :request do
 
   before { sign_in create(:user) }
 
-  describe "GET /index" do
-    it "returns a successful response and display reports" do
-      get location_equipment_reports_path(report1.location_equipment)
-      expect(response).to have_http_status(:success)
-      expect(response.body).to include(report1.id.to_s)
-      expect(response.body).to include(report2.id.to_s)
-    end
-  end
-
   describe "GET /show" do
     it "returns a successful response and display the report" do
       get location_equipment_report_path(report1.location_equipment, report1)

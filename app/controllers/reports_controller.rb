@@ -1,10 +1,4 @@
 class ReportsController < ApplicationController
-  before_action :set_order, only: :index
-
-  def index
-    @reports = location_equipment.reports.order(@order)
-  end
-
   def show
     @report = Report.find(params[:id])
   end
@@ -41,10 +35,6 @@ class ReportsController < ApplicationController
   end
 
   private
-
-  def set_order
-    @order = params[:order] || "created_at DESC"
-  end
 
   def location_equipment
     @location_equipment ||= LocationEquipment.find(params[:location_equipment_id])

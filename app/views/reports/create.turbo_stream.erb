@@ -1,3 +1,4 @@
 <%= turbo_stream.prepend "reports" do %>
   <%= render "report_table_row", report: @report, location_equipment: @location_equipment %>
 <% end %>
+<%= turbo_stream.remove "empty_reports" %>
