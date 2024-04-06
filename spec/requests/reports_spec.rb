@@ -29,10 +29,17 @@ RSpec.describe "Reports", type: :request do
   end
 
   describe "POST /create" do
+    let(:request) { post location_equipment_reports_path(create(:location_equipment)), params: {report: {observations: "Test"}} }
+
     it "creates a new Report" do
       expect {
-        post location_equipment_reports_path(create(:location_equipment)), params: {report: {observations: "Test"}}
+        request
       }.to change(Report, :count).by(1)
+    end
+
+    it "attaches a PDF file to the report" do
+      request
+      expect(Report.last.pdf).to be_attached
     end
   end
 

@@ -1,6 +1,7 @@
 <%= turbo_frame_tag report do %>
-  <%# TODO: report view %>
-  <div class="h2">
-    <%= report.location_equipment.equipment.full_name %> - Informe
-  </div>
+  <% if report.pdf.attached? %>
+    <%= tag.iframe src: rails_blob_path(report.pdf, disposition: "inline"), width: "100%", height: "800", style: "border:0" %>
+  <% else %>
+    <p>No hay un PDF adjunto a este informe.</p>
+  <% end %>
 <% end %>

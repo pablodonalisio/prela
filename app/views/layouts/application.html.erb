@@ -36,10 +36,10 @@
                 aria-hidden="true"
                 data-controller="remote-modal"
                 data-action="turbo:frame-load->remote-modal#open turbo:submit-end->remote-modal#close">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content" id="modal_content">
-                <%= turbo_frame_tag "remote_modal" %>
-              </div>
+              <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document">
+                <div class="modal-content" id="modal_content">
+                  <%= turbo_frame_tag "remote_modal" %>
+                </div>
               </div>
             </div>
           </main>
