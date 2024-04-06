@@ -5,6 +5,7 @@ class PdfGenerator
     @data = data
     @success = false
     @pdf = Prawn::Document.new
+    @tempfiles = []
   end
 
   def self.call(data)
@@ -32,6 +33,19 @@ class PdfGenerator
     @pdf = @pdf.render
   end
 
+  def create_tempfile(file)
+    tempfile = Tempfile.new(["report", File.extname(file.filename.to_s)], Rails.root.join("tmp"))
+    tempfile.binmode
+    tempfile.write(file.download)
+    tempfile.rewind
+    @tempfiles << tempfile
+    tempfile
+  end
+
   def cleanup
+    @tempfiles.each do |tempfile|
+      tempfile.close
+      tempfile&.unlink
+    end
   end
 end

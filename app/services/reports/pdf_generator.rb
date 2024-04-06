@@ -17,16 +17,6 @@ class Reports::PdfGenerator < PdfGenerator
   end
 
   def client_logo
-    avatar = location_equipment.client.avatar
-    @client_avatar_temp_file = Tempfile.new(["avatar", File.extname(avatar.filename.to_s)], Rails.root.join("tmp"))
-    @client_avatar_temp_file.binmode
-    @client_avatar_temp_file.write(avatar.download)
-    @client_avatar_temp_file.rewind
-    @client_avatar_temp_file
-  end
-
-  def cleanup
-    @client_avatar_temp_file.close
-    @client_avatar_temp_file&.unlink
+    @client_avatar_temp_file = create_tempfile(location_equipment.client.avatar)
   end
 end
