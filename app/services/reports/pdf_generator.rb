@@ -7,6 +7,8 @@ class Reports::PdfGenerator < PdfGenerator
     add_header_to_pdf
     @pdf.move_down 10
     add_datetime_to_pdf
+    @pdf.move_down 10
+    add_equipment_stats_to_pdf
     super
   end
 
@@ -22,6 +24,10 @@ class Reports::PdfGenerator < PdfGenerator
       cells.border_color = PRIMARY_COLOR
       cells.width = @pdf.bounds.width / 3
     end
+  end
+
+  def add_equipment_stats_to_pdf
+    @pdf = Reports::EquipmentStats.new(report, @pdf).render
   end
 
   def report
