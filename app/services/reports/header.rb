@@ -1,15 +1,12 @@
-class Reports::Header
-  PRIMARY_COLOR = "DACFE8"
-
+class Reports::Header < Reports::Content
   def initialize(report, pdf, client_logo)
-    @report = report
-    @pdf = pdf
+    super(report, pdf)
     @client_logo = client_logo
   end
 
   def render
     header
-    @pdf
+    super
   end
 
   private
@@ -43,9 +40,5 @@ class Reports::Header
       [{content: "Piso: ", font_style: :bold}, location_equipment.floor],
       [{content: "Sala: ", font_style: :bold}, location_equipment.zone]
     ], cell_style: {border_width: 0, padding: 1})
-  end
-
-  def location_equipment
-    @report.location_equipment
   end
 end

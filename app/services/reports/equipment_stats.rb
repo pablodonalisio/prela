@@ -1,15 +1,8 @@
-class Reports::EquipmentStats
-  PRIMARY_COLOR = "DACFE8"
-
-  def initialize(report, pdf)
-    @report = report
-    @pdf = pdf
-  end
-
+class Reports::EquipmentStats < Reports::Content
   def render
     equipment_data
     equipment_stats
-    @pdf
+    super
   end
 
   private
@@ -43,13 +36,5 @@ class Reports::EquipmentStats
       cells.border_color = PRIMARY_COLOR
       cells.width = table_width / 3
     end
-  end
-
-  def location_equipment
-    @location_equipment ||= @report.location_equipment
-  end
-
-  def equipment
-    @equipment ||= location_equipment.equipment
   end
 end
