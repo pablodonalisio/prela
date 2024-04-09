@@ -9,6 +9,8 @@ class Reports::PdfGenerator < PdfGenerator
     add_datetime_to_pdf
     @pdf.move_down 10
     add_equipment_stats_to_pdf
+    @pdf.move_down 10
+    add_room_stats_to_pdf
     super
   end
 
@@ -28,6 +30,10 @@ class Reports::PdfGenerator < PdfGenerator
 
   def add_equipment_stats_to_pdf
     @pdf = Reports::EquipmentStats.new(report, @pdf).render
+  end
+
+  def add_room_stats_to_pdf
+    @pdf = Reports::RoomStats.new(report, @pdf).render
   end
 
   def report
