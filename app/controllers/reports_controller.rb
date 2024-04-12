@@ -5,6 +5,7 @@ class ReportsController < ApplicationController
 
   def new
     @report = location_equipment.reports.build
+    @report.build_ups_report_stat
   end
 
   def create
@@ -43,6 +44,19 @@ class ReportsController < ApplicationController
   end
 
   def report_params
-    params.require(:report).permit(:observations)
+    params.require(:report)
+      .permit(
+        :observations,
+        ups_report_stat_attributes: %i[
+          operating_mode
+          associated_charge
+          battery_charge
+          voltage_input
+          voltage_output
+          pat_state
+          alarms_presence
+          ventilation_state
+        ]
+      )
   end
 end

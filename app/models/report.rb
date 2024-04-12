@@ -3,4 +3,6 @@ class Report < ApplicationRecord
 
   has_one_attached :pdf
   has_one :ups_report_stat, dependent: :destroy
+
+  accepts_nested_attributes_for :ups_report_stat
 end
