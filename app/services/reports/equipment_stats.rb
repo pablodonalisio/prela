@@ -22,19 +22,21 @@ class Reports::EquipmentStats < Reports::Content
   def equipment_stats
     table_width = @pdf.bounds.width
     @pdf.table([
-      [{content: "PLANILLA DE OBSEVACION", colspan: 3, background_color: PRIMARY_COLOR, font_style: :bold, align: :center}],
-      [{}, {content: "Valor Observado", font_style: :bold, align: :center}, {content: "Óptimo", font_style: :bold, align: :center}],
-      [{content: "Modo de funcionamiento"}, {}, {}],
-      [{content: "Carga asociada"}, {}, {}],
-      [{content: "Carga de la batería"}, {}, {}],
-      [{content: "Voltaje de entrada"}, {}, {}],
-      [{content: "Voltaje de salida"}, {}, {}],
-      [{content: "Estado de PAT"}, {}, {}],
-      [{content: "Existencia de alarmas"}, {}, {}],
-      [{content: "Estado de ventilación"}, {}, {}]
+      [{content: "PLANILLA DE OBSEVACION", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
+      [{}, {content: "Valor Observado"}, {content: "Óptimo"}],
+      [{content: "Modo de funcionamiento"}, {}, {content: "Normal"}],
+      [{content: "Carga asociada"}, {}, {content: "-"}],
+      [{content: "Carga de la batería"}, {}, {content: "-"}],
+      [{content: "Voltaje de entrada"}, {}, {content: "220 V± 10%"}],
+      [{content: "Voltaje de salida"}, {}, {content: "220 V± 10%"}],
+      [{content: "Estado de PAT"}, {}, {content: "Correcto"}],
+      [{content: "Existencia de alarmas"}, {}, {content: "Ninguna"}],
+      [{content: "Estado de ventilación"}, {}, {content: "Normal"}]
     ], width: table_width) do
       cells.border_color = PRIMARY_COLOR
       cells.width = table_width / 3
+      rows(0..1).font_style = :bold
+      columns(1..2).align = :center
     end
   end
 end
