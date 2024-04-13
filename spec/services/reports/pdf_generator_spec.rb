@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe Reports::PdfGenerator do
   describe "#generate_pdf" do
-    let(:report) { create(:report) }
+    let(:report) { create(:report, ups_report_stat: ups_report_stat) }
+    let(:ups_report_stat) { create(:ups_report_stat) }
     let(:pdf_service_object) { described_class.call(report) }
 
     context "when the service object is successful" do
