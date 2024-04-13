@@ -6,6 +6,7 @@ class ReportsController < ApplicationController
   def new
     @report = location_equipment.reports.build
     @report.build_ups_report_stat
+    @report.build_room_report_stat
   end
 
   def create
@@ -56,6 +57,10 @@ class ReportsController < ApplicationController
           pat_state
           alarms_presence
           ventilation_state
+        ],
+        room_report_stat_attributes: %i[
+          room_status
+          air_conditioning
         ]
       )
   end

@@ -41,6 +41,10 @@ RSpec.describe "Reports", type: :request do
           pat_state: "Correcto",
           alarms_presence: "Ninguna",
           ventilation_state: "Normal"
+        },
+        room_report_stat_attributes: {
+          room_status: "Normal",
+          air_conditioning: "Normal"
         }
       }}
     end
@@ -58,6 +62,12 @@ RSpec.describe "Reports", type: :request do
       request
       expect(Report.last.ups_report_stat).to be_present
       expect(Report.last.ups_report_stat.attributes).to include(params[:report][:ups_report_stat_attributes].stringify_keys)
+    end
+
+    it "creates a new Room Report Stat" do
+      request
+      expect(Report.last.room_report_stat).to be_present
+      expect(Report.last.room_report_stat.attributes).to include(params[:report][:room_report_stat_attributes].stringify_keys)
     end
 
     it "attaches a PDF file to the report" do

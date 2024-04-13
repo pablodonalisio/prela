@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_12_145021) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_13_154805) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -115,6 +115,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_12_145021) do
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
   end
 
+  create_table "room_report_stats", force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.string "room_status"
+    t.string "air_conditioning"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id"], name: "index_room_report_stats_on_report_id"
+  end
+
   create_table "ups_report_stats", force: :cascade do |t|
     t.bigint "report_id", null: false
     t.string "operating_mode"
@@ -148,5 +157,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_12_145021) do
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "locations", "clients"
   add_foreign_key "reports", "location_equipments"
+  add_foreign_key "room_report_stats", "reports"
   add_foreign_key "ups_report_stats", "reports"
 end
