@@ -77,10 +77,45 @@ RSpec.describe "Reports", type: :request do
   end
 
   describe "PATCH /update" do
+    let(:request) do
+      patch location_equipment_report_path(report1.location_equipment, report1), params:
+    end
+    let(:params) do
+      {report:
+        {
+          observations: "Test",
+          ups_report_stat_attributes: {
+            operating_mode: "Fuera de servicio",
+            associated_charge: 10,
+            battery_charge: 80,
+            voltage_input: 230,
+            voltage_output: 225
+          },
+          room_report_stat_attributes: {
+            room_status: "Elementos ajenos a la sala"
+          }
+        }}
+    end
+
     it "updates the requested report" do
-      patch location_equipment_report_path(report1.location_equipment, report1), params: {report: {observations: "Test"}}
+      request
       report1.reload
       expect(report1.observations).to eq("Test")
+    end
+
+    it "edits the UPS Report Stat" do
+      request
+      expect(report1.ups_report_stat.attributes).to include(params[:report][:ups_report_stat_attributes].stringify_keys)
+    end
+
+    it "edits the Room Report Stat" do
+      request
+      expect(report1.room_report_stat.attributes).to include(params[:report][:room_report_stat_attributes].stringify_keys)
+    end
+
+    it "attaches new PDF file to the report" do
+      request
+      expect(report1.pdf).to be_attached
     end
   end
 

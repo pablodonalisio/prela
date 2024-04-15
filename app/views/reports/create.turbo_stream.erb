@@ -1,5 +1,5 @@
-<%= turbo_stream.replace "flash" do %>
-  <% render "layouts/flash"%>
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
 <% end %>
 
 <%= turbo_stream.prepend "reports" do %>

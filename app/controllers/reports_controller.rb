@@ -20,8 +20,8 @@ class ReportsController < ApplicationController
       return report_pdf_error unless attach_pdf
 
       respond_to do |format|
-        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "Report was successfully created." }
-        format.turbo_stream {}
+        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se creo correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El reporte se creo correctamente." }
       end
     else
       render :new, status: :unprocessable_entity
@@ -35,7 +35,16 @@ class ReportsController < ApplicationController
   def update
     @report = location_equipment.reports.find(params[:id])
 
-    render :edit unless @report.update(report_params)
+    if @report.update(report_params)
+      return report_pdf_error unless attach_pdf
+
+      respond_to do |format|
+        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se edito correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El reporte se edito correctamente." }
+      end
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -88,7 +97,7 @@ class ReportsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to location_equipment_reports_path(location_equipment), error: @report.errors.full_messages.to_sentence }
-      format.turbo_stream { flash.now[:error] = @report.errors.full_messages.to_sentence }
+      format.turbo_stream { flash.now[:error] = "Error: #{@report.errors.full_messages.to_sentence}" }
     end
   end
 end

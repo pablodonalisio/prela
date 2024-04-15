@@ -13,9 +13,9 @@
 
   <body>
     <%= render partial: 'shared/navbar' %>
-    <div id="flash" class="fixed-top bg-light">
-      <% render "layouts/flash"%>
-    </div>
+    <%= turbo_frame_tag "flash", class: "fixed-top bg-light" do %>
+      <%= render "layouts/flash"%>
+    <% end %>
     <% if user_signed_in?%>
       <div class="container-fluid">
         <div class="row">
