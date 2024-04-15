@@ -1,1 +1,5 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
 <%= turbo_stream.replace "reports", partial: "reports_table", locals: { reports: @location_equipment.reports.order(created_at: :desc), location_equipment: @location_equipment } %>

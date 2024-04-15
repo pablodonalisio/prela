@@ -48,7 +48,7 @@ class ReportsController < ApplicationController
   end
 
   def destroy
-    location_equipment.reports.find(params[:id]).destroy
+    flash.now[:notice] = "El reporte ha sido eliminado." if location_equipment.reports.find(params[:id]).destroy
   end
 
   private
