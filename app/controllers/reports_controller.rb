@@ -1,4 +1,8 @@
 class ReportsController < ApplicationController
+  def index
+    @reports = location_equipment.reports.order(created_at: :desc)
+  end
+
   def show
     @report = Report.find(params[:id])
   end
@@ -11,16 +15,16 @@ class ReportsController < ApplicationController
 
   def create
     @report = location_equipment.reports.build(report_params)
-    pdf_content = Reports::PdfGenerator.call(@report)
 
-    if pdf_content.success? && @report.save
-      @report.pdf.attach(io: StringIO.new(pdf_content.pdf), filename: "#{location_equipment.model}_report.pdf", content_type: "application/pdf")
+    if @report.save
+      return report_pdf_error unless attach_pdf
+
       respond_to do |format|
         format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "Report was successfully created." }
         format.turbo_stream {}
       end
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -63,5 +67,28 @@ class ReportsController < ApplicationController
           air_conditioning
         ]
       )
+  end
+
+  def attach_pdf
+    return unless pdf_content.success?
+
+    @report.pdf.attach(
+      io: StringIO.new(pdf_content.pdf),
+      filename: "#{location_equipment.model}_report.pdf",
+      content_type: "application/pdf"
+    )
+  end
+
+  def pdf_content
+    @pdf_content ||= Reports::PdfGenerator.call(@report)
+  end
+
+  def report_pdf_error
+    @report.errors.add(:pdf, pdf_content.error)
+
+    respond_to do |format|
+      format.html { redirect_to location_equipment_reports_path(location_equipment), error: @report.errors.full_messages.to_sentence }
+      format.turbo_stream { flash.now[:error] = @report.errors.full_messages.to_sentence }
+    end
   end
 end
