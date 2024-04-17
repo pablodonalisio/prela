@@ -74,7 +74,8 @@ class ReportsController < ApplicationController
         room_report_stat_attributes: %i[
           room_status
           air_conditioning
-        ]
+        ],
+        images: []
       )
   end
 

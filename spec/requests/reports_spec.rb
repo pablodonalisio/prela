@@ -45,7 +45,8 @@ RSpec.describe "Reports", type: :request do
         room_report_stat_attributes: {
           room_status: "Normal",
           air_conditioning: "Normal"
-        }
+        },
+        images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
       }}
     end
     let(:request) do
@@ -73,6 +74,11 @@ RSpec.describe "Reports", type: :request do
     it "attaches a PDF file to the report" do
       request
       expect(Report.last.pdf).to be_attached
+    end
+
+    it "uploads images to the report" do
+      request
+      expect(Report.last.images).to be_attached
     end
   end
 
