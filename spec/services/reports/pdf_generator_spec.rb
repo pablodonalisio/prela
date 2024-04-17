@@ -7,6 +7,11 @@ RSpec.describe Reports::PdfGenerator do
     let(:room_report_stat) { create(:room_report_stat) }
     let(:pdf_service_object) { described_class.call(report) }
 
+    before do
+      file = fixture_file_upload(Rails.root.join("spec", "fixtures", "placeholder-img.jpeg"), "image/jpeg")
+      report.images.attach(file)
+    end
+
     context "when the service object is successful" do
       it "generates a PDF file" do
         expect(pdf_service_object.pdf).to be_a(String)
