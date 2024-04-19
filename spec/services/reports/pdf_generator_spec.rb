@@ -10,6 +10,7 @@ RSpec.describe Reports::PdfGenerator do
     before do
       file = fixture_file_upload(Rails.root.join("spec", "fixtures", "placeholder-img.jpeg"), "image/jpeg")
       report.images.attach(file)
+      report.location_equipment.client.avatar.attach(file)
     end
 
     context "when the service object is successful" do

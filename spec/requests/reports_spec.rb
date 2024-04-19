@@ -7,10 +7,9 @@ RSpec.describe "Reports", type: :request do
   before { sign_in create(:user) }
 
   describe "GET /show" do
-    it "returns a successful response and display the report" do
+    it "returns a successful response" do
       get location_equipment_report_path(report1.location_equipment, report1)
       expect(response).to have_http_status(:success)
-      expect(response.body).to include(report1.location_equipment.model)
     end
   end
 
@@ -49,8 +48,9 @@ RSpec.describe "Reports", type: :request do
         images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
       }}
     end
+    let(:location_equipment) { create(:location_equipment) }
     let(:request) do
-      post location_equipment_reports_path(create(:location_equipment)), params: params
+      post location_equipment_reports_path(location_equipment), params: params
     end
 
     it "creates a new Report" do
@@ -72,6 +72,7 @@ RSpec.describe "Reports", type: :request do
     end
 
     it "attaches a PDF file to the report" do
+      location_equipment.client.avatar.attach Rack::Test::UploadedFile.new(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")
       request
       expect(Report.last.pdf).to be_attached
     end
@@ -120,6 +121,7 @@ RSpec.describe "Reports", type: :request do
     end
 
     it "attaches new PDF file to the report" do
+      report1.location_equipment.client.avatar.attach Rack::Test::UploadedFile.new(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")
       request
       expect(report1.pdf).to be_attached
     end

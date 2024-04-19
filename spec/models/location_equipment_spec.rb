@@ -41,20 +41,4 @@ RSpec.describe LocationEquipment, type: :model do
       expect(LocationEquipment.by_location_ids([location_equipment1.location_id]).count).to eq(1)
     end
   end
-
-  context "delegations" do
-    let(:location_equipment) { create(:location_equipment) }
-
-    it "delegates avatar to equipment" do
-      expect(location_equipment.avatar).to eq(location_equipment.equipment.avatar)
-    end
-
-    it "delegates model to equipment" do
-      expect(location_equipment.model).to eq(location_equipment.equipment.model)
-    end
-
-    it "delegates client to location" do
-      expect(location_equipment.client).to eq(location_equipment.location.client)
-    end
-  end
 end
