@@ -12,7 +12,8 @@ class Reports::EquipmentStats < Reports::Content
     @pdf.table([
       [{content: location_equipment.code, colspan: 3, background_color: PRIMARY_COLOR, font_style: :bold, align: :center}],
       [{content: "Marca - Modelo"}, {content: equipment.full_name, colspan: 2, align: :right}],
-      [{content: "Potencia"}, {content: "#{equipment.kva} kVA", colspan: 2, align: :right}]
+      [{content: "Potencia"}, {content: "#{equipment.kva} kVA", colspan: 2, align: :right}],
+      [{content: "Numero de Serie"}, {content: location_equipment.serial_number, colspan: 2, align: :right}]
     ], width: table_width) do
       cells.border_color = PRIMARY_COLOR
       cells.width = table_width / 3

@@ -43,7 +43,7 @@ class Reports::PdfGenerator < PdfGenerator
     @pdf.move_down 10
     @pdf.table([
       [{content: "OBSERVACIONES", colspan: 3, background_color: PRIMARY_COLOR, font_style: :bold}],
-      [{content: report.observations, colspan: 3, height: 80, background_color: "f3f3f3"}]
+      [{content: report.observations, colspan: 3, height: 70, background_color: "f3f3f3"}]
     ], width: @pdf.bounds.width) do
       cells.borders = []
       cells.width = @pdf.bounds.width / 3
