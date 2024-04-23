@@ -7,7 +7,7 @@ FactoryBot.define do
     voltage_input { 230 }
     voltage_output { 225 }
     pat_state { "Correcto" }
-    alarms_presence { "Ninguna" }
-    ventilation_state { "Normal" }
+    alarms_presence { "Si" }
+    ventilation_state { "Bien" }
   end
 end

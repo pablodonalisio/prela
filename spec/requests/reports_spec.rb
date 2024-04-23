@@ -96,10 +96,14 @@ RSpec.describe "Reports", type: :request do
             associated_charge: 10,
             battery_charge: 80,
             voltage_input: 230,
-            voltage_output: 225
+            voltage_output: 225,
+            pat_state: "Incorrecto",
+            ventilation_state: "Mal",
+            alarms_presence: "Si"
           },
           room_report_stat_attributes: {
-            room_status: "Elementos ajenos a la sala"
+            room_status: "Incorrecto",
+            air_conditioning: "Incorrecto"
           }
         }}
     end

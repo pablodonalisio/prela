@@ -60,7 +60,7 @@ class ReportsController < ApplicationController
   def report_params
     params.require(:report)
       .permit(
-        :observations,
+        :observations, :date,
         ups_report_stat_attributes: %i[
           operating_mode
           associated_charge

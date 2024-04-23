@@ -20,7 +20,7 @@ class Reports::PdfGenerator < PdfGenerator
 
   def add_datetime
     @pdf.move_down 10
-    datetime = report&.created_at || Time.zone.now
+    datetime = report&.date || Time.zone.now
     @pdf.table([
       [{content: "FECHA Y HORA: ", font_style: :bold, background_color: PRIMARY_COLOR}, {content: datetime.strftime("%d/%m/%Y %H:%M"), colspan: 2, align: :right}]
     ], width: @pdf.bounds.width) do
