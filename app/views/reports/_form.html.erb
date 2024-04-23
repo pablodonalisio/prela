@@ -1,20 +1,20 @@
 <%= simple_form_for [location_equipment, report] do |f| %>
   <h2>Equipo</h2>
   <%= f.simple_fields_for :ups_report_stat do |ups_stats_form| %>
-    <%= ups_stats_form.input :operating_mode, label: "Modo de funcionamiento" %>
+    <%= ups_stats_form.input :operating_mode, collection: UpsReportStat::OPERATING_MODE_OPTIONS, label: "Modo de funcionamiento" %>
     <%= ups_stats_form.input :associated_charge, label: "Carga asociada" %>
     <%= ups_stats_form.input :battery_charge, label: "Carga de la batería" %>
-    <%= ups_stats_form.input :voltage_input, label: "Voltage de entrada" %>
-    <%= ups_stats_form.input :voltage_output, label: "Voltage de salida" %>
-    <%= ups_stats_form.input :pat_state, label: "Estado de PAT" %>
-    <%= ups_stats_form.input :alarms_presence, label: "Existencia de alarmas" %>
-    <%= ups_stats_form.input :ventilation_state, label: "Estado de ventilación" %>
+    <%= ups_stats_form.input :voltage_input, label: "Voltaje de entrada" %>
+    <%= ups_stats_form.input :voltage_output, label: "Voltaje de salida" %>
+    <%= ups_stats_form.input :pat_state, collection: UpsReportStat::PAT_STATE_OPTIONS, label: "Estado de PAT" %>
+    <%= ups_stats_form.input :alarms_presence, label: "Existencia de alarmas", collection: UpsReportStat::ALARMS_PRESENCE_OPTIONS %>
+    <%= ups_stats_form.input :ventilation_state, label: "Estado de ventilación", collection: UpsReportStat::VENTILATION_STATE_OPTIONS %>
   <% end %>
 
   <h2>Sala</h2>
   <%= f.simple_fields_for :room_report_stat do |room_stats_form| %>
-    <%= room_stats_form.input :room_status, label: "Estado de la sala" %>
-    <%= room_stats_form.input :air_conditioning, label: "Funcionamiento de los aires acondicionados" %>
+    <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
+    <%= room_stats_form.input :air_conditioning, label: "Funcionamiento de los aires acondicionados", collection: RoomReportStat::AIR_CONDITIONING_OPTIONS %>
   <% end %>
 
   <br>
