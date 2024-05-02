@@ -27,19 +27,9 @@
   <h2>Imágenes</h2>
 
   <div class="col-sm-3 my-3">
-    <% images_array = Array.new(2) %>
-    <% report.images.each_with_index do |image, index| %>
-      <% images_array[index] = image if index < 2 %>
-    <% end %>
-
-    <% images_array.each_with_index do |image, index| %>
-      <% if image.present? %>
-        <%= image_tag image, size: "200x200" %>
-        <%= f.hidden_field :images, multiple: true, value: image.try(:signed_id) %>
-      <% else %>
-        <%= f.input :images, label: "Imagen #{index + 1}" do %>
-          <%= f.file_field :images, multiple: true %>
-        <% end %>
+    <% 2.times do |n| %>
+      <%= f.input :images, label: "Nueva Imagen #{n + 1}" do %>
+        <%= f.file_field :images, multiple: true %>
       <% end %>
     <% end %>
   </div>
