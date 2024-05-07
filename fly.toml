@@ -7,6 +7,8 @@ app = "prela"
 primary_region = "scl"
 console_command = "/rails/bin/rails console"
 
+swap_size_mb = 256
+
 [build]
 
 [http_service]
