@@ -10,5 +10,4 @@ class Report < ApplicationRecord
   accepts_nested_attributes_for :room_report_stat
 
   validates :date, presence: true
-  validates :date, comparison: {less_than_or_equal_to: Time.zone.tomorrow, message: "No puede ser mayor a la fecha actual"}
 end
