@@ -1,4 +1,8 @@
 class ReportsController < ApplicationController
+  before_action lambda {
+    resize_before_save(params[:report][:images], nil, 250)
+  }, only: %i[create update]
+
   def index
     @reports = location_equipment.reports.order(created_at: :desc)
   end
@@ -99,6 +103,24 @@ class ReportsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to location_equipment_reports_path(location_equipment), error: @report.errors.full_messages.to_sentence }
       format.turbo_stream { flash.now[:error] = "Error: #{@report.errors.full_messages.to_sentence}" }
+    end
+  end
+
+  def resize_before_save(images, width, height)
+    return unless images.present?
+
+    begin
+      images.each do |image|
+        next unless image&.is_a?(ActionDispatch::Http::UploadedFile)
+        ImageProcessing::MiniMagick
+          .source(image)
+          .resize_to_limit(width, height)
+          .call(destination: image.tempfile.path)
+      end
+    rescue => _e
+      # Do nothing. If this is catching, it probably means the
+      # file type is incorrect, which can be caught later by
+      # model validations.
     end
   end
 end
