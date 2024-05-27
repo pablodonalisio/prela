@@ -1,9 +1,11 @@
-<table class="table mt-4">
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th></th>
-    </tr>
-  </thead>
-  <%= render "reports/reports_table", reports: reports, location_equipment: location_equipment %>
-</table>
+<div style="max-height: 400px; overflow-y: scroll;" class="my-4">
+  <table class="table">
+    <thead style="position: sticky; z-index: 100; top: 0">
+      <tr>
+        <th>Fecha</th>
+        <th></th>
+      </tr>
+    </thead>
+    <%= render "reports/reports_table", reports: reports, location_equipment: location_equipment %>
+  </table>
+</div>
