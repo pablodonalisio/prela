@@ -1,21 +1,21 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["existingImage", "input", "newImage"];
+  static targets = ["existingFile", "input", "newFile"];
 
   connect() {}
 
-  changeImage() {
-    this.existingImageTarget.classList.add("d-none");
-    this.existingImageTarget.getElementsByTagName("input")[0].disabled = true;
-    this.newImageTarget.classList.remove("d-none");
+  changeFile() {
+    this.existingFileTarget.classList.add("d-none");
+    this.existingFileTarget.getElementsByTagName("input")[0].disabled = true;
+    this.newFileTarget.classList.remove("d-none");
     this.inputTarget.disabled = false;
   }
 
-  reloadExistingImage() {
-    this.existingImageTarget.classList.remove("d-none");
-    this.existingImageTarget.getElementsByTagName("input")[0].disabled = false;
-    this.newImageTarget.classList.add("d-none");
+  reloadExistingFile() {
+    this.existingFileTarget.classList.remove("d-none");
+    this.existingFileTarget.getElementsByTagName("input")[0].disabled = false;
+    this.newFileTarget.classList.add("d-none");
     this.inputTarget.disabled = true;
   }
 }

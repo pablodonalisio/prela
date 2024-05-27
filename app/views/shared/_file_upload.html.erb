@@ -1,0 +1,19 @@
+<%= content_tag :div, data: { controller: "upload" } do %>
+  <% if file %>
+    <div data-upload-target="existingFile">
+      <% if file.representable? %>
+        <%= image_tag file.representation(resize_to_limit: resize) %>
+      <% end %>
+      <div class="col-12">
+        <%= content_tag :div, "Cambiar", class:"btn btn-primary mt-2", data: { action: "click->upload#changeFile"} %>
+      </div>
+      <%= form.hidden_field file_field, multiple: true, value: file.signed_id %>
+    </div>
+  <% end %>
+  <%= form.input file_field, label: new_label, wrapper_html: {class: "#{file ? "d-none" : ""}", data: { upload_target: "newFile"}} do %>
+    <%= form.file_field file_field, multiple: true, disabled: file.present?, data: { upload_target: "input"}, accept: accepted_formats %>
+    <div class="col-12">
+      <%= content_tag :div, "Cancelar", class: "btn btn-primary mt-2 #{file.present? ? "" : "d-none"}", data: { action: "click->upload#reloadExistingFile"} %>
+    </div>
+  <% end %>
+<% end %>
