@@ -21,6 +21,12 @@ es:
         last_battery_change: "Ultimo cambio de bateria"
         next_battery_change: "Proximo cambio de bateria"
         details: "Detalles"
+        statuses:
+          active: "En servicio"
+          out_of_service: "Fuera de servicio"
+          prela_on_service: "PRELA en service"
+          prela_to_check: "PRELA para revisar"
+          prela_to_deliver: "PRELA para entregar"
       battery:
         model: "Modelo"
         voltage: "Voltaje"

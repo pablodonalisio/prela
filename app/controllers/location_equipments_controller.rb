@@ -62,7 +62,7 @@ class LocationEquipmentsController < ApplicationController
   def location_equipment_params
     params.require(:location_equipment)
       .permit(:zone, :floor, :location_id, :equipment_id, :serial_number, :code, :form_link,
-        :last_service, :next_service, :last_battery_change, :next_battery_change, :details)
+        :last_service, :next_service, :last_battery_change, :next_battery_change, :details, :status)
   end
 
   def location_equipment

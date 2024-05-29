@@ -15,4 +15,10 @@ class LocationEquipment < ApplicationRecord
 
   delegate :avatar, :model, to: :equipment
   delegate :client, to: :location
+
+  def self.status_attributes_for_select
+    statuses.map do |status, _|
+      [I18n.t("activerecord.attributes.location_equipment.statuses.#{status}"), status]
+    end
+  end
 end
