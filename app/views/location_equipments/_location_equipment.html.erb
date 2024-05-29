@@ -47,6 +47,9 @@
                 <small class="text-body-secondary">Código: <%= location_equipment.code %></small>
               </p>
               <p class="card-text m-0">
+                <small class="text-body-secondary">Estado: <%= location_equipment.status ? t("activerecord.attributes.location_equipment.statuses.#{location_equipment.status}") : "" %></small>
+              </p>
+              <p class="card-text m-0">
                 <small class="text-body-secondary">Detalles: <%= location_equipment.details %></small>
               </p>
             </div>
