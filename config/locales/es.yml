@@ -39,3 +39,11 @@ es:
   date:
     formats:
       month_year_concise: "%b %Y"
+  devise:
+    failure:
+      user:
+        unauthenticated: "No se pudo autenticar el usuario, por favor iniciar sesión."
+    sessions:
+      user:
+        signed_in: "Sesión iniciada correctamente. Bienvenido."
+        signed_out: "Sesión cerrada."
