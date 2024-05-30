@@ -9,7 +9,7 @@
                               prompt: "Seleccione un equipo" %>
   <%= f.input :serial_number, label: "Numero de serie" %>
   <%= f.input :code, label: "Codigo" %>
-  <%= f.input :status, label: "Estado", collection: LocationEquipment.status_attributes_for_select %>
+  <%= f.input :status, label: "Estado", collection: LocationEquipment.status_attributes_for_select, include_blank: false %>
   <%= f.input :form_link, label: "Link Formulario" %>
   <%= f.input :details, label: "Detalles" %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>

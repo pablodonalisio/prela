@@ -10,6 +10,7 @@ class LocationEquipment < ApplicationRecord
 
   scope :by_client_ids, ->(client_id) { joins(:location).where(location: {client_id:}) }
   scope :by_location_ids, ->(location_id) { where(location_id:) }
+  scope :by_status, ->(status) { where(status:) }
 
   enum status: {active: 0, out_of_service: 1, prela_to_check: 2, prela_to_deliver: 3, prela_on_service: 4}
 

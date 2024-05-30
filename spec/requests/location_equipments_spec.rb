@@ -38,6 +38,13 @@ RSpec.describe "/location_equipments", type: :request do
         expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
         expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
       end
+
+      it "filter by status" do
+        location_equipments.last.update(status: LocationEquipment.statuses.keys[1])
+        get location_equipments_url, params: {status: LocationEquipment.statuses.keys[0]}
+        expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
+        expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
+      end
     end
   end
 
