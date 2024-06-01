@@ -31,6 +31,7 @@ RSpec.describe "Reports", type: :request do
     let(:params) do
       {report: {
         observations: "Test",
+        date: Date.today,
         ups_report_stat_attributes: {
           operating_mode: "Normal",
           associated_charge: 10,
@@ -38,12 +39,12 @@ RSpec.describe "Reports", type: :request do
           voltage_input: 230,
           voltage_output: 225,
           pat_state: "Correcto",
-          alarms_presence: "Ninguna",
-          ventilation_state: "Normal"
+          alarms_presence: "No",
+          ventilation_state: "Bien"
         },
         room_report_stat_attributes: {
-          room_status: "Normal",
-          air_conditioning: "Normal"
+          room_status: "Correcto",
+          air_conditioning: "Correcto"
         },
         images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
       }}
