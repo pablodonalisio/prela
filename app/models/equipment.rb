@@ -5,8 +5,9 @@ class Equipment < ApplicationRecord
   has_one :equipment_battery, dependent: :destroy, as: :equipmentable, class_name: "EquipmentSupply"
   has_one :battery, through: :equipment_battery, source: :suppliable, source_type: "Battery"
 
+  enum kind: {ups: 0, power_unit: 1}
+
   validates :kind, :brand, :model, presence: true
-  validates :kind, inclusion: {in: ["UPS"], message: "%{value} no es un tipo válido"}
 
   def full_name
     "#{brand} - #{model}"
