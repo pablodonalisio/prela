@@ -25,7 +25,7 @@
     <%= render "filter_item", title: "Estado",
                               f: f,
                               attribute: :status,
-                              collection: LocationEquipment.status_attributes_for_select,
+                              collection: LocationEquipment.enum_attributes_for_select("status"),
                               value: :last,
                               label: :first,
                               selected_filters: filter_params[:status] %>
