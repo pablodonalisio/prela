@@ -7,6 +7,9 @@ es:
         name: "Nombre"
       equipment:
         kind: "Tipo"
+        kinds:
+          ups: "UPS"
+          power_unit: "Grupo Electrógeno"
         brand: "Marca"
         model: "Modelo"
         technical_model: "Modelo Técnico"

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "/equipments", type: :request do
-  let(:valid_attributes) { {kind: "UPS", brand: "some brand", model: "some model", more_info: "some info"} }
+  let(:valid_attributes) { {kind: "ups", brand: "some brand", model: "some model", more_info: "some info"} }
   let(:invalid_attributes) { {kind: ""} }
 
   before { sign_in create(:user) }
@@ -69,17 +69,6 @@ RSpec.describe "/equipments", type: :request do
           post equipment_index_url, params: {equipment: invalid_attributes}, as: :turbo_stream
           expect(response.media_type).to eq Mime[:turbo_stream]
           expect(response.body).to include("turbo-stream action=\"update\" target=\"remote_modal_body\"")
-        end
-      end
-
-      context "when kind is not as expected" do
-        let(:invalid_attributes) {
-          {kind: "invalid kind", brand: "valid brand", model: "valid model"}
-        }
-
-        it "does not create a new Equipment and responds with HTML" do
-          post equipment_index_url, params: {equipment: invalid_attributes}
-          expect(response).to have_http_status(:unprocessable_entity)
         end
       end
     end

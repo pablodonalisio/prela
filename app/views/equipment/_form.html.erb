@@ -1,8 +1,6 @@
 <%= simple_form_for equipment do |f| %>
   <%= f.input :avatar, label: "Foto" %>
-  <%= f.input :kind, label: "Tipo", input_html: { class: 'form-control' } do %>
-    <%= f.select :kind, ["UPS"], {}, class: 'form-control' %>
-  <% end %>
+  <%= f.input :kind, label: "Tipo", collection: Equipment.enum_attributes_for_select("kind"), include_blank: false %>
   <%= f.input :brand, label: "Marca" %>
   <%= f.input :model, label: "Modelo" %>
   <%= f.input :technical_model, label: "Modelo Técnico" %>
