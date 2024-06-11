@@ -49,7 +49,7 @@ RSpec.describe "Reports", type: :request do
         images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
       }}
     end
-    let(:location_equipment) { create(:location_equipment) }
+    let(:location_equipment) { create(:location_equipment, location: create(:location, name: "Sala de Máquinas de Resonador")) }
     let(:request) do
       post location_equipment_reports_path(location_equipment), params: params
     end

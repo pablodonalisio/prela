@@ -18,7 +18,8 @@ class PdfGenerator
       @success = true
       cleanup
     rescue => e
-      @error = e
+      @error = e.message.truncate(200) + " in #{Rails.backtrace_cleaner.clean(e.backtrace).first}"
+      Rails.logger.error @error
     end
     self
   end

@@ -2,6 +2,7 @@ class Reports::Header < Reports::Content
   def initialize(report, pdf, client_logo)
     super(report, pdf)
     @client_logo = client_logo
+    @table_width = @pdf.bounds.width
   end
 
   def render
@@ -12,13 +13,12 @@ class Reports::Header < Reports::Content
   private
 
   def header
-    table_width = @pdf.bounds.width
     @pdf.table([
       [title],
       [prela_logo, client_image, location_data]
-    ], width: table_width) do
+    ], width: @table_width) do
       cells.border_color = PRIMARY_COLOR
-      cells.width = table_width / 3
+      cells.width = @pdf.bounds.width / 3
     end
   end
 
@@ -39,6 +39,6 @@ class Reports::Header < Reports::Content
       [{content: "Sede: ", font_style: :bold}, location_equipment.location.name],
       [{content: "Piso: ", font_style: :bold}, location_equipment.floor],
       [{content: "Sala: ", font_style: :bold}, location_equipment.zone]
-    ], cell_style: {border_width: 0, padding: 1})
+    ], cell_style: {border_width: 0, padding: 1, height: 20, overflow: :shrink_to_fit}, width: @table_width / 3)
   end
 end
