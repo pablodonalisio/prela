@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_01_142007) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_11_213522) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -108,6 +108,33 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_01_142007) do
     t.index ["client_id"], name: "index_locations_on_client_id"
   end
 
+  create_table "power_unit_report_stats", force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.string "equipment_power"
+    t.boolean "general_disconnector"
+    t.boolean "emergency_stop_position"
+    t.string "start_key_on_auto"
+    t.integer "rpm"
+    t.float "frequency"
+    t.float "battery_charge_control"
+    t.integer "tension_between_phases_a_b"
+    t.integer "tension_between_phases_b_c"
+    t.integer "tension_between_phases_c_a"
+    t.float "initial_temperature"
+    t.float "running_temperature"
+    t.integer "number_of_starts"
+    t.integer "operating_time"
+    t.integer "failed_starts"
+    t.float "oil_pressure"
+    t.integer "fuel_level"
+    t.integer "coolant_level"
+    t.integer "oil_level"
+    t.integer "testing_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
+  end
+
   create_table "reports", force: :cascade do |t|
     t.bigint "location_equipment_id", null: false
     t.text "observations"
@@ -158,6 +185,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_01_142007) do
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "locations", "clients"
+  add_foreign_key "power_unit_report_stats", "reports"
   add_foreign_key "reports", "location_equipments"
   add_foreign_key "room_report_stats", "reports"
   add_foreign_key "ups_report_stats", "reports"
