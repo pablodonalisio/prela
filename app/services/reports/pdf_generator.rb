@@ -19,7 +19,6 @@ class Reports::PdfGenerator < PdfGenerator
   end
 
   def add_datetime
-    @pdf.move_down 10
     datetime = report&.date || Time.zone.now
     @pdf.table([
       [{content: "FECHA Y HORA: ", font_style: :bold, background_color: PRIMARY_COLOR}, {content: datetime.strftime("%d/%m/%Y %H:%M"), colspan: 2, align: :right}]
@@ -53,14 +52,8 @@ class Reports::PdfGenerator < PdfGenerator
   def add_images
     return unless report.images.attached?
 
-    new_page
-    @pdf = Reports::Images.new(report, @pdf, report_images).render
-  end
-
-  def new_page
     @pdf.start_new_page
-    add_header
-    @pdf.move_down 10
+    @pdf = Reports::Images.new(report, @pdf, report_images).render
   end
 
   def add_footer
@@ -70,7 +63,7 @@ class Reports::PdfGenerator < PdfGenerator
 
   def add_contact_info
     @pdf.repeat(:all) do
-      @pdf.bounding_box([0, 25], width: @pdf.bounds.width, height: 50) do
+      @pdf.bounding_box([0, 0], width: @pdf.bounds.width, height: 50) do
         @pdf.font "Helvetica", size: 10
         @pdf.text "Tel: 3512 44 6662 | 3516 70 4660"
         @pdf.text "Email: contacto@prela.com.ar"
@@ -80,7 +73,7 @@ class Reports::PdfGenerator < PdfGenerator
   end
 
   def add_page_numbers
-    @pdf.number_pages "Página <page> de <total>", at: [@pdf.bounds.right - 80, 25], size: 10
+    @pdf.number_pages "Página <page> de <total>", at: [@pdf.bounds.right - 80, 0], size: 10
   end
 
   def report
@@ -99,5 +92,12 @@ class Reports::PdfGenerator < PdfGenerator
     images = []
     report.images.each { |image| images << create_tempfile(image) }
     images
+  end
+
+  def document_options
+    {
+      top_margin: 130,
+      bottom_margin: 70
+    }
   end
 end

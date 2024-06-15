@@ -13,8 +13,7 @@ class ReportsController < ApplicationController
 
   def new
     @report = location_equipment.reports.build
-    @report.build_ups_report_stat
-    @report.build_room_report_stat
+    build_report_stats
   end
 
   def create
@@ -75,6 +74,28 @@ class ReportsController < ApplicationController
           alarms_presence
           ventilation_state
         ],
+        power_unit_report_stat_attributes: %i[
+          equipment_power
+          start_key_on_auto
+          rpm
+          frequency
+          battery_charge_control
+          tension_between_phases_a_b
+          tension_between_phases_b_c
+          tension_between_phases_c_a
+          initial_temperature
+          running_temperature
+          number_of_starts
+          operating_time
+          failed_starts
+          oil_pressure
+          fuel_level
+          coolant_level
+          oil_level
+          testing_time
+          general_disconnector
+          emergency_stop_position
+        ],
         room_report_stat_attributes: %i[
           room_status
           air_conditioning
@@ -122,5 +143,11 @@ class ReportsController < ApplicationController
       # file type is incorrect, which can be caught later by
       # model validations.
     end
+  end
+
+  def build_report_stats
+    @report.build_ups_report_stat if location_equipment.equipment.ups?
+    @report.build_power_unit_report_stat if location_equipment.equipment.power_unit?
+    @report.build_room_report_stat
   end
 end

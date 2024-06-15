@@ -1,0 +1,10 @@
+<%= form.simple_fields_for :ups_report_stat do |ups_stats_form| %>
+  <%= ups_stats_form.input :operating_mode, collection: UpsReportStat::OPERATING_MODE_OPTIONS, label: "Modo de funcionamiento" %>
+  <%= ups_stats_form.input :associated_charge, label: "Carga asociada" %>
+  <%= ups_stats_form.input :battery_charge, label: "Carga de la batería" %>
+  <%= ups_stats_form.input :voltage_input, label: "Voltaje de entrada" %>
+  <%= ups_stats_form.input :voltage_output, label: "Voltaje de salida" %>
+  <%= ups_stats_form.input :pat_state, collection: UpsReportStat::PAT_STATE_OPTIONS, label: "Estado de PAT" %>
+  <%= ups_stats_form.input :alarms_presence, label: "Existencia de alarmas", collection: UpsReportStat::ALARMS_PRESENCE_OPTIONS %>
+  <%= ups_stats_form.input :ventilation_state, label: "Estado de ventilación", collection: UpsReportStat::VENTILATION_STATE_OPTIONS %>
+<% end %>

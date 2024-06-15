@@ -13,12 +13,16 @@ class Reports::Header < Reports::Content
 
   def header
     table_width = @pdf.bounds.width
-    @pdf.table([
-      [title],
-      [prela_logo, client_image, location_data]
-    ], width: table_width) do
-      cells.border_color = PRIMARY_COLOR
-      cells.width = table_width / 3
+    @pdf.repeat(:all) do
+      @pdf.bounding_box([0, @pdf.bounds.top + 110], width: table_width, height: 100) do
+        @pdf.table([
+          [title],
+          [prela_logo, client_image, location_data]
+        ], width: table_width) do
+          cells.border_color = PRIMARY_COLOR
+          cells.width = table_width / 3
+        end
+      end
     end
   end
 

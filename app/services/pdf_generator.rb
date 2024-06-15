@@ -4,7 +4,7 @@ class PdfGenerator
   def initialize(data)
     @data = data
     @success = false
-    @pdf = Prawn::Document.new
+    @pdf = Prawn::Document.new(**document_options)
     @tempfiles = []
   end
 
@@ -47,5 +47,9 @@ class PdfGenerator
       tempfile.close
       tempfile&.unlink
     end
+  end
+
+  def document_options
+    {}
   end
 end
