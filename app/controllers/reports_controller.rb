@@ -2,6 +2,7 @@ class ReportsController < ApplicationController
   before_action lambda {
     resize_before_save(params[:report][:images], nil, 250)
   }, only: %i[create update]
+  before_action :set_reports, only: %i[index destroy update]
 
   def index
     @reports = location_equipment.reports.order(created_at: :desc)
@@ -149,5 +150,9 @@ class ReportsController < ApplicationController
     @report.build_ups_report_stat if location_equipment.equipment.ups?
     @report.build_power_unit_report_stat if location_equipment.equipment.power_unit?
     @report.build_room_report_stat
+  end
+
+  def set_reports
+    @reports = location_equipment.reports.order(date: :desc)
   end
 end

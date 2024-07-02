@@ -70,7 +70,7 @@
                 <%= render "shared/button_link", text: "Nuevo Informe",
                                                 path: new_location_equipment_report_path(@location_equipment) %>
               <% end %>
-              <%= render "reports/reports", reports: @location_equipment.reports.order(created_at: :desc), location_equipment: @location_equipment %>
+              <%= render "reports/reports", reports: @location_equipment.reports.order(date: :desc), location_equipment: @location_equipment %>
             </div>
           </div>
           <div class="col">

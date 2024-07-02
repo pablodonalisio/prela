@@ -2,6 +2,4 @@
   <%= render "layouts/flash"%>
 <% end %>
 
-<%= turbo_stream.replace @report do %>
-  <%= render "report_table_row", report: @report, location_equipment: @location_equipment %>
-<% end %>
+<%= turbo_stream.replace "reports", partial: "reports_table", locals: { reports: @reports, location_equipment: @location_equipment } %>
