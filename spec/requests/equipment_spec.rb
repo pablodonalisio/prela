@@ -44,7 +44,7 @@ RSpec.describe "/equipments", type: :request do
   end
 
   describe "POST /create" do
-    context "with valid parameters" do
+    context "when creating a Ups Equipment with valid parameters" do
       it "creates a new Equipment and responds with HTML" do
         post equipment_index_url, params: {equipment: valid_attributes}
         expect(Equipment.last.more_info).to eq("some info")
@@ -55,6 +55,30 @@ RSpec.describe "/equipments", type: :request do
         post equipment_index_url, params: {equipment: valid_attributes}, as: :turbo_stream
         expect(response.media_type).to eq Mime[:turbo_stream]
         expect(response.body).to include("turbo-stream action=\"append\" target=\"equipment\"")
+      end
+    end
+
+    context "when creating a Power Unit Equipment with valid parameters" do
+      let(:valid_attributes) do
+        {
+          kind: "power_unit",
+          brand: "some brand",
+          model: "some model",
+          more_info: "some info",
+          motor_brand: "some motor brand",
+          motor_model: "some motor model",
+          generator_brand: "some generator brand",
+          generator_model: "some generator model",
+          kw: 10
+        }
+      end
+
+      it "creates a new Power Unit Equipment" do
+        expect { post equipment_index_url, params: {equipment: valid_attributes} }.to change(Equipment, :count).by(1)
+        expect(Equipment.last.kind).to eq("power_unit")
+        valid_attributes.each do |key, value|
+          expect(Equipment.last.send(key)).to eq(value)
+        end
       end
     end
 

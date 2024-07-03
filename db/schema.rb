@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_11_213522) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_03_192755) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -66,6 +66,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_11_213522) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "more_info"
+    t.string "motor_brand"
+    t.string "motor_model"
+    t.string "generator_brand"
+    t.string "generator_model"
+    t.integer "kw"
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
