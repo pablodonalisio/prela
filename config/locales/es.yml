@@ -16,6 +16,10 @@ es:
         kva: "KVA"
         manual: "Manual"
         more_info: "Mas info"
+        motor_brand: "Marca del motor"
+        motor_model: "Modelo del motor"
+        generator_brand: "Marca del generador"
+        generator_model: "Modelo del generador"
       location_equipment:
         location: "Sede"
         equipment: "Equipo"

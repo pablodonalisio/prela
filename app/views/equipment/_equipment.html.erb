@@ -6,8 +6,7 @@
   <% end %>
 <% end %>
 <div class="row mt-3">
-  <% equipment.attributes.each do |attribute, value| %>
-    <% next if %w[id created_at updated_at].include? attribute %>
+  <% attributes_to_show(equipment).each do |attribute, value| %>
     <p>
       <strong class="text-bg-primary p-1 rounded me-2">
         <%=  Equipment.human_attribute_name(attribute) %>
