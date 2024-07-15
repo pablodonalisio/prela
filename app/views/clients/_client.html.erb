@@ -2,9 +2,9 @@
   <div class="align-items-center list-group-item list-group-item-action">
     <%= link_to client_path(client), data: { turbo_frame: "main_content", turbo_action: "advance"},
                                     class: "flex-grow-1 text-center text-light link-underline-dark" do %>
-      <div class="d-flex w-100 align-items-center" style="height: 70px;">
+      <div class="d-flex w-100 align-items-center" style="height: 100px;">
         <% if client.avatar.attached? %>
-          <%= image_tag client.avatar.variant(resize_to_limit: [50, 50]) %>
+          <%= image_tag client.avatar.variant(resize_to_limit: [100, nil]) %>
         <% else %>
           <%= client.name %>
         <% end %>
