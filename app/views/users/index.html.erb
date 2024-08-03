@@ -1,0 +1,17 @@
+<%= render "shared/content_header", title: "Usuarios" do %>
+  <%= render "shared/button_link", text: "Agregar",
+                                  path: new_user_path %>
+<% end %>
+
+<div class="w-100 overflow-auto">
+  <table class="table mt-4">
+    <thead class="thead-dark">
+      <tr>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <%= render "users/users_table", users: @users %>
+  </table>
+</div>

@@ -12,6 +12,13 @@
           <p class="dropdown-header"><%= current_user.email %></p>
         </li>
         <li>
+          <%= link_to(
+            "Gestionar Usuarios",
+            users_path,
+            class: "dropdown-item"
+          ) %>
+        </li>
+        <li>
           <%= button_to(
             "Cerrar Sesion",
             destroy_user_session_path,

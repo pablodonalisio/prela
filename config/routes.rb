@@ -23,4 +23,5 @@ Rails.application.routes.draw do
   resources :equipment
   resources :batteries, except: %i[index]
   resources :supplies, only: [:index]
+  resources :users
 end

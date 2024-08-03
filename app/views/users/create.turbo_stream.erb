@@ -1,0 +1,8 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.prepend "users" do %>
+  <%= render "user_table_row", user: @user, location_equipment: @location_equipment %>
+<% end %>
+<%= turbo_stream.remove "empty_users" %>

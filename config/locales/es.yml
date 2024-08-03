@@ -38,6 +38,10 @@ es:
         model: "Modelo"
         voltage: "Voltaje"
         amps: "Amperes"
+      user:
+        roles:
+          admin: "Admin"
+          client: "Cliente"
   errors:
     format: "%{attribute} %{message}"
     messages:
