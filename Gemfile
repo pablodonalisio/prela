@@ -90,3 +90,5 @@ gem "aws-sdk-s3", require: false
 # pdf generation
 gem "prawn"
 gem "prawn-table"
+
+gem "pundit", "~> 2.3"
