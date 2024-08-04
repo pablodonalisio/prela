@@ -4,18 +4,18 @@ class LocationEquipmentsController < ApplicationController
   before_action :set_order, only: :index
 
   def new
-    @location_equipment = LocationEquipment.new
+    @location_equipment = authorize LocationEquipment.new
     @locations = Location.where(client_id: params[:client_id])
   end
 
   def index
-    @location_equipments = LocationEquipment.filter(filter_params)
+    @location_equipments = authorize LocationEquipment.filter(filter_params)
       .includes(equipment: :avatar_blob, location: :client)
       .order(@order)
   end
 
   def show
-    @location_equipment = LocationEquipment.find(params[:id])
+    @location_equipment = authorize LocationEquipment.find(params[:id])
   end
 
   def edit
@@ -66,7 +66,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def location_equipment
-    @location_equipment ||= LocationEquipment.find(params[:id])
+    @location_equipment ||= authorize LocationEquipment.find(params[:id])
   end
 
   def set_locations
@@ -80,7 +80,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def create_location_equipment
-    @location_equipment = LocationEquipment.new(location_equipment_params)
+    @location_equipment = authorize LocationEquipment.new(location_equipment_params)
     @location_equipment.battery = @location_equipment.equipment&.battery
   end
 

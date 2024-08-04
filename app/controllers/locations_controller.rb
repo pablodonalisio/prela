@@ -2,14 +2,14 @@ class LocationsController < ApplicationController
   before_action :set_location, only: [:edit, :update, :destroy]
 
   def new
-    @location = client.locations.build
+    @location = authorize client.locations.build
   end
 
   def edit
   end
 
   def create
-    @location = client.locations.build(location_params)
+    @location = authorize client.locations.build(location_params)
 
     if @location.save
       respond_to do |format|
@@ -52,6 +52,6 @@ class LocationsController < ApplicationController
   end
 
   def set_location
-    @location = client.locations.find(params[:id])
+    @location = authorize client.locations.find(params[:id])
   end
 end

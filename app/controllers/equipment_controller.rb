@@ -2,11 +2,11 @@ class EquipmentController < ApplicationController
   before_action :set_equipment, except: %i[new index create]
 
   def new
-    @equipment = Equipment.new
+    @equipment = authorize Equipment.new
   end
 
   def index
-    @equipment = Equipment.all
+    @equipment = authorize Equipment.all
   end
 
   def show
@@ -16,7 +16,7 @@ class EquipmentController < ApplicationController
   end
 
   def create
-    @equipment = Equipment.new(equipment_params)
+    @equipment = authorize Equipment.new(equipment_params)
 
     respond_to do |format|
       if @equipment.save
@@ -59,6 +59,6 @@ class EquipmentController < ApplicationController
   end
 
   def set_equipment
-    @equipment = Equipment.find(params[:id])
+    @equipment = authorize Equipment.find(params[:id])
   end
 end

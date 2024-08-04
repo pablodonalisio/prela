@@ -2,21 +2,21 @@ class ClientsController < ApplicationController
   before_action :set_client, only: %i[show edit update destroy]
 
   def index
-    @clients = Client.all
+    @clients = authorize Client.all
   end
 
   def show
   end
 
   def new
-    @client = Client.new
+    @client = authorize Client.new
   end
 
   def edit
   end
 
   def create
-    @client = Client.new(client_params)
+    @client = authorize Client.new(client_params)
 
     respond_to do |format|
       if @client.save
@@ -53,7 +53,7 @@ class ClientsController < ApplicationController
   private
 
   def set_client
-    @client = Client.includes(:locations).find(params[:id])
+    @client = authorize Client.find(params[:id])
   end
 
   def client_params

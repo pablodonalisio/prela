@@ -5,11 +5,11 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new
+    @user = authorize User.new
   end
 
   def create
-    @user = User.new(user_params)
+    @user = authorize User.new(user_params)
 
     if @user.save
       respond_to do |format|
@@ -22,11 +22,11 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
+    @user = user
   end
 
   def update
-    @user = User.find(params[:id])
+    @user = user
 
     if @user.update(user_params)
       respond_to do |format|
@@ -39,7 +39,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    flash.now[:notice] = "El usuario ha sido eliminado." if User.find(params[:id]).destroy
+    flash.now[:notice] = "El usuario ha sido eliminado." if user.destroy
   end
 
   private
@@ -49,6 +49,10 @@ class UsersController < ApplicationController
   end
 
   def set_users
-    @users = User.all.order(created_at: :desc)
+    @users = authorize User.all.order(created_at: :desc)
+  end
+
+  def user
+    @user ||= authorize User.find(params[:id])
   end
 end
