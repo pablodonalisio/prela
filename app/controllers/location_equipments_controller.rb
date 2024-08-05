@@ -9,9 +9,9 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def index
-    @location_equipments = authorize LocationEquipment.filter(filter_params)
+    @location_equipments = authorize policy_scope(LocationEquipment.filter(filter_params)
       .includes(equipment: :avatar_blob, location: :client)
-      .order(@order)
+      .order(@order))
   end
 
   def show

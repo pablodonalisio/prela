@@ -15,8 +15,14 @@ class LocationEquipmentPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
-    # def resolve
-    #   scope.all
-    # end
+    def resolve
+      if user.admin?
+        scope.all
+      elsif user.client?
+        scope.joins(:location).where(location: {client_id: user.client_id})
+      else
+        raise Pundit::NotAuthorizedError
+      end
+    end
   end
 end
