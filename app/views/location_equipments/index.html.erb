@@ -1,7 +1,9 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
   <%= render "shared/content_header", title: "Activos" do %>
-    <%= render "shared/button_link", text: "Agregar",
-                                     path: new_location_equipment_path %>
+    <% if current_user.admin? %>
+      <%= render "shared/button_link", text: "Agregar",
+                                      path: new_location_equipment_path %>
+    <% end %>
   <% end %>
 
   <%= render "shared/items", collection: @location_equipments %>

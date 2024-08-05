@@ -7,8 +7,14 @@ class ClientPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
-    # def resolve
-    #   scope.all
-    # end
+    def resolve
+      if user.admin?
+        scope.all
+      elsif user.client?
+        scope.where(id: user.client_id)
+      else
+        raise Pundit::NotAuthorizedError
+      end
+    end
   end
 end

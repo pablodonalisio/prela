@@ -5,13 +5,15 @@
                  [["Prox Service", "next_service"], ["Prox Cambio de batería", "next_battery_change"]],
                  {selected: order, prompt: "Ordenar por"},
                  {onchange: "this.form.requestSubmit()", class: "form-select form-select-sm mb-2"} %>
+
     <%= render "filter_item", title: "Cliente",
                               f: f,
                               attribute: :client_ids,
-                              collection: Client.order(:name),
+                              collection: policy_scope(Client).order(:name),
                               value: :id,
                               label: :name,
                               selected_filters: filter_params[:client_ids] %>
+
     <% if filter_params[:client_ids].present? &&
           (locations = Location.where(client_id: filter_params[:client_ids])).present? %>
       <%= render "filter_item", title: "Sede",
@@ -22,13 +24,17 @@
                                 label: :name,
                                 selected_filters: filter_params[:location_ids] %>
     <% end %>
-    <%= render "filter_item", title: "Estado",
-                              f: f,
-                              attribute: :status,
-                              collection: LocationEquipment.enum_attributes_for_select("status"),
-                              value: :last,
-                              label: :first,
-                              selected_filters: filter_params[:status] %>
+
+    <% if current_user.admin? %>
+      <%= render "filter_item", title: "Estado",
+                                f: f,
+                                attribute: :status,
+                                collection: LocationEquipment.enum_attributes_for_select("status"),
+                                value: :last,
+                                label: :first,
+                                selected_filters: filter_params[:status] %>
+    <% end %>
+
     <%= render "filter_item", title: "Tipo",
                               f: f,
                               attribute: :kind,
