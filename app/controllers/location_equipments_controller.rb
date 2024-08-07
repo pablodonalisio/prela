@@ -4,18 +4,18 @@ class LocationEquipmentsController < ApplicationController
   before_action :set_order, only: :index
 
   def new
-    @location_equipment = LocationEquipment.new
+    @location_equipment = authorize LocationEquipment.new
     @locations = Location.where(client_id: params[:client_id])
   end
 
   def index
-    @location_equipments = LocationEquipment.filter(filter_params)
+    @location_equipments = authorize policy_scope(LocationEquipment.filter(filter_params)
       .includes(equipment: :avatar_blob, location: :client)
-      .order(@order)
+      .order(@order))
   end
 
   def show
-    @location_equipment = LocationEquipment.find(params[:id])
+    @location_equipment = authorize LocationEquipment.find(params[:id])
   end
 
   def edit
@@ -66,7 +66,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def location_equipment
-    @location_equipment ||= LocationEquipment.find(params[:id])
+    @location_equipment ||= authorize LocationEquipment.find(params[:id])
   end
 
   def set_locations
@@ -74,13 +74,30 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def filter_params
-    filters = %i[client_ids status kind]
-    filters << :location_ids if params[:client_ids]&.compact_blank!.present?
+    set_client_id_filter if current_user.client?
+    add_location_ids_filter if any_client_selected?
+
     @filter_params = params.slice(*filters)
   end
 
+  def filters
+    @filters ||= %i[client_ids status kind]
+  end
+
+  def add_location_ids_filter
+    filters << :location_ids
+  end
+
+  def any_client_selected?
+    params[:client_ids]&.compact_blank!.present?
+  end
+
+  def set_client_id_filter
+    params[:client_ids] = [current_user.client_id.to_s]
+  end
+
   def create_location_equipment
-    @location_equipment = LocationEquipment.new(location_equipment_params)
+    @location_equipment = authorize LocationEquipment.new(location_equipment_params)
     @location_equipment.battery = @location_equipment.equipment&.battery
   end
 

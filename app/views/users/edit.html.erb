@@ -1,0 +1,7 @@
+<h1>Editar Usuario</h1>
+
+<%= turbo_frame_tag @user do %>
+  <%= render "shared/remote_modal", title: "Editar Usuario" do %>
+    <%= render "form", user: @user %>
+  <% end %>
+<% end %>

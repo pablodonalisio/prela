@@ -11,6 +11,17 @@
         <li>
           <p class="dropdown-header"><%= current_user.email %></p>
         </li>
+
+        <% if current_user.admin? %>
+          <li>
+            <%= link_to(
+              "Gestionar Usuarios",
+              users_path,
+              class: "dropdown-item"
+            ) %>
+          </li>
+        <% end %>
+
         <li>
           <%= button_to(
             "Cerrar Sesion",

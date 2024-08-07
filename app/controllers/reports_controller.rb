@@ -5,20 +5,20 @@ class ReportsController < ApplicationController
   before_action :set_reports, only: %i[index destroy update]
 
   def index
-    @reports = location_equipment.reports.order(created_at: :desc)
+    @reports = authorize location_equipment.reports.order(created_at: :desc)
   end
 
   def show
-    @report = Report.find(params[:id])
+    @report = authorize Report.find(params[:id])
   end
 
   def new
-    @report = location_equipment.reports.build
+    @report = authorize location_equipment.reports.build
     build_report_stats
   end
 
   def create
-    @report = location_equipment.reports.build(report_params)
+    @report = authorize location_equipment.reports.build(report_params)
 
     if @report.save
       return report_pdf_error unless attach_pdf
@@ -33,11 +33,11 @@ class ReportsController < ApplicationController
   end
 
   def edit
-    @report = location_equipment.reports.find(params[:id])
+    @report = authorize report
   end
 
   def update
-    @report = location_equipment.reports.find(params[:id])
+    @report = authorize report
 
     if @report.update(report_params)
       return report_pdf_error unless attach_pdf
@@ -52,13 +52,17 @@ class ReportsController < ApplicationController
   end
 
   def destroy
-    flash.now[:notice] = "El reporte ha sido eliminado." if location_equipment.reports.find(params[:id]).destroy
+    flash.now[:notice] = "El reporte ha sido eliminado." if report.destroy
   end
 
   private
 
   def location_equipment
     @location_equipment ||= LocationEquipment.find(params[:location_equipment_id])
+  end
+
+  def report
+    @report ||= authorize location_equipment.reports.find(params[:id])
   end
 
   def report_params

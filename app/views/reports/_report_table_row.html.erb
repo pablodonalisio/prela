@@ -4,11 +4,13 @@
     <%= link_to location_equipment_report_path(location_equipment, report), data: { turbo_frame: "remote_modal" } do %>
       <i class="fas fa-eye"></i>
     <% end %>
-    <%= link_to edit_location_equipment_report_path(location_equipment, report), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
-      <i class="fas fa-edit"></i>
-    <% end %>
-    <%= button_to location_equipment_report_path(location_equipment, report), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
-      <i class="fas fa-trash text-danger"></i>
+    <% if current_user.admin? %>
+      <%= link_to edit_location_equipment_report_path(location_equipment, report), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
+        <i class="fas fa-edit"></i>
+      <% end %>
+      <%= button_to location_equipment_report_path(location_equipment, report), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
+        <i class="fas fa-trash text-danger"></i>
+      <% end %>
     <% end %>
   </td>
 <% end %>

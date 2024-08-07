@@ -2,14 +2,14 @@ class EquipmentSuppliesController < ApplicationController
   before_action :set_equipment_supply, only: %i[edit update destroy]
 
   def new
-    @equipment_supply = EquipmentSupply.new(equipment_supply_params)
+    @equipment_supply = authorize EquipmentSupply.new(equipment_supply_params)
   end
 
   def edit
   end
 
   def create
-    @equipment_supply = EquipmentSupply.new(equipment_supply_params)
+    @equipment_supply = authorize EquipmentSupply.new(equipment_supply_params)
 
     if @equipment_supply.save
       respond_to do |format|
@@ -49,6 +49,6 @@ class EquipmentSuppliesController < ApplicationController
   end
 
   def set_equipment_supply
-    @equipment_supply = EquipmentSupply.find(params[:id])
+    @equipment_supply = authorize EquipmentSupply.find(params[:id])
   end
 end

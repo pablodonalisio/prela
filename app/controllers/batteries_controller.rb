@@ -2,7 +2,7 @@ class BatteriesController < ApplicationController
   before_action :set_battery, only: %i[show edit update destroy]
 
   def new
-    @battery = Battery.new
+    @battery = authorize Battery.new
   end
 
   def edit
@@ -12,7 +12,7 @@ class BatteriesController < ApplicationController
   end
 
   def create
-    @battery = Battery.new(battery_params)
+    @battery = authorize Battery.new(battery_params)
 
     respond_to do |format|
       if @battery.save
@@ -50,6 +50,6 @@ class BatteriesController < ApplicationController
   end
 
   def set_battery
-    @battery = Battery.find(params[:id])
+    @battery = authorize Battery.find(params[:id])
   end
 end

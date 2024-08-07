@@ -9,22 +9,27 @@
       <div class="col">
         <div class="card-body">
           <div class="d-flex">
-            <h5 class="card-title me-auto">
-              <%= link_to location_equipment.equipment.full_name, equipment_path(location_equipment.equipment),
-                                                                  data: { turbo_frame: "_top" } %>
-            </h5>
-            <%= render "shared/dropdown" do %>
-              <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
+            <% if current_user.admin? %>
+              <h5 class="card-title me-auto">
+                <%= link_to location_equipment.equipment.full_name, equipment_path(location_equipment.equipment),
+                                                                    data: { turbo_frame: "_top" } %>
+              </h5>
+
+              <%= render "shared/dropdown" do %>
+                <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
+                                                  class: "dropdown-item text-center",
+                                                  data: { turbo_frame: "remote_modal" } %></li>
+                <% if location_equipment.form_link.present? %>
+                  <li><%= link_to "Formulario", location_equipment.form_link,
                                                 class: "dropdown-item text-center",
-                                                data: { turbo_frame: "remote_modal" } %></li>
-              <% if location_equipment.form_link.present? %>
-                <li><%= link_to "Formulario", location_equipment.form_link,
-                                              class: "dropdown-item text-center",
-                                              target: "_blank" %></li>
+                                                target: "_blank" %></li>
+                <% end %>
+                <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
+                                                delete_path: location_equipment_path(location_equipment),
+                                                confirm: "Seguro queres borrar este equipo?" %>
               <% end %>
-              <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
-                                              delete_path: location_equipment_path(location_equipment),
-                                              confirm: "Seguro queres borrar este equipo?" %>
+            <% else %>
+              <h5 class="card-title me-auto"><%= location_equipment.equipment.full_name %></h5>
             <% end %>
           </div>
           <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>
@@ -67,23 +72,28 @@
           <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-4">
             <div class="col">
               <%= render "shared/content_header", title: "Informes" do %>
-                <%= render "shared/button_link", text: "Nuevo Informe",
-                                                path: new_location_equipment_report_path(@location_equipment) %>
+                <% if current_user.admin? %>
+                  <%= render "shared/button_link", text: "Nuevo Informe",
+                                                   path: new_location_equipment_report_path(@location_equipment) %>
+                <% end %>
               <% end %>
               <%= render "reports/reports", reports: @location_equipment.reports.order(date: :desc), location_equipment: @location_equipment %>
             </div>
           </div>
-          <div class="col">
-            <%= render "shared/content_header", title: "Insumos" %>
-            <div class="row">
-              <div class="w-auto">
-                <h5 class="text-center">Bateria</h5>
-                <%= turbo_frame_tag "equipment_battery" do %>
-                  <%= render "equipment_supplies/equipment_battery", equipment: location_equipment %>
-                <% end %>
+
+          <% if current_user.admin? %>
+            <div class="col">
+              <%= render "shared/content_header", title: "Insumos" %>
+              <div class="row">
+                <div class="w-auto">
+                  <h5 class="text-center">Bateria</h5>
+                  <%= turbo_frame_tag "equipment_battery" do %>
+                    <%= render "equipment_supplies/equipment_battery", equipment: location_equipment %>
+                  <% end %>
+                </div>
               </div>
             </div>
-          </div>
+          <% end %>
         </div>
       </div>
     </div>

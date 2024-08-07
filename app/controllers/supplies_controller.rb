@@ -1,5 +1,5 @@
 class SuppliesController < ApplicationController
   def index
-    @batteries = Battery.all
+    @batteries = authorize Battery.all
   end
 end
