@@ -6,6 +6,9 @@
     <%= link_to edit_user_path(user), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
       <i class="fas fa-edit"></i>
     <% end %>
+    <%= link_to edit_user_path(user, change_password: true), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
+      <i class="fa-solid fa-key"></i>
+    <% end %>
     <%= button_to user_path(user), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
       <i class="fas fa-trash text-danger"></i>
     <% end %>

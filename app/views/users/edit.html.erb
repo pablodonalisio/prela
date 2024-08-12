@@ -2,6 +2,10 @@
 
 <%= turbo_frame_tag @user do %>
   <%= render "shared/remote_modal", title: "Editar Usuario" do %>
-    <%= render "form", user: @user %>
+    <% if @change_password %>
+      <%= render "change_password", user: @user %>
+    <% else %>
+      <%= render "form", user: @user %>
+    <% end%>
   <% end %>
 <% end %>

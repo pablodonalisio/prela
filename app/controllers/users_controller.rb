@@ -23,6 +23,7 @@ class UsersController < ApplicationController
 
   def edit
     @user = user
+    @change_password = params[:change_password]
   end
 
   def update
