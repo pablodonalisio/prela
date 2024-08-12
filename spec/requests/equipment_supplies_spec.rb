@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "EquipmentSupplies", type: :request do
-  before { sign_in(create(:user)) }
+  before { sign_in(create(:admin)) }
 
   describe "GET /new" do
     let(:equipment) { create(:equipment) }

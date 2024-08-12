@@ -55,7 +55,7 @@ RSpec.describe "Reports", type: :request do
   end
   let(:equipment_report_params) { send("#{equipment_kind}_report_params") }
 
-  before { sign_in create(:user) }
+  before { sign_in create(:admin) }
 
   describe "GET /show" do
     it "returns a successful response" do

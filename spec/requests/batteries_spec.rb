@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Batteries", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:admin) }
   let(:valid_attributes) { {battery: {model: "BP5-12", voltage: 12, amps: 7}} }
   let(:invalid_attributes) { {battery: {model: "", voltage: "", amps: ""}} }
   let(:battery) { create(:battery) }

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "/location_equipments", type: :request do
-  before { sign_in create(:user) }
+  before { sign_in create(:admin) }
 
   describe "GET /new" do
     let(:client) { create(:client) }

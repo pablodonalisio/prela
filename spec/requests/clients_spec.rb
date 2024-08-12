@@ -21,7 +21,7 @@ RSpec.describe "/clients", type: :request do
     {name: ""}
   }
 
-  before { sign_in create(:user) }
+  before { sign_in create(:admin) }
 
   describe "GET /index" do
     let!(:client1) { create(:client) }

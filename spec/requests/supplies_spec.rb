@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Supplies", type: :request do
-  before { sign_in create(:user) }
+  before { sign_in create(:admin) }
 
   describe "GET /index" do
     it "returns http success" do

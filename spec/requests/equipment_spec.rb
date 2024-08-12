@@ -4,7 +4,7 @@ RSpec.describe "/equipments", type: :request do
   let(:valid_attributes) { {kind: "ups", brand: "some brand", model: "some model", more_info: "some info"} }
   let(:invalid_attributes) { {kind: ""} }
 
-  before { sign_in create(:user) }
+  before { sign_in create(:admin) }
 
   describe "GET /show" do
     let!(:equipment) { create(:equipment) }

@@ -26,7 +26,7 @@ RSpec.describe "/locations", type: :request do
 
   let(:location) { create(:location) }
 
-  before { sign_in create(:user) }
+  before { sign_in create(:admin) }
 
   describe "GET /new" do
     it "renders a successful response" do
