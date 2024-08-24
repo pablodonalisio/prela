@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_03_162959) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_24_150753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -137,6 +137,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_03_162959) do
     t.integer "testing_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "lamp_test"
+    t.string "belt_condition"
+    t.string "air_filter_condition"
+    t.string "anti_vibration_pad_condition"
+    t.string "liquids_leaks"
+    t.string "connections_condition_and_battery_fixation"
+    t.string "cable_and_electrical_connections"
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
   end
 

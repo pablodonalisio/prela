@@ -100,6 +100,13 @@ class ReportsController < ApplicationController
           testing_time
           general_disconnector
           emergency_stop_position
+          lamp_test
+          belt_condition
+          air_filter_condition
+          anti_vibration_pad_condition
+          liquids_leaks
+          connections_condition_and_battery_fixation
+          cable_and_electrical_connections
         ],
         room_report_stat_attributes: %i[
           room_status

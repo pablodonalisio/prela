@@ -21,4 +21,11 @@
   <%= power_unit_stats_form.input :coolant_level, label: "Nivel de refrigerante" %>
   <%= power_unit_stats_form.input :oil_level, label: "Nivel de aceite" %>
   <%= power_unit_stats_form.input :testing_time, label: "Tiempo de prueba (Min.)" %>
+  <%= power_unit_stats_form.input :lamp_test, collection: PowerUnitReportStat::LAMP_TEST_OPTIONS, label: "Test de lámparas" %>
+  <%= power_unit_stats_form.input :belt_condition, collection: PowerUnitReportStat::BELT_CONDITION_OPTIONS, label: "Estado y tensión de correas" %>
+  <%= power_unit_stats_form.input :air_filter_condition, collection: PowerUnitReportStat::AIR_FILTER_CONDITION_OPTIONS, label: "Estado de filtro de aire" %>
+  <%= power_unit_stats_form.input :anti_vibration_pad_condition, collection: PowerUnitReportStat::ANTI_VIBRATION_PAD_CONDITION_OPTIONS, label: "Estado de tacos antivibratorias" %>
+  <%= power_unit_stats_form.input :liquids_leaks, collection: PowerUnitReportStat::LIQUIDS_LEAKS_OPTIONS, label: "Pérdida de fluídos" %>
+  <%= power_unit_stats_form.input :connections_condition_and_battery_fixation, collection: PowerUnitReportStat::CONNECTIONS_CONDITION_AND_BATTERY_FIXATION_OPTIONS, label: "Estado de conexiones y fijación de baterías" %>
+  <%= power_unit_stats_form.input :cable_and_electrical_connections, collection: PowerUnitReportStat::CABLE_AND_ELECTRICAL_CONNECTIONS_CONDITION_OPTIONS, label: "Estado de cables y conexiones eléctricas" %>
 <% end %>
