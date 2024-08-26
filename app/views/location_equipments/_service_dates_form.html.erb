@@ -15,5 +15,15 @@
                                     as: :date, end_year: Date.today.year + 90,
                                     start_year: Date.today.year, discard_day: true,
                                     order: [:month, :year], include_blank: true %>
+  <% if location_equipment.equipment.power_unit? %>
+    <%= f.input :last_belt_change, label: LocationEquipment.human_attribute_name(:last_belt_change),
+                                        as: :date, end_year: Date.today.year - 90,
+                                        start_year: Date.today.year, discard_day: true,
+                                        order: [:month, :year], include_blank: true %>
+    <%= f.input :next_belt_change, label: LocationEquipment.human_attribute_name(:next_belt_change),
+                                        as: :date, end_year: Date.today.year + 90,
+                                        start_year: Date.today.year, discard_day: true,
+                                        order: [:month, :year], include_blank: true %>
+  <% end %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

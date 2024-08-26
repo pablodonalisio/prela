@@ -23,10 +23,12 @@ es:
       location_equipment:
         location: "Sede"
         equipment: "Equipo"
-        last_service: "Ultimo service"
-        next_service: "Proximo service"
-        last_battery_change: "Ultimo cambio de bateria"
-        next_battery_change: "Proximo cambio de bateria"
+        last_service: "Último service"
+        next_service: "Próximo service"
+        last_battery_change: "Último cambio de batería"
+        next_battery_change: "Próximo cambio de batería"
+        last_belt_change: "Último cambio de correas"
+        next_belt_change: "Próximo cambio de correas"
         details: "Detalles"
         statuses:
           active: "En servicio"

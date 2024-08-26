@@ -2,7 +2,7 @@
   <small class="text-body-secondary">
     <label><%= label %>: </label>
       <% if date %>
-        <span class="<%= label.include?("Proximo") ? service_date_color(date) : "" %>">
+        <span class="<%= label.include?("Próximo") ? service_date_color(date) : "" %>">
           <%= l(date, format: :month_year_concise) %>
         </span>
       <% end %>

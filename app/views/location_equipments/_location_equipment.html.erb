@@ -63,6 +63,12 @@
                 <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
                                             date: location_equipment.send(attribute) %>
               <% end %>
+              <% if location_equipment.equipment.power_unit? %>
+                <% %i[last_belt_change next_belt_change].each do |attribute| %>
+                  <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
+                                              date: location_equipment.send(attribute) %>
+                <% end %>
+              <% end %>
             </div>
           </div>
         </div>
