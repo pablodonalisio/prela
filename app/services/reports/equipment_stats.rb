@@ -2,6 +2,7 @@ class Reports::EquipmentStats < Reports::Content
   def render
     equipment_data
     equipment_stats
+    equipment_service_dates
     super
   end
 
@@ -26,5 +27,9 @@ class Reports::EquipmentStats < Reports::Content
     elsif equipment.power_unit?
       @pdf = Reports::Equipment::PowerUnitStats.new(@report, @pdf).render
     end
+  end
+
+  def equipment_service_dates
+    @pdf = Reports::Equipment::ServiceDateStats.new(@report, @pdf).render
   end
 end

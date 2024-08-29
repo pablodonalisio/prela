@@ -34,7 +34,7 @@ class Reports::PdfGenerator < PdfGenerator
   end
 
   def add_room_stats
-    @pdf.move_down 10
+    @pdf.start_new_page
     @pdf = Reports::RoomStats.new(report, @pdf).render
   end
 
