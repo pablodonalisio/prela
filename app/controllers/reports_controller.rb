@@ -121,9 +121,13 @@ class ReportsController < ApplicationController
 
     @report.pdf.attach(
       io: StringIO.new(pdf_content.pdf),
-      filename: "#{location_equipment.model}_report.pdf",
+      filename: "#{report_filename}.pdf",
       content_type: "application/pdf"
     )
+  end
+
+  def report_filename
+    "Informe preventivo de #{location_equipment.code} - #{l(report.date.to_date)}"
   end
 
   def pdf_content
