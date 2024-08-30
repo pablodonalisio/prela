@@ -6,20 +6,48 @@
   <% end %>
 <% end %>
 <div class="row mt-3">
-  <% attributes_to_show(equipment).each do |attribute, value| %>
-    <p>
-      <strong class="text-bg-primary p-1 rounded me-2">
-        <%=  Equipment.human_attribute_name(attribute) %>
-      </strong>
-      <% if attribute.eql?("manual") && value.present?  %>
-        <%= link_to "ver", value, target: "_blank" %>
-      <% elsif attribute.eql?("kind") %>
-        <%= t("activerecord.attributes.equipment.kinds.#{value}") %>
-      <% else %>
-        <%= value %>
-      <% end %>
-    </p>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= Equipment.human_attribute_name("kind") %>
+    </strong>
+    <%= t("activerecord.attributes.equipment.kinds.#{equipment.kind}") %>
+  </p>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= Equipment.human_attribute_name("brand") %>
+    </strong>
+    <%= equipment.brand %>
+  </p>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= Equipment.human_attribute_name("model") %>
+    </strong>
+    <%= equipment.model %>
+  </p>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= Equipment.human_attribute_name("technical_model") %>
+    </strong>
+    <%= equipment.technical_model %>
+  </p>
+  <% if equipment.ups? %>
+    <%= render "ups_attributes", equipment: equipment %>
+  <% elsif equipment.power_unit? %>
+    <%= render "power_unit_attributes", equipment: equipment %>
   <% end %>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= Equipment.human_attribute_name("more_info") %>
+    </strong>
+    <%= equipment.more_info %>
+  </p>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= Equipment.human_attribute_name("manual") %>
+    </strong>
+    <%= link_to "ver", equipment.manual, target: "_blank" if equipment.manual.present? %>
+  </p>
+
 </div>
 
 <div class="row mt-3">

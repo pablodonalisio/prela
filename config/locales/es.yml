@@ -20,6 +20,7 @@ es:
         motor_model: "Modelo del motor"
         generator_brand: "Marca del generador"
         generator_model: "Modelo del generador"
+        is_triphase: "Trifásico"
       location_equipment:
         location: "Sede"
         equipment: "Equipo"
