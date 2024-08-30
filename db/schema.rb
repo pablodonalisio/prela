@@ -71,6 +71,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_26_181409) do
     t.string "generator_brand"
     t.string "generator_model"
     t.integer "kw"
+    t.boolean "is_triphase"
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
