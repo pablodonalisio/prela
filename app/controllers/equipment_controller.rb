@@ -55,7 +55,7 @@ class EquipmentController < ApplicationController
   def equipment_params
     params.require(:equipment).permit(:avatar, :kind, :brand, :model, :technical_model,
       :kva, :manual, :details, :battery, :more_info, :motor_brand, :motor_model, :generator_brand,
-      :generator_model, :kw)
+      :generator_model, :kw, :is_triphase)
   end
 
   def set_equipment
