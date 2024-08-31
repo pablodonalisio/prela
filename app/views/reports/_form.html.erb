@@ -4,7 +4,7 @@
 
   <h2>Equipo</h2>
   <% if location_equipment.equipment.ups?%>
-    <%= render "ups_form", form: f %>
+    <%= render "ups_form", form: f, is_triphase: location_equipment.equipment.is_triphase %>
   <% elsif location_equipment.equipment.power_unit? %>
     <%= render "power_unit_form", form: f %>
   <% end %>

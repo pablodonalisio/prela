@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_31_143859) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_31_150656) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -181,6 +181,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_31_143859) do
     t.string "ventilation_state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "voltage_input_l1"
+    t.float "voltage_input_l2"
+    t.float "voltage_input_l3"
+    t.float "voltage_output_l1"
+    t.float "voltage_output_l2"
+    t.float "voltage_output_l3"
     t.index ["report_id"], name: "index_ups_report_stats_on_report_id"
   end
 

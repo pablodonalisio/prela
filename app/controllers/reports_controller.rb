@@ -75,6 +75,12 @@ class ReportsController < ApplicationController
           battery_charge
           voltage_input
           voltage_output
+          voltage_input_l1
+          voltage_input_l2
+          voltage_input_l3
+          voltage_output_l1
+          voltage_output_l2
+          voltage_output_l3
           pat_state
           alarms_presence
           ventilation_state
