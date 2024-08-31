@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_26_181409) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_30_142045) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -103,6 +103,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_26_181409) do
     t.integer "status", default: 0
     t.date "last_belt_change"
     t.date "next_belt_change"
+    t.string "engine_serial_number"
+    t.string "power_unit_serial_number"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end
