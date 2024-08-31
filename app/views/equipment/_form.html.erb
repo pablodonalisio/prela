@@ -6,18 +6,17 @@
                      input_html: { data: { dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>
   <%= f.input :brand, label: "Marca" %>
   <%= f.input :model, label: "Modelo" %>
-  <%= f.input :technical_model, label: "Modelo Técnico" %>
   <fieldset data-select-value="ups" data-dynamic-form-target="inputGroup">
-    <%= f.input :kva, label: "KVA" %>
     <%= f.input :is_triphase, label: "Trifásica" %>
+    <%= f.input :technical_model, label: "Modelo Técnico" %>
   </fieldset>
   <fieldset data-select-value="power_unit" data-dynamic-form-target="inputGroup">
     <%= f.input :motor_brand, label: "Marca del Motor" %>
     <%= f.input :motor_model, label: "Modelo del Motor" %>
     <%= f.input :generator_brand, label: "Marca del Generador" %>
     <%= f.input :generator_model, label: "Modelo del Generador" %>
-    <%= f.input :kw, label: "KW" %>
   </fieldset>
+  <%= f.input :kva, label: "Kva" %>
   <%= f.input :more_info, label: "Mas Info" %>
   <%= f.input :manual %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
