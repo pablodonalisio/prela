@@ -1,12 +1,12 @@
 <p>
   <strong class="text-bg-primary p-1 rounded me-2">
-    <%= Equipment.human_attribute_name("kva") %>
-  </strong>
-  <%= equipment.kva %>
-</p>
-<p>
-  <strong class="text-bg-primary p-1 rounded me-2">
     <%= Equipment.human_attribute_name("is_triphase") %>
   </strong>
   <%= equipment.is_triphase ? "Si" : "No" %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("technical_model") %>
+  </strong>
+  <%= equipment.technical_model %>
 </p>

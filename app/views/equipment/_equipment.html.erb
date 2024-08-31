@@ -24,17 +24,17 @@
     </strong>
     <%= equipment.model %>
   </p>
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
-      <%= Equipment.human_attribute_name("technical_model") %>
-    </strong>
-    <%= equipment.technical_model %>
-  </p>
   <% if equipment.ups? %>
     <%= render "ups_attributes", equipment: equipment %>
   <% elsif equipment.power_unit? %>
     <%= render "power_unit_attributes", equipment: equipment %>
   <% end %>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= Equipment.human_attribute_name("kva") %>
+    </strong>
+    <%= equipment.kva %>
+  </p>
   <p>
     <strong class="text-bg-primary p-1 rounded me-2">
       <%= Equipment.human_attribute_name("more_info") %>
