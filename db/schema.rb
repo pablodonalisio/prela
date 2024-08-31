@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_30_142045) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_31_143859) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_30_142045) do
     t.string "motor_model"
     t.string "generator_brand"
     t.string "generator_model"
-    t.integer "kw"
+    t.boolean "is_triphase"
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
