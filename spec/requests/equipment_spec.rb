@@ -69,7 +69,7 @@ RSpec.describe "/equipments", type: :request do
           motor_model: "some motor model",
           generator_brand: "some generator brand",
           generator_model: "some generator model",
-          kw: 10
+          kva: 10
         }
       end
 
