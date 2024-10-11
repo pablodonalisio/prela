@@ -86,7 +86,6 @@ class ReportsController < ApplicationController
           ventilation_state
         ],
         power_unit_report_stat_attributes: %i[
-          equipment_power
           start_key_on_auto
           rpm
           frequency
@@ -100,6 +99,7 @@ class ReportsController < ApplicationController
           operating_time
           failed_starts
           oil_pressure
+          oil_pressure_unit
           fuel_level
           coolant_level
           oil_level

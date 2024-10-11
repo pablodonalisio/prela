@@ -12,7 +12,9 @@
   <h2>Sala</h2>
   <%= f.simple_fields_for :room_report_stat do |room_stats_form| %>
     <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
-    <%= room_stats_form.input :air_conditioning, label: "Funcionamiento de los aires acondicionados", collection: RoomReportStat::AIR_CONDITIONING_OPTIONS %>
+    <% unless location_equipment.equipment.power_unit?%>
+      <%= room_stats_form.input :air_conditioning, label: "Funcionamiento de los aires acondicionados", collection: RoomReportStat::AIR_CONDITIONING_OPTIONS %>
+    <% end %>
   <% end %>
 
   <br>

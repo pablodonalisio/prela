@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_31_150656) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_01_180905) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -119,9 +119,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_31_150656) do
 
   create_table "power_unit_report_stats", force: :cascade do |t|
     t.bigint "report_id", null: false
-    t.string "equipment_power"
-    t.boolean "general_disconnector"
-    t.boolean "emergency_stop_position"
+    t.string "general_disconnector"
+    t.string "emergency_stop_position"
     t.string "start_key_on_auto"
     t.integer "rpm"
     t.float "frequency"
@@ -135,9 +134,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_31_150656) do
     t.integer "operating_time"
     t.integer "failed_starts"
     t.float "oil_pressure"
-    t.integer "fuel_level"
-    t.integer "coolant_level"
-    t.integer "oil_level"
+    t.string "fuel_level"
+    t.string "coolant_level"
+    t.string "oil_level"
     t.integer "testing_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -148,6 +147,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_31_150656) do
     t.string "liquids_leaks"
     t.string "connections_condition_and_battery_fixation"
     t.string "cable_and_electrical_connections"
+    t.string "oil_pressure_unit"
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
   end
 

@@ -1,10 +1,9 @@
 FactoryBot.define do
   factory :power_unit_report_stat do
     report
-    equipment_power { "OK" }
-    general_disconnector { true }
-    emergency_stop_position { false }
-    start_key_on_auto { "Auto" }
+    general_disconnector { "ON" }
+    emergency_stop_position { "OFF" }
+    start_key_on_auto { "ON" }
     rpm { 1500 }
     frequency { 50.0 }
     battery_charge_control { 26.0 }
@@ -17,9 +16,10 @@ FactoryBot.define do
     operating_time { 1 }
     failed_starts { 0 }
     oil_pressure { 4.0 }
+    oil_pressure_unit { "bar" }
     fuel_level { 75 }
-    coolant_level { 100 }
-    oil_level { 100 }
+    coolant_level { "Bajo" }
+    oil_level { "Medio" }
     testing_time { 10 }
   end
 end

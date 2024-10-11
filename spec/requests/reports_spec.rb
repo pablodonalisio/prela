@@ -18,24 +18,33 @@ RSpec.describe "Reports", type: :request do
   let(:power_unit_report_params) do
     {
       power_unit_report_stat_attributes: {
-        equipment_power: "10",
-        start_key_on_auto: "Auto",
+        start_key_on_auto: "ON",
         rpm: 1500,
-        frequency: 50,
-        battery_charge_control: 26,
+        frequency: 50.0,
+        battery_charge_control: 26.0,
         tension_between_phases_a_b: 380,
         tension_between_phases_b_c: 380,
         tension_between_phases_c_a: 380,
-        initial_temperature: 20,
-        running_temperature: 40,
+        initial_temperature: 20.0,
+        running_temperature: 40.0,
         number_of_starts: 10,
         operating_time: 10,
         failed_starts: 0,
-        oil_pressure: 4,
-        fuel_level: 4,
-        coolant_level: 100,
-        oil_level: 100,
-        testing_time: 10
+        oil_pressure: 4.0,
+        fuel_level: "4",
+        coolant_level: "Bajo",
+        oil_level: "100",
+        testing_time: 10,
+        lamp_test: "Bien",
+        belt_condition: "Bien",
+        air_filter_condition: "Bien",
+        anti_vibration_pad_condition: "Bien",
+        liquids_leaks: "No",
+        connections_condition_and_battery_fixation: "OK",
+        cable_and_electrical_connections: "OK",
+        general_disconnector: "ON",
+        emergency_stop_position: "OFF",
+        oil_pressure_unit: "bar"
       }
     }
   end

@@ -1,10 +1,7 @@
 <%= form.simple_fields_for :power_unit_report_stat do |power_unit_stats_form| %>
-  <%= power_unit_stats_form.input :equipment_power, label: "Potencia del equipo" %>
-  <label>Seccionador general</label>
-  <%= power_unit_stats_form.input :general_disconnector, label: "ON/OFF", as: :boolean, checked_value: :true, unchecked_value: :false %>
-  <label>Posición parada de emergencia</label>
-  <%= power_unit_stats_form.input :emergency_stop_position, label: "ON/OFF" %>
-  <%= power_unit_stats_form.input :start_key_on_auto, label: "Llave encendido en posición AUTO" %>
+  <%= power_unit_stats_form.input :general_disconnector, label: "Seccionador general", collection: PowerUnitReportStat::GENERAL_DISCONNECTOR_OPTIONS %>
+  <%= power_unit_stats_form.input :emergency_stop_position, label: "Posición parada de emergencia", collection: PowerUnitReportStat::EMERGENCY_STOP_POSITION_OPTIONS %>
+  <%= power_unit_stats_form.input :start_key_on_auto, label: "Llave encendido en posición AUTO", collection: PowerUnitReportStat::START_KEY_ON_AUTO_OPTIONS %>
   <%= power_unit_stats_form.input :rpm, label: "R.P.M." %>
   <%= power_unit_stats_form.input :frequency, label: "Frecuencia (Hz)" %>
   <%= power_unit_stats_form.input :battery_charge_control, label: "Control de carga de baterías (V)" %>
@@ -16,10 +13,13 @@
   <%= power_unit_stats_form.input :number_of_starts, label: "Número de arranques" %>
   <%= power_unit_stats_form.input :operating_time, label: "Tiempo de funcionamiento (Hs)" %>
   <%= power_unit_stats_form.input :failed_starts, label: "Arranques fallidos" %>
-  <%= power_unit_stats_form.input :oil_pressure, label: "Presión de aceite" %>
+  <div class="d-flex">
+    <%= power_unit_stats_form.input :oil_pressure, label: "Presión de aceite" %>
+    <%= power_unit_stats_form.input :oil_pressure_unit, label: "Unidad", collection: PowerUnitReportStat::OIL_PRESSURE_UNIT_OPTIONS %>
+  </div>
   <%= power_unit_stats_form.input :fuel_level, label: "Nivel de combustible" %>
-  <%= power_unit_stats_form.input :coolant_level, label: "Nivel de refrigerante" %>
-  <%= power_unit_stats_form.input :oil_level, label: "Nivel de aceite" %>
+  <%= power_unit_stats_form.input :coolant_level, label: "Nivel de refrigerante", collection: PowerUnitReportStat::COOLANT_LEVEL_OPTIONS %>
+  <%= power_unit_stats_form.input :oil_level, label: "Nivel de aceite", collection: PowerUnitReportStat::OIL_LEVEL_OPTIONS %>
   <%= power_unit_stats_form.input :testing_time, label: "Tiempo de prueba (Min.)" %>
   <%= power_unit_stats_form.input :lamp_test, collection: PowerUnitReportStat::LAMP_TEST_OPTIONS, label: "Test de lámparas" %>
   <%= power_unit_stats_form.input :belt_condition, collection: PowerUnitReportStat::BELT_CONDITION_OPTIONS, label: "Estado y tensión de correas" %>
