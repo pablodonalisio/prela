@@ -1,7 +1,7 @@
 class PowerUnitReportStat < ApplicationRecord
   GENERAL_DISCONNECTOR_OPTIONS = ["ON", "OFF"]
   EMERGENCY_STOP_POSITION_OPTIONS = ["ON", "OFF"]
-  START_KEY_ON_AUTO_OPTIONS = ["ON", "OFF", "Trip"]
+  START_KEY_ON_AUTO_OPTIONS = ["Auto", "Manual"]
   LAMP_TEST_OPTIONS = ["Bien", "Mal"]
   BELT_CONDITION_OPTIONS = ["Sobretensada", "Bien", "Floja", "Reemplazar"]
   AIR_FILTER_CONDITION_OPTIONS = ["Bien", "Reemplazar"]

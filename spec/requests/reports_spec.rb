@@ -18,7 +18,7 @@ RSpec.describe "Reports", type: :request do
   let(:power_unit_report_params) do
     {
       power_unit_report_stat_attributes: {
-        start_key_on_auto: "ON",
+        start_key_on_auto: "Auto",
         rpm: 1500,
         frequency: 50.0,
         battery_charge_control: 26.0,
