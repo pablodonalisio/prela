@@ -14,19 +14,19 @@ class Reports::Equipment::PowerUnitStats < Reports::Content
       [{content: "Seccionador general"}, {content: power_unit_report_stat.general_disconnector}, {content: "ON"}],
       [{content: "Posición parada de emergencia"}, {content: power_unit_report_stat.emergency_stop_position}, {content: "OFF"}],
       [{content: "Llave encendido en posición AUTO"}, {content: power_unit_report_stat.start_key_on_auto.to_s}, {content: ""}],
-      [{content: "R.P.M."}, {content: "#{power_unit_report_stat.rpm} rpm"}, {content: "~1500 rpm"}],
-      [{content: "Frecuencia (Hz)"}, {content: "#{power_unit_report_stat.frequency} Hz"}, {content: "~50 Hz"}],
+      [{content: "R.P.M."}, {content: data_present?(power_unit_report_stat.rpm, "rpm")}, {content: "~1500 rpm"}],
+      [{content: "Frecuencia (Hz)"}, {content: data_present?(power_unit_report_stat.frequency, "Hz")}, {content: "~50 Hz"}],
       [{content: "Control de carga de baterías (V)"}, {content: "#{power_unit_report_stat.battery_charge_control} Vcc"}, {content: ">26 Vcc"}],
-      [{content: "Tensión entre fases A-B (V)"}, {content: "#{power_unit_report_stat.tension_between_phases_a_b} V"}, {content: "~380 V"}],
-      [{content: "Tensión entre fases B-C (V)"}, {content: "#{power_unit_report_stat.tension_between_phases_b_c} V"}, {content: "~380 V"}],
-      [{content: "Tensión entre fases C-A (V)"}, {content: "#{power_unit_report_stat.tension_between_phases_c_a} V"}, {content: "~380 V"}],
-      [{content: "Temperatura inicial (°C)"}, {content: "#{power_unit_report_stat.initial_temperature}°C"}, {content: ">20°C"}],
-      [{content: "Temperatura en marcha (°C)"}, {content: "#{power_unit_report_stat.running_temperature}°C"}, {content: ">40°C"}],
-      [{content: "Número de arranques"}, {content: power_unit_report_stat.number_of_starts.to_s}, {content: "-"}],
-      [{content: "Tiempo de funcionamiento (Hs)"}, {content: power_unit_report_stat.operating_time.to_s}, {content: "HS"}],
-      [{content: "Arranques fallidos"}, {content: power_unit_report_stat.failed_starts.to_s}, {content: "-"}],
+      [{content: "Tensión entre fases A-B (V)"}, {content: data_present?(power_unit_report_stat.tension_between_phases_a_b, "V")}, {content: "~380 V"}],
+      [{content: "Tensión entre fases B-C (V)"}, {content: data_present?(power_unit_report_stat.tension_between_phases_b_c, "V")}, {content: "~380 V"}],
+      [{content: "Tensión entre fases C-A (V)"}, {content: data_present?(power_unit_report_stat.tension_between_phases_c_a, "V")}, {content: "~380 V"}],
+      [{content: "Temperatura inicial (°C)"}, {content: data_present?(power_unit_report_stat.initial_temperature, "°C")}, {content: ">20°C"}],
+      [{content: "Temperatura en marcha (°C)"}, {content: data_present?(power_unit_report_stat.running_temperature, "°C")}, {content: ">40°C"}],
+      [{content: "Número de arranques"}, {content: data_present?(power_unit_report_stat.number_of_starts)}, {content: "-"}],
+      [{content: "Tiempo de funcionamiento (Hs)"}, {content: data_present?(power_unit_report_stat.operating_time)}, {content: "HS"}],
+      [{content: "Arranques fallidos"}, {content: data_present?(power_unit_report_stat.failed_starts)}, {content: "-"}],
       [{content: "Presión de aceite"}, {content: "#{power_unit_report_stat.oil_pressure} #{power_unit_report_stat.oil_pressure_unit}"}, {content: ">4 bar"}],
-      [{content: "Nivel de combustible"}, {content: power_unit_report_stat.fuel_level.to_s}, {content: ">3/4"}],
+      [{content: "Nivel de combustible"}, {content: data_present?(power_unit_report_stat.fuel_level)}, {content: ">3/4"}],
       [{content: "Nivel de refrigerante"}, {content: power_unit_report_stat.coolant_level.to_s}, {content: "Full"}],
       [{content: "Nivel de aceite"}, {content: power_unit_report_stat.oil_level.to_s}, {content: "Full"}],
       [{content: "Tiempo de prueba (Min.)"}, {content: "#{power_unit_report_stat.testing_time}'"}, {content: ">10'"}],
@@ -47,5 +47,9 @@ class Reports::Equipment::PowerUnitStats < Reports::Content
 
   def power_unit_report_stat
     @report.power_unit_report_stat
+  end
+
+  def data_present?(attribute, suffix = "")
+    attribute.to_i.eql?(-1) ? "Sin datos" : "#{attribute} #{suffix}"
   end
 end

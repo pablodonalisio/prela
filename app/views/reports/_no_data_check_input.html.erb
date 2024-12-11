@@ -1,0 +1,8 @@
+
+<div class="form-group">
+  <%= power_unit_stats_form.input attribute, label: input_label %>
+  <div class="form-check mb-4">
+    <%= check_box_tag "disable_#{attribute}", "1", false, class: "form-check-input", data: { action: "power-unit-input#toggleDisabled", power_unit_input_target: "checkbox", input_id: "report_power_unit_report_stat_attributes_#{attribute}" } %>
+    <%= label_tag "disable_#{attribute}", "Sin datos", class: "form-check-label" %>
+  </div>
+</div>
