@@ -8,7 +8,7 @@ class Reports::PdfGenerator < PdfGenerator
     add_datetime
     add_equipment_stats
     add_room_stats
-    add_observations
+    add_observations if report.observations.present?
     add_images
     add_footer
     super
@@ -42,7 +42,7 @@ class Reports::PdfGenerator < PdfGenerator
     @pdf.move_down 10
     @pdf.table([
       [{content: "OBSERVACIONES", colspan: 3, background_color: PRIMARY_COLOR, font_style: :bold}],
-      [{content: report.observations, colspan: 3, height: 70, background_color: "f3f3f3"}]
+      [{content: report.observations, colspan: 3, background_color: "f3f3f3"}]
     ], width: @pdf.bounds.width) do
       cells.borders = []
       cells.width = @pdf.bounds.width / 3
