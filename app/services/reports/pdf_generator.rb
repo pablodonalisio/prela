@@ -9,6 +9,7 @@ class Reports::PdfGenerator < PdfGenerator
     add_equipment_stats
     add_room_stats
     add_observations if report.observations.present?
+    add_equipment_service_dates
     add_images
     add_footer
     super
@@ -47,6 +48,10 @@ class Reports::PdfGenerator < PdfGenerator
       cells.borders = []
       cells.width = @pdf.bounds.width / 3
     end
+  end
+
+  def add_equipment_service_dates
+    @pdf = Reports::Equipment::ServiceDateStats.new(report, @pdf).render
   end
 
   def add_images
