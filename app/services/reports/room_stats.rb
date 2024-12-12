@@ -32,7 +32,9 @@ class Reports::RoomStats < Reports::Content
         [{content: "SALA", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
         [{}, {content: "Valor Observado"}, {content: "Óptimo"}],
         [{content: "Estado de la sala"}, {content: room_report_stat.room_status}, {content: "Correcto"}],
-        [{content: "Funcionamiento de los aires acondicionados"}, {content: room_report_stat.air_conditioning}, {content: "Correcto"}]
+        [{content: "Funcionamiento de los aires acondicionados"}, {content: room_report_stat.air_conditioning}, {content: "Correcto"}],
+        [{content: "Temperatura"}, {content: "#{room_report_stat.temperature} °C"}, {content: ""}],
+        [{content: "Humedad"}, {content: "#{room_report_stat.humidity} %"}, {content: ""}]
       ]
     end
   end

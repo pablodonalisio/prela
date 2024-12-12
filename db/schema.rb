@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_01_180905) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_12_185446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -166,6 +166,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_01_180905) do
     t.string "air_conditioning"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "temperature"
+    t.float "humidity"
     t.index ["report_id"], name: "index_room_report_stats_on_report_id"
   end
 

@@ -9,7 +9,9 @@ RSpec.describe "Reports", type: :request do
       date: Date.today,
       room_report_stat_attributes: {
         room_status: "Correcto",
-        air_conditioning: "Correcto"
+        air_conditioning: "Correcto",
+        temperature: 25.5,
+        humidity: 50.5
       },
       images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
     }.merge(equipment_report_params)}
