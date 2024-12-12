@@ -69,12 +69,14 @@
             <div class="col-lg-6">
               <% %i[last_service next_service last_battery_change next_battery_change].each do |attribute| %>
                 <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                            date: location_equipment.send(attribute) %>
+                                            date: location_equipment.send(attribute),
+                                            location_equipment: location_equipment %>
               <% end %>
               <% if location_equipment.equipment.power_unit? %>
                 <% %i[last_belt_change next_belt_change].each do |attribute| %>
                   <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                              date: location_equipment.send(attribute) %>
+                                              date: location_equipment.send(attribute),
+                                              location_equipment: location_equipment %>
                 <% end %>
               <% end %>
             </div>
