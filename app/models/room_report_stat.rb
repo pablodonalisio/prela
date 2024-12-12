@@ -1,6 +1,6 @@
 class RoomReportStat < ApplicationRecord
   ROOM_STATUS_OPTIONS = ["Correcto", "Incorrecto"]
-  AIR_CONDITIONING_OPTIONS = ["Correcto", "Incorrecto", "Falta refrigeración"]
+  AIR_CONDITIONING_OPTIONS = ["Correcto", "Incorrecto", "Falta refrigeración", "Sala sin aire"]
   belongs_to :report
 
   validates :room_status, presence: true
