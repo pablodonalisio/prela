@@ -37,6 +37,7 @@ es:
           prela_on_service: "PRELA en service"
           prela_to_check: "PRELA para revisar"
           prela_to_deliver: "PRELA para entregar"
+          inaccessible: "Inaccesible"
       battery:
         model: "Modelo"
         voltage: "Voltaje"
