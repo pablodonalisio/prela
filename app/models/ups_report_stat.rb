@@ -1,5 +1,5 @@
 class UpsReportStat < ApplicationRecord
-  OPERATING_MODE_OPTIONS = ["Normal", "Bypass", "En Batería", "Fuera de servicio", "Apagado"]
+  OPERATING_MODE_OPTIONS = ["Normal", "Bypass", "En Batería", "Fuera de servicio", "Apagado", "Con alarma", "Sin acceso"]
   PAT_STATE_OPTIONS = ["Correcto", "Incorrecto", "No tiene"]
   VENTILATION_STATE_OPTIONS = ["Bien", "Mal", "No tiene"]
   ALARMS_PRESENCE_OPTIONS = ["Si", "No"]
