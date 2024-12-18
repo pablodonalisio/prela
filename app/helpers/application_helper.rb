@@ -24,6 +24,7 @@ module ApplicationHelper
 
   def sidebar_links
     [
+      {text: "Home", path: root_path, icon: "fa-house"},
       {text: "Activos", path: location_equipments_path, icon: "fa-wrench"},
       {text: "Clientes", path: clients_path, icon: "fa-building"},
       {text: "Equipos", path: equipment_index_path, icon: "fa-bolt"},
