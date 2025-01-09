@@ -24,5 +24,6 @@ Rails.application.routes.draw do
   resources :batteries, except: %i[index]
   resources :supplies, only: [:index]
   resources :users
-  resources :links
+  resources :links, only: [:new, :create, :edit, :update, :destroy]
+
 end

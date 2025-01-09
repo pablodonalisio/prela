@@ -1,48 +1,35 @@
-<h1 class="mb-4">Panel de Administrador</h1>
+<h1>Enlaces de Interés</h1>
 
-<%= turbo_frame_tag :links_list do %>
-  <h2>Enlaces de Interés</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Título</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @links.each do |link| %>
-        <%= content_tag :tr, id: dom_id(link) do %>
-          <td><%= link.title %></td>
-          <td class="d-flex justify-content-evenly align-items-center">
-            <%= link_to link.url, target: "_blank", class: "btn btn-sm btn-primary" do %>
-              <i class="fas fa-eye"></i> Abrir
+<%= link_to "Nueva URL", new_link_path, class: "btn btn-success" %>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @links.each do |link| %>
+      <%= content_tag :tr, id: dom_id(link) do %>
+        <td><%= link.title %></td>
+        <td class="d-flex justify-content-evenly align-items-center">
+          <!-- Ver enlace -->
+          <%= link_to link.url, target: "_blank", class: "btn btn-sm btn-primary" do %>
+            <i class="fas fa-eye"></i> 
+          <% end %>
+          <!-- Editar enlace (admin only) -->
+          <% if current_user.admin? %>
+            <%= link_to edit_link_path(link), class: "btn btn-sm btn-warning ms-2", data: { turbo_frame: "remote_modal" } do %>
+              <i class="fas fa-edit"></i> 
             <% end %>
-            <% if current_user.admin? %>
-              <%= link_to edit_link_path(link), class: "ms-2 btn btn-sm btn-warning" do %>
-                <i class="fas fa-edit"></i> Editar
-              <% end %>
-              <%= button_to link_path(link), class: "btn btn-sm btn-danger ms-2", method: :delete, form: { data: {turbo_confirm: "¿Estás seguro de querer eliminar este enlace?"} } do %>
-                <i class="fas fa-trash"></i> Eliminar
-              <% end %>
+            <!-- Eliminar enlace -->
+            <%= button_to link_path(link), class: "btn btn-sm btn-danger ms-2", method: :delete, form: { data: { turbo_confirm: "¿Estás seguro?" } } do %>
+              <i class="fas fa-trash"></i> 
             <% end %>
-          </td>
-        <% end %>
+          <% end %>
+        </td>
       <% end %>
-    </tbody>
-  </table>
-<% end %>
+    <% end %>
+  </tbody>
+</table>
 
-<%= turbo_frame_tag :new_link do %>
-  <h2>Agregar nuevo enlace</h2>
-  <%= form_with model: Link.new, local: true do |form| %>
-    <div class="mb-3">
-      <%= form.label :title, "Título del enlace", class: "form-label" %>
-      <%= form.text_field :title, class: "form-control" %>
-    </div>
-    <div class="mb-3">
-      <%= form.label :url, "URL", class: "form-label" %>
-      <%= form.text_field :url, class: "form-control" %>
-    </div>
-    <%= form.submit "Agregar Enlace", class: "btn btn-primary" %>
-  <% end %>
-<% end %>

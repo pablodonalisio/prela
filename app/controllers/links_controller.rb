@@ -6,14 +6,19 @@ class LinksController < ApplicationController
           @links = Link.all
         end
       
+        def new
+          @link = Link.new
+        end
+        
         def create
           @link = Link.new(link_params)
           if @link.save
             redirect_to root_path, notice: "Enlace creado con éxito."
           else
-            redirect_to root_path, alert: "Error al crear el enlace."
+            render :new, status: :unprocessable_entity
           end
         end
+        
       
         def edit
         end
