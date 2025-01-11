@@ -1,11 +1,5 @@
-<%= form_with model: @link, local: true do |form| %>
-  <div class="mb-3">
-    <%= form.label :title, "Título del enlace", class: "form-label" %>
-    <%= form.text_field :title, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :url, "URL", class: "form-label" %>
-    <%= form.text_field :url, class: "form-control" %>
-  </div>
-  <%= form.submit "Guardar Enlace", class: "btn btn-primary" %>
+<%= simple_form_for link do |f| %>
+  <%= f.input :title, label: "Título del enlace" %>
+  <%= f.input :url, label: "URL" %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
