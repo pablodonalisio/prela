@@ -2,7 +2,7 @@
   <%= render "layouts/flash"%>
 <% end %>
 
-<%= turbo_stream.prepend "links" do %>
-  <%= render "report_table_row", report: @report, location_equipment: @location_equipment %>
+<%= turbo_stream.append "links" do %>
+  <%= render "links_table_row", link: @link %>
 <% end %>
-<%= turbo_stream.remove "empty_reports" %>
+<%= turbo_stream.remove "empty_links" %>

@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
   <div class="col-md-6">
-    <%= render "links/links" %>
+    <%= render "links/links", links: @links %>
   </div>
 <% end %>
 
