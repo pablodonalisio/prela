@@ -11,8 +11,8 @@ class LinksController < ApplicationController
     @link = Link.new(link_params)
     if @link.save
       respond_to do |format|
-        format.html { redirect_to home_path, notice: "El enlace se creo correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El enlace se creo correctamente." }
+        format.html { redirect_to home_path, notice: "El enlace se creó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El enlace se creó correctamente." }
       end
     else
       render :new, status: :unprocessable_entity, alert: @link.errors.full_messages.join
