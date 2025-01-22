@@ -1,7 +1,7 @@
 
 class LinksController < ApplicationController
   before_action :set_link, only: %i[edit update destroy]
-      
+  before_action :set_links, only: %i[destroy update]
 
   def new
     @link = Link.new
@@ -25,9 +25,12 @@ class LinksController < ApplicationController
 
   def update
     if @link.update(link_params)
-      redirect_to root_path, notice: "Enlace actualizado con éxito."
+      respond_to do |format|
+        format.html { redirect_to home_path, notice: "El enlace se actualizó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El enlace se actualizó correctamente." }
+      end
     else
-      redirect_to root_path, alert: "Error al actualizar el enlace."
+      render :update, status: :unprocessable_entity, alert: @link.errors.full_messages.join
     end
   end
 
@@ -40,6 +43,10 @@ class LinksController < ApplicationController
 
   def set_link
     @link = Link.find(params[:id])
+  end
+
+  def set_links
+    @links = Link.all
   end
 
   def link_params
