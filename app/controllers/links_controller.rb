@@ -36,7 +36,10 @@ class LinksController < ApplicationController
 
   def destroy
     @link.destroy
-    redirect_to root_path, notice: "Enlace eliminado con éxito."
+    respond_to do |format|
+      format.html { redirect_to home_path, notice: "Enlace eliminado con éxito." }
+      format.turbo_stream { flash.now[:notice] = "Enlace eliminado con éxito." }
+    end
   end
 
   private
