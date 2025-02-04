@@ -9,4 +9,8 @@ class User < ApplicationRecord
   enum role: {client: 0, admin: 1}
 
   validates :role, presence: true
+
+  def location_equipments
+    admin? ? LocationEquipment.all : client.location_equipments
+  end
 end

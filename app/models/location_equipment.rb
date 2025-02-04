@@ -12,6 +12,7 @@ class LocationEquipment < ApplicationRecord
   scope :by_location_ids, ->(location_id) { where(location_id:) }
   scope :by_status, ->(status) { where(status:) }
   scope :by_kind, ->(kind) { joins(:equipment).where(equipment: {kind:}) }
+  scope :ups_with_overdue_maintenance, -> { where("next_service < ?", Date.today).or(where("next_battery_change < ?", Date.today)) }
 
   enum status: {active: 0, out_of_service: 1, prela_to_check: 2, prela_to_deliver: 3, prela_on_service: 4, inaccessible: 5}
 
