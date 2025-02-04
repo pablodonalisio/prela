@@ -25,5 +25,4 @@ Rails.application.routes.draw do
   resources :supplies, only: [:index]
   resources :users
   resources :links, only: [:new, :create, :edit, :update, :destroy]
-
 end

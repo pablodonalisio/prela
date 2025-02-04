@@ -1,4 +1,3 @@
-
 class LinksController < ApplicationController
   before_action :set_link, only: %i[edit update destroy]
   before_action :set_links, only: %i[destroy update]
@@ -6,7 +5,7 @@ class LinksController < ApplicationController
   def new
     @link = Link.new
   end
-  
+
   def create
     @link = Link.new(link_params)
     if @link.save
@@ -18,7 +17,6 @@ class LinksController < ApplicationController
       render :new, status: :unprocessable_entity, alert: @link.errors.full_messages.join
     end
   end
-  
 
   def edit
   end
@@ -56,6 +54,3 @@ class LinksController < ApplicationController
     params.require(:link).permit(:title, :url)
   end
 end
-      
-
-
