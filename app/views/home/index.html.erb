@@ -1,6 +1,8 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <div class="col-md-6">
-    <%= render "links/links", links: @links %>
-  </div>
+  <% if current_user.admin? %>
+    <div class="col-md-6">
+      <%= render "links/links", links: @links %>
+    </div>
+  <% end %>
 <% end %>
 
