@@ -1,0 +1,5 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.replace "links", partial: "links_table", locals: { links: @links } %>

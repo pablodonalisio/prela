@@ -24,10 +24,11 @@ module ApplicationHelper
 
   def sidebar_links
     [
-      {text: "Activos", path: location_equipments_path, icon: "fa-wrench"},
-      {text: "Clientes", path: clients_path, icon: "fa-building"},
-      {text: "Equipos", path: equipment_index_path, icon: "fa-bolt"},
-      {text: "Insumos", path: supplies_path, icon: "fa-car-battery"}
+      {text: "Home", path: root_path, icon: "fa-house", admin: false},
+      {text: "Activos", path: location_equipments_path, icon: "fa-wrench", admin: false},
+      {text: "Clientes", path: clients_path, icon: "fa-building", admin: true},
+      {text: "Equipos", path: equipment_index_path, icon: "fa-bolt", admin: true},
+      {text: "Insumos", path: supplies_path, icon: "fa-car-battery", admin: true}
     ]
   end
 

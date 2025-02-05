@@ -1,7 +1,6 @@
 class HomeController < ApplicationController
   def index
-    redirect_to location_equipments_path
-
     authorize :home, :index?
+    @links = Link.all if current_user.admin?
   end
 end

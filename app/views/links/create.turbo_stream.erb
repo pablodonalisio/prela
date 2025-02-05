@@ -1,0 +1,8 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.append "links" do %>
+  <%= render "links_table_row", link: @link %>
+<% end %>
+<%= turbo_stream.remove "empty_links" %>

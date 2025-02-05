@@ -1,0 +1,9 @@
+<div class="col-12">
+  <h1>Nuevo Enlace</h1>
+
+  <%= turbo_frame_tag @link do %>
+    <%= render "shared/remote_modal", title: "Nuevo Enlace" do %>
+      <%= render "form", link: @link %>
+    <% end %>
+  <% end %>
+</div>
