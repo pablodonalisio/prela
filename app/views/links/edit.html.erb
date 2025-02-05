@@ -1,0 +1,7 @@
+<h1>Editar enlace</h1>
+
+<%= turbo_frame_tag @link do %>
+  <%= render "shared/remote_modal", title: "Editar enlace" do %>
+    <%= render "form", link: @link %>
+  <% end %>
+<% end %>

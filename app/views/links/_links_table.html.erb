@@ -1,0 +1,9 @@
+<tbody id="links">
+  <% if links.empty? %>
+    <tr id="empty_links">
+      <td colspan="2" class="text-center">No hay links</td>
+    </tr>
+  <% else %>
+    <%= render partial: "links/links_table_row", collection: links, as: :link %>
+  <% end %>
+</tbody>
