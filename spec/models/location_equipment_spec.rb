@@ -29,7 +29,7 @@ RSpec.describe LocationEquipment, type: :model do
     end
   end
 
-  context "scopes" do
+  context "filter scopes" do
     let!(:location_equipment1) { create(:location_equipment, status: LocationEquipment.statuses.keys[0]) }
     let!(:location_equipment2) { create(:location_equipment, status: LocationEquipment.statuses.keys[1]) }
 
@@ -43,6 +43,32 @@ RSpec.describe LocationEquipment, type: :model do
 
     it "returns location equipments by status" do
       expect(LocationEquipment.by_status(LocationEquipment.statuses.keys[0]).count).to eq(1)
+    end
+  end
+
+  context "maintenance scopes" do
+    let(:ups) { create(:equipment, kind: :ups) }
+    let(:power_unit) { create(:equipment, kind: :power_unit) }
+
+    let!(:ups_with_overdue_service) { create(:location_equipment, next_service: Date.yesterday, equipment: ups) }
+    let!(:ups_with_overdue_battery_change) { create(:location_equipment, next_battery_change: Date.yesterday, equipment: ups) }
+    let!(:ups_without_overdue_maintenance) { create(:location_equipment, next_service: Date.tomorrow, next_battery_change: Date.tomorrow, equipment: ups) }
+
+    let!(:power_unit_with_overdue_service) { create(:location_equipment, next_service: Date.yesterday, equipment: power_unit) }
+    let!(:power_unit_with_overdue_battery_change) { create(:location_equipment, next_battery_change: Date.yesterday, equipment: power_unit) }
+    let!(:power_unit_without_overdue_maintenance) { create(:location_equipment, next_service: Date.tomorrow, next_battery_change: Date.tomorrow, equipment: power_unit) }
+
+    let(:ups_with_overdue_maintenance) { LocationEquipment.ups_with_overdue_maintenance }
+    let(:power_units_with_overdue_maintenance) { LocationEquipment.power_units_with_overdue_maintenance }
+
+    it "return ups with overdue maintenance" do
+      expect(ups_with_overdue_maintenance.count).to eq(2)
+      expect(ups_with_overdue_maintenance).to include(ups_with_overdue_service, ups_with_overdue_battery_change)
+    end
+
+    it "return power units with overdue maintenance" do
+      expect(power_units_with_overdue_maintenance.count).to eq(2)
+      expect(power_units_with_overdue_maintenance).to include(power_unit_with_overdue_service, power_unit_with_overdue_battery_change)
     end
   end
 end
