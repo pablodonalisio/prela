@@ -1,9 +1,13 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <% if current_user.admin? %>
-    <div class="col-md-6">
-      <%= render "links/links", links: @links %>
+  <div class="row justify-content-around mt-4 gy-5">
+    <div class="col-md-10">
+      <%= render "location_equipments/control_panel", location_equipments: @location_equipments %>
     </div>
-  <% end %>
-  <%= render "control_panel"%>
+    <% if current_user.admin? %>
+      <div class="col-md-10">
+        <%= render "links/links", links: @links %>
+      </div>
+    <% end %>
+  </div>
 <% end %>
 
