@@ -4,7 +4,7 @@
     <% sidebar_links.each do |link| %>
       <% next if link[:admin] && !current_user.admin?%>
       <%= link_to link[:path], class: "nav-link text-white #{active_class(link[:path])} d-md-flex align-items-center" do %>
-        <i class="fa-solid <%= link[:icon] %> mx-3"></i>
+        <i class="fa-solid <%= link[:icon] %> mx-2"></i>
         <p class="m-0 fs-6 fs-sm-6"><%= link[:text] %></p>
       <% end %>
     <% end %>
