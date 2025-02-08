@@ -1,0 +1,5 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.replace "activities", partial: "activities_table", locals: { activities: @activities, location_equipment: @location_equipment } %>

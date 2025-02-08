@@ -1,0 +1,17 @@
+<%= content_tag :tr, id: dom_id(activity) do %>
+  <td><%= activity.description %></td>
+  <td><%= activity.date.strftime("%d/%m/%Y") %></td>
+  <td class="d-flex justify-content-evenly align-items-center">
+    <%= link_to location_equipment_activity_path(location_equipment, activity), data: { turbo_frame: "remote_modal" } do %>
+      <i class="fas fa-eye"></i>
+    <% end %>
+    <% if current_user.admin? %>
+      <%= link_to edit_location_equipment_activity_path(location_equipment, activity), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
+        <i class="fas fa-edit"></i>
+      <% end %>
+      <%= button_to location_equipment_activity_path(location_equipment, activity), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
+        <i class="fas fa-trash text-danger"></i>
+      <% end %>
+    <% end %>
+  </td>
+<% end %>

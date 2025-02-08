@@ -1,0 +1,8 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.prepend "activities" do %>
+  <%= render "activity_table_row", activity: @activity, location_equipment: @location_equipment %>
+<% end %>
+<%= turbo_stream.remove "empty_activitiess" %>

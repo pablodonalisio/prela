@@ -1,0 +1,7 @@
+<h1>Nueva Actividad</h1>
+
+<%= turbo_frame_tag @activity do %>
+  <%= render "shared/remote_modal", title: "Nueva Actividad" do %>
+    <%= render "form", activity: @activity, location_equipment: @location_equipment %>
+  <% end %>
+<% end %>
