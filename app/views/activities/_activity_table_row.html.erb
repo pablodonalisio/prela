@@ -2,9 +2,11 @@
   <td class="align-middle"><%= activity.description %></td>
   <td class="align-middle"><%= activity.date.strftime("%d/%m/%Y") %></td>
   <td class="align-middle">
-    <div class="d-flex justify-content-evenly align-items-center">
-      <%= link_to location_equipment_activity_path(location_equipment, activity), data: { turbo_frame: "remote_modal" } do %>
-        <i class="fas fa-eye"></i>
+    <div class="d-flex justify-content-center align-items-center">
+      <% if activity.document.attached? %>
+        <%= link_to location_equipment_activity_path(location_equipment, activity), data: { turbo_frame: "remote_modal" } do %>
+          <i class="fa fa-file" aria-hidden="true"></i>
+        <% end %>
       <% end %>
       <% if current_user.admin? %>
         <%= link_to edit_location_equipment_activity_path(location_equipment, activity), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
