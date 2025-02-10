@@ -85,7 +85,7 @@
       </div>
       <div class="col-12 p-3">
         <div class="row gx-5">
-          <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-4">
+          <div class="col-12 col-xl-6 col-xxl-5">
             <div class="col">
               <%= render "shared/content_header", title: "Informes" do %>
                 <% if current_user.admin? %>
@@ -97,8 +97,20 @@
             </div>
           </div>
 
-          <% if current_user.admin? %>
+          <div class="col-12 col-lg-6 col-xxl-5">
             <div class="col">
+              <%= render "shared/content_header", title: "Actividades" do %>
+                <% if current_user.admin? %>
+                  <%= render "shared/button_link", text: "Nuevo Actividad",
+                                                   path: new_location_equipment_activity_path(@location_equipment) %>
+                <% end %>
+              <% end %>
+              <%= render "activities/activities", activities: @location_equipment.activities.order(date: :desc), location_equipment: @location_equipment %>
+            </div>
+          </div>
+
+          <% if current_user.admin? %>
+            <div class="col-12">
               <%= render "shared/content_header", title: "Insumos" %>
               <div class="row">
                 <div class="w-auto">

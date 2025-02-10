@@ -1,0 +1,7 @@
+<%= turbo_frame_tag activity do %>
+  <% if activity.document.attached? %>
+    <%= tag.iframe src: rails_blob_path(activity.document, disposition: "inline"), width: "100%", height: "800", style: "border:0" %>
+  <% else %>
+    <p>No hay un documento adjunto a esta actividad.</p>
+  <% end %>
+<% end %>

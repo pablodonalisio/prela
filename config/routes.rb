@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   end
   resources :location_equipments do
     resources :reports
+    resources :activities
   end
   resources :equipment_supplies
   resources :equipment

@@ -1,0 +1,18 @@
+<%= simple_form_for [location_equipment, activity] do |f| %>
+  <%= f.input :date, as: :datetime, label: "Fecha", value: activity.date || Time.now.in_time_zone, end_year: Date.today.year %>
+  <%= f.input :description, label: "Descripción" %>
+
+  <div class="my-3 border col-sm-6 p-2">
+    <h4>Documento</h4>
+    <% document = activity.new_record? ? nil : activity.document %>
+    <%= render "shared/file_upload", file: document,
+                                     form: f,
+                                     resize: [nil, 250],
+                                     file_field: :document,
+                                     new_label: "Nuevo documento",
+                                     accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
+                                     multiple: false %>
+  </div>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>
