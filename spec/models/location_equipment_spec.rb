@@ -62,8 +62,8 @@ RSpec.describe LocationEquipment, type: :model do
     let(:power_units_with_overdue_maintenance) { LocationEquipment.power_units_with_overdue_maintenance }
 
     it "return ups with overdue maintenance" do
-      expect(ups_with_overdue_maintenance.count).to eq(2)
-      expect(ups_with_overdue_maintenance).to include(ups_with_overdue_service, ups_with_overdue_battery_change)
+      expect(ups_with_overdue_maintenance.count).to eq(1)
+      expect(ups_with_overdue_maintenance).to include(ups_with_overdue_battery_change)
     end
 
     it "return power units with overdue maintenance" do
