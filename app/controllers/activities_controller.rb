@@ -2,7 +2,7 @@ class ActivitiesController < ApplicationController
   before_action :set_activities, only: %i[index destroy update]
 
   def index
-    @activities = authorize location_equipment.activities.order(created_at: :desc)
+    @activities = authorize location_equipment.activities.order(date: :desc)
   end
 
   def show
