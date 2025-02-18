@@ -1,6 +1,12 @@
 class LocationEquipment < ApplicationRecord
   include Filterable
 
+  ACTIVITY_KIND = {
+    last_battery_change: Activity::BATTERY_CHANGE,
+    last_service: Activity::SERVICE,
+    last_belt_change: Activity::BELT_CHANGE
+  }
+
   belongs_to :location
   belongs_to :equipment
   has_many :equipment_supplies, dependent: :destroy, as: :equipmentable
@@ -21,13 +27,27 @@ class LocationEquipment < ApplicationRecord
   delegate :avatar, :model, to: :equipment
   delegate :client, to: :location
 
-  def service_dates
+  def last_service_dates
     if equipment.kind.eql?("ups")
-      %i[last_battery_change next_battery_change]
+      %i[last_battery_change]
     elsif equipment.kind.eql?("power_unit")
-      %i[last_service next_service last_battery_change next_battery_change last_belt_change next_belt_change]
+      %i[last_service last_battery_change last_belt_change]
     else
       raise "No estan definidas las fechas de servicio para el equipo #{equipment.kind}"
     end
+  end
+
+  def next_service_dates
+    if equipment.kind.eql?("ups")
+      %i[next_battery_change]
+    elsif equipment.kind.eql?("power_unit")
+      %i[next_service next_battery_change next_belt_change]
+    else
+      raise "No estan definidas las fechas de servicio para el equipo #{equipment.kind}"
+    end
+  end
+
+  def last_service_date(service_kind)
+    activities.where(kind: ACTIVITY_KIND[service_kind]).order(date: :desc).first&.date&.to_date || send(service_kind) # send(service_kind) is for legacy behaviour
   end
 end

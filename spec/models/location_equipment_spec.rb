@@ -77,18 +77,45 @@ RSpec.describe LocationEquipment, type: :model do
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
-    it "returns service dates for ups" do
-      expect(ups.service_dates).to eq(%i[last_battery_change next_battery_change])
+    context "last_service_dates" do
+      it "returns last service dates for ups" do
+        expect(ups.last_service_dates).to eq(%i[last_battery_change])
+      end
+
+      it "returns last service dates for power unit" do
+        expect(power_unit.last_service_dates).to eq(%i[last_service last_battery_change last_belt_change])
+      end
+
+      it "raises an error if last service dates are not defined" do
+        allow(undefined_equipment.equipment).to receive(:kind).and_return("undefined")
+
+        expect { undefined_equipment.last_service_dates }.to raise_error(RuntimeError, "No estan definidas las fechas de servicio para el equipo undefined")
+      end
     end
 
-    it "returns service dates for power unit" do
-      expect(power_unit.service_dates).to eq(%i[last_service next_service last_battery_change next_battery_change last_belt_change next_belt_change])
+    context "next_service_dates" do
+      it "returns next service dates for ups" do
+        expect(ups.next_service_dates).to eq(%i[next_battery_change])
+      end
+
+      it "returns next service dates for power unit" do
+        expect(power_unit.next_service_dates).to eq(%i[next_service next_battery_change next_belt_change])
+      end
+
+      it "raises an error if next service dates are not defined" do
+        allow(undefined_equipment.equipment).to receive(:kind).and_return("undefined")
+
+        expect { undefined_equipment.next_service_dates }.to raise_error(RuntimeError, "No estan definidas las fechas de servicio para el equipo undefined")
+      end
     end
 
-    it "raises an error if service dates are not defined" do
-      allow(undefined_equipment.equipment).to receive(:kind).and_return("undefined")
+    context "last_service_date" do
+      let(:location_equipment) { create(:location_equipment) }
+      let!(:activity) { create(:activity, kind: Activity::BATTERY_CHANGE, date: Date.today, location_equipment: location_equipment) }
 
-      expect { undefined_equipment.service_dates }.to raise_error(RuntimeError, "No estan definidas las fechas de servicio para el equipo undefined")
+      it "returns last service date" do
+        expect(location_equipment.last_service_date(:last_battery_change).to_date).to eq(Date.today)
+      end
     end
   end
 end

@@ -1,7 +1,14 @@
 <div class="col-lg-6">
-  <% location_equipment.service_dates.each do |attribute| %>
+  <% location_equipment.last_service_dates.each do |attribute| %>
+    <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
+                                date: location_equipment.last_service_date(attribute),
+                                location_equipment: location_equipment,
+                                editable: false %>
+  <% end %>
+  <% location_equipment.next_service_dates.each do |attribute| %>
     <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
                                 date: location_equipment.send(attribute),
-                                location_equipment: location_equipment %>
+                                location_equipment: location_equipment,
+                                editable: true %>
   <% end %>
 </div>

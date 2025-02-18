@@ -7,7 +7,7 @@
         </span>
       <% end %>
   </small>
-  <% if current_user.admin? %>
+  <% if current_user.admin? && editable %>
     <%= link_to edit_location_equipment_path(location_equipment, edition: "service_dates"), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
       <i class="fas fa-edit"></i>
     <% end %>
