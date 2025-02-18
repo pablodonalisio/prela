@@ -71,4 +71,24 @@ RSpec.describe LocationEquipment, type: :model do
       expect(power_units_with_overdue_maintenance).to include(power_unit_with_overdue_service, power_unit_with_overdue_battery_change)
     end
   end
+
+  context "methods" do
+    let(:ups) { create(:location_equipment, equipment: create(:equipment, kind: :ups)) }
+    let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
+    let(:undefined_equipment) { create(:location_equipment) }
+
+    it "returns service dates for ups" do
+      expect(ups.service_dates).to eq(%i[last_battery_change next_battery_change])
+    end
+
+    it "returns service dates for power unit" do
+      expect(power_unit.service_dates).to eq(%i[last_service next_service last_battery_change next_battery_change last_belt_change next_belt_change])
+    end
+
+    it "raises an error if service dates are not defined" do
+      allow(undefined_equipment.equipment).to receive(:kind).and_return("undefined")
+
+      expect { undefined_equipment.service_dates }.to raise_error(RuntimeError, "No estan definidas las fechas de servicio para el equipo undefined")
+    end
+  end
 end

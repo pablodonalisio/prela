@@ -20,4 +20,14 @@ class LocationEquipment < ApplicationRecord
 
   delegate :avatar, :model, to: :equipment
   delegate :client, to: :location
+
+  def service_dates
+    if equipment.kind.eql?("ups")
+      %i[last_battery_change next_battery_change]
+    elsif equipment.kind.eql?("power_unit")
+      %i[last_service next_service last_battery_change next_battery_change last_belt_change next_belt_change]
+    else
+      raise "No estan definidas las fechas de servicio para el equipo #{equipment.kind}"
+    end
+  end
 end
