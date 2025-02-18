@@ -34,52 +34,8 @@
           </div>
           <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>
           <div class="row">
-            <div class="col-lg-6 mb-3">
-              <p class="card-text m-0">
-                <small class="text-body-secondary">
-                  Sala: <%= location_equipment.zone %>
-                </small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">
-                  Piso: <%= humanize_floor(location_equipment.floor) %>
-                </small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
-              </p>
-              <% if location_equipment.equipment.power_unit? %>
-                <p class="card-text m-0">
-                  <small class="text-body-secondary">Numero de serie del motor: <%= location_equipment.engine_serial_number %></small>
-                </p>
-                <p class="card-text m-0">
-                  <small class="text-body-secondary">Numero de serie del grupo electrógeno: <%= location_equipment.power_unit_serial_number %></small>
-                </p>
-              <% end %>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Código: <%= location_equipment.code %></small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Estado: <%= location_equipment.status ? t("activerecord.attributes.location_equipment.statuses.#{location_equipment.status}") : "" %></small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Detalles: <%= location_equipment.details %></small>
-              </p>
-            </div>
-            <div class="col-lg-6">
-              <% %i[last_service next_service last_battery_change next_battery_change].each do |attribute| %>
-                <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                            date: location_equipment.send(attribute),
-                                            location_equipment: location_equipment %>
-              <% end %>
-              <% if location_equipment.equipment.power_unit? %>
-                <% %i[last_belt_change next_belt_change].each do |attribute| %>
-                  <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                              date: location_equipment.send(attribute),
-                                              location_equipment: location_equipment %>
-                <% end %>
-              <% end %>
-            </div>
+            <%= render "details", location_equipment: location_equipment%>
+            <%= render "service_dates", location_equipment: location_equipment%>
           </div>
         </div>
       </div>
