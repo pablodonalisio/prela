@@ -16,9 +16,6 @@
               </h5>
 
               <%= render "shared/dropdown" do %>
-                <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
-                                                  class: "dropdown-item text-center",
-                                                  data: { turbo_frame: "remote_modal" } %></li>
                 <% if location_equipment.form_link.present? %>
                   <li><%= link_to "Formulario", location_equipment.form_link,
                                                 class: "dropdown-item text-center",
