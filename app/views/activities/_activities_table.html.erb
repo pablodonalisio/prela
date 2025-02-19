@@ -1,7 +1,7 @@
 <tbody id="activities">
   <% if activities.empty? %>
     <tr id="empty_activities">
-      <td colspan="3" class="text-center">No hay actividades</td>
+      <td colspan="4" class="text-center">No hay actividades</td>
     </tr>
   <% else %>
     <%= render partial: "activities/activity_table_row", collection: activities, as: :activity, locals: { location_equipment: location_equipment } %>
