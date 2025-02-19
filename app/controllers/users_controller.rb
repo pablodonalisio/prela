@@ -35,6 +35,7 @@ class UsersController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "Usuario actualizado exitosamente" }
       end
     else
+      @change_password = params[:user][:change_password]
       render :edit, status: :unprocessable_entity
     end
   end
