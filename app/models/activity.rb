@@ -12,6 +12,7 @@ class Activity < ApplicationRecord
 
   belongs_to :location_equipment
   has_one_attached :document
+  has_one :service_date, dependent: :destroy
 
   validates :description, :date, :kind, presence: true
 end
