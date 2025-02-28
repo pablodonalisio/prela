@@ -77,24 +77,12 @@ RSpec.describe LocationEquipment, type: :model do
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
-    context "last_service_dates" do
-      it "returns last service dates for ups" do
-        expect(ups.last_service_dates).to eq(%i[last_battery_change])
-      end
-
-      it "returns last service dates for power unit" do
-        expect(power_unit.last_service_dates).to eq(%i[last_service last_battery_change last_belt_change])
-      end
-
-      it "raises an error if last service dates are not defined" do
-        allow(undefined_equipment.equipment).to receive(:kind).and_return("undefined")
-
-        expect { undefined_equipment.last_service_dates }.to raise_error(RuntimeError, "No estan definidas las fechas de servicio para el equipo undefined")
-      end
-    end
-
     context "next_service_dates" do
-      let(:location_equipment) { create(:location_equipment) }
+      let!(:location_equipment) do
+        location_equipment = create(:location_equipment)
+        location_equipment.service_dates.destroy_all # Remove default next service dates created by after_create callback
+        location_equipment
+      end
       let!(:older_battery_change) { create(:service_date, kind: :battery_change, date: 2.years.ago, location_equipment: location_equipment) }
       let!(:older_service) { create(:service_date, kind: :service, date: 1.years.ago, location_equipment: location_equipment) }
       let!(:older_belt_change) { create(:service_date, kind: :belt_change, date: 5.years.ago, location_equipment: location_equipment) }
@@ -114,6 +102,37 @@ RSpec.describe LocationEquipment, type: :model do
 
       it "returns last service date" do
         expect(location_equipment.last_service_date(:last_battery_change).to_date).to eq(Date.today)
+      end
+    end
+
+    context "create_next_service_dates" do
+      let(:service_kinds) { %i[service battery_change belt_change] }
+
+      it "creates first next service dates after location equipment creation" do
+        freeze_time
+
+        expect(power_unit.next_service_dates.size).to eq(ServiceDate.kinds.size)
+        expect(power_unit.next_service_dates.service.first.date).to eq(1.year.from_now)
+        expect(power_unit.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
+        expect(power_unit.next_service_dates.belt_change.first.date).to eq(5.years.from_now)
+      end
+
+      it "creates new next service dates for power unit from specific time" do
+        freeze_time
+        power_unit.create_next_service_dates(Time.current, service_kinds)
+
+        expect(power_unit.next_service_dates.size).to eq(ServiceDate.kinds.size)
+        expect(power_unit.next_service_dates.service.first.date).to eq(1.year.from_now)
+        expect(power_unit.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
+        expect(power_unit.next_service_dates.belt_change.first.date).to eq(5.years.from_now)
+      end
+
+      it "creates new next service dates for specific kind of equipment" do
+        freeze_time
+        ups.create_next_service_dates(Time.current)
+
+        expect(ups.next_service_dates.size).to eq(1)
+        expect(ups.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
       end
     end
   end

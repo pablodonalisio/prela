@@ -7,6 +7,13 @@ class LocationEquipment < ApplicationRecord
     last_belt_change: Activity::BELT_CHANGE
   }
 
+  SERVICE_KINDS = {
+    "ups" => %i[battery_change],
+    "power_unit" => %i[service battery_change belt_change]
+  }
+
+  after_create :create_next_service_dates
+
   belongs_to :location
   belongs_to :equipment
   has_many :equipment_supplies, dependent: :destroy, as: :equipmentable
@@ -25,18 +32,8 @@ class LocationEquipment < ApplicationRecord
 
   enum status: {active: 0, out_of_service: 1, prela_to_check: 2, prela_to_deliver: 3, prela_on_service: 4, inaccessible: 5}
 
-  delegate :avatar, :model, to: :equipment
+  delegate :avatar, :model, :kind, to: :equipment
   delegate :client, to: :location
-
-  def last_service_dates
-    if equipment.kind.eql?("ups")
-      %i[last_battery_change]
-    elsif equipment.kind.eql?("power_unit")
-      %i[last_service last_battery_change last_belt_change]
-    else
-      raise "No estan definidas las fechas de servicio para el equipo #{equipment.kind}"
-    end
-  end
 
   def next_service_dates
     service_dates.select("DISTINCT ON (kind) *").order(:kind, date: :desc)
@@ -44,5 +41,12 @@ class LocationEquipment < ApplicationRecord
 
   def last_service_date(service_kind)
     activities.where(kind: ACTIVITY_KIND[service_kind]).order(date: :desc).first&.date&.to_date || send(service_kind) # send(service_kind) is for legacy behaviour
+  end
+
+  def create_next_service_dates(from_date = Time.current, kinds = SERVICE_KINDS[kind])
+    kinds.each do |kind|
+      next_date = from_date + send("#{kind}_interval").years
+      service_dates.create(kind: kind, date: next_date)
+    end
   end
 end
