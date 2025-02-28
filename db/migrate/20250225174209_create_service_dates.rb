@@ -10,16 +10,16 @@ class CreateServiceDates < ActiveRecord::Migration[7.1]
     end
 
     LocationEquipment.all.each do |location_equipment|
-      create_service_date(location_equipment, :service) if location_equipment.next_service.present?
-      create_service_date(location_equipment, :battery_change) if location_equipment.next_battery_change.present?
-      create_service_date(location_equipment, :belt_change) if location_equipment.next_belt_change.present?
+      create_service_date(location_equipment, :service) if location_equipment.equipment.kind.eql?("power_unit")
+      create_service_date(location_equipment, :battery_change)
+      create_service_date(location_equipment, :belt_change) if location_equipment.equipment.kind.eql?("power_unit")
     end
   end
 
   def create_service_date(location_equipment, kind)
     ServiceDate.create!(
       kind: kind,
-      date: location_equipment.send("next_#{kind}"),
+      date: location_equipment.send("next_#{kind}") || location_equipment.send("#{kind}_interval").years.from_now,
       location_equipment: location_equipment
     )
   end

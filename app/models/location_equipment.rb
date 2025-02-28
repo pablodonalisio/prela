@@ -39,13 +39,7 @@ class LocationEquipment < ApplicationRecord
   end
 
   def next_service_dates
-    if equipment.kind.eql?("ups")
-      %i[next_battery_change]
-    elsif equipment.kind.eql?("power_unit")
-      %i[next_service next_battery_change next_belt_change]
-    else
-      raise "No estan definidas las fechas de servicio para el equipo #{equipment.kind}"
-    end
+    service_dates.select("DISTINCT ON (kind) *").order(:kind, date: :desc)
   end
 
   def last_service_date(service_kind)

@@ -94,18 +94,17 @@ RSpec.describe LocationEquipment, type: :model do
     end
 
     context "next_service_dates" do
-      it "returns next service dates for ups" do
-        expect(ups.next_service_dates).to eq(%i[next_battery_change])
-      end
+      let(:location_equipment) { create(:location_equipment) }
+      let!(:older_battery_change) { create(:service_date, kind: :battery_change, date: 2.years.ago, location_equipment: location_equipment) }
+      let!(:older_service) { create(:service_date, kind: :service, date: 1.years.ago, location_equipment: location_equipment) }
+      let!(:older_belt_change) { create(:service_date, kind: :belt_change, date: 5.years.ago, location_equipment: location_equipment) }
+      let!(:next_battery_change) { create(:service_date, kind: :battery_change, date: Date.current, location_equipment: location_equipment) }
+      let!(:next_service) { create(:service_date, kind: :service, date: Date.current, location_equipment: location_equipment) }
+      let!(:next_belt_change) { create(:service_date, kind: :belt_change, date: Date.current, location_equipment: location_equipment) }
 
-      it "returns next service dates for power unit" do
-        expect(power_unit.next_service_dates).to eq(%i[next_service next_battery_change next_belt_change])
-      end
-
-      it "raises an error if next service dates are not defined" do
-        allow(undefined_equipment.equipment).to receive(:kind).and_return("undefined")
-
-        expect { undefined_equipment.next_service_dates }.to raise_error(RuntimeError, "No estan definidas las fechas de servicio para el equipo undefined")
+      it "returns next service dates for location equipment" do
+        expect(location_equipment.next_service_dates.map { |sd| sd.date.to_date }).to all(eq(Date.current))
+        expect(location_equipment.next_service_dates.size).to eq(ServiceDate.kinds.size)
       end
     end
 

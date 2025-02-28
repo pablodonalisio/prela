@@ -24,9 +24,9 @@
   <% item.next_service_dates.each do |service_date| %>
     <p class="card-text m-0 text-truncate">
       <small class="text-body-secondary">
-        <label><%= LocationEquipment.human_attribute_name(service_date) %>: </label>
-        <span class="<%= service_date_color(item.send(service_date)) %>">
-          <%= l(item.send(service_date), format: :month_year_concise) if item.next_service %>
+        <label><%= ServiceDate.human_attribute_name(service_date.kind) %>: </label>
+        <span class="<%= service_date_color(service_date.date) %>">
+          <%= l(service_date.date.to_date, format: :month_year_concise) %>
         </span>
       </small>
     </p>

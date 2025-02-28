@@ -19,7 +19,6 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def edit
-    @edition = params[:edition]
   end
 
   def create

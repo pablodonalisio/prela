@@ -1,9 +1,0 @@
-<%= simple_form_for location_equipment do |f| %>
-  <% location_equipment.next_service_dates.each do |service_date| %>
-    <%= f.input service_date, label: LocationEquipment.human_attribute_name(service_date),
-                              as: :date, end_year: Date.today.year + 90,
-                              start_year: Date.today.year - 30, discard_day: true,
-                              order: [:month, :year], include_blank: true %>
-  <% end %>
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
-<% end %>
