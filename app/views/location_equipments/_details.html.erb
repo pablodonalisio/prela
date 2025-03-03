@@ -1,32 +1,30 @@
-<div class="col-lg-6 mb-3">
+<p class="card-text m-0">
+  <small class="text-body-secondary">
+    Sala: <%= location_equipment.zone %>
+  </small>
+</p>
+<p class="card-text m-0">
+  <small class="text-body-secondary">
+    Piso: <%= humanize_floor(location_equipment.floor) %>
+  </small>
+</p>
+<p class="card-text m-0">
+  <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
+</p>
+<% if location_equipment.equipment.power_unit? %>
   <p class="card-text m-0">
-    <small class="text-body-secondary">
-      Sala: <%= location_equipment.zone %>
-    </small>
+    <small class="text-body-secondary">Numero de serie del motor: <%= location_equipment.engine_serial_number %></small>
   </p>
   <p class="card-text m-0">
-    <small class="text-body-secondary">
-      Piso: <%= humanize_floor(location_equipment.floor) %>
-    </small>
+    <small class="text-body-secondary">Numero de serie del grupo electrógeno: <%= location_equipment.power_unit_serial_number %></small>
   </p>
-  <p class="card-text m-0">
-    <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
-  </p>
-  <% if location_equipment.equipment.power_unit? %>
-    <p class="card-text m-0">
-      <small class="text-body-secondary">Numero de serie del motor: <%= location_equipment.engine_serial_number %></small>
-    </p>
-    <p class="card-text m-0">
-      <small class="text-body-secondary">Numero de serie del grupo electrógeno: <%= location_equipment.power_unit_serial_number %></small>
-    </p>
-  <% end %>
-  <p class="card-text m-0">
-    <small class="text-body-secondary">Código: <%= location_equipment.code %></small>
-  </p>
-  <p class="card-text m-0">
-    <small class="text-body-secondary">Estado: <%= location_equipment.status ? t("activerecord.attributes.location_equipment.statuses.#{location_equipment.status}") : "" %></small>
-  </p>
-  <p class="card-text m-0">
-    <small class="text-body-secondary">Detalles: <%= location_equipment.details %></small>
-  </p>
-</div>
+<% end %>
+<p class="card-text m-0">
+  <small class="text-body-secondary">Código: <%= location_equipment.code %></small>
+</p>
+<p class="card-text m-0">
+  <small class="text-body-secondary">Estado: <%= location_equipment.status ? t("activerecord.attributes.location_equipment.statuses.#{location_equipment.status}") : "" %></small>
+</p>
+<p class="card-text m-0">
+  <small class="text-body-secondary">Detalles: <%= location_equipment.details %></small>
+</p>

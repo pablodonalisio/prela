@@ -77,7 +77,7 @@ RSpec.describe LocationEquipment, type: :model do
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
-    context "next_service_dates" do
+    describe "next_service_dates" do
       let!(:location_equipment) do
         location_equipment = create(:location_equipment)
         location_equipment.service_dates.destroy_all # Remove default next service dates created by after_create callback
@@ -96,7 +96,7 @@ RSpec.describe LocationEquipment, type: :model do
       end
     end
 
-    context "last_service_date" do
+    describe "last_service_date" do
       let(:location_equipment) { create(:location_equipment) }
       let!(:activity) { create(:activity, kind: Activity::BATTERY_CHANGE, date: Date.today, location_equipment: location_equipment) }
 
@@ -105,7 +105,7 @@ RSpec.describe LocationEquipment, type: :model do
       end
     end
 
-    context "create_next_service_dates" do
+    describe "create_next_service_dates" do
       let(:service_kinds) { %i[service battery_change belt_change] }
 
       it "creates first next service dates after location equipment creation" do
@@ -133,6 +133,24 @@ RSpec.describe LocationEquipment, type: :model do
 
         expect(ups.next_service_dates.size).to eq(1)
         expect(ups.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
+      end
+    end
+
+    describe "calculate_next_service_date" do
+      it "calculates next service date for specific service kind" do
+        freeze_time
+
+        expect(power_unit.calculate_next_service_date(:service)).to eq(1.year.from_now)
+        expect(power_unit.calculate_next_service_date(:battery_change)).to eq(2.years.from_now)
+        expect(power_unit.calculate_next_service_date(:belt_change)).to eq(5.years.from_now)
+      end
+
+      it "calculates next service date for specific service kind from specific time" do
+        freeze_time
+
+        expect(power_unit.calculate_next_service_date(:service, 1.year.from_now)).to eq(2.years.from_now)
+        expect(power_unit.calculate_next_service_date(:battery_change, 2.years.from_now)).to eq(4.years.from_now)
+        expect(power_unit.calculate_next_service_date(:belt_change, 5.years.from_now)).to eq(10.years.from_now)
       end
     end
   end

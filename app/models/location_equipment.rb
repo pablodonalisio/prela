@@ -49,4 +49,8 @@ class LocationEquipment < ApplicationRecord
       service_dates.create(kind: kind, date: next_date)
     end
   end
+
+  def calculate_next_service_date(service_kind, from_date = Time.current)
+    from_date + send("#{service_kind}_interval").years
+  end
 end

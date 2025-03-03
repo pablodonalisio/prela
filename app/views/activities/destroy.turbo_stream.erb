@@ -3,3 +3,5 @@
 <% end %>
 
 <%= turbo_stream.replace "activities", partial: "activities_table", locals: { activities: @activities, location_equipment: @location_equipment } %>
+
+<%= turbo_stream.replace "service_dates", partial: "location_equipments/service_dates", locals: { location_equipment: @location_equipment } %>
