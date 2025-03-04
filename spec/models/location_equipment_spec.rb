@@ -50,25 +50,36 @@ RSpec.describe LocationEquipment, type: :model do
     let(:ups) { create(:equipment, kind: :ups) }
     let(:power_unit) { create(:equipment, kind: :power_unit) }
 
-    let!(:ups_with_overdue_service) { create(:location_equipment, next_service: Date.yesterday, equipment: ups) }
-    let!(:ups_with_overdue_battery_change) { create(:location_equipment, next_battery_change: Date.yesterday, equipment: ups) }
-    let!(:ups_without_overdue_maintenance) { create(:location_equipment, next_service: Date.tomorrow, next_battery_change: Date.tomorrow, equipment: ups) }
+    let!(:ups_with_overdue_battery_change) { create(:location_equipment, equipment: ups) }
+    let(:ups_battery_overdue_date) { ups_with_overdue_battery_change.service_dates.create(kind: :battery_change, date: Date.yesterday) }
 
-    let!(:power_unit_with_overdue_service) { create(:location_equipment, next_service: Date.yesterday, equipment: power_unit) }
-    let!(:power_unit_with_overdue_battery_change) { create(:location_equipment, next_battery_change: Date.yesterday, equipment: power_unit) }
-    let!(:power_unit_without_overdue_maintenance) { create(:location_equipment, next_service: Date.tomorrow, next_battery_change: Date.tomorrow, equipment: power_unit) }
+    let!(:power_unit_close_overdue_service) { create(:location_equipment, equipment: power_unit) }
+    let(:power_unit_service_overdue_date) { power_unit_close_overdue_service.service_dates.create(kind: :service, date: 45.days.from_now) }
+    let!(:power_unit_with_overdue_battery_change) { create(:location_equipment, equipment: power_unit) }
+    let(:power_unit_battery_overdue_date) { power_unit_with_overdue_battery_change.service_dates.create(kind: :battery_change, date: Date.yesterday) }
 
-    let(:ups_with_overdue_maintenance) { LocationEquipment.ups_with_overdue_maintenance }
-    let(:power_units_with_overdue_maintenance) { LocationEquipment.power_units_with_overdue_maintenance }
+    let!(:power_unit_without_overdue_maintenance) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
+    let(:power_unit_service_date) { power_unit_without_overdue_maintenance.service_dates.create(kind: :service, date: 1.year.from_now) }
+
+    let(:ups_with_overdue_maintenance) { LocationEquipment.with_overdue_maintenance(:ups) }
+    let(:power_units_with_overdue_maintenance) { LocationEquipment.with_overdue_maintenance(:power_unit) }
+
+    before do
+      ServiceDate.delete_all # Remove default next service dates created by after_create callback
+    end
 
     it "return ups with overdue maintenance" do
+      ups_battery_overdue_date
       expect(ups_with_overdue_maintenance.count).to eq(1)
       expect(ups_with_overdue_maintenance).to include(ups_with_overdue_battery_change)
     end
 
     it "return power units with overdue maintenance" do
+      power_unit_service_overdue_date
+      power_unit_battery_overdue_date
+      power_unit_service_date
       expect(power_units_with_overdue_maintenance.count).to eq(2)
-      expect(power_units_with_overdue_maintenance).to include(power_unit_with_overdue_service, power_unit_with_overdue_battery_change)
+      expect(power_units_with_overdue_maintenance).to include(power_unit_close_overdue_service, power_unit_with_overdue_battery_change)
     end
   end
 
