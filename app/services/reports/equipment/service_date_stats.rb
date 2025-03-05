@@ -29,14 +29,6 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
     end
   end
 
-  # def ups_rows
-  #   [service_dates_row, battery_dates_row]
-  # end
-
-  # def power_unit_rows
-  #   [service_dates_row, battery_dates_row, belt_dates_row]
-  # end
-
   def dates_header
     [{content: "Mantenimiento preventivo", colspan: 6, background_color: PRIMARY_COLOR, font_style: :bold, align: :center}]
   end
