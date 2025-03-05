@@ -1,0 +1,10 @@
+<p class="card-text m-0">
+  <small class="text-body-secondary">
+    <label><%= label %>: </label>
+      <% if date %>
+        <span>
+          <%= l(date, format: :month_year_concise) %>
+        </span>
+      <% end %>
+  </small>
+</p>

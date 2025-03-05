@@ -5,4 +5,6 @@
 <%= turbo_stream.prepend "activities" do %>
   <%= render "activity_table_row", activity: @activity, location_equipment: @location_equipment %>
 <% end %>
-<%= turbo_stream.remove "empty_activitiess" %>
+<%= turbo_stream.remove "empty_activities" %>
+
+<%= turbo_stream.replace "service_dates", partial: "location_equipments/service_dates", locals: { location_equipment: @location_equipment } %>

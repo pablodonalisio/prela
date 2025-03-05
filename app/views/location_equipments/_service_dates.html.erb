@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "service_dates" do %>
+  <% LocationEquipment::SERVICE_KINDS[location_equipment.kind].each do |service_kind| %>
+    <% attribute = "last_#{service_kind}".to_sym %>
+    <%= render "location_equipments/last_service_date", label: LocationEquipment.human_attribute_name(attribute),
+                                                        date: location_equipment.last_service_date(attribute),
+                                                        location_equipment: location_equipment %>
+  <% end %>
+  <%= render location_equipment.next_service_dates %>
+<% end %>

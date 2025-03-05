@@ -16,7 +16,7 @@ module LocationEquipmentsHelper
   def service_date_color(date)
     return unless date
 
-    if date < Date.today.months_since(1)
+    if date < Time.current
       "text-danger"
     elsif date < Date.today.months_since(3)
       "text-warning"

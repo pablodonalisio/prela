@@ -16,9 +16,6 @@
               </h5>
 
               <%= render "shared/dropdown" do %>
-                <li><%= link_to "Cambiar fechas", edit_location_equipment_path(location_equipment, edition: "service_dates"),
-                                                  class: "dropdown-item text-center",
-                                                  data: { turbo_frame: "remote_modal" } %></li>
                 <% if location_equipment.form_link.present? %>
                   <li><%= link_to "Formulario", location_equipment.form_link,
                                                 class: "dropdown-item text-center",
@@ -35,50 +32,10 @@
           <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>
           <div class="row">
             <div class="col-lg-6 mb-3">
-              <p class="card-text m-0">
-                <small class="text-body-secondary">
-                  Sala: <%= location_equipment.zone %>
-                </small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">
-                  Piso: <%= humanize_floor(location_equipment.floor) %>
-                </small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
-              </p>
-              <% if location_equipment.equipment.power_unit? %>
-                <p class="card-text m-0">
-                  <small class="text-body-secondary">Numero de serie del motor: <%= location_equipment.engine_serial_number %></small>
-                </p>
-                <p class="card-text m-0">
-                  <small class="text-body-secondary">Numero de serie del grupo electrógeno: <%= location_equipment.power_unit_serial_number %></small>
-                </p>
-              <% end %>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Código: <%= location_equipment.code %></small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Estado: <%= location_equipment.status ? t("activerecord.attributes.location_equipment.statuses.#{location_equipment.status}") : "" %></small>
-              </p>
-              <p class="card-text m-0">
-                <small class="text-body-secondary">Detalles: <%= location_equipment.details %></small>
-              </p>
+              <%= render "details", location_equipment: location_equipment%>
             </div>
             <div class="col-lg-6">
-              <% %i[last_service next_service last_battery_change next_battery_change].each do |attribute| %>
-                <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                            date: location_equipment.send(attribute),
-                                            location_equipment: location_equipment %>
-              <% end %>
-              <% if location_equipment.equipment.power_unit? %>
-                <% %i[last_belt_change next_belt_change].each do |attribute| %>
-                  <%= render "service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                              date: location_equipment.send(attribute),
-                                              location_equipment: location_equipment %>
-                <% end %>
-              <% end %>
+              <%= render "service_dates", location_equipment: location_equipment%>
             </div>
           </div>
         </div>
@@ -101,7 +58,7 @@
             <div class="col">
               <%= render "shared/content_header", title: "Actividades" do %>
                 <% if current_user.admin? %>
-                  <%= render "shared/button_link", text: "Nuevo Actividad",
+                  <%= render "shared/button_link", text: "Nueva Actividad",
                                                    path: new_location_equipment_activity_path(@location_equipment) %>
                 <% end %>
               <% end %>

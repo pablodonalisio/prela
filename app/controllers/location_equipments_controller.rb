@@ -19,7 +19,6 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def edit
-    @edition = params[:edition]
   end
 
   def create
@@ -63,7 +62,8 @@ class LocationEquipmentsController < ApplicationController
     params.require(:location_equipment)
       .permit(:zone, :floor, :location_id, :equipment_id, :serial_number, :code, :form_link,
         :last_service, :next_service, :last_battery_change, :next_battery_change, :details, :status,
-        :last_belt_change, :next_belt_change, :engine_serial_number, :power_unit_serial_number)
+        :last_belt_change, :next_belt_change, :engine_serial_number, :power_unit_serial_number, :service_interval,
+        :battery_change_interval, :belt_change_interval)
   end
 
   def location_equipment

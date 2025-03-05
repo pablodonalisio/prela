@@ -21,28 +21,12 @@
   </p>
 </div>
 <div class="mb-2" style="height: 72px">
-  <p class="card-text m-0 text-truncate">
-    <small class="text-body-secondary">
-      <label>Próximo service: </label>
-      <span class="<%= service_date_color(item.next_service) %>">
-        <%= l(item.next_service, format: :month_year_concise) if item.next_service %>
-      </span>
-    </small>
-  </p>
-  <p class="card-text m-0 text-truncate">
-    <small class="text-body-secondary">
-      <label>Próximo cambio de baterías: </label>
-      <span class="<%= service_date_color(item.next_battery_change) %>">
-        <%= l(item.next_battery_change, format: :month_year_concise) if item.next_battery_change %>
-      </span>
-    </small>
-  </p>
-  <% if item.equipment.power_unit? %>
+  <% item.next_service_dates.each do |service_date| %>
     <p class="card-text m-0 text-truncate">
       <small class="text-body-secondary">
-        <label>Próximo cambio de correas: </label>
-        <span class="<%= service_date_color(item.next_belt_change) %>">
-          <%= l(item.next_belt_change, format: :month_year_concise) if item.next_belt_change %>
+        <label><%= ServiceDate.human_attribute_name(service_date.kind) %>: </label>
+        <span class="<%= service_date_color(service_date.date) %>">
+          <%= l(service_date.date.to_date, format: :month_year_concise) %>
         </span>
       </small>
     </p>

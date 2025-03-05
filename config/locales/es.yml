@@ -46,6 +46,10 @@ es:
         roles:
           admin: "Admin"
           client: "Cliente"
+      service_date:
+        service: "Próximo service"
+        battery_change: "Próximo cambio de batería"
+        belt_change: "Próximo cambio de correas"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"

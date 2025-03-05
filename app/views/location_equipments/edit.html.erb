@@ -2,11 +2,7 @@
 
 <%= turbo_frame_tag @location_equipment do %>
   <%= render "shared/remote_modal", title: "Editar Equipo de Sede" do %>
-    <% if @edition.eql? "service_dates" %>
-      <%= render "service_dates_form", location_equipment: @location_equipment %>
-    <% else %>
-      <%= render "form", location_equipment: @location_equipment,
-                        locations: @locations %>
-    <% end %>
+    <%= render "form", location_equipment: @location_equipment,
+                      locations: @locations %>
   <% end %>
 <% end %>

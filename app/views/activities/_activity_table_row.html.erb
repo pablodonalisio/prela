@@ -1,5 +1,6 @@
 <%= content_tag :tr, id: dom_id(activity), class: "align-items-stretch" do %>
   <td class="align-middle"><%= activity.description %></td>
+  <td class="align-middle"><%= activity.kind %></td>
   <td class="align-middle"><%= activity.date.strftime("%d/%m/%Y") %></td>
   <td class="align-middle">
     <div class="d-flex justify-content-center align-items-center">

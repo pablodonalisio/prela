@@ -8,16 +8,11 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   private
 
   def service_date_stats
-    if equipment.ups?
-      create_table_with(ups_rows)
-      ups_foot_notes
-    elsif equipment.power_unit?
-      create_table_with(power_unit_rows)
-      power_unit_foot_notes
-    end
+    create_table_with_service_dates
+    foot_notes
   end
 
-  def create_table_with(equipment_rows)
+  def create_table_with_service_dates
     table_width = @pdf.bounds.width
     @pdf.table([
       dates_header,
@@ -28,12 +23,10 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
     end
   end
 
-  def ups_rows
-    [service_dates_row, battery_dates_row]
-  end
-
-  def power_unit_rows
-    [service_dates_row, battery_dates_row, belt_dates_row]
+  def equipment_rows
+    LocationEquipment::SERVICE_KINDS[equipment.kind].map do |service_kind|
+      send("#{service_kind}_dates_row")
+    end
   end
 
   def dates_header
@@ -46,40 +39,40 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
       {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_service_date)}]
   end
 
-  def battery_dates_row
+  def battery_change_dates_row
     [{content: "Último Cambio de Batería", background_color: PRIMARY_COLOR}, {content: formated_date(last_battery_change_date)},
       {content: "Próximo Cambio de Batería", background_color: PRIMARY_COLOR}, {content: formated_date(next_battery_change_date)},
       {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_battery_change_date)}]
   end
 
-  def belt_dates_row
+  def belt_change_dates_row
     [{content: "Último Cambio de Correa", background_color: PRIMARY_COLOR}, {content: formated_date(last_belt_change_date)},
       {content: "Próximo Cambio de Correa", background_color: PRIMARY_COLOR}, {content: formated_date(next_belt_change_date)},
       {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_belt_change_date)}]
   end
 
   def last_service_date
-    location_equipment.last_service
+    @last_service_date ||= location_equipment.last_service_date(:last_service)
   end
 
   def next_service_date
-    location_equipment.next_service
+    @next_service_date ||= location_equipment.next_service_dates.find_by(kind: "service")&.date
   end
 
   def last_battery_change_date
-    location_equipment.last_battery_change
+    @last_battery_change_date ||= location_equipment.last_service_date(:last_battery_change)
   end
 
   def next_battery_change_date
-    location_equipment.next_battery_change
+    @next_battery_change_date ||= location_equipment.next_service_dates.find_by(kind: "battery_change")&.date
   end
 
   def last_belt_change_date
-    location_equipment.last_belt_change
+    @last_belt_change_date ||= location_equipment.last_service_date(:last_belt_change)
   end
 
   def next_belt_change_date
-    location_equipment.next_belt_change
+    @next_belt_change_date ||= location_equipment.next_service_dates.find_by(kind: "belt_change")&.date
   end
 
   def date_past?(date)
@@ -92,13 +85,16 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
     I18n.l(date, format: "%B %Y") if date
   end
 
-  def ups_foot_notes
+  def foot_notes
     @pdf.move_down 10
-    @pdf.text "*Los cambios de baterías de las UPS dependen del tipo y tiempo de uso, por lo que las próximas fechas son estimativas.", size: 10
+    if equipment.ups?
+      @pdf.text "*Los cambios de baterías de las UPS dependen del tipo y tiempo de uso, por lo que las próximas fechas son estimativas.", size: 10
+    elsif equipment.power_unit?
+      @pdf.text "*Los cambios de baterías y correas de los grupos electrógenos dependen del tipo y tiempo de uso, por lo que las próximas fechas son estimativas.", size: 10
+    end
   end
 
-  def power_unit_foot_notes
-    @pdf.move_down 10
-    @pdf.text "*Los cambios de baterías y correas de los grupos electrógenos dependen del tipo y tiempo de uso, por lo que las próximas fechas son estimativas.", size: 10
+  def next_service_dates
+    @next_service_dates ||= location_equipment.next_service_dates
   end
 end
