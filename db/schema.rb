@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_25_174209) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_07_173458) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -151,7 +151,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_25_174209) do
     t.float "initial_temperature"
     t.float "running_temperature"
     t.integer "number_of_starts"
-    t.integer "operating_time"
+    t.float "operating_time"
     t.integer "failed_starts"
     t.float "oil_pressure"
     t.string "fuel_level"
