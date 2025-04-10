@@ -9,7 +9,7 @@ class Reports::Equipment::UpsStats < Reports::Content
   def ups_stats
     table_width = @pdf.bounds.width
     @pdf.table([
-      [{content: "PLANILLA DE OBSEVACION", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
+      [{content: "PLANILLA DE OBSERVACIÓN", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
       [{}, {content: "Valor Observado"}, {content: "Óptimo"}],
       [{content: "Modo de funcionamiento"}, {content: ups_report_stat.operating_mode}, {content: "Normal"}],
       [{content: "Carga asociada"}, {content: "#{ups_report_stat.associated_charge}%"}, {content: "-"}],

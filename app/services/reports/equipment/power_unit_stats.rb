@@ -9,7 +9,7 @@ class Reports::Equipment::PowerUnitStats < Reports::Content
   def power_unit_stats
     table_width = @pdf.bounds.width
     @pdf.table([
-      [{content: "PLANILLA DE OBSEVACION", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
+      [{content: "PLANILLA DE OBSERVACIÓN", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
       [{}, {content: "Valor Observado"}, {content: "Óptimo"}],
       [{content: "Seccionador general"}, {content: power_unit_report_stat.general_disconnector}, {content: "ON"}],
       [{content: "Posición parada de emergencia"}, {content: power_unit_report_stat.emergency_stop_position}, {content: "OFF"}],
