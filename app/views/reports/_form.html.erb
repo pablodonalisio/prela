@@ -1,4 +1,10 @@
-<%= simple_form_for [location_equipment, report] do |f| %>
+<%= simple_form_for [location_equipment, report], html: {
+  data: {
+    controller: "auto-save",
+    auto_save_target: "form",
+    action: "change->auto-save#saveToLocalStorage"
+  }
+} do |f| %>
   <h2>Fecha</h2>
   <%= f.input :date, as: :datetime, label: "Fecha", value: report.date || Time.now.in_time_zone, end_year: Date.today.year %>
 
