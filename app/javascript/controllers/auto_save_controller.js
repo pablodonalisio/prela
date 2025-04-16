@@ -4,7 +4,10 @@ export default class extends Controller {
   static targets = ["form"];
 
   connect() {
-    this.localStorageKey = window.location;
+    this.localStorageKey = "report-form-data";
+    if (this.deleteLocalStorage()) {
+      this.clearLocalStorage();
+    }
 
     this.setFormData();
   }
@@ -19,7 +22,6 @@ export default class extends Controller {
     const form = new FormData(this.formTarget);
     let data = [];
 
-    //a chequear esto
     for (var pair of form.entries()) {
       const name = pair[0];
       const value = pair[1];
@@ -50,5 +52,9 @@ export default class extends Controller {
         input && (input.value = value);
       });
     }
+  }
+
+  deleteLocalStorage() {
+    return document.getElementById("delete-local-storage");
   }
 }
