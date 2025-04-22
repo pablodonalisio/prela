@@ -57,7 +57,7 @@
           <div class="col-12 col-lg-6 col-xxl-5">
             <div class="col">
               <%= render "shared/content_header", title: "Actividades" do %>
-                <% if current_user.admin? %>
+                <% if current_user.admin? || current_user.editor? %>
                   <%= render "shared/button_link", text: "Nueva Actividad",
                                                    path: new_location_equipment_activity_path(@location_equipment) %>
                 <% end %>
