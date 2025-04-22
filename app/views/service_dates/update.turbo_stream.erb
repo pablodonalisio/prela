@@ -6,7 +6,7 @@
   <span class="<%= service_date_color(@service_date.date) %>">
     <%= l(@service_date.date.to_date, format: :month_year_concise) %>
   </span>
-  <% if current_user.admin? %>
+  <% if current_user.admin? || current_user.editor? %>
     <%= link_to edit_service_date_path(@service_date), class: "ms-2" do %>
       <i class="fas fa-edit"></i>
     <% end %>

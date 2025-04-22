@@ -4,6 +4,10 @@
     <%= f.input :password, label: "Password" %>
   <% end %>
   <%= f.input :role, label: "Rol", collection: User.enum_attributes_for_select("role"), include_blank: false %>
+  <%= f.input :editor, label: "Editor", collection: [
+    ["No", false],
+    ["Sí", true]
+  ], include_blank: false %>
   <%= f.association :client, label_method: :name, value_method: :id %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

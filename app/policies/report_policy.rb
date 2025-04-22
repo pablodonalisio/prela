@@ -13,6 +13,26 @@ class ReportPolicy < ApplicationPolicy
     user.admin? || user.client?
   end
 
+  def create?
+    user.admin? || user.editor?
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    user.admin? || user.editor?
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    user.admin? || user.editor?
+  end
+
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     # def resolve

@@ -9,7 +9,7 @@
           <i class="fa fa-file" aria-hidden="true"></i>
         <% end %>
       <% end %>
-      <% if current_user.admin? %>
+      <% if current_user.admin? || current_user.editor? %>
         <%= link_to edit_location_equipment_activity_path(location_equipment, activity), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
           <i class="fas fa-edit"></i>
         <% end %>

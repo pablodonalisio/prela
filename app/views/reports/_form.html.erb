@@ -6,7 +6,12 @@
   }
 } do |f| %>
   <h2>Fecha</h2>
-  <%= f.input :date, as: :datetime, label: "Fecha", value: report.date || Time.now.in_time_zone, end_year: Date.today.year %>
+  <%= f.input :date,
+              as: :datetime,
+              label: "Fecha",
+              value: report.date || Time.now.in_time_zone,
+              end_year: Date.today.year,
+              disabled: !current_user.admin?  %>
 
   <h2>Equipo</h2>
   <% if location_equipment.equipment.ups?%>
