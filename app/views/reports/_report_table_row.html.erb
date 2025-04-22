@@ -5,7 +5,7 @@
       <%= link_to location_equipment_report_path(location_equipment, report), data: { turbo_frame: "remote_modal" } do %>
         <i class="fas fa-eye"></i>
       <% end %>
-      <% if current_user.admin? %>
+      <% if current_user.admin? || current_user.editor? %>
         <%= link_to edit_location_equipment_report_path(location_equipment, report), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
           <i class="fas fa-edit"></i>
         <% end %>
