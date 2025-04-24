@@ -3,7 +3,7 @@
     <label><%= label %>: </label>
       <% if date %>
         <span>
-          <%= l(date, format: :month_year_concise) %>
+          <%= date.strftime("%d/%m/%Y") %>
         </span>
       <% end %>
   </small>
