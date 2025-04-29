@@ -1,8 +1,6 @@
 <%= simple_form_for [location_equipment, report], html: {
   data: {
-    controller: "auto-save",
     auto_save_target: "form",
-    action: "change->auto-save#saveToLocalStorage"
   }
 } do |f| %>
   <h2>Fecha</h2>
