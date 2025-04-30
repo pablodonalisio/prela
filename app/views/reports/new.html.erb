@@ -2,6 +2,8 @@
 
 <%= turbo_frame_tag @report do %>
   <%= render "shared/remote_modal", title: "Nuevo Informe" do %>
-    <%= render "form", report: @report, location_equipment: @location_equipment %>
+    <div data-controller="auto-save" data-action="change->auto-save#saveToLocalStorage">
+      <%= render "form", report: @report, location_equipment: @location_equipment %>
+    </div>
   <% end %>
 <% end %>
