@@ -26,12 +26,20 @@ export default class extends Controller {
       const name = pair[0];
       const value = pair[1];
 
-      if (name !== "authenticity_token" && !(value instanceof File)) {
+      if (this.field_to_save(name, value)) {
         data.push([name, value]);
       }
     }
 
     return Object.fromEntries(data);
+  }
+
+  field_to_save(name, value) {
+    const notAnAuthenticityToken = name !== "authenticity_token";
+    const notAFile = !(value instanceof File);
+    const notReportDate = !name.includes("report[date");
+
+    return notAnAuthenticityToken && notAFile && notReportDate;
   }
 
   saveToLocalStorage() {
