@@ -2,20 +2,19 @@
 
 <%= turbo_frame_tag @location_equipment do %>
   <%= render "shared/remote_modal", title: "Nuevo Equipo de Sede" do %>
-    <% if @locations.blank? %>
-      <div class="dropdown" style="min-height: 300px">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Seleccione un cliente
-        </button>
-        <ul class="dropdown-menu">
-          <% Client.pluck(:id, :name).each do |client| %>
-            <li><%= link_to client[1], new_location_equipment_path(client_id: client[0]),
-                                      class: "dropdown-item",
-                                      data: { turbo_frame: "remote_modal" } %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% else %>
+    <div class="dropdown mb-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <%= @client ? @client.name : "Seleccione un cliente" %>
+      </button>
+      <ul class="dropdown-menu">
+        <% Client.pluck(:id, :name).each do |client| %>
+          <li><%= link_to client[1], new_location_equipment_path(client_id: client[0]),
+                                    class: "dropdown-item",
+                                    data: { turbo_frame: "remote_modal" } %></li>
+        <% end %>
+      </ul>
+    </div>
+    <% if @locations.present? %>
       <%= render "form", location_equipment: @location_equipment,
                          locations: @locations %>
     <% end %>

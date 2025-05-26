@@ -7,9 +7,11 @@
   <%= f.input :equipment_id, label: "Equipo",
                               collection: Equipment.all.map { |e| [e.model, e.id, { 'data-kind' => e.kind }] },
                               prompt: "Seleccione un equipo",
-                              input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displayPowerUnitSerialNumberInputs change->location-equipment-form#displayServiceIntervals"}} %>
-  <%= f.input :serial_number, label: "Numero de serie" %>
-  <div data-location-equipment-form-target="powerUnitSerialNumbersGroup">
+                              input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displaySerialNumberInputs change->location-equipment-form#displayServiceIntervals"}} %>
+  <div data-location-equipment-form-target="serialNumber">
+    <%= f.input :serial_number, label: "Numero de serie" %>
+  </div>
+  <div data-location-equipment-form-target="powerUnitSerialNumbersGroup" class="d-none">
     <%= f.input :engine_serial_number, label: "Numero de serie del motor" %>
     <%= f.input :power_unit_serial_number, label: "Numero de serie del grupo electrógeno" %>
   </div>
