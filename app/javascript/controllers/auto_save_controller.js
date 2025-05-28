@@ -2,9 +2,12 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = ["form"];
+  static values = {
+    locationEquipmentId: Number,
+  };
 
   connect() {
-    this.localStorageKey = "report-form-data";
+    this.localStorageKey = `location_equipment_${this.locationEquipmentIdValue}_new_report`;
     if (this.deleteLocalStorage()) {
       this.clearLocalStorage();
     }
