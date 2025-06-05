@@ -33,6 +33,8 @@ class LocationEquipment < ApplicationRecord
   delegate :avatar, :model, :kind, to: :equipment
   delegate :client, to: :location
 
+  validates :location_id, :equipment_id, presence: true
+
   class << self
     def with_overdue_maintenance(equipment_kind)
       by_kind(equipment_kind)

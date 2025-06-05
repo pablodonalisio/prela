@@ -4,8 +4,9 @@ class LocationEquipmentsController < ApplicationController
   before_action :set_order, only: :index
 
   def new
+    @client = Client.find_by(id: params[:client_id])
     @location_equipment = authorize LocationEquipment.new
-    @locations = Location.where(client_id: params[:client_id])
+    @locations = Location.where(client_id: @client&.id)
   end
 
   def index
@@ -71,7 +72,8 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def set_locations
-    @locations = Location.where(client_id: @location_equipment.location&.client_id)
+    @client = @location_equipment.location&.client
+    @locations = Location.where(client_id: @client&.id)
   end
 
   def filter_params

@@ -2,9 +2,12 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = ["form"];
+  static values = {
+    locationEquipmentId: Number,
+  };
 
   connect() {
-    this.localStorageKey = "report-form-data";
+    this.localStorageKey = `location_equipment_${this.locationEquipmentIdValue}_new_report`;
     if (this.deleteLocalStorage()) {
       this.clearLocalStorage();
     }
@@ -26,12 +29,20 @@ export default class extends Controller {
       const name = pair[0];
       const value = pair[1];
 
-      if (name !== "authenticity_token" && !(value instanceof File)) {
+      if (this.field_to_save(name, value)) {
         data.push([name, value]);
       }
     }
 
     return Object.fromEntries(data);
+  }
+
+  field_to_save(name, value) {
+    const notAnAuthenticityToken = name !== "authenticity_token";
+    const notAFile = !(value instanceof File);
+    const notReportDate = !name.includes("report[date");
+
+    return notAnAuthenticityToken && notAFile && notReportDate;
   }
 
   saveToLocalStorage() {

@@ -8,15 +8,19 @@
     Piso: <%= humanize_floor(location_equipment.floor) %>
   </small>
 </p>
-<p class="card-text m-0">
-  <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
-</p>
 <% if location_equipment.equipment.power_unit? %>
+  <p class="card-text m-0">
+    <small class="text-body-secondary">Numero de serie del generador: <%= location_equipment.serial_number %></small>
+  </p>
   <p class="card-text m-0">
     <small class="text-body-secondary">Numero de serie del motor: <%= location_equipment.engine_serial_number %></small>
   </p>
   <p class="card-text m-0">
     <small class="text-body-secondary">Numero de serie del grupo electrógeno: <%= location_equipment.power_unit_serial_number %></small>
+  </p>
+<% else %>
+  <p class="card-text m-0">
+    <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
   </p>
 <% end %>
 <p class="card-text m-0">

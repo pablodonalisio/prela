@@ -3,6 +3,7 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = [
     "powerUnitSerialNumbersGroup",
+    "serialNumber",
     "equipment",
     "serviceInterval",
     "batteryInterval",
@@ -10,17 +11,21 @@ export default class extends Controller {
   ];
 
   connect() {
-    this.displayPowerUnitSerialNumberInputs();
+    this.displaySerialNumberInputs();
     this.displayServiceIntervals();
   }
 
-  displayPowerUnitSerialNumberInputs() {
+  displaySerialNumberInputs() {
     let selectedOption = this.equipmentTarget.querySelector("option:checked");
     let kind = selectedOption.dataset.kind;
     if (kind === "power_unit") {
       this.powerUnitSerialNumbersGroupTarget.classList.remove("d-none");
+      this.serialNumberTarget.getElementsByTagName("label")[0].innerText =
+        "Numero de serie del generador";
     } else {
       this.powerUnitSerialNumbersGroupTarget.classList.add("d-none");
+      this.serialNumberTarget.getElementsByTagName("label")[0].innerText =
+        "Numero de serie";
     }
   }
 
