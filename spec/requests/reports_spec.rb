@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Reports", type: :request do
-  let(:report1) { create(:report) }
+  let(:report1) { create(:report, location_equipment: location_equipment) }
   let(:report2) { create(:report) }
   let(:params) do
     {report: {
@@ -69,6 +69,8 @@ RSpec.describe "Reports", type: :request do
   before { sign_in create(:admin) }
 
   describe "GET /show" do
+    let(:equipment_kind) { "ups" }
+
     it "returns a successful response" do
       get location_equipment_report_path(report1.location_equipment, report1)
       expect(response).to have_http_status(:success)
@@ -76,6 +78,8 @@ RSpec.describe "Reports", type: :request do
   end
 
   describe "GET /new" do
+    let(:equipment_kind) { "ups" }
+
     it "renders a successful response" do
       get new_location_equipment_report_path(report1.location_equipment)
       expect(response).to be_successful
@@ -83,6 +87,8 @@ RSpec.describe "Reports", type: :request do
   end
 
   describe "GET /edit" do
+    let(:equipment_kind) { "ups" }
+
     it "renders a successful response" do
       get edit_location_equipment_report_path(report1.location_equipment, report1)
       expect(response).to be_successful
@@ -193,6 +199,8 @@ RSpec.describe "Reports", type: :request do
   end
 
   describe "DELETE /destroy" do
+    let(:equipment_kind) { "ups" }
+
     it "destroys the requested report" do
       report1
       expect {
