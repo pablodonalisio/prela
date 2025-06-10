@@ -9,7 +9,7 @@ class User < ApplicationRecord
   enum role: {client: 0, admin: 1}
 
   validates :role, presence: true
-  validates :editor, presence: true if :role == "client"
+  validates :editor, inclusion: {in: [true, false]}
 
   def full_role
     case role
