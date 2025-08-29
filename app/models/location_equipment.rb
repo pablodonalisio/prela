@@ -28,7 +28,7 @@ class LocationEquipment < ApplicationRecord
   scope :by_status, ->(status) { where(status:) }
   scope :by_kind, ->(kind) { joins(:equipment).where(equipment: {kind:}) }
 
-  enum status: {active: 0, out_of_service: 1, prela_to_check: 2, prela_to_deliver: 3, prela_on_service: 4, inaccessible: 5}
+  enum :status, {:active=>0, :out_of_service=>1, :prela_to_check=>2, :prela_to_deliver=>3, :prela_on_service=>4, :inaccessible=>5}
 
   delegate :avatar, :model, :kind, to: :equipment
   delegate :client, to: :location

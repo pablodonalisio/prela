@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   belongs_to :client, optional: true
 
-  enum role: {client: 0, admin: 1}
+  enum :role, {:client=>0, :admin=>1}
 
   validates :role, presence: true
   validates :editor, inclusion: {in: [true, false]}
