@@ -1,6 +1,6 @@
 <%= content_tag :tr, id: dom_id(user) do %>
   <td><%= user.email %></td>
-  <td><%= user.role.capitalize %></td>
+  <td><%= user.full_role %></td>
   <td><%= user.client&.name %></td>
   <td class="d-flex justify-content-start align-items-center">
     <%= link_to edit_user_path(user), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>

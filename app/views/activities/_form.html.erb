@@ -1,5 +1,5 @@
 <%= simple_form_for [location_equipment, activity] do |f| %>
-  <%= f.input :date, as: :datetime, label: "Fecha", value: activity.date || Time.now.in_time_zone, end_year: Date.today.year %>
+  <%= f.input :date, as: :datetime, label: "Fecha", value: activity.date || Time.now.in_time_zone, end_year: Date.today.year, disabled: !current_user.admin? %>
   <%= f.input :description, label: "Descripción" %>
   <%= f.input :kind, label: "Tipo", collection: Activity::KINDS.keys %>
 

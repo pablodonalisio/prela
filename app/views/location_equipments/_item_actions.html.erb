@@ -1,4 +1,4 @@
-<% if current_user.admin? %>
+<% if current_user.admin? || current_user.editor? %>
   <%= link_to new_location_equipment_report_path(item), class: "btn btn-primary",
                                                         data: { turbo_frame: "remote_modal" } do %>
     <i class="fa-regular fa-file"></i>

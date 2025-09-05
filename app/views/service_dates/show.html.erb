@@ -3,9 +3,9 @@
     <label><%= ServiceDate.human_attribute_name(@service_date.kind) %>: </label>
     <%= turbo_frame_tag @service_date do %>
       <span class="<%= service_date_color(@service_date.date) %>">
-        <%= l(@service_date.date.to_date, format: :month_year_concise) %>
+        <%= @service_date.date.strftime("%d/%m/%Y") %>
       </span>
-      <% if current_user.admin? %>
+      <% if current_user.admin? || current_user.editor?%>
         <%= link_to edit_service_date_path(@service_date), class: "ms-2" do %>
           <i class="fas fa-edit"></i>
         <% end %>
