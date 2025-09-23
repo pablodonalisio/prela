@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_10_173822) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_18_184238) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -126,6 +126,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_10_173822) do
     t.integer "service_interval", default: 1
     t.integer "battery_change_interval", default: 2
     t.integer "belt_change_interval", default: 5
+    t.integer "torque_interval", default: 1
+    t.date "last_torque"
+    t.date "next_torque"
+    t.integer "cleaning_interval", default: 1
+    t.date "last_cleaning"
+    t.date "next_cleaning"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end

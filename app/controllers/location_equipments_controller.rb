@@ -64,7 +64,8 @@ class LocationEquipmentsController < ApplicationController
       .permit(:zone, :floor, :location_id, :equipment_id, :serial_number, :code, :form_link,
         :last_service, :next_service, :last_battery_change, :next_battery_change, :details, :status,
         :last_belt_change, :next_belt_change, :engine_serial_number, :power_unit_serial_number, :service_interval,
-        :battery_change_interval, :belt_change_interval)
+        :battery_change_interval, :belt_change_interval, :torque_interval, :last_torque, :next_torque,
+        :cleaning_interval, :last_cleaning, :next_cleaning)
   end
 
   def location_equipment
@@ -72,7 +73,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def set_locations
-    @client = @location_equipment.location&.client
+    @client = @location_equipment.location&.client || Client.find_by(id: params[:location_equipment][:client_id])
     @locations = Location.where(client_id: @client&.id)
   end
 

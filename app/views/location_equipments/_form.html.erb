@@ -1,4 +1,5 @@
 <%= simple_form_for location_equipment, html: { data: { controller: "location-equipment-form"}} do |f| %>
+  <%= f.hidden_field :client_id, value: @client.id %>
   <%= f.input :location_id, label: "Sede",
                             collection: locations.pluck(:name, :id),
                             prompt: "Seleccione una sede" %>
@@ -7,26 +8,18 @@
   <%= f.input :equipment_id, label: "Equipo",
                               collection: Equipment.all.map { |e| [e.model, e.id, { 'data-kind' => e.kind }] },
                               prompt: "Seleccione un equipo",
-                              input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displaySerialNumberInputs change->location-equipment-form#displayServiceIntervals"}} %>
-  <div data-location-equipment-form-target="serialNumber">
-    <%= f.input :serial_number, label: "Numero de serie" %>
-  </div>
-  <div data-location-equipment-form-target="powerUnitSerialNumbersGroup" class="d-none">
-    <%= f.input :engine_serial_number, label: "Numero de serie del motor" %>
-    <%= f.input :power_unit_serial_number, label: "Numero de serie del grupo electrógeno" %>
-  </div>
-  <%= f.input :code, label: "Codigo" %>
-  <%= f.input :status, label: "Estado", collection: LocationEquipment.enum_attributes_for_select("status"), include_blank: false %>
-  <div data-location-equipment-form-target="serviceInterval">
-    <%= f.input :service_interval, label: "Intervalo entre servicios (años)" %>
-  </div>
-  <div data-location-equipment-form-target="batteryInterval">
-    <%= f.input :battery_change_interval, label: "Intervalo de cambio de batería (años)" %>
-  </div>
-  <div data-location-equipment-form-target="beltInterval">
-    <%= f.input :belt_change_interval, label: "Intervalo de cambio de correa (años)" %>
-  </div>
-  <%= f.input :form_link, label: "Link Formulario" %>
+                              input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
+
+  <fieldset data-location-equipment-form-target="upsInputs" class="d-none">
+    <%= render "location_equipments/ups_form", f: f %>
+  </fieldset>
+  <fieldset data-location-equipment-form-target="powerUnitInputs" class="d-none">
+    <%= render "location_equipments/power_unit_form", f: f %>
+  </fieldset>
+  <fieldset data-location-equipment-form-target="electricalPanelInputs" class="d-none">
+    <%= render "location_equipments/electrical_panel", f: f %>
+  </fieldset>
+
   <%= f.input :details, label: "Detalles" %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
