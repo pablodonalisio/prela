@@ -86,6 +86,7 @@ RSpec.describe LocationEquipment, type: :model do
   context "methods" do
     let(:ups) { create(:location_equipment, equipment: create(:equipment, kind: :ups)) }
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
+    let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, kind: :electrical_panel)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
     describe "next_service_dates" do
@@ -138,12 +139,22 @@ RSpec.describe LocationEquipment, type: :model do
         expect(power_unit.next_service_dates.belt_change.first.date).to eq(5.years.from_now)
       end
 
-      it "creates new next service dates for specific kind of equipment" do
+      it "creates new next service dates for ups" do
         freeze_time
         ups.create_next_service_dates(Time.current)
 
         expect(ups.next_service_dates.size).to eq(1)
         expect(ups.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
+      end
+
+      it "creates new next service dates for electrical panel" do
+        freeze_time
+        electrical_panel.create_next_service_dates(Time.current)
+
+        expect(electrical_panel.next_service_dates.size).to eq(3)
+        expect(electrical_panel.next_service_dates.service.first.date).to eq(1.year.from_now)
+        expect(electrical_panel.next_service_dates.torque.first.date).to eq(1.year.from_now)
+        expect(electrical_panel.next_service_dates.cleaning.first.date).to eq(1.year.from_now)
       end
     end
 
@@ -163,6 +174,12 @@ RSpec.describe LocationEquipment, type: :model do
         expect(power_unit.calculate_next_service_date(:battery_change, 2.years.from_now)).to eq(4.years.from_now)
         expect(power_unit.calculate_next_service_date(:belt_change, 5.years.from_now)).to eq(10.years.from_now)
       end
+    end
+  end
+
+  context "SERVICE_KINDS constant" do
+    it "defines service kinds for each equipment kind" do
+      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment.kinds.keys.size)
     end
   end
 end

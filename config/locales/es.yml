@@ -32,6 +32,10 @@ es:
         next_battery_change: "Próximo cambio de batería"
         last_belt_change: "Último cambio de correas"
         next_belt_change: "Próximo cambio de correas"
+        last_torque: "Último torqueo"
+        next_torque: "Próximo torqueo"
+        last_cleaning: "Última limpieza"
+        next_cleaning: "Próxima limpieza"
         details: "Detalles"
         statuses:
           active: "En servicio"
@@ -52,6 +56,8 @@ es:
         service: "Próximo service"
         battery_change: "Próximo cambio de batería"
         belt_change: "Próximo cambio de correas"
+        torque: "Próximo torqueo"
+        cleaning: "Próxima limpieza"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
