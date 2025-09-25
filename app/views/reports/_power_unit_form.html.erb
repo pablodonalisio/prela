@@ -1,46 +1,57 @@
 <%= form.simple_fields_for :power_unit_report_stat do |power_unit_stats_form| %>
-  <div data-controller="power-unit-input">
+  <div data-controller="report-input">
     <%= power_unit_stats_form.input :general_disconnector, label: "Seccionador general", collection: PowerUnitReportStat::GENERAL_DISCONNECTOR_OPTIONS %>
     <%= power_unit_stats_form.input :emergency_stop_position, label: "Posición parada de emergencia", collection: PowerUnitReportStat::EMERGENCY_STOP_POSITION_OPTIONS %>
     <%= power_unit_stats_form.input :start_key_on_auto, label: "Llave encendido en posición AUTO", collection: PowerUnitReportStat::START_KEY_ON_AUTO_OPTIONS %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :rpm,
-                                      input_label: "R.P.M." %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "R.P.M.",
+                                      input_id: "report_power_unit_report_stat_attributes_rpm" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :frequency,
-                                      input_label: "Frecuencia (Hz)" %>
+                                      input_label: "Frecuencia (Hz)",
+                                      input_id: "report_power_unit_report_stat_attributes_frequency" %>
     <%= power_unit_stats_form.input :battery_charge_control, label: "Control de carga de baterías (V)" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :tension_between_phases_a_b,
-                                      input_label: "Tensión entre fases A-B (V)" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "Tensión entre fases A-B (V)",
+                                      input_id: "report_power_unit_report_stat_attributes_tension_between_phases_a_b" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :tension_between_phases_b_c,
-                                      input_label: "Tensión entre fases B-C (V)" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "Tensión entre fases B-C (V)",
+                                      input_id: "report_power_unit_report_stat_attributes_tension_between_phases_b_c" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :tension_between_phases_c_a,
-                                      input_label: "Tensión entre fases C-A (V)" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "Tensión entre fases C-A (V)",
+                                      input_id: "report_power_unit_report_stat_attributes_tension_between_phases_c_a" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :initial_temperature,
-                                      input_label: "Temperatura inicial (°C)" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "Temperatura inicial (°C)",
+                                      input_id: "report_power_unit_report_stat_attributes_initial_temperature" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :running_temperature,
-                                      input_label: "Temperatura en marcha (°C)" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "Temperatura en marcha (°C)",
+                                      input_id: "report_power_unit_report_stat_attributes_running_temperature" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :number_of_starts,
-                                      input_label: "Número de arranques" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "Número de arranques",
+                                      input_id: "report_power_unit_report_stat_attributes_number_of_starts" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :operating_time,
-                                      input_label: "Tiempo de funcionamiento (Hs)" %>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+                                      input_label: "Tiempo de funcionamiento (Hs)",
+                                      input_id: "report_power_unit_report_stat_attributes_operating_time" %>
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :failed_starts,
-                                      input_label: "Arranques fallidos" %>
+                                      input_label: "Arranques fallidos",
+                                      input_id: "report_power_unit_report_stat_attributes_failed_starts" %>
     <div class="d-flex">
       <%= power_unit_stats_form.input :oil_pressure, label: "Presión de aceite" %>
       <%= power_unit_stats_form.input :oil_pressure_unit, label: "Unidad", collection: PowerUnitReportStat::OIL_PRESSURE_UNIT_OPTIONS %>
     </div>
-    <%= render "no_data_check_input", power_unit_stats_form: power_unit_stats_form,
+    <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :fuel_level,
-                                      input_label: "Nivel de combustible" %>
+                                      input_label: "Nivel de combustible",
+                                      input_id: "report_power_unit_report_stat_attributes_fuel_level" %>
     <%= power_unit_stats_form.input :coolant_level, label: "Nivel de refrigerante", collection: PowerUnitReportStat::COOLANT_LEVEL_OPTIONS %>
     <%= power_unit_stats_form.input :oil_level, label: "Nivel de aceite", collection: PowerUnitReportStat::OIL_LEVEL_OPTIONS %>
     <%= power_unit_stats_form.input :testing_time, label: "Tiempo de prueba (Min.)" %>
