@@ -172,6 +172,7 @@ class ReportsController < ApplicationController
   def build_report_stats
     @report.build_ups_report_stat if location_equipment.equipment.ups?
     @report.build_power_unit_report_stat if location_equipment.equipment.power_unit?
+    @report.build_electrical_panel_report_stat if location_equipment.equipment.electrical_panel?
     @report.build_room_report_stat
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_18_184238) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_24_202134) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,67 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_184238) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "electrical_panel_report_stats", force: :cascade do |t|
+    t.string "dimensions"
+    t.string "mounting_surface"
+    t.string "physical_state"
+    t.boolean "voltage_presence_lights_in_operation"
+    t.string "panel_labeling"
+    t.string "general_cutoff_switch_model"
+    t.string "key"
+    t.string "cabinet_cleaning"
+    t.string "power_quantity_and_section"
+    t.string "power_cable_type"
+    t.string "l1_color"
+    t.string "l2_color"
+    t.string "l3_color"
+    t.string "neutral_color"
+    t.string "power_rotation_sequency"
+    t.string "general_cutoff_switch_protection_limit"
+    t.string "panel_type"
+    t.boolean "operational_atmospheric_discharger"
+    t.integer "distributor_or_bars"
+    t.integer "circuits_without_differentials"
+    t.integer "circuits_without_thermal_keys"
+    t.integer "protections_powered_on_garlands"
+    t.integer "protections_such_as_terminal_blocks"
+    t.integer "misplaced_switchgears"
+    t.string "switchgear_type"
+    t.integer "specialized_switchgears"
+    t.string "specialized_switchgear_type"
+    t.integer "conductors_without_terminals"
+    t.integer "undersized_conductors"
+    t.integer "conductors_with_marked_aging"
+    t.integer "conductors_with_clear_colorimetry"
+    t.integer "conductors_with_splices"
+    t.integer "overheated_conductors"
+    t.string "conductors_cable_order"
+    t.float "average_temperature"
+    t.boolean "hot_spots_presence"
+    t.float "l1_amperage"
+    t.float "l2_amperage"
+    t.float "l3_amperage"
+    t.float "neutral_amperage"
+    t.float "l1_neutral_voltage"
+    t.float "l2_neutral_voltage"
+    t.float "l3_neutral_voltage"
+    t.float "l1_l2_voltage"
+    t.float "l2_l3_voltage"
+    t.float "l3_l1_voltage"
+    t.float "l1_pe_voltage"
+    t.float "neutral_pe_voltage"
+    t.boolean "pat_bars_presence"
+    t.string "ground_cable_status"
+    t.boolean "pat_cable_continuity_with_circuits"
+    t.string "pat_cable_section"
+    t.boolean "cabinet_equipotentialization"
+    t.boolean "pat_splices_presence"
+    t.bigint "report_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id"], name: "index_electrical_panel_report_stats_on_report_id"
   end
 
   create_table "equipment", force: :cascade do |t|
@@ -249,6 +310,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_18_184238) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "location_equipments"
+  add_foreign_key "electrical_panel_report_stats", "reports"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "locations", "clients"

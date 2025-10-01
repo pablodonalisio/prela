@@ -1,0 +1,13 @@
+ <div class="border p-3 my-4">
+  <p><%= group_name %></p>
+  <div class="form-group">
+    <div class="form-check">
+      <%= render "toggle_disable_checkbox", attribute: attribute,
+                                            input_id: input_id,
+                                            label: toggle_disable_label %>
+    </div>
+    <div id=<%= input_id %> class="mt-4">
+      <%= yield %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<%= check_box_tag "disable_#{attribute}", "1",
+                                          false,
+                                          class: "form-check-input",
+                                          data: {
+                                            action: "report-input#toggleDisabled",
+                                            power_unit_input_target: "checkbox",
+                                            input_id: input_id
+                                          } %>
+<%= label_tag "disable_#{attribute}", label, class: "form-check-label" %>

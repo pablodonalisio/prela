@@ -16,6 +16,8 @@
     <%= render "ups_form", form: f, is_triphase: location_equipment.equipment.is_triphase %>
   <% elsif location_equipment.equipment.power_unit? %>
     <%= render "power_unit_form", form: f %>
+  <% elsif location_equipment.equipment.electrical_panel? %>
+    <%= render "electrical_panel_form", form: f, is_triphase: location_equipment.equipment.is_triphase %>
   <% end %>
 
   <h2>Sala</h2>
