@@ -114,6 +114,7 @@ class ReportsController < ApplicationController
           connections_condition_and_battery_fixation
           cable_and_electrical_connections
         ],
+        electrical_panel_report_stat_attributes: ElectricalPanelReportStat.permitted_attributes,
         room_report_stat_attributes: %i[
           room_status
           air_conditioning
