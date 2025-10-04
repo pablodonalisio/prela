@@ -21,21 +21,15 @@ class Reports::RoomStats < Reports::Content
   end
 
   def room_rows
-    if equipment.power_unit?
-      [
-        [{content: "SALA", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
-        [{}, {content: "Valor Observado"}, {content: "Óptimo"}],
-        [{content: "Estado de la sala"}, {content: room_report_stat.room_status}, {content: "Correcto"}]
-      ]
-    else
-      [
-        [{content: "SALA", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
-        [{}, {content: "Valor Observado"}, {content: "Óptimo"}],
-        [{content: "Estado de la sala"}, {content: room_report_stat.room_status}, {content: "Correcto"}],
-        [{content: "Funcionamiento de los aires acondicionados"}, {content: room_report_stat.air_conditioning}, {content: "Correcto"}],
-        [{content: "Temperatura"}, {content: "#{room_report_stat.temperature} °C"}, {content: ""}],
-        [{content: "Humedad"}, {content: "#{room_report_stat.humidity} %"}, {content: ""}]
-      ]
-    end
+    rows = [
+      [{content: "SALA", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
+      [{}, {content: "Valor Observado"}, {content: "Óptimo"}]
+    ]
+    rows << [{content: "Estado de la sala"}, {content: room_report_stat.room_status}, {content: "Correcto"}] if room_report_stat.room_status.present?
+    rows << [{content: "Funcionamiento de los aires acondicionados"}, {content: room_report_stat.air_conditioning}, {content: "Correcto"}] if room_report_stat.air_conditioning.present?
+    rows << [{content: "Temperatura"}, {content: "#{room_report_stat.temperature} °C"}, {content: ""}] if room_report_stat.temperature.present?
+    rows << [{content: "Humedad"}, {content: "#{room_report_stat.humidity} %"}, {content: ""}] if room_report_stat.humidity.present?
+
+    rows
   end
 end
