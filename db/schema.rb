@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_24_202134) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_06_135916) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -256,6 +256,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_24_202134) do
     t.datetime "updated_at", null: false
     t.float "temperature"
     t.float "humidity"
+    t.string "clean_and_tidy"
+    t.string "ventilated"
+    t.string "free_access_to_panel"
+    t.string "with_access_key"
     t.index ["report_id"], name: "index_room_report_stats_on_report_id"
   end
 

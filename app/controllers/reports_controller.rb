@@ -115,12 +115,7 @@ class ReportsController < ApplicationController
           cable_and_electrical_connections
         ],
         electrical_panel_report_stat_attributes: ElectricalPanelReportStat.permitted_attributes,
-        room_report_stat_attributes: %i[
-          room_status
-          air_conditioning
-          temperature
-          humidity
-        ],
+        room_report_stat_attributes: RoomReportStat.permitted_attributes,
         images: []
       )
   end

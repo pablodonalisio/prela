@@ -3,15 +3,34 @@ class RoomReportStat < ApplicationRecord
   AIR_CONDITIONING_OPTIONS = ["Correcto", "Incorrecto", "Falta refrigeración", "Sala sin aire"]
   belongs_to :report
 
-  validates :room_status, presence: true
-  validates :air_conditioning, :temperature, :humidity, presence: true, unless: :power_unit?
+  validates :room_status, presence: true, if: :power_unit?
+  validates :room_status, :air_conditioning, :temperature, :humidity, presence: true, if: :ups?
+  validates :clean_and_tidy, :ventilated, :free_access_to_panel, :with_access_key, presence: true, if: :electrical_panel?
 
-  validates :room_status, inclusion: {in: ROOM_STATUS_OPTIONS, message: "Debe ser alguno de los siguientes: #{ROOM_STATUS_OPTIONS.join(", ")}"}
-  validates :air_conditioning, inclusion: {in: AIR_CONDITIONING_OPTIONS, message: "Debe ser alguno de los siguientes: #{AIR_CONDITIONING_OPTIONS.join(", ")}"}, unless: :power_unit?
+  def self.permitted_attributes
+    %i[
+      room_status
+      air_conditioning
+      temperature
+      humidity
+      clean_and_tidy
+      ventilated
+      free_access_to_panel
+      with_access_key
+    ]
+  end
 
   private
 
   def power_unit?
     report.location_equipment.equipment.power_unit?
+  end
+
+  def ups?
+    report.location_equipment.equipment.ups?
+  end
+
+  def electrical_panel?
+    report.location_equipment.equipment.electrical_panel?
   end
 end

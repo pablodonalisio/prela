@@ -22,11 +22,18 @@
 
   <h2>Sala</h2>
   <%= f.simple_fields_for :room_report_stat do |room_stats_form| %>
-    <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
-    <% unless location_equipment.equipment.power_unit?%>
+    <% if location_equipment.equipment.power_unit? %>
+      <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
+    <% elsif location_equipment.equipment.ups?%>
+      <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
       <%= room_stats_form.input :air_conditioning, label: "Funcionamiento de los aires acondicionados", collection: RoomReportStat::AIR_CONDITIONING_OPTIONS %>
       <%= room_stats_form.input :temperature, label: "Temperatura" %>
       <%= room_stats_form.input :humidity, label: "Humedad" %>
+    <% elsif location_equipment.equipment.electrical_panel?%>
+      <%= room_stats_form.input :clean_and_tidy, label: "Limpia y ordenada", collection: ["Si", "No"] %>
+      <%= room_stats_form.input :ventilated, label: "Ventilada", collection: ["Si", "No"] %>
+      <%= room_stats_form.input :free_access_to_panel, label: "Libre accesso al tablero", collection: ["Si", "No"] %>
+      <%= room_stats_form.input :with_access_key, label: "Con llave de ingreso", collection: ["Si", "No"] %>
     <% end %>
   <% end %>
 
