@@ -4,5 +4,6 @@ class HomeController < ApplicationController
     @links = Link.all if current_user.admin?
     @overdue_ups = policy_scope(LocationEquipment).with_overdue_maintenance(:ups)
     @overdue_power_units = policy_scope(LocationEquipment).with_overdue_maintenance(:power_unit)
+    @overdue_electrical_panels = policy_scope(LocationEquipment).with_overdue_maintenance(:electrical_panel)
   end
 end

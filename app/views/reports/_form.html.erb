@@ -16,15 +16,24 @@
     <%= render "ups_form", form: f, is_triphase: location_equipment.equipment.is_triphase %>
   <% elsif location_equipment.equipment.power_unit? %>
     <%= render "power_unit_form", form: f %>
+  <% elsif location_equipment.equipment.electrical_panel? %>
+    <%= render "electrical_panel_form", form: f, is_triphase: location_equipment.equipment.is_triphase %>
   <% end %>
 
   <h2>Sala</h2>
   <%= f.simple_fields_for :room_report_stat do |room_stats_form| %>
-    <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
-    <% unless location_equipment.equipment.power_unit?%>
+    <% if location_equipment.equipment.power_unit? %>
+      <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
+    <% elsif location_equipment.equipment.ups?%>
+      <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
       <%= room_stats_form.input :air_conditioning, label: "Funcionamiento de los aires acondicionados", collection: RoomReportStat::AIR_CONDITIONING_OPTIONS %>
       <%= room_stats_form.input :temperature, label: "Temperatura" %>
       <%= room_stats_form.input :humidity, label: "Humedad" %>
+    <% elsif location_equipment.equipment.electrical_panel?%>
+      <%= room_stats_form.input :clean_and_tidy, label: "Limpia y ordenada", collection: ["Si", "No"] %>
+      <%= room_stats_form.input :ventilated, label: "Ventilada", collection: ["Si", "No"] %>
+      <%= room_stats_form.input :free_access_to_panel, label: "Libre accesso al tablero", collection: ["Si", "No"] %>
+      <%= room_stats_form.input :with_access_key, label: "Con llave de ingreso", collection: ["Si", "No"] %>
     <% end %>
   <% end %>
 
@@ -35,17 +44,22 @@
   <h2>Imágenes</h2>
 
   <div class="my-3 row">
-    <% 2.times do |n| %>
-      <% image = report.new_record? ? nil : report.images[n] %>
-      <div class="mt-3 border col-sm-6 p-2">
-        <h4>Imagen <%= n+1 %></h4>
-        <%= render "shared/file_upload", file: image,
-                                         form: f,
-                                         resize: [nil, 250],
-                                         file_field: :images, new_label: "Nueva Imagen #{n + 1}",
-                                         accepted_formats: "image/jpeg, image/jpg, image/png",
-                                         multiple: true %>
-      </div>
+    <% if location_equipment.equipment.electrical_panel? %>
+      <%= render "image_upload", report: report, title: "Plano unifilar", f: f, n: 0 %>
+      <%= render "image_upload", report: report, title: "Plano de ubicación", f: f, n: 1 %>
+      <%= render "image_upload", report: report, title: "Entorno", f: f, n: 2 %>
+      <%= render "image_upload", report: report, title: "Vista de frente", f: f, n: 3 %>
+      <%= render "image_upload", report: report, title: "Vista tablero cerrado", f: f, n: 4 %>
+      <%= render "image_upload", report: report, title: "Vista interior con plastrones", f: f, n: 5 %>
+      <%= render "image_upload", report: report, title: "Vista interior sin plastrones", f: f, n: 6 %>
+      <%= render "image_upload", report: report, title: "Vista interior puerta", f: f, n: 7 %>
+      <%= render "image_upload", report: report, title: "Terografía", f: f, n: 8 %>
+      <%= render "image_upload", report: report, title: "Foto ingreso y egreso del tablero", f: f, n: 9 %>
+      <%= render "image_upload", report: report, title: "Extra", f: f, n: 10 %>
+    <% else %>
+      <% 2.times do |n| %>
+        <%= render "image_upload", report: report, title: "Imagen #{n+1}", f: f, n: n%>
+      <% end %>
     <% end %>
   </div>
 

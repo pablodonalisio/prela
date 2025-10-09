@@ -2,7 +2,7 @@
   <% if file %>
     <div data-upload-target="existingFile">
       <% if file.representable? %>
-        <%= image_tag file.representation(resize_to_limit: resize) %>
+        <%= image_tag file.representation(resize_to_limit: resize), style: "object-fit: contain;" %>
       <% end %>
       <div class="col-12">
         <%= content_tag :div, "Cambiar", class:"btn btn-primary mt-2", data: { action: "click->upload#changeFile"} %>

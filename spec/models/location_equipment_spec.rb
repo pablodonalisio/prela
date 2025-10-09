@@ -86,11 +86,12 @@ RSpec.describe LocationEquipment, type: :model do
   context "methods" do
     let(:ups) { create(:location_equipment, equipment: create(:equipment, kind: :ups)) }
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
+    let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, kind: :electrical_panel)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
     describe "next_service_dates" do
       let!(:location_equipment) do
-        location_equipment = create(:location_equipment)
+        location_equipment = create(:location_equipment, equipment: create(:equipment, kind: :power_unit))
         location_equipment.service_dates.destroy_all # Remove default next service dates created by after_create callback
         location_equipment
       end
@@ -103,7 +104,7 @@ RSpec.describe LocationEquipment, type: :model do
 
       it "returns next service dates for location equipment" do
         expect(location_equipment.next_service_dates.map { |sd| sd.date.to_date }).to all(eq(Date.current))
-        expect(location_equipment.next_service_dates.size).to eq(ServiceDate.kinds.size)
+        expect(location_equipment.next_service_dates.size).to eq(LocationEquipment::SERVICE_KINDS[location_equipment.kind].size)
       end
     end
 
@@ -114,6 +115,10 @@ RSpec.describe LocationEquipment, type: :model do
       it "returns last service date" do
         expect(location_equipment.last_service_date(:last_battery_change).to_date).to eq(Date.today)
       end
+
+      it "should raise error for undefined activity kind" do
+        expect { location_equipment.last_service_date(:undefined_kind) }.to raise_error("Undefined activity kind")
+      end
     end
 
     describe "create_next_service_dates" do
@@ -122,7 +127,7 @@ RSpec.describe LocationEquipment, type: :model do
       it "creates first next service dates after location equipment creation" do
         freeze_time
 
-        expect(power_unit.next_service_dates.size).to eq(ServiceDate.kinds.size)
+        expect(power_unit.next_service_dates.size).to eq(LocationEquipment::SERVICE_KINDS[power_unit.kind].size)
         expect(power_unit.next_service_dates.service.first.date).to eq(1.year.from_now)
         expect(power_unit.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
         expect(power_unit.next_service_dates.belt_change.first.date).to eq(5.years.from_now)
@@ -132,18 +137,28 @@ RSpec.describe LocationEquipment, type: :model do
         freeze_time
         power_unit.create_next_service_dates(Time.current, service_kinds)
 
-        expect(power_unit.next_service_dates.size).to eq(ServiceDate.kinds.size)
+        expect(power_unit.next_service_dates.size).to eq(LocationEquipment::SERVICE_KINDS[power_unit.kind].size)
         expect(power_unit.next_service_dates.service.first.date).to eq(1.year.from_now)
         expect(power_unit.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
         expect(power_unit.next_service_dates.belt_change.first.date).to eq(5.years.from_now)
       end
 
-      it "creates new next service dates for specific kind of equipment" do
+      it "creates new next service dates for ups" do
         freeze_time
         ups.create_next_service_dates(Time.current)
 
         expect(ups.next_service_dates.size).to eq(1)
         expect(ups.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
+      end
+
+      it "creates new next service dates for electrical panel" do
+        freeze_time
+        electrical_panel.create_next_service_dates(Time.current)
+
+        expect(electrical_panel.next_service_dates.size).to eq(3)
+        expect(electrical_panel.next_service_dates.service.first.date).to eq(1.year.from_now)
+        expect(electrical_panel.next_service_dates.torque.first.date).to eq(1.year.from_now)
+        expect(electrical_panel.next_service_dates.cleaning.first.date).to eq(1.year.from_now)
       end
     end
 
@@ -163,6 +178,12 @@ RSpec.describe LocationEquipment, type: :model do
         expect(power_unit.calculate_next_service_date(:battery_change, 2.years.from_now)).to eq(4.years.from_now)
         expect(power_unit.calculate_next_service_date(:belt_change, 5.years.from_now)).to eq(10.years.from_now)
       end
+    end
+  end
+
+  context "SERVICE_KINDS constant" do
+    it "defines service kinds for each equipment kind" do
+      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment.kinds.keys.size)
     end
   end
 end

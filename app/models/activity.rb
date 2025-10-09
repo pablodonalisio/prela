@@ -2,11 +2,15 @@ class Activity < ApplicationRecord
   SERVICE = "Service general"
   BATTERY_CHANGE = "Cambio batería"
   BELT_CHANGE = "Cambio correas"
+  TORQUE = "Torqueo"
+  CLEANING = "Limpieza"
   OTHER = "Otro"
   KINDS = {
     SERVICE => :service,
     BATTERY_CHANGE => :battery_change,
     BELT_CHANGE => :belt_change,
+    TORQUE => :torque,
+    CLEANING => :cleaning,
     OTHER => :other
   }
 

@@ -18,7 +18,7 @@
   <p class="card-text m-0">
     <small class="text-body-secondary">Numero de serie del grupo electrógeno: <%= location_equipment.power_unit_serial_number %></small>
   </p>
-<% else %>
+<% elsif location_equipment.equipment.ups? %>
   <p class="card-text m-0">
     <small class="text-body-secondary">Numero de serie: <%= location_equipment.serial_number %></small>
   </p>

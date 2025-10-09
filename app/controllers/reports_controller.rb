@@ -114,12 +114,8 @@ class ReportsController < ApplicationController
           connections_condition_and_battery_fixation
           cable_and_electrical_connections
         ],
-        room_report_stat_attributes: %i[
-          room_status
-          air_conditioning
-          temperature
-          humidity
-        ],
+        electrical_panel_report_stat_attributes: ElectricalPanelReportStat.permitted_attributes,
+        room_report_stat_attributes: RoomReportStat.permitted_attributes,
         images: []
       )
   end
@@ -172,6 +168,7 @@ class ReportsController < ApplicationController
   def build_report_stats
     @report.build_ups_report_stat if location_equipment.equipment.ups?
     @report.build_power_unit_report_stat if location_equipment.equipment.power_unit?
+    @report.build_electrical_panel_report_stat if location_equipment.equipment.electrical_panel?
     @report.build_room_report_stat
   end
 
