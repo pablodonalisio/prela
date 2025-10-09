@@ -1,7 +1,9 @@
 
 <div class="form-group">
-  <%= form.input attribute, label: input_label %>
+  <div id= <%= form_group_id%>>
+    <%= form.input attribute, label: input_label %>
+  </div>
   <div class="form-check mb-4">
-    <%= render "toggle_disable_checkbox", attribute: attribute, input_id: input_id, label: "Sin datos" %>
+    <%= render "toggle_disable_checkbox", attribute: attribute, form_group_id: form_group_id, label: "Sin datos" %>
   </div>
 </div>

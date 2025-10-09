@@ -3,7 +3,7 @@ FactoryBot.define do
     dimensions { "X x Y x Z" }
     mounting_surface { "Empotrado" }
     physical_state { "Perfecto" }
-    voltage_presence_lights_in_operation { true }
+    voltage_presence_lights_in_operation { "No posee" }
     panel_labeling { "Deficiente" }
     general_cutoff_switch_model { "Interruptor General" }
     key { "Sin llave" }

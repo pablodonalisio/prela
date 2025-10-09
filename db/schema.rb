@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_135916) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_08_182430) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -70,7 +70,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_135916) do
     t.string "dimensions"
     t.string "mounting_surface"
     t.string "physical_state"
-    t.boolean "voltage_presence_lights_in_operation"
+    t.string "voltage_presence_lights_in_operation"
     t.string "panel_labeling"
     t.string "general_cutoff_switch_model"
     t.string "key"
@@ -84,7 +84,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_135916) do
     t.string "power_rotation_sequency"
     t.string "general_cutoff_switch_protection_limit"
     t.string "panel_type"
-    t.boolean "operational_atmospheric_discharger"
+    t.string "operational_atmospheric_discharger"
     t.integer "distributor_or_bars"
     t.integer "circuits_without_differentials"
     t.integer "circuits_without_thermal_keys"

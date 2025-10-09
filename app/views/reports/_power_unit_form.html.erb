@@ -6,44 +6,44 @@
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :rpm,
                                       input_label: "R.P.M.",
-                                      input_id: "report_power_unit_report_stat_attributes_rpm" %>
+                                      form_group_id: "rpm_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :frequency,
                                       input_label: "Frecuencia (Hz)",
-                                      input_id: "report_power_unit_report_stat_attributes_frequency" %>
+                                      form_group_id: "frequency_form_group" %>
     <%= power_unit_stats_form.input :battery_charge_control, label: "Control de carga de baterías (V)" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :tension_between_phases_a_b,
                                       input_label: "Tensión entre fases A-B (V)",
-                                      input_id: "report_power_unit_report_stat_attributes_tension_between_phases_a_b" %>
+                                      form_group_id: "tension_between_phases_a_b_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :tension_between_phases_b_c,
                                       input_label: "Tensión entre fases B-C (V)",
-                                      input_id: "report_power_unit_report_stat_attributes_tension_between_phases_b_c" %>
+                                      form_group_id: "tension_between_phases_b_c_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :tension_between_phases_c_a,
                                       input_label: "Tensión entre fases C-A (V)",
-                                      input_id: "report_power_unit_report_stat_attributes_tension_between_phases_c_a" %>
+                                      form_group_id: "tension_between_phases_c_a_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :initial_temperature,
                                       input_label: "Temperatura inicial (°C)",
-                                      input_id: "report_power_unit_report_stat_attributes_initial_temperature" %>
+                                      form_group_id: "initial_temperature_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :running_temperature,
                                       input_label: "Temperatura en marcha (°C)",
-                                      input_id: "report_power_unit_report_stat_attributes_running_temperature" %>
+                                      form_group_id: "running_temperature_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :number_of_starts,
                                       input_label: "Número de arranques",
-                                      input_id: "report_power_unit_report_stat_attributes_number_of_starts" %>
+                                      form_group_id: "number_of_starts_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :operating_time,
                                       input_label: "Tiempo de funcionamiento (Hs)",
-                                      input_id: "report_power_unit_report_stat_attributes_operating_time" %>
+                                      form_group_id: "operating_time_form_group" %>
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :failed_starts,
                                       input_label: "Arranques fallidos",
-                                      input_id: "report_power_unit_report_stat_attributes_failed_starts" %>
+                                      form_group_id: "failed_starts_form_group" %>
     <div class="d-flex">
       <%= power_unit_stats_form.input :oil_pressure, label: "Presión de aceite" %>
       <%= power_unit_stats_form.input :oil_pressure_unit, label: "Unidad", collection: PowerUnitReportStat::OIL_PRESSURE_UNIT_OPTIONS %>
@@ -51,7 +51,7 @@
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :fuel_level,
                                       input_label: "Nivel de combustible",
-                                      input_id: "report_power_unit_report_stat_attributes_fuel_level" %>
+                                      form_group_id: "fuel_level_form_group" %>
     <%= power_unit_stats_form.input :coolant_level, label: "Nivel de refrigerante", collection: PowerUnitReportStat::COOLANT_LEVEL_OPTIONS %>
     <%= power_unit_stats_form.input :oil_level, label: "Nivel de aceite", collection: PowerUnitReportStat::OIL_LEVEL_OPTIONS %>
     <%= power_unit_stats_form.input :testing_time, label: "Tiempo de prueba (Min.)" %>

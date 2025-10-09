@@ -9,6 +9,8 @@ class ElectricalPanelReportStat < ApplicationRecord
   PANEL_TYPE_OPTIONS = ["Seccional", "Principal", "Distribuidor de cargas", "Coseno phi", "Tablero de aislación"]
   CONDUCTORS_CABLE_ORDER_OPTIONS = ["Perfecto", "Bueno", "Deficiente", "Malo"]
   GROUND_CABLE_STATUS_OPTIONS = ["Perfecto", "Deficiente", "Malo"]
+  VOLTAGE_PRESENCE_LIGHTS_IN_OPERATION_OPTIONS = ["No posee", "Funciona correctamente", "No funciona"]
+  OPERATIONAL_ATMOSPHERIC_DISCHARGER_OPTIONS = ["No posee", "Funciona correctamente", "No funciona"]
   belongs_to :report
 
   validates :dimensions, :mounting_surface, :physical_state,
@@ -23,14 +25,13 @@ class ElectricalPanelReportStat < ApplicationRecord
     :conductors_with_marked_aging, :conductors_with_clear_colorimetry, :conductors_with_splices,
     :overheated_conductors, :conductors_cable_order, :average_temperature,
     :l1_amperage, :neutral_amperage, :l1_neutral_voltage, :neutral_pe_voltage,
-    :ground_cable_status, :pat_cable_section, presence: true
+    :ground_cable_status, :pat_cable_section, :voltage_presence_lights_in_operation,
+    :operational_atmospheric_discharger, presence: true
 
   validates :l2_color, :l3_color, :l2_amperage, :l3_amperage, :l2_neutral_voltage, :l3_neutral_voltage,
     :l1_l2_voltage, :l2_l3_voltage, :l3_l1_voltage, presence: true, if: :is_triphase?
   validates :l1_pe_voltage, presence: true, if: :is_monophase?
 
-  validates :voltage_presence_lights_in_operation, inclusion: {in: [true, false]}
-  validates :operational_atmospheric_discharger, inclusion: {in: [true, false]}
   validates :hot_spots_presence, inclusion: {in: [true, false]}
   validates :pat_bars_presence, inclusion: {in: [true, false]}
   validates :pat_cable_continuity_with_circuits, inclusion: {in: [true, false]}
@@ -100,5 +101,61 @@ class ElectricalPanelReportStat < ApplicationRecord
       pat_cable_section
       cabinet_equipotentialization
       pat_splices_presence]
+  end
+
+  def general_cutoff_switch_present?
+    !general_cutoff_switch_model.eql?("-1")
+  end
+
+  def distributor_or_bars_present?
+    !distributor_or_bars.eql?(-1)
+  end
+
+  def circuits_without_differentials_present?
+    !circuits_without_differentials.eql?(-1)
+  end
+
+  def circuits_without_thermal_keys_present?
+    !circuits_without_thermal_keys.eql?(-1)
+  end
+
+  def protections_powered_on_garlands_present?
+    !protections_powered_on_garlands.eql?(-1)
+  end
+
+  def protections_such_as_terminal_blocks_present?
+    !protections_such_as_terminal_blocks.eql?(-1)
+  end
+
+  def misplaced_switchgears_present?
+    !misplaced_switchgears.eql?(-1)
+  end
+
+  def specialized_switchgears_present?
+    !specialized_switchgears.eql?(-1)
+  end
+
+  def conductors_without_terminals_present?
+    !conductors_without_terminals.eql?(-1)
+  end
+
+  def undersized_conductors_present?
+    !undersized_conductors.eql?(-1)
+  end
+
+  def conductors_with_marked_aging_present?
+    !conductors_with_marked_aging.eql?(-1)
+  end
+
+  def conductors_with_clear_colorimetry_present?
+    !conductors_with_clear_colorimetry.eql?(-1)
+  end
+
+  def conductors_with_splices_present?
+    !conductors_with_splices.eql?(-1)
+  end
+
+  def overheated_conductors_present?
+    !overheated_conductors.eql?(-1)
   end
 end

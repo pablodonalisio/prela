@@ -8,13 +8,8 @@
                                                              collection: ElectricalPanelReportStat::MOUNTING_SURFACE_OPTIONS %>
     <%= electrical_panel_stats_form.input :physical_state, label: "Estado físico",
                                                            collection: ElectricalPanelReportStat::PHYSICAL_STATE_OPTIONS %>
-
-    <%= render "toggle_disable_groups", group_name: "Indicadores luminosos de presencia de tensión",
-                                        attribute: :voltage_presence_lights_in_operation,
-                                        input_id: "report_electrical_panel_report_stat_attributes_voltage_presence_lights_in_operation_form_group",
-                                        toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :voltage_presence_lights_in_operation, label: "Funciona correctamente?" %>
-    <% end %>
+    <%= electrical_panel_stats_form.input :voltage_presence_lights_in_operation, label: "Indicadores luminosos de presencia de tensión",
+                                                           collection: ElectricalPanelReportStat::VOLTAGE_PRESENCE_LIGHTS_IN_OPERATION_OPTIONS %>
 
     <%= electrical_panel_stats_form.input :panel_labeling, label: "Etiquetado del tablero",
                                                            collection: ElectricalPanelReportStat::PANEL_LABELING_OPTIONS %>
@@ -47,7 +42,7 @@
 
     <%= render "toggle_disable_groups", group_name: "Interruptor de corte general",
                                         attribute: :general_cutoff_switch,
-                                        input_id: "report_electrical_panel_report_stat_attributes_general_cutoff_switch_form_group",
+                                        form_group_id: "general_cutoff_switch_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :general_cutoff_switch_model, label: "Modelo" %>
       <%= electrical_panel_stats_form.input :general_cutoff_switch_protection_limit, label: "Límite de protección" %>
@@ -55,52 +50,48 @@
 
     <%= electrical_panel_stats_form.input :panel_type, label: "Tipo de tablero",
                                                        collection: ElectricalPanelReportStat::PANEL_TYPE_OPTIONS %>
-    <%= render "toggle_disable_groups", group_name: "Descargador atmosférico",
-                                        attribute: :operational_atmospheric_discharger,
-                                        input_id: "report_electrical_panel_report_stat_attributes_operational_atmospheric_discharger_form_group",
-                                        toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :operational_atmospheric_discharger, label: "Funcional?" %>
-    <% end %>
+    <%= electrical_panel_stats_form.input :operational_atmospheric_discharger, label: "Descargador atmosférico",
+                                                                               collection: ElectricalPanelReportStat::OPERATIONAL_ATMOSPHERIC_DISCHARGER_OPTIONS %>
     <%= render "toggle_disable_groups", group_name: "Distribuidor o barras",
                                         attribute: :distributor_or_bars,
-                                        input_id: "report_electrical_panel_report_stat_attributes_distributor_or_bars_form_group",
+                                        form_group_id: "distributor_or_bars_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :distributor_or_bars, label: "N libres" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Circuitos sin diferenciales",
                                         attribute: :circuits_without_differentials,
-                                        input_id: "report_electrical_panel_report_stat_attributes_circuits_without_differentials_form_group",
+                                        form_group_id: "circuits_without_differentials_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :circuits_without_differentials, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Circuitos sin térmicas",
                                         attribute: :circuits_without_thermal_keys,
-                                        input_id: "report_electrical_panel_report_stat_attributes_circuits_without_thermal_keys_form_group",
+                                        form_group_id: "circuits_without_thermal_keys_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :circuits_without_thermal_keys, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Protecciones alimentadas en guirnaldas",
                                         attribute: :protections_powered_on_garlands,
-                                        input_id: "report_electrical_panel_report_stat_attributes_protections_powered_on_garlands_form_group",
+                                        form_group_id: "protections_powered_on_garlands_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :protections_powered_on_garlands, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Protecciones como borneras",
                                         attribute: :protections_such_as_terminal_blocks,
-                                        input_id: "report_electrical_panel_report_stat_attributes_protections_such_as_terminal_blocks_form_group",
+                                        form_group_id: "protections_such_as_terminal_blocks_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :protections_such_as_terminal_blocks, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Aparamenta fuera de lugar",
                                         attribute: :misplaced_switchgears,
-                                        input_id: "report_electrical_panel_report_stat_attributes_misplaced_switchgears_form_group",
+                                        form_group_id: "misplaced_switchgears_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :misplaced_switchgears, label: "Cuantos" %>
       <%= electrical_panel_stats_form.input :switchgear_type, label: "Tipo" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Presencia de aparamenta especializada",
                                         attribute: :specialized_switchgears,
-                                        input_id: "report_electrical_panel_report_stat_attributes_specialized_switchgears_form_group",
+                                        form_group_id: "specialized_switchgears_form_group",
                                         toggle_disable_label: "No posee" do %>
       <%= electrical_panel_stats_form.input :specialized_switchgears, label: "Cuantos" %>
       <%= electrical_panel_stats_form.input :specialized_switchgear_type, label: "Tipo" %>
@@ -110,37 +101,37 @@
 
     <%= render "toggle_disable_groups", group_name: "Sin terminales",
                                         attribute: :conductors_without_terminals,
-                                        input_id: "report_electrical_panel_report_stat_attributes_conductors_without_terminals_form_group",
+                                        form_group_id: "conductors_without_terminals_form_group",
                                         toggle_disable_label: "Ninguno" do %>
       <%= electrical_panel_stats_form.input :conductors_without_terminals, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Subdimensionados para su proteccion",
                                         attribute: :undersized_conductors,
-                                        input_id: "report_electrical_panel_report_stat_attributes_undersized_conductors_form_group",
+                                        form_group_id: "undersized_conductors_form_group",
                                         toggle_disable_label: "Ninguno" do %>
       <%= electrical_panel_stats_form.input :undersized_conductors, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Con envejecimiento marcado",
                                         attribute: :conductors_with_marked_aging,
-                                        input_id: "report_electrical_panel_report_stat_attributes_conductors_with_marked_aging_form_group",
+                                        form_group_id: "conductors_with_marked_aging_form_group",
                                         toggle_disable_label: "Ninguno" do %>
       <%= electrical_panel_stats_form.input :conductors_with_marked_aging, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Con colorimetría clara",
                                         attribute: :conductors_with_clear_colorimetry,
-                                        input_id: "report_electrical_panel_report_stat_attributes_conductors_with_clear_colorimetry_form_group",
+                                        form_group_id: "conductors_with_clear_colorimetry_form_group",
                                         toggle_disable_label: "Ninguno" do %>
       <%= electrical_panel_stats_form.input :conductors_with_clear_colorimetry, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Con empalmes",
                                         attribute: :conductors_with_splices,
-                                        input_id: "report_electrical_panel_report_stat_attributes_conductors_with_splices_form_group",
+                                        form_group_id: "conductors_with_splices_form_group",
                                         toggle_disable_label: "Ninguno" do %>
       <%= electrical_panel_stats_form.input :conductors_with_splices, label: "Cuantos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Sobrecalentados",
                                         attribute: :overheated_conductors,
-                                        input_id: "report_electrical_panel_report_stat_attributes_overheated_conductors_form_group",
+                                        form_group_id: "overheated_conductors_form_group",
                                         toggle_disable_label: "Ninguno" do %>
       <%= electrical_panel_stats_form.input :overheated_conductors, label: "Cuantos" %>
     <% end %>
