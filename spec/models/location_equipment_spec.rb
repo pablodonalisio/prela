@@ -115,6 +115,10 @@ RSpec.describe LocationEquipment, type: :model do
       it "returns last service date" do
         expect(location_equipment.last_service_date(:last_battery_change).to_date).to eq(Date.today)
       end
+
+      it "should raise error for undefined activity kind" do
+        expect { location_equipment.last_service_date(:undefined_kind) }.to raise_error("Undefined activity kind")
+      end
     end
 
     describe "create_next_service_dates" do

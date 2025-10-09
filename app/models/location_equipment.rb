@@ -4,7 +4,9 @@ class LocationEquipment < ApplicationRecord
   ACTIVITY_KIND = {
     last_battery_change: Activity::BATTERY_CHANGE,
     last_service: Activity::SERVICE,
-    last_belt_change: Activity::BELT_CHANGE
+    last_belt_change: Activity::BELT_CHANGE,
+    last_torque: Activity::TORQUE,
+    last_cleaning: Activity::CLEANING
   }
 
   SERVICE_KINDS = {
@@ -57,6 +59,8 @@ class LocationEquipment < ApplicationRecord
   end
 
   def last_service_date(service_kind)
+    raise "Undefined activity kind" unless ACTIVITY_KIND.key?(service_kind)
+
     activities.where(kind: ACTIVITY_KIND[service_kind]).order(date: :desc).first&.date&.to_date || send(service_kind) # send(service_kind) is for legacy behaviour
   end
 
