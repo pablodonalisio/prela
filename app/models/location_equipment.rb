@@ -25,6 +25,7 @@ class LocationEquipment < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :activities, dependent: :destroy
   has_many :service_dates, dependent: :destroy
+  has_many :documents, as: :documentable, dependent: :destroy
 
   scope :by_client_ids, ->(client_id) { joins(:location).where(location: {client_id:}) }
   scope :by_location_ids, ->(location_id) { where(location_id:) }

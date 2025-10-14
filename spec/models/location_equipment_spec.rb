@@ -27,6 +27,11 @@ RSpec.describe LocationEquipment, type: :model do
       create(:equipment_supply, equipmentable: location_equipment, suppliable: battery)
       expect(location_equipment.battery).to eq(battery)
     end
+
+    it "has many documents" do
+      create_list(:document, 3, documentable: location_equipment)
+      expect(location_equipment.documents.size).to eq(3)
+    end
   end
 
   context "filter scopes" do

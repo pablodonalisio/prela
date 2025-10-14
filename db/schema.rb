@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_182430) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_13_193207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_182430) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "documents", force: :cascade do |t|
+    t.string "description"
+    t.string "documentable_type", null: false
+    t.bigint "documentable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["documentable_type", "documentable_id"], name: "index_documents_on_documentable"
   end
 
   create_table "electrical_panel_report_stats", force: :cascade do |t|
