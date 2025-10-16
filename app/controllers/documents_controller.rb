@@ -1,10 +1,13 @@
 class DocumentsController < ApplicationController
+  before_action :document, only: %i[show edit]
+  before_action :documentable, only: %i[show edit update]
+  before_action :documents, only: %i[update destroy] # to refresh the list after update or destroy
+
   def index
     redirect_to documentable
   end
 
   def show
-    @document = authorize Document.find(params[:id])
   end
 
   def new
@@ -25,13 +28,10 @@ class DocumentsController < ApplicationController
   end
 
   def edit
-    @document = authorize document
   end
 
   def update
-    @document = authorize document
-
-    if @document.update(document_params)
+    if document.update(document_params)
       respond_to do |format|
         format.html { redirect_to polymorphic_path([documentable]), notice: "El documento se edito correctamente." }
         format.turbo_stream { flash.now[:notice] = "El documento se edito correctamente." }
@@ -52,14 +52,30 @@ class DocumentsController < ApplicationController
   private
 
   def documentable
-    @documentable ||= authorize params[:documentable_type].constantize.find(params[:documentable_id])
+    @documentable ||= if params[:id]
+      authorize document.documentable
+    else
+      authorize documentable_type.constantize.find(documentable_id)
+    end
   end
 
   def document
-    @document ||= authorize documentable.documents.find(params[:id])
+    @document ||= authorize Document.find(params[:id])
   end
 
   def document_params
     params.require(:document).permit(:description, :file)
+  end
+
+  def documentable_type
+    params[:document][:documentable_type]
+  end
+
+  def documentable_id
+    params[:document][:documentable_id]
+  end
+
+  def documents
+    @documents ||= documentable.documents.order(created_at: :desc)
   end
 end

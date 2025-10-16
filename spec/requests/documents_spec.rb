@@ -7,7 +7,16 @@ RSpec.describe "/documents", type: :request do
   let(:documentable) { create(:location_equipment) }
 
   describe "GET /new" do
-    let(:request) { get new_polymorphic_path([documentable, :document]), params: {documentable_type: documentable.class.name, documentable_id: documentable.id} }
+    let(:params) do
+      {
+        document: {
+          documentable_type: documentable.class.name,
+          documentable_id: documentable.id
+        }
+      }
+    end
+    let(:request) { get new_polymorphic_path([documentable, :document]), params: params }
+
     it "renders a successful response and responds with HTML" do
       request
       expect(response).to be_successful
@@ -26,7 +35,7 @@ RSpec.describe "/documents", type: :request do
 
   describe "GET /edit" do
     let(:document) { create(:document, documentable: documentable) }
-    let(:request) { get edit_polymorphic_path([documentable, document]), params: {documentable_type: documentable.class.name, documentable_id: documentable.id} }
+    let(:request) { get edit_polymorphic_path([documentable, document]) }
 
     it "renders a successful response and responds with HTML" do
       request
@@ -45,15 +54,24 @@ RSpec.describe "/documents", type: :request do
   end
 
   describe "GET /index" do
+    let(:params) do
+      {
+        document: {
+          documentable_type: documentable.class.name,
+          documentable_id: documentable.id
+        }
+      }
+    end
+
     it "returns a success response" do
-      get polymorphic_path([documentable, :documents]), params: {documentable_type: documentable.class.name, documentable_id: documentable.id}
+      get polymorphic_path([documentable, :documents], params: params)
       expect(response).to redirect_to(documentable)
     end
   end
 
   describe "GET /show" do
     let(:document) { create(:document, documentable: documentable) }
-    let(:request) { get polymorphic_path([documentable, document]), params: {documentable_type: documentable.class.name, documentable_id: documentable.id} }
+    let(:request) { get polymorphic_path([documentable, document]) }
 
     it "renders a successful response and responds with HTML" do
       request
@@ -66,10 +84,10 @@ RSpec.describe "/documents", type: :request do
       {
         document: {
           description: "Test Document",
-          file: fixture_file_upload("spec/fixtures/files/test.pdf", "application/pdf")
-        },
-        documentable_type: documentable.class.name,
-        documentable_id: documentable.id
+          file: fixture_file_upload("spec/fixtures/files/test.pdf", "application/pdf"),
+          documentable_type: documentable.class.name,
+          documentable_id: documentable.id
+        }
       }
     }
     let(:request) { post polymorphic_path([documentable, :documents]), params: params }
@@ -117,9 +135,7 @@ RSpec.describe "/documents", type: :request do
       {
         document: {
           description: "Updated Description"
-        },
-        documentable_type: documentable.class.name,
-        documentable_id: documentable.id
+        }
       }
     }
     let(:request) { patch polymorphic_path([documentable, document]), params: params }
@@ -156,7 +172,7 @@ RSpec.describe "/documents", type: :request do
 
   describe "DELETE /destroy" do
     let!(:document) { create(:document, documentable: documentable) }
-    let(:request) { delete polymorphic_path([documentable, document]), params: {documentable_type: documentable.class.name, documentable_id: documentable.id} }
+    let(:request) { delete polymorphic_path([documentable, document]) }
 
     it "destroys the requested document" do
       expect {
