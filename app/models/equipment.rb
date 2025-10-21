@@ -5,7 +5,7 @@ class Equipment < ApplicationRecord
   has_one :equipment_battery, dependent: :destroy, as: :equipmentable, class_name: "EquipmentSupply"
   has_one :battery, through: :equipment_battery, source: :suppliable, source_type: "Battery"
 
-  enum :kind, {ups: 0, power_unit: 1, electrical_panel: 2}
+  enum :kind, {ups: 0, power_unit: 1, electrical_panel: 2, building: 3}
 
   validates :kind, :model, presence: true
 

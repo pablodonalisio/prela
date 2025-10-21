@@ -44,17 +44,19 @@
       <div class="col-12 p-3">
         <div class="row gx-5">
 
-          <div class="col-12 col-md-6 col-xxl-4">
-            <div class="col">
-              <%= render "shared/content_header", title: "Informes" do %>
-                <% if current_user.admin? || current_user.editor? %>
-                  <%= render "shared/button_link", text: "Nuevo Informe",
-                                                   path: new_location_equipment_report_path(@location_equipment) %>
+          <% unless location_equipment.equipment.building? %>
+            <div class="col-12 col-md-6 col-xxl-4">
+              <div class="col">
+                <%= render "shared/content_header", title: "Informes" do %>
+                  <% if current_user.admin? || current_user.editor? %>
+                    <%= render "shared/button_link", text: "Nuevo Informe",
+                                                    path: new_location_equipment_report_path(@location_equipment) %>
+                  <% end %>
                 <% end %>
-              <% end %>
-              <%= render "reports/reports", reports: @location_equipment.reports.order(date: :desc), location_equipment: @location_equipment %>
+                <%= render "reports/reports", reports: @location_equipment.reports.order(date: :desc), location_equipment: @location_equipment %>
+              </div>
             </div>
-          </div>
+          <% end %>
 
           <div class="col-12 col-md-6 col-xxl-4">
             <div class="col">

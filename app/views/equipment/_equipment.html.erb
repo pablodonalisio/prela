@@ -13,6 +13,8 @@
     <%= render "power_unit_attributes", equipment: equipment %>
   <% elsif equipment.electrical_panel? %>
     <%= render "electrical_panel_attributes", equipment: equipment %>
+  <% elsif equipment.building? %>
+    <%= render "building_attributes", equipment: equipment %>
   <% end %>
 </div>
 

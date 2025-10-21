@@ -65,7 +65,9 @@ class LocationEquipmentsController < ApplicationController
         :last_service, :next_service, :last_battery_change, :next_battery_change, :details, :status,
         :last_belt_change, :next_belt_change, :engine_serial_number, :power_unit_serial_number, :service_interval,
         :battery_change_interval, :belt_change_interval, :torque_interval, :last_torque, :next_torque,
-        :cleaning_interval, :last_cleaning, :next_cleaning)
+        :cleaning_interval, :last_cleaning, :next_cleaning, :srt_900_interval, :last_srt_900, :next_srt_900,
+        :thermography_interval, :last_thermography, :next_thermography,
+        :electrical_approval_interval, :last_electrical_approval, :next_electrical_approval)
   end
 
   def location_equipment
