@@ -6,13 +6,17 @@ class LocationEquipment < ApplicationRecord
     last_service: Activity::SERVICE,
     last_belt_change: Activity::BELT_CHANGE,
     last_torque: Activity::TORQUE,
-    last_cleaning: Activity::CLEANING
+    last_cleaning: Activity::CLEANING,
+    last_srt_900: Activity::SRT_900,
+    last_thermography: Activity::THERMOGRAPHY,
+    last_electrical_approval: Activity::ELECTRICAL_APPROVAL
   }
 
   SERVICE_KINDS = {
     "ups" => %i[battery_change],
     "power_unit" => %i[service battery_change belt_change],
-    "electrical_panel" => %i[service torque cleaning]
+    "electrical_panel" => %i[service torque cleaning],
+    "building" => %i[srt_900 thermography electrical_approval]
   }
 
   after_create :create_next_service_dates
@@ -25,6 +29,7 @@ class LocationEquipment < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :activities, dependent: :destroy
   has_many :service_dates, dependent: :destroy
+  has_many :documents, as: :documentable, dependent: :destroy
 
   scope :by_client_ids, ->(client_id) { joins(:location).where(location: {client_id:}) }
   scope :by_location_ids, ->(location_id) { where(location_id:) }

@@ -13,5 +13,9 @@
   <fieldset data-select-value="electrical_panel" data-dynamic-form-target="inputGroup">
     <%= render "electrical_panel_form", f: f %>
   </fieldset>
+  <fieldset data-select-value="building" data-dynamic-form-target="inputGroup">
+    <%= f.input :model, label: "Nombre" %>
+    <%= f.input :more_info, label: "Mas Info" %>
+  </fieldset>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

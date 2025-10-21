@@ -4,6 +4,9 @@ class Activity < ApplicationRecord
   BELT_CHANGE = "Cambio correas"
   TORQUE = "Torqueo"
   CLEANING = "Limpieza"
+  SRT_900 = "SRT-900"
+  THERMOGRAPHY = "Termografía"
+  ELECTRICAL_APPROVAL = "Apto eléctrico"
   OTHER = "Otro"
   KINDS = {
     SERVICE => :service,
@@ -11,6 +14,9 @@ class Activity < ApplicationRecord
     BELT_CHANGE => :belt_change,
     TORQUE => :torque,
     CLEANING => :cleaning,
+    SRT_900 => :srt_900,
+    THERMOGRAPHY => :thermography,
+    ELECTRICAL_APPROVAL => :electrical_approval,
     OTHER => :other
   }
 

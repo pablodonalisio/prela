@@ -1,0 +1,8 @@
+
+<h1>Editar Documento</h1>
+
+<%= turbo_frame_tag @document do %>
+  <%= render "shared/remote_modal", title: "Editar Documento" do %>
+    <%= render "form", document: @document, documentable: @documentable %>
+  <% end %>
+<% end %>

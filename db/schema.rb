@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_182430) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_20_184049) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_182430) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "documents", force: :cascade do |t|
+    t.string "description"
+    t.string "documentable_type", null: false
+    t.bigint "documentable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["documentable_type", "documentable_id"], name: "index_documents_on_documentable"
   end
 
   create_table "electrical_panel_report_stats", force: :cascade do |t|
@@ -193,6 +202,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_182430) do
     t.integer "cleaning_interval", default: 1
     t.date "last_cleaning"
     t.date "next_cleaning"
+    t.integer "srt_900_interval", default: 1
+    t.date "last_srt_900"
+    t.date "next_srt_900"
+    t.integer "thermography_interval", default: 1
+    t.date "last_thermography"
+    t.date "next_thermography"
+    t.integer "electrical_approval_interval", default: 1
+    t.date "last_electrical_approval"
+    t.date "next_electrical_approval"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end

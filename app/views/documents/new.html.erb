@@ -1,0 +1,7 @@
+<h1>Nuevo Documento</h1>
+
+<%= turbo_frame_tag @document do %>
+  <%= render "shared/remote_modal", title: "Nuevo Documento" do %>
+    <%= render "form", document: @document, documentable: @documentable %>
+  <% end %>
+<% end %>

@@ -1,0 +1,18 @@
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("kind") %>
+  </strong>
+  <%= t("activerecord.attributes.equipment.kinds.#{equipment.kind}") %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    Nombre
+  </strong>
+  <%= equipment.model %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("more_info") %>
+  </strong>
+  <%= equipment.more_info %>
+</p>

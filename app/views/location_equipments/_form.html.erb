@@ -19,6 +19,9 @@
   <fieldset data-location-equipment-form-target="electricalPanelInputs" class="d-none">
     <%= render "location_equipments/electrical_panel", f: f %>
   </fieldset>
+  <fieldset data-location-equipment-form-target="buildingInputs" class="d-none">
+    <%= render "location_equipments/building_form", f: f %>
+  </fieldset>
 
   <%= f.input :details, label: "Detalles" %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>

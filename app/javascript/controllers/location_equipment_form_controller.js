@@ -5,6 +5,7 @@ export default class extends Controller {
     "upsInputs",
     "powerUnitInputs",
     "electricalPanelInputs",
+    "buildingInputs",
     "equipment",
   ];
 
@@ -21,6 +22,7 @@ export default class extends Controller {
       this.upsInputsTarget,
       this.powerUnitInputsTarget,
       this.electricalPanelInputsTarget,
+      this.buildingInputsTarget,
     ];
 
     let inputsToDisplay = this.targets.find(`${this.ToCamelCase(kind)}Inputs`);

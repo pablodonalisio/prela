@@ -27,6 +27,11 @@ RSpec.describe LocationEquipment, type: :model do
       create(:equipment_supply, equipmentable: location_equipment, suppliable: battery)
       expect(location_equipment.battery).to eq(battery)
     end
+
+    it "has many documents" do
+      create_list(:document, 3, documentable: location_equipment)
+      expect(location_equipment.documents.size).to eq(3)
+    end
   end
 
   context "filter scopes" do
@@ -87,6 +92,7 @@ RSpec.describe LocationEquipment, type: :model do
     let(:ups) { create(:location_equipment, equipment: create(:equipment, kind: :ups)) }
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
     let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, kind: :electrical_panel)) }
+    let(:building) { create(:location_equipment, equipment: create(:equipment, kind: :building)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
     describe "next_service_dates" do
@@ -159,6 +165,16 @@ RSpec.describe LocationEquipment, type: :model do
         expect(electrical_panel.next_service_dates.service.first.date).to eq(1.year.from_now)
         expect(electrical_panel.next_service_dates.torque.first.date).to eq(1.year.from_now)
         expect(electrical_panel.next_service_dates.cleaning.first.date).to eq(1.year.from_now)
+      end
+
+      it "creates new next service dates for building" do
+        freeze_time
+        building.create_next_service_dates(Time.current)
+
+        expect(building.next_service_dates.size).to eq(3)
+        expect(building.next_service_dates.srt_900.first.date).to eq(1.year.from_now)
+        expect(building.next_service_dates.thermography.first.date).to eq(1.year.from_now)
+        expect(building.next_service_dates.electrical_approval.first.date).to eq(1.year.from_now)
       end
     end
 
