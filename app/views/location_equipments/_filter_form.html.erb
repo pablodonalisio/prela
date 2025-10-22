@@ -2,7 +2,7 @@
   <%= form_with(url: url_for, method: :get, data: { turbo_stream: true }) do |f| %>
     <%= f.label :order, "Ordenar por", class: "form-label" %>
     <%= f.select :order,
-                 [["Prox Service", "next_service"], ["Prox Cambio de batería", "next_battery_change"]],
+                 [["Prox Service", "next_service"], ["Prox Cambio de batería", "next_battery_change"], ["Código", "code"], ["Sala", "zone"]],
                  {selected: order, prompt: "Ordenar por"},
                  {onchange: "this.form.requestSubmit()", class: "form-select form-select-sm mb-2"} %>
 

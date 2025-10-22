@@ -19,6 +19,11 @@
       Estado: <%= item.status ? t("activerecord.attributes.location_equipment.statuses.#{item.status}") : "" %>
     </small>
   </p>
+  <p class="card-text text-truncate m-0">
+    <small class="text-body-secondary">
+      Código: <%= item.code %>
+    </small>
+  </p>
 </div>
 <div class="mb-2" style="height: 72px">
   <% item.next_service_dates.each do |service_date| %>
