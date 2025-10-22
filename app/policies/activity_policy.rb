@@ -14,7 +14,7 @@ class ActivityPolicy < ApplicationPolicy
   end
 
   def create?
-    user.admin?
+    user.admin? || user.editor?
   end
 
   def new?
@@ -22,7 +22,7 @@ class ActivityPolicy < ApplicationPolicy
   end
 
   def update?
-    user.admin?
+    user.admin? || user.editor?
   end
 
   def edit?
@@ -30,7 +30,7 @@ class ActivityPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.admin?
+    user.admin? || user.editor?
   end
 
   class Scope < ApplicationPolicy::Scope

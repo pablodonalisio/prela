@@ -2,8 +2,8 @@
   <div class="d-flex">
     <%= f.input_field :date, label: ServiceDate.human_attribute_name(service_date.kind),
                         as: :date, end_year: Date.today.year + 90,
-                        start_year: Date.today.year - 30, discard_day: true,
-                        order: [:month, :year], include_blank: true %>
+                        start_year: Date.today.year - 30,
+                        order: [:day, :month, :year], include_blank: true %>
 
     <%= f.button :submit, "Ok", class: "btn btn-success" %>
     <%= link_to "X", service_date_path(service_date), class: "btn btn-danger", style: "width: 46px" %>

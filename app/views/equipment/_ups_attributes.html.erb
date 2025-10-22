@@ -1,5 +1,23 @@
 <p>
   <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("kind") %>
+  </strong>
+  <%= t("activerecord.attributes.equipment.kinds.#{equipment.kind}") %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("brand") %>
+  </strong>
+  <%= equipment.brand %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("model") %>
+  </strong>
+  <%= equipment.model %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
     <%= Equipment.human_attribute_name("is_triphase") %>
   </strong>
   <%= equipment.is_triphase ? "Si" : "No" %>
@@ -9,4 +27,22 @@
     <%= Equipment.human_attribute_name("technical_model") %>
   </strong>
   <%= equipment.technical_model %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("kva") %>
+  </strong>
+  <%= equipment.kva %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("more_info") %>
+  </strong>
+  <%= equipment.more_info %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name("manual") %>
+  </strong>
+  <%= link_to "ver", equipment.manual, target: "_blank" if equipment.manual.present? %>
 </p>

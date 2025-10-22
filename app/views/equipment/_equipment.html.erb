@@ -1,53 +1,21 @@
-<%= render "shared/content_header", title: "#{@equipment.brand.upcase} #{@equipment.model.upcase}" do %>
+<%= render "shared/content_header", title: "#{@equipment.full_name.upcase}" do %>
   <%= render "shared/dropdown" do %>
     <%= render "shared/button_box", edit_path: edit_equipment_path(@equipment),
                                     delete_path: equipment_path(@equipment),
                                     confirm: "Seguro queres borrar el Equipo?" %>
   <% end %>
 <% end %>
+
 <div class="row mt-3">
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
-      <%= Equipment.human_attribute_name("kind") %>
-    </strong>
-    <%= t("activerecord.attributes.equipment.kinds.#{equipment.kind}") %>
-  </p>
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
-      <%= Equipment.human_attribute_name("brand") %>
-    </strong>
-    <%= equipment.brand %>
-  </p>
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
-      <%= Equipment.human_attribute_name("model") %>
-    </strong>
-    <%= equipment.model %>
-  </p>
   <% if equipment.ups? %>
     <%= render "ups_attributes", equipment: equipment %>
   <% elsif equipment.power_unit? %>
     <%= render "power_unit_attributes", equipment: equipment %>
+  <% elsif equipment.electrical_panel? %>
+    <%= render "electrical_panel_attributes", equipment: equipment %>
+  <% elsif equipment.building? %>
+    <%= render "building_attributes", equipment: equipment %>
   <% end %>
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
-      <%= Equipment.human_attribute_name("kva") %>
-    </strong>
-    <%= equipment.kva %>
-  </p>
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
-      <%= Equipment.human_attribute_name("more_info") %>
-    </strong>
-    <%= equipment.more_info %>
-  </p>
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
-      <%= Equipment.human_attribute_name("manual") %>
-    </strong>
-    <%= link_to "ver", equipment.manual, target: "_blank" if equipment.manual.present? %>
-  </p>
-
 </div>
 
 <div class="row mt-3">

@@ -31,7 +31,7 @@
       <small class="text-body-secondary">
         <label><%= ServiceDate.human_attribute_name(service_date.kind) %>: </label>
         <span class="<%= service_date_color(service_date.date) %>">
-          <%= l(service_date.date.to_date, format: :month_year_concise) %>
+          <%= service_date.date.strftime("%d/%m/%Y") %>
         </span>
       </small>
     </p>

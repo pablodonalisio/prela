@@ -1,10 +1,7 @@
-$primary: #6760fa;
-$secondary: #283243;
-$body-bg-dark: #1c2431;
-$body-color-dark: white;
-
+@import "variables";
 @import "bootstrap";
 @import "font-awesome";
+@import "modal";
 
 @media (max-width: 767px) {
   .fs-sm-6 {

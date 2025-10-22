@@ -18,7 +18,7 @@
       <% end %>
       <%= link_to "Ver", url_for(item),
                          class: "btn btn-primary",
-                         data: { turbo_frame: "main_content", turbo_action: "advance" } %>
+                         data: { turbo_frame: :_top } %>
       <% if lookup_context.template_exists?("item_actions", item.class.to_s.underscore.pluralize, true)%>
         <%= render partial: "#{item.class.to_s.underscore.pluralize}/item_actions", locals: {item: item} %>
       <% end %>

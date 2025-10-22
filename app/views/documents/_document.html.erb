@@ -1,0 +1,7 @@
+<%= turbo_frame_tag document do %>
+  <% if document.file.attached? %>
+    <%= tag.iframe src: rails_blob_path(document.file, disposition: "inline"), width: "100%", height: "800", style: "border:0" %>
+  <% else %>
+    <p>No hay un archivo adjunto.</p>
+  <% end %>
+<% end %>

@@ -40,29 +40,45 @@
           </div>
         </div>
       </div>
+
       <div class="col-12 p-3">
         <div class="row gx-5">
-          <div class="col-12 col-xl-6 col-xxl-5">
-            <div class="col">
-              <%= render "shared/content_header", title: "Informes" do %>
-                <% if current_user.admin? %>
-                  <%= render "shared/button_link", text: "Nuevo Informe",
-                                                   path: new_location_equipment_report_path(@location_equipment) %>
-                <% end %>
-              <% end %>
-              <%= render "reports/reports", reports: @location_equipment.reports.order(date: :desc), location_equipment: @location_equipment %>
-            </div>
-          </div>
 
-          <div class="col-12 col-lg-6 col-xxl-5">
+          <% unless location_equipment.equipment.building? %>
+            <div class="col-12 col-md-6 col-xxl-4">
+              <div class="col">
+                <%= render "shared/content_header", title: "Informes" do %>
+                  <% if current_user.admin? || current_user.editor? %>
+                    <%= render "shared/button_link", text: "Nuevo Informe",
+                                                    path: new_location_equipment_report_path(@location_equipment) %>
+                  <% end %>
+                <% end %>
+                <%= render "reports/reports", reports: @location_equipment.reports.order(date: :desc), location_equipment: @location_equipment %>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="col-12 col-md-6 col-xxl-4">
             <div class="col">
               <%= render "shared/content_header", title: "Actividades" do %>
-                <% if current_user.admin? %>
+                <% if current_user.admin? || current_user.editor? %>
                   <%= render "shared/button_link", text: "Nueva Actividad",
                                                    path: new_location_equipment_activity_path(@location_equipment) %>
                 <% end %>
               <% end %>
               <%= render "activities/activities", activities: @location_equipment.activities.order(date: :desc), location_equipment: @location_equipment %>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6 col-xxl-4">
+            <div class="col">
+              <%= render "shared/content_header", title: "Documentos" do %>
+                <% if current_user.admin? %>
+                  <%= render "shared/button_link", text: "Nuevo Documento",
+                                                   path: new_location_equipment_document_path(@location_equipment, document: {documentable_type: @location_equipment.class.name, documentable_id: @location_equipment.id}) %>
+                <% end %>
+              <% end %>
+              <%= render "documents/documents", documents: @location_equipment.documents.order(created_at: :desc), documentable: @location_equipment %>
             </div>
           </div>
 

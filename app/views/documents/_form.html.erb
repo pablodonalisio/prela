@@ -1,0 +1,19 @@
+<%= simple_form_for [documentable, document] do |f| %>
+  <%= f.hidden_field :documentable_type, value: documentable.class.name %>
+  <%= f.hidden_field :documentable_id, value: documentable.id %>
+  <%= f.input :description, label: "Descripción" %>
+
+  <div class="my-3 border col-sm-6 p-2">
+    <h4>Archivo</h4>
+    <% file = document.new_record? ? nil : document.file %>
+    <%= render "shared/file_upload", file: file,
+                                     form: f,
+                                     resize: [nil, 250],
+                                     file_field: :file,
+                                     new_label: "Nuevo documento",
+                                     accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
+                                     multiple: false %>
+  </div>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

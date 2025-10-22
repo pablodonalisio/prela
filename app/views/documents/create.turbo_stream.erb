@@ -1,0 +1,8 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.prepend "documents" do %>
+  <%= render "documents/document_table_row", document: @document, documentable: @documentable %>
+<% end %>
+<%= turbo_stream.remove "empty_documents" %>

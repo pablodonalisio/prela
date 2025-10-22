@@ -1,0 +1,21 @@
+<%= content_tag :tr, id: dom_id(document), class: "align-items-stretch" do %>
+  <td class="align-middle"><%= document.description %></td>
+  <td class="align-middle"><%= document.created_at.strftime("%d/%m/%Y") %></td>
+  <td class="align-middle">
+    <div class="d-flex justify-content-center align-items-center">
+      <% if document.file.attached? %>
+        <%= link_to polymorphic_path([documentable, document]), data: { turbo_frame: "remote_modal" } do %>
+          <i class="fa fa-file" aria-hidden="true"></i>
+        <% end %>
+      <% end %>
+      <% if current_user.admin? %>
+        <%= link_to edit_polymorphic_path([documentable, document]), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
+          <i class="fas fa-edit"></i>
+        <% end %>
+        <%= button_to polymorphic_path([documentable, document]), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
+          <i class="fas fa-trash text-danger"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+<% end %>

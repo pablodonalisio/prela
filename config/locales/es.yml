@@ -10,6 +10,8 @@ es:
         kinds:
           ups: "UPS"
           power_unit: "Grupo Electrógeno"
+          electrical_panel: "Tablero Eléctrico"
+          building: "Edificio"
         brand: "Marca"
         model: "Modelo"
         technical_model: "Modelo Técnico"
@@ -21,6 +23,7 @@ es:
         generator_brand: "Marca del generador"
         generator_model: "Modelo del generador"
         is_triphase: "Trifásico"
+        size: "Tamaño"
       location_equipment:
         location: "Sede"
         equipment: "Equipo"
@@ -30,6 +33,16 @@ es:
         next_battery_change: "Próximo cambio de batería"
         last_belt_change: "Último cambio de correas"
         next_belt_change: "Próximo cambio de correas"
+        last_torque: "Último torqueo"
+        next_torque: "Próximo torqueo"
+        last_cleaning: "Última limpieza"
+        next_cleaning: "Próxima limpieza"
+        last_srt_900: "Último SRT-900"
+        next_srt_900: "Próximo SRT-900"
+        last_thermography: "Última termografía"
+        next_thermography: "Próxima termografía"
+        last_electrical_approval: "Último apto eléctrico"
+        next_electrical_approval: "Próximo apto eléctrico"
         details: "Detalles"
         statuses:
           active: "En servicio"
@@ -50,6 +63,11 @@ es:
         service: "Próximo service"
         battery_change: "Próximo cambio de batería"
         belt_change: "Próximo cambio de correas"
+        torque: "Próximo torqueo"
+        cleaning: "Próxima limpieza"
+        srt_900: "Próximo SRT-900"
+        thermography: "Próxima termografía"
+        electrical_approval: "Próximo apto eléctrico"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"

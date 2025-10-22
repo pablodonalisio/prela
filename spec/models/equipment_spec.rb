@@ -13,11 +13,6 @@ RSpec.describe Equipment, type: :model do
       expect(equipment).not_to be_valid
     end
 
-    it "is not valid without a brand" do
-      equipment.brand = nil
-      expect(equipment).not_to be_valid
-    end
-
     it "is not valid without a model" do
       equipment.model = nil
       expect(equipment).not_to be_valid
@@ -46,6 +41,19 @@ RSpec.describe Equipment, type: :model do
 
     it "returns full name" do
       expect(equipment.full_name).to eq("Brand - Model")
+    end
+
+    it "returns model if brand is not present" do
+      equipment.brand = nil
+      expect(equipment.full_name).to eq("Model")
+    end
+  end
+
+  context "electrical panel" do
+    let(:panel) { Equipment.build(kind: "electrical_panel", model: "Nombre del tablero", is_triphase: true, size: "2din") }
+
+    it "is valid with electrical panel attributes" do
+      expect(panel).to be_valid
     end
   end
 end

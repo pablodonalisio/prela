@@ -1,0 +1,9 @@
+<tbody id="documents">
+  <% if documents.empty? %>
+    <tr id="empty_documents">
+      <td colspan="4" class="text-center">No hay documentos</td>
+    </tr>
+  <% else %>
+    <%= render partial: "documents/document_table_row", collection: documents, as: :document, locals: { documentable: documentable } %>
+  <% end %>
+</tbody>
