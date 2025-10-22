@@ -15,7 +15,7 @@ module ApplicationHelper
   end
 
   def active_class(path)
-    if request.path == path
+    if request.path == path || request.path.start_with?(path + "/")
       "active"
     else
       ""
