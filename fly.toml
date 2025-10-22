@@ -4,7 +4,7 @@
 #
 
 app = "prela"
-primary_region = "scl"
+primary_region = "gru"
 console_command = "/rails/bin/rails console"
 
 swap_size_mb = 256
