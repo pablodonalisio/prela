@@ -49,7 +49,7 @@
               <div class="col">
                 <%= render "shared/content_header", title: "Informes" do %>
                   <% if current_user.admin? || current_user.editor? %>
-                    <%= render "shared/button_link", text: "Nuevo Informe",
+                    <%= render "shared/button_link", text: "Agregar",
                                                     path: new_location_equipment_report_path(@location_equipment) %>
                   <% end %>
                 <% end %>
@@ -62,7 +62,7 @@
             <div class="col">
               <%= render "shared/content_header", title: "Actividades" do %>
                 <% if current_user.admin? || current_user.editor? %>
-                  <%= render "shared/button_link", text: "Nueva Actividad",
+                  <%= render "shared/button_link", text: "Agregar",
                                                    path: new_location_equipment_activity_path(@location_equipment) %>
                 <% end %>
               <% end %>
@@ -74,7 +74,7 @@
             <div class="col">
               <%= render "shared/content_header", title: "Documentos" do %>
                 <% if current_user.admin? %>
-                  <%= render "shared/button_link", text: "Nuevo Documento",
+                  <%= render "shared/button_link", text: "Agregar",
                                                    path: new_location_equipment_document_path(@location_equipment, document: {documentable_type: @location_equipment.class.name, documentable_id: @location_equipment.id}) %>
                 <% end %>
               <% end %>
