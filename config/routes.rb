@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     resources :reports
     resources :activities
     resources :documents
+    resources :failures
   end
   resources :equipment_supplies
   resources :equipment

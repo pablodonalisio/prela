@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_20_184049) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_23_143233) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -164,6 +164,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_184049) do
     t.datetime "updated_at", null: false
     t.index ["equipmentable_type", "equipmentable_id"], name: "index_equipment_supplies_on_equipmentable"
     t.index ["suppliable_type", "suppliable_id"], name: "index_equipment_supplies_on_suppliable"
+  end
+
+  create_table "failures", force: :cascade do |t|
+    t.string "description"
+    t.date "date"
+    t.bigint "location_equipment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_equipment_id"], name: "index_failures_on_location_equipment_id"
   end
 
   create_table "links", force: :cascade do |t|
@@ -333,6 +342,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_184049) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "location_equipments"
   add_foreign_key "electrical_panel_report_stats", "reports"
+  add_foreign_key "failures", "location_equipments"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "locations", "clients"

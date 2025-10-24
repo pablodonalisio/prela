@@ -1,0 +1,7 @@
+<h1>Nueva Falla</h1>
+
+<%= turbo_frame_tag @failure do %>
+  <%= render "shared/remote_modal", title: "Nueva Falla" do %>
+    <%= render "form", failure: @failure, location_equipment: @location_equipment %>
+  <% end %>
+<% end %>
