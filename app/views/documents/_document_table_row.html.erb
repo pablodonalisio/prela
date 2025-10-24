@@ -1,6 +1,6 @@
 <%= content_tag :tr, id: dom_id(document), class: "align-items-stretch" do %>
   <td class="align-middle">
-    <p class="m-0"><%= document.description %></p>
+    <p class="m-0"><%= document.description.capitalize %></p>
     <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Fecha: <%= document.created_at.strftime("%d/%m/%Y") %></p>
   </td>
   <td class="align-middle">

@@ -1,5 +1,7 @@
 class FailuresController < ApplicationController
   before_action :failure, only: %i[edit]
+  before_action :location_equipment, only: %i[edit update]
+  before_action :failures, only: %i[update destroy] # to refresh the list after update or destroy
 
   def index
     redirect_to location_equipment_path(location_equipment)
@@ -56,5 +58,9 @@ class FailuresController < ApplicationController
 
   def failure_params
     params.require(:failure).permit(:description, :date)
+  end
+
+  def failures
+    @failures ||= location_equipment.failures.order(date: :desc)
   end
 end

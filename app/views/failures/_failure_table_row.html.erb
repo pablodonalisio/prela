@@ -1,0 +1,18 @@
+<%= content_tag :tr, id: dom_id(failure), class: "align-items-stretch" do %>
+  <td class="align-middle">
+    <p class="m-0"><%= failure.description.capitalize %></p>
+    <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Fecha: <%= failure.date.strftime("%d/%m/%Y") %></p>
+  </td>
+  <td class="align-middle">
+    <div class="d-flex justify-content-evenly align-items-center">
+      <% if current_user.admin? %>
+        <%= link_to edit_location_equipment_failure_path(location_equipment, failure), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
+          <i class="fas fa-edit"></i>
+        <% end %>
+        <%= button_to location_equipment_failure_path(location_equipment, failure), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
+          <i class="fas fa-trash text-danger"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+<% end %>

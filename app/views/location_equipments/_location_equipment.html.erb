@@ -45,11 +45,12 @@
         <div class="row gx-5">
 
           <% unless location_equipment.equipment.building? %>
-            <div class="col-12 col-md-6 col-xxl-4">
+            <div class="col-12 col-md-6 col-xxl-3">
               <div class="col">
                 <%= render "shared/content_header", title: "Informes" do %>
                   <% if current_user.admin? || current_user.editor? %>
-                    <%= render "shared/button_link", text: "Agregar",
+                    <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                                     text: "",
                                                     path: new_location_equipment_report_path(@location_equipment) %>
                   <% end %>
                 <% end %>
@@ -58,11 +59,25 @@
             </div>
           <% end %>
 
-          <div class="col-12 col-md-6 col-xxl-4">
+          <div class="col-12 col-md-6 col-xxl-3">
+            <div class="col">
+              <%= render "shared/content_header", title: "Fallas" do %>
+                <% if current_user.admin? %>
+                  <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                                   text: "",
+                                                   path: new_location_equipment_failure_path(@location_equipment) %>
+                <% end %>
+              <% end %>
+              <%= render "failures/failures", failures: @location_equipment.failures.order(date: :desc), location_equipment: @location_equipment %>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6 col-xxl-3">
             <div class="col">
               <%= render "shared/content_header", title: "Actividades" do %>
                 <% if current_user.admin? || current_user.editor? %>
-                  <%= render "shared/button_link", text: "Agregar",
+                  <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                                   text: "",
                                                    path: new_location_equipment_activity_path(@location_equipment) %>
                 <% end %>
               <% end %>
@@ -70,11 +85,12 @@
             </div>
           </div>
 
-          <div class="col-12 col-md-6 col-xxl-4">
+          <div class="col-12 col-md-6 col-xxl-3">
             <div class="col">
               <%= render "shared/content_header", title: "Documentos" do %>
                 <% if current_user.admin? %>
-                  <%= render "shared/button_link", text: "Agregar",
+                  <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                                   text: "",
                                                    path: new_location_equipment_document_path(@location_equipment, document: {documentable_type: @location_equipment.class.name, documentable_id: @location_equipment.id}) %>
                 <% end %>
               <% end %>

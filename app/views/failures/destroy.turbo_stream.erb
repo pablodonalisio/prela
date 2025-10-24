@@ -1,0 +1,5 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.replace "failures", partial: "failures_table", locals: { failures: @failures, location_equipment: @location_equipment } %>
