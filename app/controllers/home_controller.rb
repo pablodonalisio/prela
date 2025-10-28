@@ -2,8 +2,6 @@ class HomeController < ApplicationController
   def index
     authorize :home, :index?
     @links = Link.all if current_user.admin?
-    @overdue_ups = policy_scope(LocationEquipment).with_overdue_maintenance(:ups)
-    @overdue_power_units = policy_scope(LocationEquipment).with_overdue_maintenance(:power_unit)
-    @overdue_electrical_panels = policy_scope(LocationEquipment).with_overdue_maintenance(:electrical_panel)
+    @overdue_services = policy_scope(ServiceDate).overdue_next_service_dates_by_equipment_kind
   end
 end
