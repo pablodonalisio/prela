@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
   <div class="row justify-content-around mt-4 gy-5">
     <div class="col-md-10 text-bg-secondary rounded p-3">
-      <%= render "location_equipments/control_panel", overdue_services: @overdue_services %>
+      <%= render "control_panel/control_panel", overdue_services: @overdue_services %>
     </div>
     <% if current_user.admin? %>
       <div class="col-md-10 text-bg-secondary rounded p-3">
