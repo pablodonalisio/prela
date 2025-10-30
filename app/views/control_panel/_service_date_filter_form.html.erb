@@ -1,0 +1,34 @@
+<button class="btn btn-primary d-md-none mt-3"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#overdueServiceDateFilters"
+        aria-controls="overdueServiceDateFilters">
+  <i class="fa-solid fa-filter"></i>
+</button>
+
+<div class="offcanvas-md offcanvas-start px-3" tabindex="-1" id="overdueServiceDateFilters" data-bs-scroll="true" aria-labelledby="overdueServiceDateFiltersLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="overdueServiceDateFiltersLabel">Filtros</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#overdueServiceDateFilters" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <%= form_with(url: root_path, method: :get, data: { turbo_frame: "overdue_service_date_list", turbo_action: "advance" }) do |form| %>
+      <div class="row g-3 align-items-end my-3">
+        <div class="col-auto">
+          <%= form.label :client_id, "Cliente", class: "form-label" %>
+          <%= form.collection_select :client_id, policy_scope(Client).all, :id, :name, { include_blank: "Todos", selected: params[:client_id] }, class: "form-control"  %>
+        </div>
+        <div class="col-auto">
+          <%= form.label :kind, "Tipo de servicio", class: "form-label" %>
+          <%= form.select :kind, options_for_select(ServiceDate.kinds.keys.map { |k| [ServiceDate.human_attribute_name(k), k] }, params[:kind]), { include_blank: "Todos", selected: params[:kind] }, class: "form-control" %>
+        </div>
+        <div class="col-auto">
+          <%= form.submit "Filtrar", class: "btn btn-primary", data: { bs_dismiss:"offcanvas"} %>
+        </div>
+        <div class="col-auto">
+          <%= link_to "Limpiar filtros", root_path, class: "btn btn-secondary", data: { turbo_frame: "overdue_service_date_list", turbo_action: "advance" } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

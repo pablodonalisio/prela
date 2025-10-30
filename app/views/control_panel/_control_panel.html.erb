@@ -1,0 +1,19 @@
+<%= render "shared/content_header", title: "Panel de control" %>
+
+<div class="mx-4">
+  <%= turbo_frame_tag "overdue_service_date_list" do %>
+    <%= render "control_panel/service_date_filter_form" %>
+
+    <div class="accordion my-4" id="serviceDateControl">
+      <%= render "control_panel/overdue_service_dates", title: "UPS",
+                                                        overdue_services: overdue_services["ups"],
+                                                        collapse: "collapseOne" %>
+      <%= render "control_panel/overdue_service_dates", title: "Grupos electrógenos",
+                                                        overdue_services: overdue_services["power_unit"],
+                                                        collapse: "collapseTwo" %>
+      <%= render "control_panel/overdue_service_dates", title: "Tableros eléctricos",
+                                                        overdue_services: overdue_services["electrical_panel"],
+                                                        collapse: "collapseThree" %>
+    </div>
+  <% end %>
+</div>
