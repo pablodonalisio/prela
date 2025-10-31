@@ -9,6 +9,7 @@
                               collection: Equipment.all.map { |e| [e.model, e.id, { 'data-kind' => e.kind }] },
                               prompt: "Seleccione un equipo",
                               input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
+  <%= f.input :condition, label: "Condición", collection: LocationEquipment::CONDITIONS.keys, include_blank: false %>
 
   <fieldset data-location-equipment-form-target="upsInputs" class="d-none">
     <%= render "location_equipments/ups_form", f: f %>

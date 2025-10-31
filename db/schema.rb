@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_23_143233) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -220,6 +220,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_23_143233) do
     t.integer "electrical_approval_interval", default: 1
     t.date "last_electrical_approval"
     t.date "next_electrical_approval"
+    t.string "condition", default: "Buena"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end

@@ -19,6 +19,12 @@ class LocationEquipment < ApplicationRecord
     "building" => %i[srt_900 thermography electrical_approval]
   }
 
+  CONDITIONS = {
+    "Buena" => {color: "success"},
+    "Aceptable" => {color: "warning"},
+    "Deficiente" => {color: "danger"}
+  }
+
   after_create :create_next_service_dates
 
   belongs_to :location
@@ -79,5 +85,9 @@ class LocationEquipment < ApplicationRecord
 
   def calculate_next_service_date(service_kind, from_date = Time.current)
     from_date + send("#{service_kind}_interval").years
+  end
+
+  def condition_color
+    CONDITIONS[condition][:color]
   end
 end
