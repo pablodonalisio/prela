@@ -13,6 +13,10 @@
               <h5 class="card-title me-auto">
                 <%= link_to location_equipment.equipment.full_name, equipment_path(location_equipment.equipment),
                                                                     data: { turbo_frame: "_top" } %>
+                <span class= "<%= "badge bg-#{location_equipment.condition_color} rounded-pill mx-3" %>">
+                  Condición:
+                  <%= location_equipment.condition %>
+                </span>
               </h5>
 
               <%= render "shared/dropdown" do %>

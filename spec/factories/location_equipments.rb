@@ -7,5 +7,6 @@ FactoryBot.define do
     details { "Tiene 2 battery pack" }
     serial_number { "lS1051004604" }
     status { "active" }
+    condition { "Buena" }
   end
 end

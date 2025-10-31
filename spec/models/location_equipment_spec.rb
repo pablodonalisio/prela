@@ -202,4 +202,11 @@ RSpec.describe LocationEquipment, type: :model do
       expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment.kinds.keys.size)
     end
   end
+
+  context "#condition_color" do
+    let(:location_equipment) { create(:location_equipment, condition: "Buena") }
+    it "should return condition color to display" do
+      expect(location_equipment.condition_color).to eq("success")
+    end
+  end
 end
