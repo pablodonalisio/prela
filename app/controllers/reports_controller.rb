@@ -151,7 +151,7 @@ class ReportsController < ApplicationController
     return if removed_ids.blank?
 
     @report.images.where(blob_id: removed_ids).find_each do |image|
-      image.purge_later
+      image.purge
     end
   end
 
