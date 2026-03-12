@@ -153,6 +153,7 @@ class ReportsController < ApplicationController
     @report.images.where(blob_id: removed_ids).find_each do |image|
       image.purge
     end
+    @report.reload
   end
 
   def build_report_stats
