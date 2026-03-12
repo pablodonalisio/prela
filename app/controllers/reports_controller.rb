@@ -1,7 +1,4 @@
 class ReportsController < ApplicationController
-  before_action lambda {
-    resize_before_save(params[:report][:images], nil, 250)
-  }, only: %i[create update]
   before_action :set_reports, only: %i[index destroy update]
 
   def index
@@ -40,6 +37,8 @@ class ReportsController < ApplicationController
     @report = authorize report
 
     if @report.update(report_params)
+      purge_removed_images
+
       return report_pdf_error unless attach_pdf
 
       respond_to do |format|
@@ -147,21 +146,12 @@ class ReportsController < ApplicationController
     end
   end
 
-  def resize_before_save(images, width, height)
-    return unless images.present?
+  def purge_removed_images
+    removed_ids = params.dig(:report, :removed_image_ids) || []
+    return if removed_ids.blank?
 
-    begin
-      images.each do |image|
-        next unless image&.is_a?(ActionDispatch::Http::UploadedFile)
-        ImageProcessing::MiniMagick
-          .source(image)
-          .resize_to_limit(width, height)
-          .call(destination: image.tempfile.path)
-      end
-    rescue => _e
-      # Do nothing. If this is catching, it probably means the
-      # file type is incorrect, which can be caught later by
-      # model validations.
+    @report.images.where(blob_id: removed_ids).find_each do |image|
+      image.purge_later
     end
   end
 

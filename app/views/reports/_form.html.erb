@@ -43,25 +43,50 @@
 
   <h2>Imágenes</h2>
 
-  <div class="my-3 row">
-    <% if location_equipment.equipment.electrical_panel? %>
-      <%= render "image_upload", report: report, title: "Plano unifilar", f: f, n: 0 %>
-      <%= render "image_upload", report: report, title: "Plano de ubicación", f: f, n: 1 %>
-      <%= render "image_upload", report: report, title: "Entorno", f: f, n: 2 %>
-      <%= render "image_upload", report: report, title: "Vista de frente", f: f, n: 3 %>
-      <%= render "image_upload", report: report, title: "Vista tablero cerrado", f: f, n: 4 %>
-      <%= render "image_upload", report: report, title: "Vista interior con plastrones", f: f, n: 5 %>
-      <%= render "image_upload", report: report, title: "Vista interior sin plastrones", f: f, n: 6 %>
-      <%= render "image_upload", report: report, title: "Vista interior puerta", f: f, n: 7 %>
-      <%= render "image_upload", report: report, title: "Terografía", f: f, n: 8 %>
-      <%= render "image_upload", report: report, title: "Foto ingreso y egreso del tablero", f: f, n: 9 %>
-      <%= render "image_upload", report: report, title: "Extra", f: f, n: 10 %>
-    <% else %>
-      <% 2.times do |n| %>
-        <%= render "image_upload", report: report, title: "Imagen #{n+1}", f: f, n: n%>
-      <% end %>
-    <% end %>
+  <% existing_images = report.images.attached? ? report.images.map do |img|
+       {
+         id: img.blob.id,
+         filename: img.filename.to_s,
+         url: url_for(img.variant(resize_and_pad: [120, 120])),
+         byte_size: img.byte_size
+       }
+     end : [] %>
+
+  <div data-controller="dropzone"
+       data-dropzone-direct-upload-url-value="<%= rails_direct_uploads_url %>"
+       data-dropzone-existing-files-value='<%= existing_images.to_json.html_safe %>'
+       data-dropzone-resize-height-value="250"
+       data-dropzone-max-files-value="<%= location_equipment.equipment.electrical_panel? ? 11 : 2 %>"
+       class="mb-4">
+    <div data-dropzone-target="dropzone" class="dropzone border rounded p-3">
+      <div class="dz-message text-center">Arrastra imágenes aquí o haz click para seleccionar. Se redimensionarán automáticamente.</div>
+    </div>
+    <div data-dropzone-target="hiddenInputs"></div>
+    <div data-dropzone-target="removedInputs"></div>
   </div>
+
+  <noscript>
+    <p class="text-warning">El navegador no soporta JavaScript. Use el formulario de carga tradicional:</p>
+    <div class="my-3 row">
+      <% if location_equipment.equipment.electrical_panel? %>
+        <%= render "image_upload", report: report, title: "Plano unifilar", f: f, n: 0 %>
+        <%= render "image_upload", report: report, title: "Plano de ubicación", f: f, n: 1 %>
+        <%= render "image_upload", report: report, title: "Entorno", f: f, n: 2 %>
+        <%= render "image_upload", report: report, title: "Vista de frente", f: f, n: 3 %>
+        <%= render "image_upload", report: report, title: "Vista tablero cerrado", f: f, n: 4 %>
+        <%= render "image_upload", report: report, title: "Vista interior con plastrones", f: f, n: 5 %>
+        <%= render "image_upload", report: report, title: "Vista interior sin plastrones", f: f, n: 6 %>
+        <%= render "image_upload", report: report, title: "Vista interior puerta", f: f, n: 7 %>
+        <%= render "image_upload", report: report, title: "Terografía", f: f, n: 8 %>
+        <%= render "image_upload", report: report, title: "Foto ingreso y egreso del tablero", f: f, n: 9 %>
+        <%= render "image_upload", report: report, title: "Extra", f: f, n: 10 %>
+      <% else %>
+        <% 2.times do |n| %>
+          <%= render "image_upload", report: report, title: "Imagen #{n+1}", f: f, n: n%>
+        <% end %>
+      <% end %>
+    </div>
+  </noscript>
 
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
