@@ -39,8 +39,8 @@ export default class extends Controller {
       maxFiles: this.maxFilesValue || 5,
       acceptedFiles: "image/*",
       addRemoveLinks: true,
-      resizeWidth: this.resizeWidthValue,
-      resizeHeight: this.resizeHeightValue,
+      resizeWidth: this.resizeWidthValue || null,
+      resizeHeight: this.resizeHeightValue || null,
       resizeQuality: this.resizeQualityValue || 0.8,
       thumbnailHeight: 120,
       thumbnailWidth: 120,
@@ -67,19 +67,29 @@ export default class extends Controller {
       return;
     }
 
-    const directUploadUrl =
-      this.directUploadUrlValue || "/rails/active_storage/direct_uploads";
-    const directUpload = new DirectUpload(uploadFile, directUploadUrl);
+    const transformFile = this.dropzoneInstance.options.transformFile.bind(
+      this.dropzoneInstance,
+    );
+    transformFile(uploadFile, (resizedBlob) => {
+      console.log(resizedBlob.type);
+      const resizedFile = new File([resizedBlob], file.name, {
+        type: resizedBlob.type,
+      });
 
-    directUpload.create((error, blob) => {
-      if (error) {
-        this.dropzoneInstance.emit("error", file, error);
-        return;
-      }
+      const directUploadUrl =
+        this.directUploadUrlValue || "/rails/active_storage/direct_uploads";
+      const directUpload = new DirectUpload(resizedFile, directUploadUrl);
 
-      this.appendHiddenInput(blob.signed_id, file);
-      this.dropzoneInstance.emit("success", file, "Upload completed");
-      this.dropzoneInstance.emit("complete", file);
+      directUpload.create((error, blob) => {
+        if (error) {
+          this.dropzoneInstance.emit("error", file, error);
+          return;
+        }
+
+        this.appendHiddenInput(blob.signed_id, file);
+        this.dropzoneInstance.emit("success", file, "Upload completed");
+        this.dropzoneInstance.emit("complete", file);
+      });
     });
   }
 
