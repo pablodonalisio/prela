@@ -25,7 +25,7 @@ class Reports::Equipment::PowerUnitStats < Reports::Content
       [{content: "Número de arranques"}, {content: data_present?(power_unit_report_stat.number_of_starts)}, {content: "-"}],
       [{content: "Tiempo de funcionamiento (Hs)"}, {content: data_present?(power_unit_report_stat.operating_time)}, {content: "HS"}],
       [{content: "Arranques fallidos"}, {content: data_present?(power_unit_report_stat.failed_starts)}, {content: "-"}],
-      [{content: "Presión de aceite"}, {content: "#{power_unit_report_stat.oil_pressure} #{power_unit_report_stat.oil_pressure_unit}"}, {content: ">4 bar"}],
+      [{content: "Presión de aceite"}, {content: data_present?(power_unit_report_stat.oil_pressure, power_unit_report_stat.oil_pressure_unit)}, {content: ">4 bar"}],
       [{content: "Nivel de combustible"}, {content: data_present?(power_unit_report_stat.fuel_level)}, {content: ">3/4"}],
       [{content: "Nivel de refrigerante"}, {content: power_unit_report_stat.coolant_level.to_s}, {content: "Full"}],
       [{content: "Nivel de aceite"}, {content: power_unit_report_stat.oil_level.to_s}, {content: "Full"}],

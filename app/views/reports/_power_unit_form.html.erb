@@ -44,10 +44,17 @@
                                       attribute: :failed_starts,
                                       input_label: "Arranques fallidos",
                                       form_group_id: "failed_starts_form_group" %>
-    <div class="d-flex">
-      <%= power_unit_stats_form.input :oil_pressure, label: "Presión de aceite" %>
-      <%= power_unit_stats_form.input :oil_pressure_unit, label: "Unidad", collection: PowerUnitReportStat::OIL_PRESSURE_UNIT_OPTIONS %>
+    <div class="form-group">
+      <div class="d-flex" id="oil_pressure_form_group">
+        <%= power_unit_stats_form.input :oil_pressure, label: "Presión de aceite" %>
+        <%= power_unit_stats_form.input :oil_pressure_unit, label: "Unidad", collection: PowerUnitReportStat::OIL_PRESSURE_UNIT_OPTIONS %>
+      </div>
+      <div class="form-check mb-4">
+        <%= render "toggle_disable_checkbox", attribute: "oil_pressure", form_group_id: "oil_pressure_form_group", label: "Sin datos" %>
+      </div>
     </div>
+
+
     <%= render "no_data_check_input", form: power_unit_stats_form,
                                       attribute: :fuel_level,
                                       input_label: "Nivel de combustible",
