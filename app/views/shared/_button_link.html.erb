@@ -1,16 +1,17 @@
 <div class="flex-shrink-1 py-2">
+  <% turbo_frame ||= "remote_modal"%>
   <% if text.present?%>
     <%= link_to text , path,
                       class: "btn btn-primary text-uppercase h-100 font-monospace",
                       style: "font-size: 0.8rem !important;",
                       data: {
-                        turbo_frame: "remote_modal"
+                        turbo_frame: turbo_frame
                       } %>
   <% else %>
     <%= link_to path, class: "btn btn-primary text-uppercase h-100 font-monospace",
                       style: "font-size: 0.8rem !important;",
                       data: {
-                        turbo_frame: "remote_modal"
+                        turbo_frame: turbo_frame
                       } do %>
           <%= tag.i(class: icon) %>
     <% end %>

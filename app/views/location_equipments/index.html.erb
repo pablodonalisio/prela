@@ -1,8 +1,13 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
   <%= render "shared/content_header", title: "Activos" do %>
     <% if current_user.admin? %>
-      <%= render "shared/button_link", text: "Agregar",
-                                      path: new_location_equipment_path %>
+      <div class="d-flex align-items-center flex-wrap justify-content-end gap-2">
+        <%= render "shared/button_link", text: "Tipos de activos",
+                                        path: "#",
+                                        turbo_frame: "main_content" %>
+        <%= render "shared/button_link", text: "Agregar",
+                                        path: new_location_equipment_path %>
+      </div>
     <% end %>
   <% end %>
 
