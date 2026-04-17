@@ -68,6 +68,13 @@ es:
         srt_900: "Próximo SRT-900"
         thermography: "Próxima termografía"
         electrical_approval: "Próximo apto eléctrico"
+      equipment_kind:
+        field_types:
+          string: "Texto"
+          integer: "Número entero"
+          float: "Número decimal"
+          date: "Fecha"
+          boolean: "Booleano"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"

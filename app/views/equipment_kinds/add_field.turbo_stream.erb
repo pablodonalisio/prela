@@ -1,0 +1,4 @@
+<%= turbo_stream.append "fields-container" do %>
+  <%= render "equipment_kinds/equipment_kind_field", field_key: @field_key, field_data: {} %>
+<% end %>
+<%= turbo_stream.remove "no-fields-message" %>

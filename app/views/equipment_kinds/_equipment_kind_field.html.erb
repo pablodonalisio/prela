@@ -1,0 +1,17 @@
+<div class="field-row mb-3 d-flex gap-2 align-items-end">
+  <div class="flex-grow-1">
+    <label class="form-label form-label-sm">Nombre del campo</label>
+    <input type="text" class="form-control field-name" placeholder="ej: Marca, Modelo"
+          value="<%= field_data["name"] %>" name="equipment_kind[fields][<%= field_key %>][name]">
+  </div>
+  <div class="flex-grow-1">
+    <label class="form-label form-label-sm">Tipo de dato</label>
+    <select class="form-control field-type" name="equipment_kind[fields][<%= field_key %>][type]">
+      <% EquipmentKind::FIELD_TYPES.each do |type| %>
+        <option value="<%= type %>" <%= "selected" if field_data["type"] == type %>>
+          <%= t("activerecord.attributes.equipment_kind.field_types.#{type}") %>
+        </option>
+      <% end %>
+    </select>
+  </div>
+</div>

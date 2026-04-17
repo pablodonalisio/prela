@@ -1,0 +1,28 @@
+<div class="border rounded m-3 p-3" id="<%= dom_id equipment_kind %>">
+  <div class="d-flex mb-3">
+      <h5 class="card-title me-auto">
+        <%= equipment_kind.name %>
+      </h5>
+
+    <% if current_user.admin? %>
+      <%= render "shared/dropdown" do %>
+        <%= render "shared/button_box", edit_path: edit_equipment_kind_path(equipment_kind),
+                                        delete_path: equipment_kind_path(equipment_kind),
+                                        confirm: "Seguro queres borrar este tipo de equipo?" %>
+      <% end %>
+    <% end %>
+  </div>
+  <p>
+    <strong>Campos:</strong>
+    <% if equipment_kind.fields.present? %>
+      <ul class="flex-column gap-1">
+        <% equipment_kind.fields.each do |field_key, field_data| %>
+          <li><strong><%= field_data["name"] %></strong></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <span class="text-muted">No hay campos definidos para este tipo de activo.</span>
+    <% end %>
+  </p>
+
+</div>

@@ -1,0 +1,13 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <%= render "shared/content_header", title: "Tipos de activos" do %>
+    <% if current_user.admin? %>
+      <%= render "shared/button_link", text: "Agregar",
+                                      path: new_equipment_kind_path %>
+    <% end %>
+  <% end %>
+
+  <%= turbo_frame_tag "equipment_kinds" do %>
+    <%= render @equipment_kinds %>
+  <% end %>
+
+<% end %>
