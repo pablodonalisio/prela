@@ -1,13 +1,15 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <%= render "shared/content_header", title: "Tipos de activos" do %>
-    <% if current_user.admin? %>
+  <%= render "location_equipments/navbar", active: "equipment_kinds" %>
+
+  <% if current_user.admin? %>
+    <div class="d-flex align-items-center flex-wrap m-4 gap-2">
       <%= render "shared/button_link", text: "Agregar",
                                       path: new_equipment_kind_path %>
-    <% end %>
+    </div>
   <% end %>
 
-  <%= turbo_frame_tag "equipment_kinds" do %>
-    <%= render @equipment_kinds %>
+  <%= turbo_frame_tag "equipment_kinds", class: "row g-3 my-3 mx-2" do %>
+      <%= render @equipment_kinds %>
   <% end %>
 
 <% end %>
