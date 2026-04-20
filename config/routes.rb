@@ -31,5 +31,6 @@ Rails.application.routes.draw do
   resources :service_dates, only: %i[edit update show]
   resources :equipment_kinds do
     get "add_field", on: :collection
+    get "remove_field", on: :collection
   end
 end
