@@ -17,7 +17,7 @@ RSpec.describe "/equipment_kinds", type: :request do
   # EquipmentKind. As you add validations to EquipmentKind, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    {name: "UPS", fields: {brand: "string", model: "string"}}
+    {name: "UPS", fields: {EquipmentKind.generate_field_key => {name: "Brand", type: "string"}}}
   }
 
   let(:invalid_attributes) {
@@ -134,7 +134,7 @@ RSpec.describe "/equipment_kinds", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        {name: "Power Unit", fields: {brand: "string", model: "string", power: "integer"}}
+        {name: "Power Unit", fields: {EquipmentKind.generate_field_key => {name: "Model", type: "string"}}}
       }
 
       it "updates the requested equipment_kind" do

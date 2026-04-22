@@ -5,6 +5,10 @@ class EquipmentKind < ApplicationRecord
 
   FIELD_TYPES = %w[string integer float date boolean].freeze
 
+  def self.generate_field_key
+    Time.now.to_i
+  end
+
   private
 
   def fields_names_must_be_present

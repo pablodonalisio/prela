@@ -56,7 +56,7 @@ class EquipmentKindsController < ApplicationController
   end
 
   def add_field
-    @field_key = Time.now.to_i
+    @field_key = EquipmentKind.generate_field_key
 
     respond_to do |format|
       format.turbo_stream
