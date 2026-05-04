@@ -1,6 +1,7 @@
 class EquipmentKind < ApplicationRecord
   has_many :equipments, dependent: :destroy
   validates :name, presence: true, uniqueness: true
+  validates :fields, presence: true
   validate :fields_names_must_be_present
 
   FIELD_TYPES = %w[string integer float date boolean].freeze

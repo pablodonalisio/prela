@@ -50,7 +50,8 @@ RSpec.describe Equipment, type: :model do
   end
 
   context "electrical panel" do
-    let(:panel) { Equipment.build(kind: "electrical_panel", model: "Nombre del tablero", is_triphase: true, size: "2din") }
+    let(:equipment_kind) { create(:equipment_kind, name: "Electrical Panel") }
+    let(:panel) { Equipment.build(kind: "electrical_panel", model: "Nombre del tablero", is_triphase: true, size: "2din", equipment_kind: equipment_kind) }
 
     it "is valid with electrical panel attributes" do
       expect(panel).to be_valid

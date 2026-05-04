@@ -1,7 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "/equipments", type: :request do
-  let(:valid_attributes) { {kind: "ups", brand: "some brand", model: "some model", more_info: "some info"} }
+  let(:equipment_kind) { create(:equipment_kind) }
+  let(:valid_attributes) { {kind: "ups", brand: "some brand", model: "some model", more_info: "some info", equipment_kind: equipment_kind} }
   let(:invalid_attributes) { {kind: ""} }
 
   before { sign_in create(:admin) }

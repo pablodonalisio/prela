@@ -1,5 +1,6 @@
 class Equipment < ApplicationRecord
   has_one_attached :avatar
+  belongs_to :equipment_kind
   has_many :location_equipments, dependent: :destroy
   has_many :equipment_supplies, dependent: :destroy, as: :equipmentable
   has_one :equipment_battery, dependent: :destroy, as: :equipmentable, class_name: "EquipmentSupply"
