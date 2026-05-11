@@ -1,15 +1,18 @@
 <%= simple_form_for location_equipment, html: { data: { controller: "location-equipment-form"}} do |f| %>
   <%= f.hidden_field :client_id, value: @client.id %>
-  <%= f.input :location_id, label: "Sede",
-                            collection: locations.pluck(:name, :id),
-                            prompt: "Seleccione una sede" %>
-  <%= f.input :zone, label: "Sala" %>
-  <%= f.input :floor, label: "Piso" %>
+  <fieldset class="border p-4 mb-4 bg-light bg-opacity-25 rounded">
+    <legend>Locación</legend>
+    <%= f.input :location_id, label: "Sede",
+                              collection: locations.pluck(:name, :id),
+                              prompt: "Seleccione una sede" %>
+    <%= f.input :zone, label: "Sala" %>
+    <%= f.input :floor, label: "Piso" %>
+  </fieldset>
+
   <%= f.input :equipment_id, label: "Equipo",
                               collection: Equipment.all.map { |e| [e.model, e.id, { 'data-kind' => e.kind }] },
                               prompt: "Seleccione un equipo",
                               input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
-  <%= f.input :condition, label: "Condición", collection: LocationEquipment::CONDITIONS.keys, include_blank: false %>
 
   <fieldset data-location-equipment-form-target="upsInputs" class="d-none">
     <%= render "location_equipments/ups_form", f: f %>
@@ -24,6 +27,10 @@
     <%= render "location_equipments/building_form", f: f %>
   </fieldset>
 
+  <%= f.input :condition, label: "Condición", collection: LocationEquipment::CONDITIONS.keys, include_blank: false %>
   <%= f.input :details, label: "Detalles" %>
+  <% if location_equipment.new_record? %>
+    <%= link_to "Volver", new_location_equipment_path(step: 1), class: "btn btn-outline-primary" %>
+  <% end %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

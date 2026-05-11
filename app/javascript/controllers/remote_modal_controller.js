@@ -12,7 +12,8 @@ export default class extends Controller {
   }
 
   close(event) {
-    if (event.detail.success) {
+    const keepModalOpen = event.detail.formSubmission.submitter.dataset.keepModalOpen;
+    if (event.detail.success && !keepModalOpen) {
       this.modal.hide();
     }
   }

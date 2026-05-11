@@ -10,6 +10,39 @@ RSpec.describe "/location_equipments", type: :request do
       get new_location_equipment_url, params: {client_id: client.id}
       expect(response).to be_successful
     end
+
+    context "step 1" do
+      it "renders the first step of the form" do
+        get new_location_equipment_url, params: {step: 1}
+        expect(response.body).to include("Seleccione un cliente")
+        expect(response.body).to include("Siguiente")
+      end
+    end
+
+    context "step 2" do
+      it "renders the second step of the form" do
+        get new_location_equipment_url, params: {step: 2, client_id: client.id}
+        expect(response.body).to include("Sede")
+        expect(response.body).to include("Sala")
+        expect(response.body).to include("Piso")
+        expect(response.body).to include("Condición")
+        expect(response.body).to include("Detalles")
+        expect(response.body).to include("Volver")
+        expect(response.body).to include("Aceptar")
+      end
+
+      it "renders client locations to select" do
+        location = create(:location, client: client)
+        get new_location_equipment_url, params: {step: 2, client_id: client.id}
+        expect(response.body).to include(location.name)
+      end
+
+      it "redirects to step 1 and displays an error if client_id is not provided" do
+        get new_location_equipment_url, params: {step: 2}
+        expect(response).to redirect_to(new_location_equipment_url(step: 1))
+        expect(flash[:alert]).to eq("Debe seleccionar un cliente")
+      end
+    end
   end
 
   describe "GET /index" do
@@ -70,7 +103,7 @@ RSpec.describe "/location_equipments", type: :request do
     let(:equipment) { create(:equipment) }
     let(:location) { create(:location) }
     let(:valid_attributes) { {equipment_id: equipment.id, location_id: location.id} }
-    let(:invalid_attributes) { {equipment_id: ""} }
+    let(:invalid_attributes) { {equipment_id: "", client_id: location.client_id} }
 
     context "with valid parameters" do
       it "creates a new LocationEquipment and responds with HTML" do
@@ -87,6 +120,16 @@ RSpec.describe "/location_equipments", type: :request do
           post location_equipments_url, params: {location_equipment: invalid_attributes}
         }.to change(LocationEquipment, :count).by(0)
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "renders the new template with step 2 and responds with HTML" do
+        post location_equipments_url, params: {location_equipment: invalid_attributes}
+        expect(response.body).to include("Sede")
+        expect(response.body).to include("Sala")
+        expect(response.body).to include("Piso")
+        expect(response.body).to include("Condición")
+        expect(response.body).to include("Detalles")
+        expect(response.body).to include("Aceptar")
       end
     end
   end

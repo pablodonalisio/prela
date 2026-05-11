@@ -4,9 +4,8 @@ class LocationEquipmentsController < ApplicationController
   before_action :set_order, only: :index
 
   def new
-    @client = Client.find_by(id: params[:client_id])
-    @location_equipment = authorize LocationEquipment.new
-    @locations = Location.where(client_id: @client&.id)
+    @step = params[:step].to_i
+    set_step_2 if @step == 2
   end
 
   def index
@@ -32,6 +31,7 @@ class LocationEquipmentsController < ApplicationController
       end
     else
       set_locations
+      @step = 2
       render :new, status: :unprocessable_entity
     end
   end
@@ -109,5 +109,19 @@ class LocationEquipmentsController < ApplicationController
 
   def set_order
     @order = params[:order] || "next_service"
+  end
+
+  def set_step_2
+    @location_equipment = authorize LocationEquipment.new
+    validate_client
+    @locations = Location.where(client_id: @client&.id)
+  end
+
+  def validate_client
+    @client = Client.find_by(id: params[:client_id])
+    return if @client
+
+    flash[:alert] = "Debe seleccionar un cliente"
+    redirect_to new_location_equipment_url(step: 1)
   end
 end
