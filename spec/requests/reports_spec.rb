@@ -84,6 +84,14 @@ RSpec.describe "Reports", type: :request do
       get new_location_equipment_report_path(report1.location_equipment)
       expect(response).to be_successful
     end
+
+    it "allows to select a report date from 2016 to the current year" do
+      get new_location_equipment_report_path(report1.location_equipment)
+      expect(response.body).to include("option value=\"2016\"")
+      expect(response.body).to include("option value=\"#{Date.today.year}\"")
+      expect(response.body).not_to include("option value=\"#{Date.today.year + 1}\"")
+      expect(response.body).not_to include("option value=\"2015\"")
+    end
   end
 
   describe "GET /edit" do
@@ -92,6 +100,14 @@ RSpec.describe "Reports", type: :request do
     it "renders a successful response" do
       get edit_location_equipment_report_path(report1.location_equipment, report1)
       expect(response).to be_successful
+    end
+
+    it "allows to select a report date from 2016 to the current year" do
+      get edit_location_equipment_report_path(report1.location_equipment, report1)
+      expect(response.body).to include("option value=\"2016\"")
+      expect(response.body).to include("option value=\"#{Date.today.year}\"")
+      expect(response.body).not_to include("option value=\"#{Date.today.year + 1}\"")
+      expect(response.body).not_to include("option value=\"2015\"")
     end
   end
 
@@ -122,6 +138,14 @@ RSpec.describe "Reports", type: :request do
       it "uploads images to the report" do
         request
         expect(Report.last.images).to be_attached
+      end
+
+      it "allows to create a report with a date from 2016" do
+        freeze_time do
+          params[:report][:date] = Date.new(2016, 1, 1)
+          request
+          expect(Report.last.date.to_date).to eq(Date.new(2016, 1, 1))
+        end
       end
     end
 
