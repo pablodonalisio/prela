@@ -8,6 +8,7 @@
               as: :datetime,
               label: "Fecha",
               value: report.date || Time.now.in_time_zone,
+              start_year: 2016,
               end_year: Date.today.year,
               disabled: !current_user.admin?  %>
 
