@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_07_125458) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -157,9 +157,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_07_125458) do
 
   create_table "equipment_kinds", force: :cascade do |t|
     t.string "name"
-    t.jsonb "fields", default: {}, null: false
+    t.jsonb "generic_fields", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "specific_fields", default: {}, null: false
+    t.string "legacy_kind"
+    t.text "description"
+    t.string "normalized_name"
+    t.index ["legacy_kind"], name: "index_equipment_kinds_on_legacy_kind", unique: true, where: "(legacy_kind IS NOT NULL)"
+    t.index ["name"], name: "index_equipment_kinds_on_name", unique: true
+    t.index ["normalized_name"], name: "index_equipment_kinds_on_normalized_name", unique: true
   end
 
   create_table "equipment_supplies", force: :cascade do |t|

@@ -17,11 +17,15 @@ RSpec.describe "/equipment_kinds", type: :request do
   # EquipmentKind. As you add validations to EquipmentKind, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    {name: "UPS", fields: {EquipmentKind.generate_field_key => {name: "Brand", type: "string"}}}
+    {
+      name: "Tipo personalizado",
+      generic_fields: {EquipmentKind.generate_field_key => {name: "Marca", type: "string"}},
+      specific_fields: {}
+    }
   }
 
   let(:invalid_attributes) {
-    {name: nil, fields: nil}
+    {name: nil, generic_fields: {}}
   }
 
   let(:user) { create(:admin) }
@@ -128,20 +132,35 @@ RSpec.describe "/equipment_kinds", type: :request do
         post equipment_kinds_url, params: {equipment_kind: invalid_attributes}
         expect(response).to have_http_status(:unprocessable_content)
       end
+
+      it "re-renders the form via turbo stream when generic_fields are missing" do
+        post equipment_kinds_url,
+          params: {equipment_kind: {name: "Nuevo tipo", generic_fields: {}}},
+          as: :turbo_stream
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include('turbo-stream action="update" target="remote_modal_body"')
+        expect(response.body).to include("debe tener al menos un campo definido")
+      end
     end
   end
 
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        {name: "Power Unit", fields: {EquipmentKind.generate_field_key => {name: "Model", type: "string"}}}
+        {
+          name: "Grupo Electrógeno",
+          generic_fields: {EquipmentKind.generate_field_key => {name: "Modelo", type: "string"}},
+          specific_fields: {"serial_number" => {name: "Número de serie", type: "string"}}
+        }
       }
 
       it "updates the requested equipment_kind" do
         equipment_kind = EquipmentKind.create! valid_attributes
         patch equipment_kind_url(equipment_kind), params: {equipment_kind: new_attributes}
         equipment_kind.reload
-        expect(equipment_kind.name).to eq "Power Unit"
+        expect(equipment_kind.name).to eq "Grupo Electrógeno"
+        expect(equipment_kind.specific_fields["serial_number"]["name"]).to eq "Número de serie"
       end
 
       it "redirects to the equipment_kind" do

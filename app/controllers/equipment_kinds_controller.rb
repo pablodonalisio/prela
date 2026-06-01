@@ -1,25 +1,20 @@
 class EquipmentKindsController < ApplicationController
   before_action :set_equipment_kind, only: %i[show edit update destroy]
 
-  # GET /equipment_kinds or /equipment_kinds.json
   def index
     @equipment_kinds = policy_scope(EquipmentKind)
   end
 
-  # GET /equipment_kinds/1 or /equipment_kinds/1.json
   def show
   end
 
-  # GET /equipment_kinds/new
   def new
     @equipment_kind = authorize EquipmentKind.new
   end
 
-  # GET /equipment_kinds/1/edit
   def edit
   end
 
-  # POST /equipment_kinds or /equipment_kinds.json
   def create
     @equipment_kind = authorize EquipmentKind.new(equipment_kind_params)
 
@@ -29,11 +24,11 @@ class EquipmentKindsController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "El tipo de activo se creo correctamente." }
       else
         format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :form_update, status: :unprocessable_entity }
       end
     end
   end
 
-  # PATCH/PUT /equipment_kinds/1 or /equipment_kinds/1.json
   def update
     respond_to do |format|
       if @equipment_kind.update(equipment_kind_params)
@@ -41,11 +36,11 @@ class EquipmentKindsController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "El tipo de activo se actualizo correctamente." }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :form_update, status: :unprocessable_entity }
       end
     end
   end
 
-  # DELETE /equipment_kinds/1 or /equipment_kinds/1.json
   def destroy
     @equipment_kind.destroy!
 
@@ -56,6 +51,7 @@ class EquipmentKindsController < ApplicationController
   end
 
   def add_field
+    @field_set = field_set_param
     @field_key = EquipmentKind.generate_field_key
 
     respond_to do |format|
@@ -73,13 +69,19 @@ class EquipmentKindsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_equipment_kind
     @equipment_kind = authorize EquipmentKind.find(params.expect(:id))
   end
 
-  # Only allow a list of trusted parameters through.
   def equipment_kind_params
-    params.require(:equipment_kind).permit(:name, fields: {})
+    permitted = params.require(:equipment_kind).permit(:name, :description, generic_fields: {}, specific_fields: {})
+    permitted[:generic_fields] ||= {}
+    permitted[:specific_fields] ||= {}
+    permitted
+  end
+
+  def field_set_param
+    field_set = params.fetch(:field_set, "generic_fields")
+    EquipmentKind::FIELD_SETS.include?(field_set) ? field_set : "generic_fields"
   end
 end

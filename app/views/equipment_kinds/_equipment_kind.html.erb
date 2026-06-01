@@ -1,27 +1,16 @@
 <%= turbo_frame_tag equipment_kind, class: "col-sm-6 col-xl-4" do %>
   <div class="card border-secondary bg-primary bg-opacity-10 bg-gradient h-100">
     <div class="card-body">
-      <h5 class="card-title text-center"><%= equipment_kind.name.capitalize %></h5>
-
-      <h6 class="card-subtitle mb-2 text-muted text-center">Campos</h6>
-      <% if equipment_kind.fields.present? %>
-        <% field_columns = equipment_kind.fields.to_a.each_slice(4).to_a %>
-        <div class="row row-cols-1 row-cols-md-2 g-2 mb-3 small">
-          <% field_columns.each do |column| %>
-            <div class="col">
-              <ul class="list-unstyled mb-0">
-                <% column.each do |field_key, field_data| %>
-                  <li class="py-1">
-                    <strong><%= field_data["name"].capitalize %></strong>
-                  </li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-        </div>
-      <% else %>
-        <p class="text-muted mb-3">No hay campos definidos para este tipo de activo.</p>
+      <h5 class="card-title text-center"><%= equipment_kind.name %></h5>
+      <% if equipment_kind.description.present? %>
+        <p class="card-text text-muted small text-center mb-3"><%= equipment_kind.description %></p>
       <% end %>
+
+      <h6 class="card-subtitle mb-2 text-muted">Campos genéricos</h6>
+      <%= render "equipment_kind_field_list", fields: equipment_kind.generic_fields %>
+
+      <h6 class="card-subtitle mb-2 text-muted mt-3">Campos específicos</h6>
+      <%= render "equipment_kind_field_list", fields: equipment_kind.specific_fields %>
     </div>
 
     <% if current_user.admin? %>

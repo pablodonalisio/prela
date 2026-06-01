@@ -1,30 +1,16 @@
 <%= simple_form_for equipment_kind do |f| %>
   <%= f.input :name, label: "Nombre" %>
+  <%= f.input :description, label: "Descripción", required: false, hint: "Opcional." %>
 
-  <%= turbo_frame_tag "fields-frame" do %>
-    <div class="form-group" id="fields-section">
-      <label>Campos <span class="text-danger">*</span></label>
-      <div clas="border rounded p-3">
-        <%= turbo_frame_tag "fields-container" do %>
-          <% if equipment_kind.fields.present? %>
-            <% equipment_kind.fields.each do |field_key, field_data| %>
-              <%= render "equipment_kind_field", field_key: field_key, field_data: field_data %>
-            <% end %>
-          <% else %>
-            <%= turbo_frame_tag "no-fields-message" do %>
-              <p class="text-muted">No hay campos definidos para este tipo de activo.</p>
-            <% end %>
-          <% end %>
-        <% end %>
-      </div>
+  <%= render "field_set_section",
+             field_set: "generic_fields",
+             label: "Campos genéricos",
+             equipment_kind: equipment_kind %>
 
-      <div class="my-2">
-        <%= link_to "Añadir campo", add_field_equipment_kinds_path,
-                                    class: "btn btn-sm btn-outline-primary",
-                                    data: { turbo_frame: "fields-container", turbo_stream: true } %>
-      </div>
-    </div>
-  <% end %>
+  <%= render "field_set_section",
+             field_set: "specific_fields",
+             label: "Campos específicos",
+             equipment_kind: equipment_kind %>
 
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

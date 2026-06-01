@@ -1,4 +1,11 @@
-<%= turbo_stream.append "fields-container" do %>
-  <%= render "equipment_kinds/equipment_kind_field", field_key: @field_key, field_data: {} %>
+<% container_id = "fields-container-#{@field_set.dasherize}" %>
+<% no_fields_id = "no-fields-message-#{@field_set.dasherize}" %>
+
+<%= turbo_stream.append container_id do %>
+  <%= render "equipment_kinds/equipment_kind_field",
+             equipment_kind: @equipment_kind || EquipmentKind.new,
+             field_set: @field_set,
+             field_key: @field_key,
+             field_data: {} %>
 <% end %>
-<%= turbo_stream.remove "no-fields-message" %>
+<%= turbo_stream.remove no_fields_id %>

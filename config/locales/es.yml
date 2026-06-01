@@ -69,6 +69,11 @@ es:
         thermography: "Próxima termografía"
         electrical_approval: "Próximo apto eléctrico"
       equipment_kind:
+        name: "Nombre"
+        description: "Descripción"
+        legacy_kind: "Tipo legacy"
+        generic_fields: "Campos genéricos"
+        specific_fields: "Campos específicos"
         field_types:
           string: "Texto"
           integer: "Número entero"
