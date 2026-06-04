@@ -45,7 +45,7 @@ class LocationEquipment < ApplicationRecord
 
   enum :status, {active: 0, out_of_service: 1, prela_to_check: 2, prela_to_deliver: 3, prela_on_service: 4, inaccessible: 5}
 
-  delegate :avatar, :model, :kind, to: :equipment
+  delegate :avatar, :name, :model, :kind, to: :equipment
   delegate :client, to: :location
 
   validates :location_id, :equipment_id, presence: true

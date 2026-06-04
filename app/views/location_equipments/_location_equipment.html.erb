@@ -11,7 +11,7 @@
           <div class="d-flex">
             <% if current_user.admin? %>
               <h5 class="card-title me-auto">
-                <%= link_to location_equipment.equipment.full_name, equipment_path(location_equipment.equipment),
+                <%= link_to location_equipment.equipment.name, equipment_path(location_equipment.equipment),
                                                                     data: { turbo_frame: "_top" } %>
                 <span class= "<%= "badge bg-#{location_equipment.condition_color} rounded-pill mx-3" %>">
                   Condición:
@@ -30,7 +30,7 @@
                                                 confirm: "Seguro queres borrar este equipo?" %>
               <% end %>
             <% else %>
-              <h5 class="card-title me-auto"><%= location_equipment.equipment.full_name %></h5>
+              <h5 class="card-title me-auto"><%= location_equipment.equipment.name %></h5>
             <% end %>
           </div>
           <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>

@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "/equipments", type: :request do
   let(:equipment_kind) { create(:equipment_kind) }
-  let(:valid_attributes) { {kind: "ups", brand: "some brand", model: "some model", more_info: "some info", equipment_kind: equipment_kind} }
+  let(:valid_attributes) { {kind: "ups", name: "some brand - some model", brand: "some brand", model: "some model", more_info: "some info", equipment_kind_id: equipment_kind.id} }
   let(:invalid_attributes) { {kind: ""} }
 
   before { sign_in create(:admin) }
@@ -29,9 +29,9 @@ RSpec.describe "/equipments", type: :request do
     it "renders a successful response and responds with HTML" do
       get equipment_index_url
       expect(response).to be_successful
-      expect(response.body).to include(equipment.first.model)
-      expect(response.body).to include(equipment.second.model)
-      expect(response.body).to include(equipment.third.model)
+      expect(response.body).to include(equipment.first.name)
+      expect(response.body).to include(equipment.second.name)
+      expect(response.body).to include(equipment.third.name)
     end
   end
 
@@ -63,6 +63,7 @@ RSpec.describe "/equipments", type: :request do
       let(:valid_attributes) do
         {
           kind: "power_unit",
+          name: "some brand - some model",
           brand: "some brand",
           model: "some model",
           more_info: "some info",
@@ -70,7 +71,8 @@ RSpec.describe "/equipments", type: :request do
           motor_model: "some motor model",
           generator_brand: "some generator brand",
           generator_model: "some generator model",
-          kva: 10
+          kva: 10,
+          equipment_kind_id: equipment_kind.id
         }
       end
 
@@ -101,13 +103,13 @@ RSpec.describe "/equipments", type: :request do
 
   describe "PATCH /update" do
     let(:equipment) { create(:equipment) }
-    let(:new_attributes) { {model: "new model"} }
+    let(:new_attributes) { {name: "updated name"} }
 
     context "with valid parameters" do
       it "updates the requested equipment and responds with HTML" do
         patch equipment_url(equipment), params: {equipment: new_attributes}
         equipment.reload
-        expect(equipment.model).to eq("new model")
+        expect(equipment.name).to eq("updated name")
         expect(response).to redirect_to(equipment_index_path)
       end
 

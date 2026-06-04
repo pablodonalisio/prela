@@ -10,7 +10,7 @@
   </fieldset>
 
   <%= f.input :equipment_id, label: "Equipo",
-                              collection: Equipment.all.map { |e| [e.model, e.id, { 'data-kind' => e.kind }] },
+                              collection: Equipment.all.map { |e| [e.name, e.id, { 'data-kind' => e.kind }] },
                               prompt: "Seleccione un equipo",
                               input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
 

@@ -6,6 +6,7 @@ es:
       client:
         name: "Nombre"
       equipment:
+        name: "Nombre"
         kind: "Tipo"
         kinds:
           ups: "UPS"

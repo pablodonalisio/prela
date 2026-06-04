@@ -8,11 +8,5 @@ class Equipment < ApplicationRecord
 
   enum :kind, {ups: 0, power_unit: 1, electrical_panel: 2, building: 3}
 
-  validates :kind, :model, presence: true
-
-  def full_name
-    return "#{brand} - #{model}" if brand.present?
-
-    model
-  end
+  validates :kind, :name, presence: true
 end
