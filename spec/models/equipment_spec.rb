@@ -43,6 +43,13 @@ RSpec.describe Equipment, type: :model do
     end
   end
 
+  context "field_values" do
+    it "defaults to an empty hash" do
+      equipment = build(:equipment)
+      expect(equipment.field_values).to eq({})
+    end
+  end
+
   context "electrical panel" do
     let(:equipment_kind) { create(:equipment_kind, name: "Electrical Panel") }
     let(:panel) { Equipment.build(kind: "electrical_panel", name: "Nombre del tablero", is_triphase: true, size: "2din", equipment_kind: equipment_kind) }
