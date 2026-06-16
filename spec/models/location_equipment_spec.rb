@@ -209,4 +209,11 @@ RSpec.describe LocationEquipment, type: :model do
       expect(location_equipment.condition_color).to eq("success")
     end
   end
+
+  context "field_values" do
+    it "defaults to an empty hash" do
+      location_equipment = build(:location_equipment)
+      expect(location_equipment.field_values).to eq({})
+    end
+  end
 end

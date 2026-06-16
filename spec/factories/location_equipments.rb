@@ -8,5 +8,6 @@ FactoryBot.define do
     serial_number { "lS1051004604" }
     status { "active" }
     condition { "Buena" }
+    field_values { {} }
   end
 end
