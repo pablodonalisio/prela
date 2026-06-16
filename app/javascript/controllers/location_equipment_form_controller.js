@@ -21,8 +21,7 @@ export default class extends Controller {
   }
 
   displayInputsForEquipmentKind() {
-    const selectedOption = this.equipmentTarget.querySelector("option:checked");
-    const equipmentId = selectedOption?.value;
+    const equipmentId = this.equipmentTarget.value;
     const frame = document.getElementById("le_field_inputs");
 
     if (!equipmentId || !frame) return;

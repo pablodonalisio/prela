@@ -55,7 +55,8 @@
                                  collection: Equipment.all.map { |e| [e.name, e.id] },
                                  prompt: "Seleccione un equipo",
                                  wrapper_html: { class: "mb-3" },
-                                 input_html: { data: { location_equipment_form_target: "equipment",
+                                 input_html: { data: { controller: "searchable-select",
+                                                       location_equipment_form_target: "equipment",
                                                        action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
 
       <%= turbo_frame_tag "le_field_inputs",
