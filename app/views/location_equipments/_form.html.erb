@@ -58,6 +58,10 @@
                                  input_html: { data: { controller: "searchable-select",
                                                        location_equipment_form_target: "equipment",
                                                        action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
+      <p class="small text-white mt-n2 mb-3">
+        ¿No encontrás el equipo?
+        <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-primary" %>.
+      </p>
 
       <%= turbo_frame_tag "le_field_inputs",
             src: location_equipment.persisted? ?
