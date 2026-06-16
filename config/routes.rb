@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     resources :locations, except: [:index, :show]
   end
   resources :location_equipments do
+    get :field_inputs, on: :collection
+    get :location_inputs, on: :collection
     resources :reports
     resources :activities
     resources :documents

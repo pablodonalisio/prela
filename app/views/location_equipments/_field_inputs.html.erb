@@ -1,0 +1,56 @@
+<%= turbo_frame_tag "le_field_inputs" do %>
+  <% if @equipment_kind&.specific_fields&.any? %>
+    <hr class="my-1">
+    <p class="small text-white mb-3">
+      <i class="fa fa-list-ul me-1"></i>Atributos de <strong><%= @equipment_kind.name %></strong>
+    </p>
+    <div class="row g-3">
+      <% @equipment_kind.specific_fields.each do |_key, definition| %>
+        <% field_name = definition["name"] %>
+        <% field_type = definition["type"] %>
+        <% current_value = @field_values[field_name] %>
+        <div class="<%= field_type == "boolean" ? "col-sm-6" : "col-sm-6" %> mb-2">
+          <% if field_type == "boolean" %>
+            <div class="form-check mt-4 pt-1">
+              <input class="form-check-input"
+                     type="checkbox"
+                     id="le_field_<%= field_name.parameterize %>"
+                     name="location_equipment[field_values][<%= field_name %>]"
+                     value="1"
+                     <%= "checked" if current_value %>>
+              <label class="form-check-label" for="le_field_<%= field_name.parameterize %>">
+                <%= field_name %>
+              </label>
+            </div>
+          <% else %>
+            <label class="form-label small fw-medium"><%= field_name %></label>
+            <% case field_type %>
+            <% when "integer" %>
+              <input class="form-control form-control-sm"
+                     type="number"
+                     step="1"
+                     name="location_equipment[field_values][<%= field_name %>]"
+                     value="<%= current_value %>">
+            <% when "float" %>
+              <input class="form-control form-control-sm"
+                     type="number"
+                     step="any"
+                     name="location_equipment[field_values][<%= field_name %>]"
+                     value="<%= current_value %>">
+            <% when "date" %>
+              <input class="form-control form-control-sm"
+                     type="date"
+                     name="location_equipment[field_values][<%= field_name %>]"
+                     value="<%= current_value %>">
+            <% else %>
+              <input class="form-control form-control-sm"
+                     type="text"
+                     name="location_equipment[field_values][<%= field_name %>]"
+                     value="<%= current_value %>">
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

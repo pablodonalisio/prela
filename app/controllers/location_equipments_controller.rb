@@ -1,11 +1,10 @@
 class LocationEquipmentsController < ApplicationController
   before_action :location_equipment, only: %i[edit update destroy]
-  before_action :set_locations, only: %i[edit]
+  before_action :set_edit_locations, only: %i[edit]
   before_action :set_order, only: :index
 
   def new
-    @step = params[:step].to_i
-    set_step_2 if @step == 2
+    @location_equipment = authorize LocationEquipment.new
   end
 
   def index
@@ -30,8 +29,6 @@ class LocationEquipmentsController < ApplicationController
         format.turbo_stream {}
       end
     else
-      set_locations
-      @step = 2
       render :new, status: :unprocessable_entity
     end
   end
@@ -43,9 +40,22 @@ class LocationEquipmentsController < ApplicationController
         format.turbo_stream {}
       end
     else
-      set_locations
+      set_edit_locations
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def location_inputs
+    @client = Client.find_by(id: params[:client_id])
+    @locations = @client ? Location.where(client_id: @client.id) : Location.none
+    @selected_location_id = params[:location_id].presence
+  end
+
+  def field_inputs
+    equipment = Equipment.find_by(id: params[:equipment_id])
+    @equipment_kind = equipment&.equipment_kind
+    existing = LocationEquipment.find_by(id: params[:location_equipment_id])
+    @field_values = existing&.field_values || {}
   end
 
   def destroy
@@ -61,22 +71,23 @@ class LocationEquipmentsController < ApplicationController
 
   def location_equipment_params
     params.require(:location_equipment)
-      .permit(:zone, :floor, :location_id, :equipment_id, :serial_number, :code, :form_link,
-        :last_service, :next_service, :last_battery_change, :next_battery_change, :details, :status,
+      .permit(:zone, :floor, :location_id, :equipment_id, :status, :condition, :details,
+        :serial_number, :code, :form_link,
+        :last_service, :next_service, :last_battery_change, :next_battery_change,
         :last_belt_change, :next_belt_change, :engine_serial_number, :power_unit_serial_number, :service_interval,
         :battery_change_interval, :belt_change_interval, :torque_interval, :last_torque, :next_torque,
         :cleaning_interval, :last_cleaning, :next_cleaning, :srt_900_interval, :last_srt_900, :next_srt_900,
         :thermography_interval, :last_thermography, :next_thermography,
-        :electrical_approval_interval, :last_electrical_approval, :next_electrical_approval, :condition)
+        :electrical_approval_interval, :last_electrical_approval, :next_electrical_approval,
+        field_values: {})
   end
 
   def location_equipment
     @location_equipment ||= authorize LocationEquipment.find(params[:id])
   end
 
-  def set_locations
-    @client = @location_equipment.location&.client || Client.find_by(id: params[:location_equipment][:client_id])
-    @locations = Location.where(client_id: @client&.id)
+  def set_edit_locations
+    @locations = Location.where(client_id: @location_equipment.location&.client_id)
   end
 
   def filter_params
@@ -109,19 +120,5 @@ class LocationEquipmentsController < ApplicationController
 
   def set_order
     @order = params[:order] || "next_service"
-  end
-
-  def set_step_2
-    @location_equipment = authorize LocationEquipment.new
-    validate_client
-    @locations = Location.where(client_id: @client&.id)
-  end
-
-  def validate_client
-    @client = Client.find_by(id: params[:client_id])
-    return if @client
-
-    flash[:alert] = "Debe seleccionar un cliente"
-    redirect_to new_location_equipment_url(step: 1)
   end
 end

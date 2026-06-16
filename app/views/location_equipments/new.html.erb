@@ -2,11 +2,6 @@
 
 <%= turbo_frame_tag @location_equipment do %>
   <%= render "shared/remote_modal", title: "Nuevo Equipo de Sede" do %>
-    <% if @step == 1 %>
-      <%= render "form_step_1", location_equipment: @location_equipment %>
-    <% elsif @step == 2 %>
-      <%= render "form_step_2", location_equipment: @location_equipment,
-                                locations: @locations %>
-    <% end %>
+    <%= render "form", location_equipment: @location_equipment, locations: [] %>
   <% end %>
 <% end %>

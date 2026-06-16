@@ -4,44 +4,33 @@ RSpec.describe "/location_equipments", type: :request do
   before { sign_in create(:admin) }
 
   describe "GET /new" do
+    it "renders a successful response with the single-step form" do
+      get new_location_equipment_url
+      expect(response).to be_successful
+      expect(response.body).to include("Cliente")
+      expect(response.body).to include("Sala")
+      expect(response.body).to include("Piso")
+      expect(response.body).to include("Condición")
+      expect(response.body).to include("Detalles")
+      expect(response.body).to include("Aceptar")
+    end
+  end
+
+  describe "GET /location_inputs" do
     let(:client) { create(:client) }
 
-    it "renders a successful response and responds with HTML" do
-      get new_location_equipment_url, params: {client_id: client.id}
+    it "returns a turbo frame with locations for the given client" do
+      location = create(:location, client: client)
+      get location_inputs_location_equipments_url, params: {client_id: client.id}
       expect(response).to be_successful
+      expect(response.body).to include("le_location_inputs")
+      expect(response.body).to include(location.name)
     end
 
-    context "step 1" do
-      it "renders the first step of the form" do
-        get new_location_equipment_url, params: {step: 1}
-        expect(response.body).to include("Seleccione un cliente")
-        expect(response.body).to include("Siguiente")
-      end
-    end
-
-    context "step 2" do
-      it "renders the second step of the form" do
-        get new_location_equipment_url, params: {step: 2, client_id: client.id}
-        expect(response.body).to include("Sede")
-        expect(response.body).to include("Sala")
-        expect(response.body).to include("Piso")
-        expect(response.body).to include("Condición")
-        expect(response.body).to include("Detalles")
-        expect(response.body).to include("Volver")
-        expect(response.body).to include("Aceptar")
-      end
-
-      it "renders client locations to select" do
-        location = create(:location, client: client)
-        get new_location_equipment_url, params: {step: 2, client_id: client.id}
-        expect(response.body).to include(location.name)
-      end
-
-      it "redirects to step 1 and displays an error if client_id is not provided" do
-        get new_location_equipment_url, params: {step: 2}
-        expect(response).to redirect_to(new_location_equipment_url(step: 1))
-        expect(flash[:alert]).to eq("Debe seleccionar un cliente")
-      end
+    it "returns an empty turbo frame when client is not found" do
+      get location_inputs_location_equipments_url, params: {client_id: 0}
+      expect(response).to be_successful
+      expect(response.body).to include("le_location_inputs")
     end
   end
 
@@ -103,7 +92,7 @@ RSpec.describe "/location_equipments", type: :request do
     let(:equipment) { create(:equipment) }
     let(:location) { create(:location) }
     let(:valid_attributes) { {equipment_id: equipment.id, location_id: location.id} }
-    let(:invalid_attributes) { {equipment_id: "", client_id: location.client_id} }
+    let(:invalid_attributes) { {equipment_id: "", location_id: ""} }
 
     context "with valid parameters" do
       it "creates a new LocationEquipment and responds with HTML" do
@@ -134,6 +123,23 @@ RSpec.describe "/location_equipments", type: :request do
     end
   end
 
+  describe "GET /field_inputs" do
+    let(:equipment) { create(:equipment) }
+
+    it "renders a turbo frame with specific_fields inputs for the equipment's kind" do
+      get field_inputs_location_equipments_url, params: {equipment_id: equipment.id}
+      expect(response).to be_successful
+      expect(response.body).to include("turbo-frame")
+      expect(response.body).to include("le_field_inputs")
+    end
+
+    it "returns an empty turbo frame when equipment is not found" do
+      get field_inputs_location_equipments_url, params: {equipment_id: 0}
+      expect(response).to be_successful
+      expect(response.body).to include("le_field_inputs")
+    end
+  end
+
   describe "PUT /update" do
     let!(:location_equipment) { create(:location_equipment) }
     let(:new_attributes) { {zone: "new zone"} }
@@ -149,6 +155,17 @@ RSpec.describe "/location_equipments", type: :request do
       put location_equipment_url(location_equipment), params: {location_equipment: new_attributes}, as: :turbo_stream
       expect(response.media_type).to eq Mime[:turbo_stream]
       expect(response.body).to include("turbo-stream action=\"replace\" target=\"location_equipment_#{location_equipment.id}\"")
+    end
+  end
+
+  describe "PUT /update field_values" do
+    let!(:location_equipment) { create(:location_equipment) }
+
+    it "updates field_values on the location equipment" do
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {field_values: {"Número de serie" => "SN-999"}}}
+      location_equipment.reload
+      expect(location_equipment.field_values["Número de serie"]).to eq("SN-999")
     end
   end
 
