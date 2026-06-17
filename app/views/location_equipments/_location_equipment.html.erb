@@ -1,49 +1,53 @@
 <%= turbo_frame_tag location_equipment do %>
   <div class="card bg-secondary mt-3">
-    <div class="row g-0">
-      <div class="col-md-2" style="min-width: 210px;">
+    <%# ── Header: image + title + actions ───────────────── %>
+    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 p-3">
+      <div class="flex-shrink-0" style="width: 120px; height: 120px;">
         <%= image_tag image_for(location_equipment, :avatar, ""),
                       alt: "Imagen de Item",
-                      class:"img-fluid rounded w-100" %>
+                      class: "rounded w-100 h-100 object-fit-cover" %>
       </div>
-      <div class="col">
-        <div class="card-body">
-          <div class="d-flex">
-            <% if current_user.admin? %>
-              <h5 class="card-title me-auto">
-                <%= link_to location_equipment.equipment.name, equipment_path(location_equipment.equipment),
-                                                                    data: { turbo_frame: "_top" } %>
-                <span class= "<%= "badge bg-#{location_equipment.condition_color} rounded-pill mx-3" %>">
-                  Condición:
-                  <%= location_equipment.condition %>
-                </span>
-              </h5>
-
-              <%= render "shared/dropdown" do %>
-                <% if location_equipment.form_link.present? %>
-                  <li><%= link_to "Formulario", location_equipment.form_link,
-                                                class: "dropdown-item text-center",
-                                                target: "_blank" %></li>
-                <% end %>
-                <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
-                                                delete_path: location_equipment_path(location_equipment),
-                                                confirm: "Seguro queres borrar este equipo?" %>
-              <% end %>
-            <% else %>
-              <h5 class="card-title me-auto"><%= location_equipment.equipment.name %></h5>
-            <% end %>
-          </div>
-          <p class="card-text"><%= location_equipment.location.client.name %> - <%= location_equipment.location.name %></p>
-          <div class="row">
-            <div class="col-lg-6 mb-3">
-              <%= render "details", location_equipment: location_equipment%>
-            </div>
-            <div class="col-lg-6">
-              <%= render "service_dates", location_equipment: location_equipment%>
-            </div>
-          </div>
+      <div class="flex-grow-1 min-w-0">
+        <% if current_user.admin? %>
+          <h5 class="mb-0">
+            <%= link_to location_equipment.equipment.name,
+                        equipment_path(location_equipment.equipment),
+                        class: "text-white text-decoration-none",
+                        data: { turbo_frame: "_top" } %>
+          </h5>
+        <% else %>
+          <h5 class="mb-0"><%= location_equipment.equipment.name %></h5>
+        <% end %>
+        <p class="text-white-50 small mb-1">
+          <%= location_equipment.location.client.name %> · <%= location_equipment.location.name %>
+        </p>
+        <span class="badge bg-<%= location_equipment.condition_color %> rounded-pill">
+          Condición: <%= location_equipment.condition %>
+        </span>
+      </div>
+      <% if current_user.admin? %>
+        <div class="flex-shrink-0">
+          <%= render "shared/dropdown" do %>
+            <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
+                                            delete_path: location_equipment_path(location_equipment),
+                                            confirm: "Seguro queres borrar este equipo?" %>
+          <% end %>
         </div>
+      <% end %>
+    </div>
+
+    <%# ── Data columns ────────────────────────────────────── %>
+    <div class="row g-0 border-top border-white border-opacity-10 px-3 pb-3">
+      <div class="col-12 col-md-4 pt-3 pe-md-3">
+        <%= render "details", location_equipment: location_equipment %>
       </div>
+      <div class="col-12 col-md-4 pt-3 px-md-3 border-md-start border-white border-opacity-10">
+        <%= render "field_values", location_equipment: location_equipment %>
+      </div>
+      <div class="col-12 col-md-4 pt-3 ps-md-3 border-md-start border-white border-opacity-10">
+        <%= render "service_dates", location_equipment: location_equipment %>
+      </div>
+    </div>
 
       <div class="col-12 p-3">
         <div class="row gx-5">

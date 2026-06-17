@@ -1,0 +1,11 @@
+<p class="text-white small text-uppercase fw-semibold mb-1 mt-2">Atributos</p>
+<% if location_equipment.field_values.any? %>
+  <dl class="row row-cols-2 g-0 mb-0 small">
+    <% location_equipment.field_values.each do |name, value| %>
+      <dt class="col text-body-secondary fw-normal"><%= name %></dt>
+      <dd class="col mb-1"><%= value.presence || "—" %></dd>
+    <% end %>
+  </dl>
+<% else %>
+  <p class="text-white-50 small">Sin atributos registrados.</p>
+<% end %>

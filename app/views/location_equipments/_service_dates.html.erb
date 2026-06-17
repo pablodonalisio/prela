@@ -1,4 +1,5 @@
 <%= turbo_frame_tag "service_dates" do %>
+  <p class="text-white small text-uppercase fw-semibold mb-1 mt-2">Fechas de servicio</p>
   <% LocationEquipment::SERVICE_KINDS[location_equipment.kind].each do |service_kind| %>
     <% attribute = "last_#{service_kind}".to_sym %>
     <%= render "location_equipments/last_service_date", label: LocationEquipment.human_attribute_name(attribute),

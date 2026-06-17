@@ -211,9 +211,15 @@ RSpec.describe LocationEquipment, type: :model do
   end
 
   context "field_values" do
-    it "defaults to an empty hash" do
-      location_equipment = build(:location_equipment)
-      expect(location_equipment.field_values).to eq({})
+    it "stores Spanish-keyed identifier values" do
+      location_equipment = create(:location_equipment)
+      expect(location_equipment.field_values["Número de serie"]).to eq(location_equipment.serial_number)
+    end
+
+    it "can store arbitrary key/value pairs" do
+      location_equipment = build(:location_equipment, field_values: {"Código" => "ABC-123", "Intervalo cambio batería (años)" => 2})
+      expect(location_equipment.field_values["Código"]).to eq("ABC-123")
+      expect(location_equipment.field_values["Intervalo cambio batería (años)"]).to eq(2)
     end
   end
 end
