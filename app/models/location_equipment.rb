@@ -41,7 +41,7 @@ class LocationEquipment < ApplicationRecord
   scope :by_client_ids, ->(client_id) { joins(:location).where(location: {client_id:}) }
   scope :by_location_ids, ->(location_id) { where(location_id:) }
   scope :by_status, ->(status) { where(status:) }
-  scope :by_kind, ->(kind) { joins(equipment: :equipment_kind).where(equipment_kinds: {legacy_kind: kind}) }
+  scope :by_equipment_kind_ids, ->(equipment_kind_ids) { joins(:equipment).where(equipment: {equipment_kind_id: equipment_kind_ids}) }
 
   enum :status, {active: 0, out_of_service: 1, prela_to_check: 2, prela_to_deliver: 3, prela_on_service: 4, inaccessible: 5}
 
@@ -49,22 +49,6 @@ class LocationEquipment < ApplicationRecord
   delegate :client, to: :location
 
   validates :location_id, :equipment_id, presence: true
-
-  class << self
-    def with_overdue_maintenance(equipment_kind)
-      by_kind(equipment_kind)
-        .where(id: overdue_equipment_ids)
-    end
-
-    private
-
-    def overdue_equipment_ids
-      ServiceDate.select(:location_equipment_id)
-        .group(:location_equipment_id, :kind)
-        .having("MAX(service_dates.date) < ?", 3.months.from_now)
-        .map(&:location_equipment_id)
-    end
-  end
 
   def next_service_dates
     service_dates.select("DISTINCT ON (kind) *").order(:kind, date: :desc)

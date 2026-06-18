@@ -37,10 +37,10 @@
 
     <%= render "filter_item", title: "Tipo",
                               f: f,
-                              attribute: :kind,
-                              collection: Equipment.legacy_kinds_for_select,
-                              value: :last,
-                              label: :first,
-                              selected_filters: filter_params[:kind] %>
+                              attribute: :equipment_kind_ids,
+                              collection: EquipmentKind.order(:name),
+                              value: :id,
+                              label: :name,
+                              selected_filters: filter_params[:equipment_kind_ids] %>
   <% end %>
 <% end %>

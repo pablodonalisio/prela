@@ -98,7 +98,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def filters
-    @filters ||= %i[client_ids status kind]
+    @filters ||= %i[client_ids status equipment_kind_ids]
   end
 
   def add_location_ids_filter
