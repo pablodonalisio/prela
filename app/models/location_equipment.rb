@@ -70,13 +70,19 @@ class LocationEquipment < ApplicationRecord
     service_dates.select("DISTINCT ON (kind) *").order(:kind, date: :desc)
   end
 
+  def service_kinds
+    SERVICE_KINDS[kind] || []
+  end
+
   def last_service_date(service_kind)
     raise "Undefined activity kind" unless ACTIVITY_KIND.key?(service_kind)
 
     activities.where(kind: ACTIVITY_KIND[service_kind]).order(date: :desc).first&.date&.to_date || send(service_kind) # send(service_kind) is for legacy behaviour
   end
 
-  def create_next_service_dates(from_date = Time.current, kinds = SERVICE_KINDS[kind])
+  def create_next_service_dates(from_date = Time.current, kinds = service_kinds)
+    return if kinds.blank?
+
     kinds.each do |kind|
       next_date = from_date + send("#{kind}_interval").years
       service_dates.create(kind: kind, date: next_date)

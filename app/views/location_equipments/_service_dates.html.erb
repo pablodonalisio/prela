@@ -1,10 +1,14 @@
 <%= turbo_frame_tag "service_dates" do %>
   <p class="text-white small text-uppercase fw-semibold mb-1 mt-2">Fechas de servicio</p>
-  <% LocationEquipment::SERVICE_KINDS[location_equipment.kind].each do |service_kind| %>
-    <% attribute = "last_#{service_kind}".to_sym %>
-    <%= render "location_equipments/last_service_date", label: LocationEquipment.human_attribute_name(attribute),
-                                                        date: location_equipment.last_service_date(attribute),
-                                                        location_equipment: location_equipment %>
+  <% if location_equipment.service_kinds.any? %>
+    <% location_equipment.service_kinds.each do |service_kind| %>
+      <% attribute = "last_#{service_kind}".to_sym %>
+      <%= render "location_equipments/last_service_date", label: LocationEquipment.human_attribute_name(attribute),
+                                                          date: location_equipment.last_service_date(attribute),
+                                                          location_equipment: location_equipment %>
+    <% end %>
+    <%= render location_equipment.next_service_dates %>
+  <% else %>
+    <p class="text-white-50 small">Sin servicios</p>
   <% end %>
-  <%= render location_equipment.next_service_dates %>
 <% end %>
