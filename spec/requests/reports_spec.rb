@@ -16,7 +16,7 @@ RSpec.describe "Reports", type: :request do
       images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
     }.merge(equipment_report_params)}
   end
-  let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, kind: equipment_kind), location: create(:location, name: "Sala de Máquinas de Resonador")) }
+  let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, legacy_kind: equipment_kind), location: create(:location, name: "Sala de Máquinas de Resonador")) }
   let(:power_unit_report_params) do
     {
       power_unit_report_stat_attributes: {

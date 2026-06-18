@@ -9,6 +9,21 @@ FactoryBot.define do
       name { "UPS" }
     end
 
+    trait :power_unit do
+      legacy_kind { "power_unit" }
+      name { "Grupo Electrógeno" }
+    end
+
+    trait :electrical_panel do
+      legacy_kind { "electrical_panel" }
+      name { "Tablero Eléctrico" }
+    end
+
+    trait :building do
+      legacy_kind { "building" }
+      name { "Edificio" }
+    end
+
     trait :with_specific_fields do
       specific_fields { {"serial_number" => {name: "Número de serie", type: "string"}} }
     end

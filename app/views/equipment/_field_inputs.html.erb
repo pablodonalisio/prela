@@ -1,13 +1,14 @@
-<%= turbo_frame_tag "le_field_inputs" do %>
-  <% if @equipment_kind&.specific_fields&.any? %>
+<%= turbo_frame_tag "eq_field_inputs" do %>
+  <% generic_fields = @equipment_kind&.generic_fields %>
+  <% if generic_fields&.any? %>
     <hr class="my-1">
     <p class="small text-white mb-3">
       <i class="fa fa-list-ul me-1"></i>Atributos de <strong><%= @equipment_kind.name %></strong>
     </p>
     <%= render "shared/dynamic_field_inputs",
-               field_definitions: @equipment_kind.specific_fields,
+               field_definitions: generic_fields,
                field_values: @field_values,
-               param_prefix: "location_equipment[field_values]",
-               id_prefix: "le_field" %>
+               param_prefix: "equipment[field_values]",
+               id_prefix: "eq_field" %>
   <% end %>
 <% end %>

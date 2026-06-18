@@ -38,7 +38,7 @@
     <%= render "filter_item", title: "Tipo",
                               f: f,
                               attribute: :kind,
-                              collection: Equipment.enum_attributes_for_select("kind"),
+                              collection: Equipment.legacy_kinds_for_select,
                               value: :last,
                               label: :first,
                               selected_filters: filter_params[:kind] %>

@@ -1,5 +1,5 @@
 class EquipmentController < ApplicationController
-  before_action :set_equipment, except: %i[new index create]
+  before_action :set_equipment, except: %i[new index create field_inputs]
 
   def new
     @equipment = authorize Equipment.new
@@ -50,12 +50,16 @@ class EquipmentController < ApplicationController
     end
   end
 
+  def field_inputs
+    @equipment_kind = EquipmentKind.find_by(id: params[:equipment_kind_id])
+    existing = Equipment.find_by(id: params[:equipment_id])
+    @field_values = existing&.field_values || {}
+  end
+
   private
 
   def equipment_params
-    params.require(:equipment).permit(:avatar, :kind, :name, :brand, :model, :technical_model,
-      :kva, :manual, :details, :battery, :more_info, :motor_brand, :motor_model, :generator_brand,
-      :generator_model, :kw, :is_triphase, :size, :equipment_kind_id)
+    params.require(:equipment).permit(:avatar, :equipment_kind_id, :name, field_values: {})
   end
 
   def set_equipment

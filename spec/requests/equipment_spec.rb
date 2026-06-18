@@ -1,9 +1,19 @@
 require "rails_helper"
 
 RSpec.describe "/equipments", type: :request do
-  let(:equipment_kind) { create(:equipment_kind) }
-  let(:valid_attributes) { {kind: "ups", name: "some brand - some model", brand: "some brand", model: "some model", more_info: "some info", equipment_kind_id: equipment_kind.id} }
-  let(:invalid_attributes) { {kind: ""} }
+  let!(:ups_equipment_kind) { create(:equipment_kind, :ups) }
+  let(:valid_attributes) do
+    {
+      equipment_kind_id: ups_equipment_kind.id,
+      name: "some brand - some model",
+      field_values: {
+        "Marca" => "some brand",
+        "Modelo" => "some model",
+        "Mas Info" => "some info"
+      }
+    }
+  end
+  let(:invalid_attributes) { {name: ""} }
 
   before { sign_in create(:admin) }
 
@@ -44,11 +54,19 @@ RSpec.describe "/equipments", type: :request do
     end
   end
 
+  describe "GET /field_inputs" do
+    it "renders dynamic field inputs for the selected equipment kind" do
+      get field_inputs_equipment_index_path(equipment_kind_id: ups_equipment_kind.id)
+      expect(response).to be_successful
+      expect(response.body).to include("Marca")
+    end
+  end
+
   describe "POST /create" do
     context "when creating a Ups Equipment with valid parameters" do
       it "creates a new Equipment and responds with HTML" do
         post equipment_index_url, params: {equipment: valid_attributes}
-        expect(Equipment.last.more_info).to eq("some info")
+        expect(Equipment.last.field_values["Mas Info"]).to eq("some info")
         expect(response).to redirect_to(equipment_index_path)
       end
 
@@ -60,28 +78,46 @@ RSpec.describe "/equipments", type: :request do
     end
 
     context "when creating a Power Unit Equipment with valid parameters" do
+      let!(:power_unit_equipment_kind) do
+        create(:equipment_kind,
+          legacy_kind: "power_unit",
+          name: "Grupo Electrógeno",
+          generic_fields: {
+            "brand" => {"name" => "Marca", "type" => "string"},
+            "model" => {"name" => "Modelo", "type" => "string"},
+            "motor_brand" => {"name" => "Marca del Motor", "type" => "string"},
+            "motor_model" => {"name" => "Modelo del Motor", "type" => "string"},
+            "generator_brand" => {"name" => "Marca del Generador", "type" => "string"},
+            "generator_model" => {"name" => "Modelo del Generador", "type" => "string"},
+            "kva" => {"name" => "Kva", "type" => "float"},
+            "more_info" => {"name" => "Mas Info", "type" => "string"},
+            "manual" => {"name" => "Manual", "type" => "string"}
+          })
+      end
       let(:valid_attributes) do
         {
-          kind: "power_unit",
+          equipment_kind_id: power_unit_equipment_kind.id,
           name: "some brand - some model",
-          brand: "some brand",
-          model: "some model",
-          more_info: "some info",
-          motor_brand: "some motor brand",
-          motor_model: "some motor model",
-          generator_brand: "some generator brand",
-          generator_model: "some generator model",
-          kva: 10,
-          equipment_kind_id: equipment_kind.id
+          field_values: {
+            "Marca" => "some brand",
+            "Modelo" => "some model",
+            "Mas Info" => "some info",
+            "Marca del Motor" => "some motor brand",
+            "Modelo del Motor" => "some motor model",
+            "Marca del Generador" => "some generator brand",
+            "Modelo del Generador" => "some generator model",
+            "Kva" => "10"
+          }
         }
       end
 
       it "creates a new Power Unit Equipment" do
         expect { post equipment_index_url, params: {equipment: valid_attributes} }.to change(Equipment, :count).by(1)
-        expect(Equipment.last.kind).to eq("power_unit")
-        valid_attributes.each do |key, value|
-          expect(Equipment.last.send(key)).to eq(value)
-        end
+        equipment = Equipment.last
+        expect(equipment.legacy_kind).to eq("power_unit")
+        expect(equipment.field_values["Marca"]).to eq("some brand")
+        expect(equipment.field_values["Marca del Motor"]).to eq("some motor brand")
+        expect(equipment.field_values["Kva"]).to eq("10")
       end
     end
 
@@ -118,6 +154,15 @@ RSpec.describe "/equipments", type: :request do
         equipment.reload
         expect(response.media_type).to eq Mime[:turbo_stream]
         expect(response.body).to include("turbo-stream action=\"update\" target=\"equipment_#{equipment.id}\"")
+      end
+    end
+
+    context "with field_values" do
+      it "updates field_values on the equipment" do
+        patch equipment_url(equipment),
+          params: {equipment: {field_values: {"Mas Info" => "updated info"}}}
+        equipment.reload
+        expect(equipment.field_values["Mas Info"]).to eq("updated info")
       end
     end
 

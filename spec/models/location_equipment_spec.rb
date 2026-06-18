@@ -52,8 +52,8 @@ RSpec.describe LocationEquipment, type: :model do
   end
 
   context "maintenance scopes" do
-    let(:ups) { create(:equipment, kind: :ups) }
-    let(:power_unit) { create(:equipment, kind: :power_unit) }
+    let(:ups) { create(:equipment, :ups) }
+    let(:power_unit) { create(:equipment, :power_unit) }
 
     let!(:ups_with_overdue_battery_change) { create(:location_equipment, equipment: ups) }
     let(:ups_battery_overdue_date) { ups_with_overdue_battery_change.service_dates.create(kind: :battery_change, date: Date.yesterday) }
@@ -63,7 +63,7 @@ RSpec.describe LocationEquipment, type: :model do
     let!(:power_unit_with_overdue_battery_change) { create(:location_equipment, equipment: power_unit) }
     let(:power_unit_battery_overdue_date) { power_unit_with_overdue_battery_change.service_dates.create(kind: :battery_change, date: Date.yesterday) }
 
-    let!(:power_unit_without_overdue_maintenance) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
+    let!(:power_unit_without_overdue_maintenance) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
     let(:power_unit_service_date) { power_unit_without_overdue_maintenance.service_dates.create(kind: :service, date: 1.year.from_now) }
 
     let(:ups_with_overdue_maintenance) { LocationEquipment.with_overdue_maintenance(:ups) }
@@ -89,15 +89,15 @@ RSpec.describe LocationEquipment, type: :model do
   end
 
   context "methods" do
-    let(:ups) { create(:location_equipment, equipment: create(:equipment, kind: :ups)) }
-    let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
-    let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, kind: :electrical_panel)) }
-    let(:building) { create(:location_equipment, equipment: create(:equipment, kind: :building)) }
+    let(:ups) { create(:location_equipment, equipment: create(:equipment, :ups)) }
+    let(:power_unit) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
+    let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, :electrical_panel)) }
+    let(:building) { create(:location_equipment, equipment: create(:equipment, :building)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
     describe "next_service_dates" do
       let!(:location_equipment) do
-        location_equipment = create(:location_equipment, equipment: create(:equipment, kind: :power_unit))
+        location_equipment = create(:location_equipment, equipment: create(:equipment, :power_unit))
         location_equipment.service_dates.destroy_all # Remove default next service dates created by after_create callback
         location_equipment
       end
@@ -199,7 +199,7 @@ RSpec.describe LocationEquipment, type: :model do
 
   context "SERVICE_KINDS constant" do
     it "defines service kinds for each equipment kind" do
-      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment.kinds.keys.size)
+      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment::LEGACY_KINDS.size)
     end
   end
 

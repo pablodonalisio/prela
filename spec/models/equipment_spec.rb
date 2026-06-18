@@ -8,8 +8,8 @@ RSpec.describe Equipment, type: :model do
       expect(equipment).to be_valid
     end
 
-    it "is not valid without a kind" do
-      equipment.kind = nil
+    it "is not valid without an equipment_kind" do
+      equipment.equipment_kind = nil
       expect(equipment).not_to be_valid
     end
 
@@ -45,14 +45,38 @@ RSpec.describe Equipment, type: :model do
 
   context "field_values" do
     it "defaults to an empty hash" do
-      equipment = build(:equipment)
+      equipment = Equipment.new
       expect(equipment.field_values).to eq({})
     end
   end
 
+  context "legacy_kind" do
+    it "returns legacy_kind from equipment_kind" do
+      equipment_kind = create(:equipment_kind, :ups)
+      equipment = Equipment.new(equipment_kind: equipment_kind, name: "Test")
+      expect(equipment.legacy_kind).to eq("ups")
+      expect(equipment.kind).to eq("ups")
+      expect(equipment.ups?).to be true
+    end
+  end
+
   context "electrical panel" do
-    let(:equipment_kind) { create(:equipment_kind, name: "Electrical Panel") }
-    let(:panel) { Equipment.build(kind: "electrical_panel", name: "Nombre del tablero", is_triphase: true, size: "2din", equipment_kind: equipment_kind) }
+    let(:equipment_kind) do
+      create(:equipment_kind,
+        legacy_kind: "electrical_panel",
+        name: "Tablero Eléctrico",
+        generic_fields: {
+          "is_triphase" => {"name" => "Trifásica", "type" => "boolean"},
+          "size" => {"name" => "Tamaño", "type" => "string"}
+        })
+    end
+    let(:panel) do
+      Equipment.build(
+        name: "Nombre del tablero",
+        field_values: {"Trifásica" => true, "Tamaño" => "2din"},
+        equipment_kind: equipment_kind
+      )
+    end
 
     it "is valid with electrical panel attributes" do
       expect(panel).to be_valid

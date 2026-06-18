@@ -4,7 +4,7 @@ class EquipmentKind < ApplicationRecord
   before_validation :set_normalized_name
 
   validates :name, presence: true
-  validates :legacy_kind, inclusion: {in: Equipment.kinds.keys}, allow_nil: true
+  validates :legacy_kind, inclusion: {in: Equipment::LEGACY_KINDS}, allow_nil: true
   validates :legacy_kind, uniqueness: true, allow_nil: true
 
   validate :generic_fields_must_be_present

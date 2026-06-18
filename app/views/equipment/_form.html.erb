@@ -1,21 +1,19 @@
 <%= simple_form_for equipment, html: { data: {controller: "dynamic-form"}} do |f| %>
   <%= f.input :avatar, label: "Foto" %>
-  <%= f.input :kind, label: "Tipo",
-                     collection: Equipment.enum_attributes_for_select("kind"),
-                     include_blank: false,
-                     input_html: { data: { dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>
+  <%= f.input :equipment_kind_id, label: "Tipo de activo",
+                                  collection: EquipmentKind.order(:name).pluck(:name, :id),
+                                  include_blank: "Seleccione un tipo",
+                                  wrapper_html: { class: "mb-0" },
+                                  input_html: { data: { dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>
+  <p class="small text-white mt-n2 mb-3">
+    ¿No encontrás el tipo de activo?
+    <%= link_to "Crear uno nuevo", new_equipment_kind_path, class: "text-primary" %>.
+  </p>
   <%= f.input :name %>
-  <fieldset data-select-value="ups" data-dynamic-form-target="inputGroup">
-    <%= render "ups_form", f: f %>
-  </fieldset>
-  <fieldset data-select-value="power_unit" data-dynamic-form-target="inputGroup">
-    <%= render "power_unit_form", f: f %>
-  </fieldset>
-  <fieldset data-select-value="electrical_panel" data-dynamic-form-target="inputGroup">
-    <%= render "electrical_panel_form", f: f %>
-  </fieldset>
-  <fieldset data-select-value="building" data-dynamic-form-target="inputGroup">
-    <%= f.input :more_info, label: "Mas Info" %>
-  </fieldset>
+  <%= turbo_frame_tag "eq_field_inputs",
+        data: { equipment_id: equipment.id },
+        src: equipment.equipment_kind_id.present? ?
+          field_inputs_equipment_index_path(equipment_kind_id: equipment.equipment_kind_id, equipment_id: equipment.id) : nil do %>
+  <% end %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

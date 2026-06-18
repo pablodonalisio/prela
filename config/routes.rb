@@ -25,7 +25,9 @@ Rails.application.routes.draw do
     resources :failures
   end
   resources :equipment_supplies
-  resources :equipment
+  resources :equipment do
+    get :field_inputs, on: :collection
+  end
   resources :batteries, except: %i[index]
   resources :supplies, only: [:index]
   resources :users

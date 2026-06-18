@@ -1,21 +1,22 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["inputGroup", "selectInput"];
+  static targets = ["selectInput"];
 
   connect() {
     this.displayInputsForSelectValue();
   }
 
   displayInputsForSelectValue() {
-    this.inputGroupTargets.forEach((inputGroup) => {
-      if (inputGroup.dataset.selectValue === this.selectInputTarget.value) {
-        inputGroup.classList.remove("d-none");
-        inputGroup.disabled = false;
-      } else {
-        inputGroup.classList.add("d-none");
-        inputGroup.disabled = true;
-      }
-    });
+    this.loadFieldInputs();
+  }
+
+  loadFieldInputs() {
+    const frame = document.getElementById("eq_field_inputs");
+    if (!frame) return;
+
+    const equipmentKindId = this.selectInputTarget.value;
+    const equipmentId = frame.dataset.equipmentId || "";
+    frame.src = `/equipment/field_inputs?equipment_kind_id=${encodeURIComponent(equipmentKindId)}&equipment_id=${encodeURIComponent(equipmentId)}`;
   }
 }

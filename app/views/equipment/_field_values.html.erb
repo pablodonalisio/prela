@@ -1,0 +1,26 @@
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    Tipo de activo
+  </strong>
+  <%= equipment.equipment_kind&.name || "—" %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    Nombre
+  </strong>
+  <%= equipment.name %>
+</p>
+<% equipment.equipment_kind&.generic_fields&.each do |key, definition| %>
+  <% field_name = definition["name"] %>
+  <% value = equipment.field_values[field_name] %>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= field_name %>
+    </strong>
+    <% if definition["type"] == "boolean" %>
+      <%= value ? "Si" : "No" %>
+    <% else %>
+      <%= value.presence || "—" %>
+    <% end %>
+  </p>
+<% end %>
