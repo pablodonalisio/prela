@@ -73,7 +73,7 @@ RSpec.describe Equipment, type: :model do
     let(:panel) do
       Equipment.build(
         name: "Nombre del tablero",
-        field_values: {"Trifásica" => true, "Tamaño" => "2din"},
+        field_values: {"is_triphase" => true, "size" => "2din"},
         equipment_kind: equipment_kind
       )
     end

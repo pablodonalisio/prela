@@ -163,9 +163,9 @@ RSpec.describe "/location_equipments", type: :request do
 
     it "updates field_values on the location equipment" do
       put location_equipment_url(location_equipment),
-        params: {location_equipment: {field_values: {"Número de serie" => "SN-999"}}}
+        params: {location_equipment: {field_values: {"serial_number" => "SN-999"}}}
       location_equipment.reload
-      expect(location_equipment.field_values["Número de serie"]).to eq("SN-999")
+      expect(location_equipment.field_values["serial_number"]).to eq("SN-999")
     end
   end
 

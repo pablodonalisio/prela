@@ -12,6 +12,8 @@ class EquipmentKind < ApplicationRecord
   validate :validate_specific_field_definitions
   validate :name_must_be_unique
 
+  after_update :sync_related_field_values, if: :field_definitions_changed?
+
   FIELD_TYPES = %w[string integer float date boolean].freeze
   FIELD_SETS = %w[generic_fields specific_fields].freeze
 
@@ -56,9 +58,19 @@ class EquipmentKind < ApplicationRecord
     validate_field_definitions(:specific_fields)
   end
 
+  def field_definitions_changed?
+    saved_change_to_generic_fields? || saved_change_to_specific_fields?
+  end
+
+  def sync_related_field_values
+    EquipmentKind::SyncFieldValues.call(self)
+  end
+
   def validate_field_definitions(attribute)
     definitions = public_send(attribute)
     return if definitions.nil?
+
+    normalized_names = {}
 
     definitions.each do |_key, value|
       if value["name"].blank? || value["type"].blank?
@@ -67,6 +79,14 @@ class EquipmentKind < ApplicationRecord
       elsif !FIELD_TYPES.include?(value["type"])
         errors.add(attribute, "El tipo de campo #{value["type"]} no es válido.")
         break
+      else
+        normalized = self.class.normalize_name(value["name"])
+        if normalized_names[normalized]
+          errors.add(attribute, "El nombre de campo '#{value["name"]}' ya está en uso.")
+          break
+        end
+
+        normalized_names[normalized] = true
       end
     end
   end

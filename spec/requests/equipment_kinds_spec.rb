@@ -169,6 +169,26 @@ RSpec.describe "/equipment_kinds", type: :request do
         equipment_kind.reload
         expect(response).to redirect_to(equipment_kind_url(equipment_kind))
       end
+
+      it "preserves field values when renaming a generic field label" do
+        field_key = EquipmentKind.generate_field_key
+        equipment_kind = EquipmentKind.create!(
+          name: "Tipo personalizado",
+          generic_fields: {field_key => {name: "Marca", type: "string"}},
+          specific_fields: {}
+        )
+        equipment = create(:equipment, equipment_kind: equipment_kind, field_values: {field_key.to_s => "APC"})
+
+        patch equipment_kind_url(equipment_kind), params: {
+          equipment_kind: {
+            name: equipment_kind.name,
+            generic_fields: {field_key => {name: "Fabricante", type: "string"}},
+            specific_fields: {}
+          }
+        }
+
+        expect(equipment.reload.field_values).to eq(field_key.to_s => "APC")
+      end
     end
 
     context "with invalid parameters" do

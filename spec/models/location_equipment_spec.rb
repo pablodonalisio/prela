@@ -174,15 +174,15 @@ RSpec.describe LocationEquipment, type: :model do
   end
 
   context "field_values" do
-    it "stores Spanish-keyed identifier values" do
+    it "stores field values keyed by equipment kind field keys" do
       location_equipment = create(:location_equipment)
-      expect(location_equipment.field_values["Número de serie"]).to eq(location_equipment.serial_number)
+      expect(location_equipment.field_values["serial_number"]).to eq(location_equipment.serial_number)
     end
 
     it "can store arbitrary key/value pairs" do
-      location_equipment = build(:location_equipment, field_values: {"Código" => "ABC-123", "Intervalo cambio batería (años)" => 2})
-      expect(location_equipment.field_values["Código"]).to eq("ABC-123")
-      expect(location_equipment.field_values["Intervalo cambio batería (años)"]).to eq(2)
+      location_equipment = build(:location_equipment, field_values: {"code" => "ABC-123", "battery_change_interval" => 2})
+      expect(location_equipment.field_values["code"]).to eq("ABC-123")
+      expect(location_equipment.field_values["battery_change_interval"]).to eq(2)
     end
   end
 end

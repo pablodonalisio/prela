@@ -13,11 +13,11 @@ FactoryBot.define do
     equipment_kind { EquipmentKind.find_by(legacy_kind: legacy_kind) || create(:equipment_kind, legacy_kind.to_sym) }
     field_values do
       {
-        "Marca" => brand,
-        "Modelo" => model,
-        "Modelo Técnico" => technical_model,
-        "Kva" => kva,
-        "Manual" => manual
+        "brand" => brand,
+        "model" => model,
+        "technical_model" => technical_model,
+        "kva" => kva,
+        "manual" => manual
       }
     end
 

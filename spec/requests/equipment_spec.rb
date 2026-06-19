@@ -7,9 +7,9 @@ RSpec.describe "/equipments", type: :request do
       equipment_kind_id: ups_equipment_kind.id,
       name: "some brand - some model",
       field_values: {
-        "Marca" => "some brand",
-        "Modelo" => "some model",
-        "Mas Info" => "some info"
+        "brand" => "some brand",
+        "model" => "some model",
+        "more_info" => "some info"
       }
     }
   end
@@ -66,7 +66,7 @@ RSpec.describe "/equipments", type: :request do
     context "when creating a Ups Equipment with valid parameters" do
       it "creates a new Equipment and responds with HTML" do
         post equipment_index_url, params: {equipment: valid_attributes}
-        expect(Equipment.last.field_values["Mas Info"]).to eq("some info")
+        expect(Equipment.last.field_values["more_info"]).to eq("some info")
         expect(response).to redirect_to(equipment_index_path)
       end
 
@@ -99,14 +99,14 @@ RSpec.describe "/equipments", type: :request do
           equipment_kind_id: power_unit_equipment_kind.id,
           name: "some brand - some model",
           field_values: {
-            "Marca" => "some brand",
-            "Modelo" => "some model",
-            "Mas Info" => "some info",
-            "Marca del Motor" => "some motor brand",
-            "Modelo del Motor" => "some motor model",
-            "Marca del Generador" => "some generator brand",
-            "Modelo del Generador" => "some generator model",
-            "Kva" => "10"
+            "brand" => "some brand",
+            "model" => "some model",
+            "more_info" => "some info",
+            "motor_brand" => "some motor brand",
+            "motor_model" => "some motor model",
+            "generator_brand" => "some generator brand",
+            "generator_model" => "some generator model",
+            "kva" => "10"
           }
         }
       end
@@ -115,9 +115,9 @@ RSpec.describe "/equipments", type: :request do
         expect { post equipment_index_url, params: {equipment: valid_attributes} }.to change(Equipment, :count).by(1)
         equipment = Equipment.last
         expect(equipment.legacy_kind).to eq("power_unit")
-        expect(equipment.field_values["Marca"]).to eq("some brand")
-        expect(equipment.field_values["Marca del Motor"]).to eq("some motor brand")
-        expect(equipment.field_values["Kva"]).to eq("10")
+        expect(equipment.field_values["brand"]).to eq("some brand")
+        expect(equipment.field_values["motor_brand"]).to eq("some motor brand")
+        expect(equipment.field_values["kva"]).to eq("10")
       end
     end
 
@@ -160,9 +160,9 @@ RSpec.describe "/equipments", type: :request do
     context "with field_values" do
       it "updates field_values on the equipment" do
         patch equipment_url(equipment),
-          params: {equipment: {field_values: {"Mas Info" => "updated info"}}}
+          params: {equipment: {field_values: {"more_info" => "updated info"}}}
         equipment.reload
-        expect(equipment.field_values["Mas Info"]).to eq("updated info")
+        expect(equipment.field_values["more_info"]).to eq("updated info")
       end
     end
 

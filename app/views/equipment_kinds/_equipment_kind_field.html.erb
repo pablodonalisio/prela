@@ -25,7 +25,10 @@
       <%= link_to "X",
                   remove_field_equipment_kinds_path(field_key: field_key),
                   class: "btn btn-sm btn-outline-danger",
-                  data: { turbo_stream: true } %>
+                  data: {
+                    turbo_stream: true,
+                    turbo_confirm: "¿Eliminar este campo? Se borrarán los valores guardados en todos los equipos/instalaciones de este tipo."
+                  } %>
     </div>
   </div>
 <% end %>
