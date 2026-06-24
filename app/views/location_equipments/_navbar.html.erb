@@ -10,6 +10,9 @@
           <%= link_to "Lista", location_equipments_path, class: "nav-link" + (active == "location_equipments" ? " active" : "") %>
         </li>
         <li class="nav-item">
+          <%= link_to "Equipos", equipment_index_path, class: "nav-link" + (active == "equipment" ? " active" : "") %>
+        </li>
+        <li class="nav-item">
           <%= link_to "Tipos de Activos", equipment_kinds_path, class: "nav-link" + (active == "equipment_kinds" ? " active" : "") %>
         </li>
       </ul>
