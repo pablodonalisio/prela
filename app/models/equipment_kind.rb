@@ -1,4 +1,6 @@
 class EquipmentKind < ApplicationRecord
+  include FieldDefinitionsValidatable
+
   has_many :equipments, dependent: :destroy
 
   before_validation :set_normalized_name
@@ -14,16 +16,8 @@ class EquipmentKind < ApplicationRecord
 
   after_update :sync_related_field_values, if: :field_definitions_changed?
 
-  FIELD_TYPES = %w[string integer float date boolean].freeze
+  FIELD_TYPES = FieldDefinitionsValidatable::FIELD_TYPES
   FIELD_SETS = %w[generic_fields specific_fields].freeze
-
-  def self.generate_field_key
-    Time.now.to_i
-  end
-
-  def self.normalize_name(value)
-    ActiveSupport::Inflector.transliterate(value.to_s.strip.downcase)
-  end
 
   def field_definitions_for(field_set)
     public_send(field_set) || {}
@@ -64,30 +58,5 @@ class EquipmentKind < ApplicationRecord
 
   def sync_related_field_values
     EquipmentKind::SyncFieldValues.call(self)
-  end
-
-  def validate_field_definitions(attribute)
-    definitions = public_send(attribute)
-    return if definitions.nil?
-
-    normalized_names = {}
-
-    definitions.each do |_key, value|
-      if value["name"].blank? || value["type"].blank?
-        errors.add(attribute, "Los campos deben tener un nombre y un tipo.")
-        break
-      elsif !FIELD_TYPES.include?(value["type"])
-        errors.add(attribute, "El tipo de campo #{value["type"]} no es válido.")
-        break
-      else
-        normalized = self.class.normalize_name(value["name"])
-        if normalized_names[normalized]
-          errors.add(attribute, "El nombre de campo '#{value["name"]}' ya está en uso.")
-          break
-        end
-
-        normalized_names[normalized] = true
-      end
-    end
   end
 end

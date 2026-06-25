@@ -1,4 +1,6 @@
 class ReportTemplate < ApplicationRecord
+  include FieldDefinitionsValidatable
+
   SECTIONS = %w[
     equipment_specifications
     location_specifications
@@ -9,8 +11,17 @@ class ReportTemplate < ApplicationRecord
   has_and_belongs_to_many :location_equipments
 
   validates :name, presence: true
+  validate :validate_section_field_definitions
 
   def active_sections
     self.class::SECTIONS.filter { |section| public_send(section).present? }
+  end
+
+  private
+
+  def validate_section_field_definitions
+    SECTIONS.each do |section|
+      validate_field_definitions(section)
+    end
   end
 end
