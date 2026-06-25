@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <%= render "shared/content_header", title: "Informes" do %>
+    <% if current_user.admin? %>
+      <%= render "shared/button_link", text: "Agregar",
+                                      path: new_report_template_path %>
+    <% end %>
+  <% end %>
+
+  <%= turbo_frame_tag "report_templates", class: "row m-4 g-3" do %>
+    <%= render @report_templates %>
+  <% end %>
+<% end %>

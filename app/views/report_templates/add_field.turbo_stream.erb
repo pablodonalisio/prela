@@ -1,0 +1,11 @@
+<% container_id = "fields-container-#{@section.dasherize}" %>
+<% no_fields_id = "no-fields-message-#{@section.dasherize}" %>
+
+<%= turbo_stream.append container_id do %>
+  <%= render "report_templates/report_template_field",
+             report_template: @report_template || ReportTemplate.new,
+             section: @section,
+             field_key: @field_key,
+             field_data: {} %>
+<% end %>
+<%= turbo_stream.remove no_fields_id %>

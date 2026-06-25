@@ -81,6 +81,13 @@ es:
           float: "Número decimal"
           date: "Fecha"
           boolean: "Booleano"
+      report_template:
+        name: "Nombre"
+        sections:
+          equipment_specifications: "Especificaciones de equipo"
+          location_specifications: "Especificaciones de ubicación"
+          measurements: "Mediciones"
+          room_specifications: "Especificaciones de sala"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_24_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_25_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -300,6 +300,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_24_120000) do
     t.jsonb "room_specifications", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "normalized_name"
+    t.index ["normalized_name"], name: "index_report_templates_on_normalized_name", unique: true
   end
 
   create_table "reports", force: :cascade do |t|

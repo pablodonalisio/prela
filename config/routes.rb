@@ -37,4 +37,8 @@ Rails.application.routes.draw do
     get "add_field", on: :collection
     get "remove_field", on: :collection
   end
+  resources :report_templates, except: [:show] do
+    get "add_field", on: :collection
+    get "remove_field", on: :collection
+  end
 end

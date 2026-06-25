@@ -11,6 +11,20 @@ RSpec.describe ReportTemplate, type: :model do
     expect(report_template).not_to be_valid
   end
 
+  it "is not valid with a duplicate name" do
+    ReportTemplate.create!(name: "Preventivo UPS")
+    report_template = ReportTemplate.new(name: "Preventivo UPS")
+    expect(report_template).not_to be_valid
+    expect(report_template.errors[:name]).to be_present
+  end
+
+  it "is not valid with a duplicate name ignoring case" do
+    ReportTemplate.create!(name: "Preventivo UPS")
+    report_template = ReportTemplate.new(name: "PREVENTIVO UPS")
+    expect(report_template).not_to be_valid
+    expect(report_template.errors[:name]).to be_present
+  end
+
   it "is valid with field definitions in a section" do
     report_template = ReportTemplate.new(
       name: "Preventivo UPS",
