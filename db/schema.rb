@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_19_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_24_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -242,6 +242,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_19_120000) do
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end
 
+  create_table "location_equipments_report_templates", id: false, force: :cascade do |t|
+    t.bigint "location_equipment_id", null: false
+    t.bigint "report_template_id", null: false
+    t.index ["location_equipment_id", "report_template_id"], name: "index_loc_equip_report_templates_uniqueness", unique: true
+    t.index ["location_equipment_id"], name: "idx_on_location_equipment_id_8af2e704ae"
+    t.index ["report_template_id"], name: "idx_on_report_template_id_468dab9b28"
+  end
+
   create_table "locations", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "client_id", null: false
@@ -282,6 +290,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_19_120000) do
     t.string "cable_and_electrical_connections"
     t.string "oil_pressure_unit"
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
+  end
+
+  create_table "report_templates", force: :cascade do |t|
+    t.string "name", null: false
+    t.jsonb "equipment_specifications", default: {}, null: false
+    t.jsonb "location_specifications", default: {}, null: false
+    t.jsonb "measurements", default: {}, null: false
+    t.jsonb "room_specifications", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "reports", force: :cascade do |t|
@@ -363,6 +381,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_19_120000) do
   add_foreign_key "failures", "location_equipments"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
+  add_foreign_key "location_equipments_report_templates", "location_equipments"
+  add_foreign_key "location_equipments_report_templates", "report_templates"
   add_foreign_key "locations", "clients"
   add_foreign_key "power_unit_report_stats", "reports"
   add_foreign_key "reports", "location_equipments"
