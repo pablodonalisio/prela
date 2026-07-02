@@ -73,6 +73,20 @@
     </div>
   </div>
 
+      <div class="card mb-3 border-0 shadow-sm">
+    <div class="card-header fw-semibold text-secondary small text-uppercase">
+      <i class="fa fa-file-lines me-2 text-primary"></i>Plantillas de informe
+    </div>
+    <div class="card-body pb-1">
+      <%= f.input :report_template_ids,
+                  label: "Plantillas asociadas",
+                  collection: ReportTemplate.order(:name).map { |t| [t.name, t.id] },
+                  input_html: { multiple: true, class: "form-select" },
+                  hint: "Opcional. Facilita la selección al crear informes con plantilla.",
+                  wrapper_html: { class: "mb-3" } %>
+    </div>
+  </div>
+
   <%# ── Others ─────────────────────────────────────────── %>
   <div class="card mb-3 border-0 shadow-sm">
     <div class="card-header fw-semibold text-secondary small text-uppercase">

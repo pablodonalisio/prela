@@ -1,0 +1,41 @@
+<div class="p-2">
+  <p class="text-muted small mb-3">
+    <strong>Plantilla:</strong> <%= report.report_template.name %>
+    <% if report.date.present? %>
+      · <strong>Fecha:</strong> <%= l(report.date.to_date) %>
+    <% end %>
+  </p>
+
+  <% report.report_template.active_sections.each do |section| %>
+    <% fields = report.field_values_for(section) %>
+    <% next if fields.blank? && report.report_template.public_send(section).blank? %>
+
+    <h5 class="mt-3"><%= t("activerecord.attributes.report_template.sections.#{section}") %></h5>
+    <table class="table table-sm table-bordered">
+      <tbody>
+        <% report.report_template.public_send(section).each do |field_key, definition| %>
+          <tr>
+            <th class="w-50"><%= definition["name"] %></th>
+            <td><%= format_report_field_value(definition["type"], fields[field_key]) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if report.observations.present? %>
+    <h5 class="mt-3">Observaciones</h5>
+    <p><%= simple_format(report.observations) %></p>
+  <% end %>
+
+  <% if report.images.attached? %>
+    <h5 class="mt-3">Imágenes</h5>
+    <div class="d-flex flex-wrap gap-2">
+      <% report.images.each do |image| %>
+        <%= link_to url_for(image), target: "_blank", rel: "noopener" do %>
+          <%= image_tag image.variant(resize_and_pad: [200, 200]), class: "rounded border" %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

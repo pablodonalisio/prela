@@ -143,6 +143,13 @@ RSpec.describe "/location_equipments", type: :request do
   describe "PUT /update" do
     let!(:location_equipment) { create(:location_equipment) }
     let(:new_attributes) { {zone: "new zone"} }
+    let(:report_template) { create(:report_template, :with_measurements) }
+
+    it "assigns report templates to the location equipment" do
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {report_template_ids: [report_template.id]}}
+      expect(location_equipment.reload.report_templates).to include(report_template)
+    end
 
     it "updates the requested location equipment and responds with HTML" do
       put location_equipment_url(location_equipment), params: {location_equipment: new_attributes}

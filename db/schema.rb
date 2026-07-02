@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_25_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_26_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -310,7 +310,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_25_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "date"
+    t.bigint "report_template_id"
+    t.jsonb "field_values", default: {}, null: false
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
+    t.index ["report_template_id"], name: "index_reports_on_report_template_id"
   end
 
   create_table "room_report_stats", force: :cascade do |t|
@@ -388,6 +391,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_25_120000) do
   add_foreign_key "locations", "clients"
   add_foreign_key "power_unit_report_stats", "reports"
   add_foreign_key "reports", "location_equipments"
+  add_foreign_key "reports", "report_templates"
   add_foreign_key "room_report_stats", "reports"
   add_foreign_key "service_dates", "activities"
   add_foreign_key "service_dates", "location_equipments"

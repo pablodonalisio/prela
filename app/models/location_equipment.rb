@@ -51,6 +51,13 @@ class LocationEquipment < ApplicationRecord
 
   validates :location_id, :equipment_id, presence: true
 
+  def associate_report_template!(report_template)
+    return if report_template.blank?
+    return if report_templates.exists?(report_template.id)
+
+    report_templates << report_template
+  end
+
   def next_service_dates
     service_dates.select("DISTINCT ON (kind) *").order(:kind, date: :desc)
   end

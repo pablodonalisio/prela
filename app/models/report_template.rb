@@ -10,6 +10,7 @@ class ReportTemplate < ApplicationRecord
   ].freeze
 
   has_and_belongs_to_many :location_equipments
+  has_many :reports, dependent: :restrict_with_error
 
   before_validation :set_normalized_name
 

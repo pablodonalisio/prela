@@ -19,7 +19,9 @@ Rails.application.routes.draw do
   resources :location_equipments do
     get :field_inputs, on: :collection
     get :location_inputs, on: :collection
-    resources :reports
+    resources :reports do
+      get :template_fields, on: :collection
+    end
     resources :activities
     resources :documents
     resources :failures

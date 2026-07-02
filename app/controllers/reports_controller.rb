@@ -11,47 +11,65 @@ class ReportsController < ApplicationController
 
   def new
     @report = authorize location_equipment.reports.build
-    build_report_stats
+    @report_mode = report_mode_param
+    load_template_form_data if template_mode?
+    build_report_stats if legacy_mode?
   end
 
   def create
-    @report = authorize location_equipment.reports.build(report_params)
+    @report_mode = template_create? ? "template" : "legacy"
+    @report = authorize location_equipment.reports.build
+    assign_report_attributes
 
     if @report.save
-      return report_pdf_error unless attach_pdf
+      location_equipment.associate_report_template!(@report.report_template) if @report.template_based?
+      return report_pdf_error if legacy_mode? && !attach_pdf
 
       respond_to do |format|
         format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se creo correctamente." }
         format.turbo_stream { flash.now[:notice] = "El reporte se creo correctamente." }
       end
     else
+      load_template_form_data if template_mode?
+      build_report_stats if legacy_mode? && @report.room_report_stat.nil?
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
     @report = authorize report
+    load_template_form_data if @report.template_based?
   end
 
   def update
     @report = authorize report
 
-    if @report.update(report_params)
+    if @report.update(report_update_params)
       purge_removed_images
-
-      return report_pdf_error unless attach_pdf
+      location_equipment.associate_report_template!(@report.report_template) if @report.template_based?
+      return report_pdf_error if !@report.template_based? && !attach_pdf
 
       respond_to do |format|
         format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se edito correctamente." }
         format.turbo_stream { flash.now[:notice] = "El reporte se edito correctamente." }
       end
     else
+      load_template_form_data if @report.template_based?
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
     flash.now[:notice] = "El reporte ha sido eliminado." if report.destroy
+  end
+
+  def template_fields
+    authorize Report.new(location_equipment: location_equipment), :new?
+    @report_template = ReportTemplate.find(params[:report_template_id])
+    @report = report_for_template_fields
+    @report.report_template = @report_template
+
+    render :template_fields, layout: false
   end
 
   private
@@ -64,73 +82,116 @@ class ReportsController < ApplicationController
     @report ||= authorize location_equipment.reports.find(params[:id])
   end
 
-  def report_params
+  def report_for_template_fields
+    if params[:report_id].present?
+      location_equipment.reports.find_by(id: params[:report_id]) || location_equipment.reports.build
+    else
+      location_equipment.reports.build(report_template: @report_template)
+    end
+  end
+
+  def assign_report_attributes
+    if template_create? || (@report.persisted? && @report.template_based?)
+      @report.assign_attributes(template_report_params)
+    else
+      @report.assign_attributes(legacy_report_params)
+    end
+  end
+
+  def report_update_params
+    if @report.template_based?
+      template_report_params
+    else
+      legacy_report_params
+    end
+  end
+
+  def template_create?
+    params.dig(:report, :report_template_id).present?
+  end
+
+  def report_mode_param
+    params[:report_mode].in?(%w[template legacy]) ? params[:report_mode] : "legacy"
+  end
+
+  def template_mode?
+    @report_mode == "template" || (@report&.template_based? && !@report.new_record?)
+  end
+
+  def legacy_mode?
+    !template_mode?
+  end
+
+  def load_template_form_data
+    @associated_templates = location_equipment.report_templates.order(:name)
+    @all_templates = ReportTemplate.order(:name)
+    @report.report_template ||= @associated_templates.first || @all_templates.first
+  end
+
+  def shared_report_params
+    params.require(:report).permit(:observations, :date, images: [])
+  end
+
+  def template_report_params
+    permitted = params.require(:report).permit(
+      :observations,
+      :date,
+      :report_template_id,
+      field_values: {
+        equipment_specifications: {},
+        location_specifications: {},
+        measurements: {},
+        room_specifications: {}
+      },
+      images: []
+    )
+
+    ReportTemplate::SECTIONS.each do |section|
+      permitted[:field_values] ||= {}
+      permitted[:field_values][section] ||= {}
+    end
+
+    permitted
+  end
+
+  def legacy_report_params
     params.require(:report)
       .permit(
         :observations, :date,
         ups_report_stat_attributes: %i[
-          operating_mode
-          associated_charge
-          battery_charge
-          voltage_input
-          voltage_output
-          voltage_input_l1
-          voltage_input_l2
-          voltage_input_l3
-          voltage_output_l1
-          voltage_output_l2
-          voltage_output_l3
-          pat_state
-          alarms_presence
-          ventilation_state
+          id operating_mode associated_charge battery_charge voltage_input voltage_output
+          voltage_input_l1 voltage_input_l2 voltage_input_l3
+          voltage_output_l1 voltage_output_l2 voltage_output_l3
+          pat_state alarms_presence ventilation_state
         ],
         power_unit_report_stat_attributes: %i[
-          start_key_on_auto
-          rpm
-          frequency
-          battery_charge_control
-          tension_between_phases_a_b
-          tension_between_phases_b_c
-          tension_between_phases_c_a
-          initial_temperature
-          running_temperature
-          number_of_starts
-          operating_time
-          failed_starts
-          oil_pressure
-          oil_pressure_unit
-          fuel_level
-          coolant_level
-          oil_level
-          testing_time
-          general_disconnector
-          emergency_stop_position
-          lamp_test
-          belt_condition
-          air_filter_condition
-          anti_vibration_pad_condition
-          liquids_leaks
-          connections_condition_and_battery_fixation
-          cable_and_electrical_connections
+          id start_key_on_auto rpm frequency battery_charge_control
+          tension_between_phases_a_b tension_between_phases_b_c tension_between_phases_c_a
+          initial_temperature running_temperature number_of_starts operating_time failed_starts
+          oil_pressure oil_pressure_unit fuel_level coolant_level oil_level testing_time
+          general_disconnector emergency_stop_position lamp_test belt_condition
+          air_filter_condition anti_vibration_pad_condition liquids_leaks
+          connections_condition_and_battery_fixation cable_and_electrical_connections
         ],
-        electrical_panel_report_stat_attributes: ElectricalPanelReportStat.permitted_attributes,
-        room_report_stat_attributes: RoomReportStat.permitted_attributes,
+        electrical_panel_report_stat_attributes: [:id] + ElectricalPanelReportStat.permitted_attributes,
+        room_report_stat_attributes: [:id] + RoomReportStat.permitted_attributes,
         images: []
       )
   end
 
   def attach_pdf
-    return unless pdf_content.success?
+    return false unless pdf_content.success?
 
     @report.pdf.attach(
       io: StringIO.new(pdf_content.pdf),
       filename: "#{report_filename}.pdf",
       content_type: "application/pdf"
     )
+    true
   end
 
   def report_filename
-    "Informe preventivo de #{location_equipment.code} - #{l(report.date.to_date)}"
+    "Informe preventivo de #{location_equipment.code} - #{l(@report.date.to_date)}"
   end
 
   def pdf_content
@@ -150,9 +211,7 @@ class ReportsController < ApplicationController
     removed_ids = params.dig(:report, :removed_image_ids) || []
     return if removed_ids.blank?
 
-    @report.images.where(blob_id: removed_ids).find_each do |image|
-      image.purge
-    end
+    @report.images.where(blob_id: removed_ids).find_each(&:purge)
     @report.reload
   end
 

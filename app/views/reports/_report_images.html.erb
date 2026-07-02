@@ -1,0 +1,32 @@
+<h2>Imágenes</h2>
+
+<% existing_images = report.images.attached? ? report.images.map do |img|
+     {
+       id: img.blob.id,
+       filename: img.filename.to_s,
+       url: url_for(img.variant(resize_and_pad: [120, 120])),
+       byte_size: img.byte_size
+     }
+   end : [] %>
+
+<div data-controller="dropzone"
+     data-dropzone-direct-upload-url-value="<%= rails_direct_uploads_url %>"
+     data-dropzone-existing-files-value='<%= existing_images.to_json.html_safe %>'
+     data-dropzone-resize-height-value="250"
+     data-dropzone-max-files-value="10"
+     class="mb-4">
+  <div data-dropzone-target="dropzone" class="dropzone border rounded p-3">
+    <div class="dz-message text-center">Arrastra imágenes aquí o haz click para seleccionar. Se redimensionarán automáticamente.</div>
+  </div>
+  <div data-dropzone-target="hiddenInputs"></div>
+  <div data-dropzone-target="removedInputs"></div>
+</div>
+
+<noscript>
+  <p class="text-warning">El navegador no soporta JavaScript. Use el formulario de carga tradicional:</p>
+  <div class="my-3 row">
+    <% 10.times do |n| %>
+      <%= render "image_upload", report: report, title: "Imagen #{n + 1}", f: f, n: n %>
+    <% end %>
+  </div>
+</noscript>

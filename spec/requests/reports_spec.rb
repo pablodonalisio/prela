@@ -232,4 +232,112 @@ RSpec.describe "Reports", type: :request do
       }.to change(Report, :count).by(-1)
     end
   end
+
+  context "template-based report" do
+    let(:equipment_kind) { "ups" }
+    let(:report_template) { create(:report_template, :with_measurements) }
+    let(:template_params) do
+      {
+        report: {
+          report_template_id: report_template.id,
+          observations: "Template test",
+          date: Date.today,
+          field_values: {
+            measurements: {"1739280000" => "220.5"}
+          },
+          images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
+        }
+      }
+    end
+
+    describe "GET /new" do
+      it "renders the template form when report_mode is template" do
+        get new_location_equipment_report_path(location_equipment, report_mode: "template")
+        expect(response).to be_successful
+        expect(response.body).to include("Plantilla")
+      end
+    end
+
+    describe "GET /template_fields" do
+      it "returns dynamic fields for the selected template" do
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+        expect(response).to be_successful
+        expect(response.body).to include("Tensión L1")
+      end
+    end
+
+    describe "POST /create" do
+      let(:request) do
+        post location_equipment_reports_path(location_equipment), params: template_params
+      end
+
+      it "creates a template-based report" do
+        expect { request }.to change(Report, :count).by(1)
+        expect(Report.last.template_based?).to be true
+        expect(Report.last.field_values.dig("measurements", "1739280000")).to eq("220.5")
+      end
+
+      it "does not attach a PDF" do
+        request
+        expect(Report.last.pdf).not_to be_attached
+      end
+
+      it "uploads images to the report" do
+        request
+        expect(Report.last.images).to be_attached
+      end
+
+      it "auto-assigns the template to the location equipment" do
+        request
+        expect(location_equipment.reload.report_templates).to include(report_template)
+      end
+    end
+
+    describe "PATCH /update" do
+      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment) }
+      let(:request) do
+        patch location_equipment_report_path(location_equipment, template_report),
+          params: {
+            report: {
+              observations: "Updated template",
+              date: Date.today,
+              report_template_id: template_report.report_template_id,
+              field_values: {
+                measurements: {"1739280000" => "230.0"}
+              }
+            }
+          }
+      end
+
+      it "updates the template report" do
+        request
+        template_report.reload
+        expect(template_report.observations).to eq("Updated template")
+        expect(template_report.field_values.dig("measurements", "1739280000")).to eq("230.0")
+      end
+
+      it "does not attach a PDF" do
+        request
+        expect(template_report.reload.pdf).not_to be_attached
+      end
+    end
+
+    describe "GET /show" do
+      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment) }
+
+      it "returns a successful response" do
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    describe "GET /edit" do
+      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment) }
+
+      it "renders a successful response" do
+        get edit_location_equipment_report_path(location_equipment, template_report)
+        expect(response).to be_successful
+      end
+    end
+  end
 end

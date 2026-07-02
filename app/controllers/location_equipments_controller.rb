@@ -79,7 +79,8 @@ class LocationEquipmentsController < ApplicationController
         :cleaning_interval, :last_cleaning, :next_cleaning, :srt_900_interval, :last_srt_900, :next_srt_900,
         :thermography_interval, :last_thermography, :next_thermography,
         :electrical_approval_interval, :last_electrical_approval, :next_electrical_approval,
-        field_values: {})
+        field_values: {},
+        report_template_ids: [])
   end
 
   def location_equipment
