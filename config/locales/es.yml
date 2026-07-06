@@ -83,6 +83,8 @@ es:
           boolean: "Booleano"
       report_template:
         name: "Nombre"
+        optimal_value: "Valor óptimo"
+        units: "Unidades"
         sections:
           equipment_specifications: "Especificaciones de equipo"
           location_specifications: "Especificaciones de ubicación"

@@ -9,6 +9,12 @@
             <li class="py-1">
               <strong><%= field_data["name"] %></strong>
               <span class="text-muted">(<%= t("activerecord.attributes.equipment_kind.field_types.#{field_data['type']}") %>)</span>
+              <% if field_data["units"].present? %>
+                <span class="text-muted">· <%= field_data["units"] %></span>
+              <% end %>
+              <% if field_data["optimal_value"].present? %>
+                <span class="text-muted">· <%= t("activerecord.attributes.report_template.optimal_value") %>: <%= field_data["optimal_value"] %></span>
+              <% end %>
             </li>
           <% end %>
         </ul>

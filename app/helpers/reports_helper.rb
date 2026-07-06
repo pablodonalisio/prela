@@ -1,5 +1,14 @@
 module ReportsHelper
-  def format_report_field_value(type, value)
+  def format_report_field_value(type, value, units: nil)
+    formatted = base_formatted_value(type, value)
+    return formatted if units.blank? || formatted == "—"
+
+    "#{formatted} #{units}"
+  end
+
+  private
+
+  def base_formatted_value(type, value)
     return "—" if value.nil? || (value.respond_to?(:blank?) && value.blank? && value != false)
 
     case type

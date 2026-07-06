@@ -4,7 +4,7 @@ FactoryBot.define do
 
     trait :with_measurements do
       measurements do
-        {"1739280000" => {name: "Tensión L1", type: "float"}}
+        {"1739280000" => {name: "Tensión L1", type: "float", optimal_value: "220", units: "V"}}
       end
     end
   end
