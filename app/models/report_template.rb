@@ -12,14 +12,25 @@ class ReportTemplate < ApplicationRecord
   has_and_belongs_to_many :location_equipments
   has_many :reports, dependent: :restrict_with_error
 
-  before_validation :set_normalized_name
+  before_validation :set_normalized_name, :normalize_field_positions
 
   validates :name, presence: true
   validate :name_must_be_unique
   validate :validate_section_field_definitions
 
   def active_sections
-    self.class::SECTIONS.filter { |section| public_send(section).present? }
+    self.class::SECTIONS.filter { |section| fields_for(section).present? }
+  end
+
+  def fields_for(section)
+    fields = public_send(section).presence || {}
+    return {} if fields.blank?
+
+    fields.sort_by.with_index do |(key, data), index|
+      position = data["position"]
+      sort_position = position.present? ? position.to_i : index
+      [sort_position, key.to_i]
+    end.to_h
   end
 
   private
@@ -40,6 +51,23 @@ class ReportTemplate < ApplicationRecord
   def validate_section_field_definitions
     SECTIONS.each do |section|
       validate_field_definitions(section)
+    end
+  end
+
+  def normalize_field_positions
+    SECTIONS.each do |section|
+      fields = public_send(section)
+      next if fields.blank?
+
+      ordered_keys = fields.sort_by.with_index do |(key, data), index|
+        position = data["position"]
+        sort_position = position.present? ? position.to_i : index
+        [sort_position, key.to_i]
+      end.map(&:first)
+
+      ordered_keys.each_with_index do |key, index|
+        fields[key]["position"] = index
+      end
     end
   end
 end

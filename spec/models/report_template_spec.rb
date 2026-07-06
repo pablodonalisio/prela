@@ -87,6 +87,47 @@ RSpec.describe ReportTemplate, type: :model do
     expect(report_template).to be_valid
   end
 
+  describe "#fields_for" do
+    it "returns fields sorted by position" do
+      report_template = ReportTemplate.new(
+        name: "Preventivo UPS",
+        measurements: {
+          "100" => {name: "Segundo", type: "string", position: 1},
+          "200" => {name: "Primero", type: "string", position: 0}
+        }
+      )
+
+      expect(report_template.fields_for("measurements").keys).to eq(%w[200 100])
+    end
+
+    it "preserves hash order for fields without position" do
+      report_template = ReportTemplate.new(
+        name: "Preventivo UPS",
+        measurements: {
+          "100" => {name: "Uno", type: "string"},
+          "200" => {name: "Dos", type: "string"}
+        }
+      )
+
+      expect(report_template.fields_for("measurements").keys).to eq(%w[100 200])
+    end
+  end
+
+  describe "field position normalization" do
+    it "assigns sequential positions on save" do
+      report_template = ReportTemplate.create!(
+        name: "Preventivo UPS",
+        measurements: {
+          "100" => {name: "Segundo", type: "string", position: 1},
+          "200" => {name: "Primero", type: "string", position: 0}
+        }
+      )
+
+      expect(report_template.measurements["200"]["position"]).to eq(0)
+      expect(report_template.measurements["100"]["position"]).to eq(1)
+    end
+  end
+
   describe "#active_sections" do
     it "returns only sections with field definitions" do
       report_template = ReportTemplate.new(

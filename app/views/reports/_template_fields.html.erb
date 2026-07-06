@@ -4,7 +4,7 @@
 <% report_template.active_sections.each do |section| %>
   <h2 class="mt-3"><%= t("activerecord.attributes.report_template.sections.#{section}") %></h2>
   <%= render "shared/dynamic_field_inputs",
-             field_definitions: report_template.public_send(section),
+             field_definitions: report_template.fields_for(section),
              field_values: report.field_values_for(section),
              param_prefix: "report[field_values][#{section}]",
              id_prefix: "report_#{section}" %>

@@ -22,7 +22,7 @@
         </tr>
       </thead>
       <tbody>
-        <% report.report_template.public_send(section).each do |field_key, definition| %>
+        <% report.report_template.fields_for(section).each do |field_key, definition| %>
           <tr>
             <th><%= definition["name"] %></th>
             <td><%= format_report_field_value(definition["type"], fields[field_key], units: definition["units"]) %></td>
