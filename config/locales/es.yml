@@ -97,6 +97,30 @@ es:
         restrict_dependent_destroy:
           has_one: No se puede eliminar el registro porque existe un %{record} dependiente
           has_many: No se puede eliminar el registro porque existen %{record} dependientes
+  reports:
+    template_report:
+      title: "Informe de mantenimiento"
+      client: "Compañía / Cliente"
+      location_area: "Ubicación / Área"
+      service_date: "Fecha y hora"
+      service_type: "Tipo de servicio"
+      service_type_preventive: "Preventivo"
+      equipment_section: "Especificaciones del equipo"
+      location_section: "Información de localización"
+      measurements_section: "Estado de parámetros físicos y mediciones"
+      observations_section: "Observaciones y recomendaciones técnicas"
+      images_section: "Imágenes"
+      print_pdf: "Imprimir / Guardar PDF"
+      serial_number: "Número de serie"
+      equipment_kind: "Tipo de equipo"
+      condition: "Condición"
+      location: "Ubicación"
+      zone: "Sala"
+      floor: "Piso"
+      table:
+        parameter: "Parámetro registrado"
+        value: "Valor obtenido"
+        optimal: "Rangos normales"
   errors:
     format: "%{attribute} %{message}"
     messages:

@@ -1,59 +1,134 @@
-<div class="p-2">
-  <p class="text-muted small mb-3">
-    <strong>Plantilla:</strong> <%= report.report_template.name %>
-    <% if report.date.present? %>
-      · <strong>Fecha:</strong> <%= l(report.date.to_date) %>
-    <% end %>
-  </p>
+<% location_equipment = report.location_equipment %>
+<% client = location_equipment.client %>
+<% equipment_rows = template_report_equipment_rows(report) %>
+<% location_spec_rows = template_report_location_specification_rows(report) %>
+<% measurement_rows = template_report_measurement_rows(report) %>
+<% room_rows = template_report_room_rows(report) %>
+<% section_number = 0 %>
 
-  <% report.report_template.active_sections.each do |section| %>
-    <% fields = report.field_values_for(section) %>
-    <% next if fields.blank? && report.report_template.public_send(section).blank? %>
+<article class="template-report">
+  <header class="template-report__header">
+    <div class="template-report__header-row">
+      <div class="template-report__header-cell template-report__header-cell--logo">
+        <%= image_tag "prela_logotipo-1.png", alt: "Prela", class: "template-report__logo" %>
+      </div>
+      <div class="template-report__header-cell template-report__header-cell--title template-report__header-cell--span-3">
+        <h1 class="template-report__title"><%= t("reports.template_report.title") %></h1>
+      </div>
+    </div>
 
-    <h5 class="mt-3"><%= t("activerecord.attributes.report_template.sections.#{section}") %></h5>
-    <table class="table table-sm table-bordered">
-      <thead>
-        <tr>
-          <th class="w-50">Campo</th>
-          <th>Valor</th>
-          <% if section == "measurements" %>
-            <th><%= t("activerecord.attributes.report_template.optimal_value") %></th>
-          <% end %>
-        </tr>
-      </thead>
-      <tbody>
-        <% report.report_template.fields_for(section).each do |field_key, definition| %>
-          <tr>
-            <th><%= definition["name"] %></th>
-            <td><%= format_report_field_value(definition["type"], fields[field_key], units: definition["units"]) %></td>
-            <% if section == "measurements" %>
-              <td>
-                <% if definition["optimal_value"].present? %>
-                  <%= definition["optimal_value"] %><% if definition["units"].present? %> <%= definition["units"] %><% end %>
-                <% else %>
-                  —
-                <% end %>
-              </td>
-            <% end %>
-          </tr>
+    <div class="template-report__header-row">
+      <div class="template-report__header-cell template-report__header-cell--logo">
+        <% if client.avatar.attached? %>
+          <%= image_tag client.avatar.variant(resize_to_limit: [160, 80]),
+                        alt: client.name,
+                        class: "template-report__logo template-report__logo--client" %>
         <% end %>
-      </tbody>
-    </table>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.client") %></span>
+        <span class="template-report__meta-value"><%= client.name %></span>
+      </div>
+      <div class="template-report__header-cell template-report__header-cell--span-2">
+        <span class="template-report__meta-label"><%= t("reports.template_report.location") %></span>
+        <span class="template-report__meta-value"><%= location_equipment.location.name %></span>
+      </div>
+    </div>
+
+    <div class="template-report__header-row">
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.service_date") %></span>
+        <span class="template-report__meta-value">
+          <% if report.date.present? %>
+            <%= report.date.strftime("%d/%m/%Y - %H:%M") %>
+          <% end %>
+        </span>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.service_type") %></span>
+        <span class="template-report__meta-value"><%= t("reports.template_report.service_type_preventive") %></span>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.zone") %></span>
+        <span class="template-report__meta-value"><%= location_equipment.zone.presence || "—" %></span>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.floor") %></span>
+        <span class="template-report__meta-value">
+          <%= location_equipment.floor.present? ? humanize_floor(location_equipment.floor) : "—" %>
+        </span>
+      </div>
+    </div>
+
+    <% if location_spec_rows.any? %>
+      <% location_spec_rows.each_slice(4) do |slice| %>
+        <div class="template-report__header-row">
+          <% slice.each do |row| %>
+            <div class="template-report__header-cell">
+              <span class="template-report__meta-label"><%= row[:label] %></span>
+              <span class="template-report__meta-value"><%= row[:value] %></span>
+            </div>
+          <% end %>
+          <% (4 - slice.size).times do %>
+            <div class="template-report__header-cell template-report__header-cell--empty" aria-hidden="true"></div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </header>
+
+  <% section_number += 1 %>
+  <section class="template-report__section">
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= t("reports.template_report.equipment_section") %>
+    </h2>
+    <%= render "template_report_fields", rows: equipment_rows %>
+  </section>
+
+  <% if measurement_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.measurements_section") %>
+      </h2>
+      <%= render "template_report_cards", items: measurement_rows %>
+    </section>
   <% end %>
 
-  <% if report.observations.present? %>
-    <h5 class="mt-3">Observaciones</h5>
-    <p><%= simple_format(report.observations) %></p>
+  <% if room_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %>
+        <%= t("activerecord.attributes.report_template.sections.room_specifications") %>
+      </h2>
+      <%= render "template_report_cards", items: room_rows %>
+    </section>
   <% end %>
+
+  <% section_number += 1 %>
+  <section class="template-report__section">
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= t("reports.template_report.observations_section") %>
+    </h2>
+    <div class="template-report__observations">
+      <%= simple_format(report.observations) if report.observations.present? %>
+    </div>
+  </section>
 
   <% if report.images.attached? %>
-    <h5 class="mt-3">Imágenes</h5>
-    <div class="d-flex flex-wrap gap-2">
-      <% report.images.each do |image| %>
-        <%= link_to url_for(image), target: "_blank", rel: "noopener" do %>
-          <%= image_tag image.variant(resize_and_pad: [200, 200]), class: "rounded border" %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.images_section") %>
+      </h2>
+      <div class="template-report__images">
+        <% report.images.each do |image| %>
+          <%= link_to url_for(image), target: "_blank", rel: "noopener", class: "template-report__image-link" do %>
+            <%= image_tag image.variant(resize_to_limit: [900, 900]), alt: image.filename.to_s %>
+          <% end %>
         <% end %>
-      <% end %>
-    </div>
+      </div>
+    </section>
   <% end %>
-</div>
+</article>

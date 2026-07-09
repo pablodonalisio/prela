@@ -329,6 +329,25 @@ RSpec.describe "Reports", type: :request do
         get location_equipment_report_path(location_equipment, template_report)
         expect(response).to have_http_status(:success)
       end
+
+      it "renders the modern template report layout" do
+        get location_equipment_report_path(location_equipment, template_report)
+        equipment = location_equipment.equipment
+
+        expect(response.body).to include("Informe de mantenimiento")
+        expect(response.body).to include(location_equipment.client.name)
+        expect(response.body).to include("Compañía / Cliente")
+        expect(response.body).to include("Preventivo")
+        expect(response.body).to include("1.0 Especificaciones del equipo")
+        expect(response.body).to include(equipment.name)
+        expect(response.body).to include(equipment.brand)
+        expect(response.body).to include(location_equipment.location.name)
+        expect(response.body).to include("Estado de parámetros físicos y mediciones")
+        expect(response.body).to include("Tensión L1")
+        expect(response.body).to include("Parámetro registrado")
+        expect(response.body).to include("Imprimir / Guardar PDF")
+        expect(response.body).to include("Some observation")
+      end
     end
 
     describe "GET /edit" do

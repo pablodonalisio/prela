@@ -1,0 +1,9 @@
+<%# locals: (rows:) %>
+<div class="template-report__fields">
+  <% rows.each do |row| %>
+    <div class="template-report__field">
+      <span class="template-report__field-label"><%= row[:label] %></span>
+      <span class="template-report__field-value"><%= row[:value] %></span>
+    </div>
+  <% end %>
+</div>

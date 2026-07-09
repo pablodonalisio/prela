@@ -1,0 +1,59 @@
+@import "template_report";
+
+@page {
+  size: A4;
+  margin: 10mm;
+}
+
+html,
+body,
+.template-report-print-body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #0f172a;
+  font-family:
+    ui-monospace,
+    "SF Mono",
+    Menlo,
+    Consolas,
+    "Liberation Mono",
+    monospace;
+}
+
+.template-report-print-page {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  html,
+  body,
+  .template-report-print-body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+
+  .template-report-print-page {
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .template-report {
+    width: 100%;
+    max-width: none;
+    min-height: auto;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    box-sizing: border-box;
+  }
+}
