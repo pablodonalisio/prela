@@ -240,7 +240,6 @@ RSpec.describe "Reports", type: :request do
       {
         report: {
           report_template_id: report_template.id,
-          observations: "Template test",
           date: Date.today,
           field_values: {
             measurements: {"1739280000" => "220.5"}
@@ -271,6 +270,15 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Verificación de torque")
         expect(response.body).to include("Protocolo de tareas")
       end
+
+      it "preloads comments from the previous template report" do
+        previous = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: 1.day.ago)
+        create(:report_comment, report: previous, description: "Comentario heredado", position: 0)
+
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+        expect(response.body).to include("Comentario heredado")
+        expect(response.body).to include("Comentarios y recomendaciones técnicas")
+      end
     end
 
     describe "POST /create" do
@@ -289,6 +297,14 @@ RSpec.describe "Reports", type: :request do
         expect(Report.last.report_tasks.order(:position).map(&:name)).to eq(
           ["Limpieza general", "Verificación de torque"]
         )
+      end
+
+      it "seeds comments from the previous template report" do
+        previous = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: 1.day.ago)
+        create(:report_comment, report: previous, description: "Comentario heredado", position: 0)
+
+        expect { request }.to change(ReportComment, :count).by(1)
+        expect(Report.order(:id).last.report_comments.map(&:description)).to eq(["Comentario heredado"])
       end
 
       it "does not attach a PDF" do
@@ -314,7 +330,6 @@ RSpec.describe "Reports", type: :request do
         patch location_equipment_report_path(location_equipment, template_report),
           params: {
             report: {
-              observations: "Updated template",
               date: Date.today,
               report_template_id: template_report.report_template_id,
               field_values: {
@@ -332,6 +347,12 @@ RSpec.describe "Reports", type: :request do
                   completed: "0",
                   position: 1
                 }
+              },
+              report_comments_attributes: {
+                "1739290000" => {
+                  description: "Nuevo comentario",
+                  position: 0
+                }
               }
             }
           }
@@ -340,7 +361,6 @@ RSpec.describe "Reports", type: :request do
       it "updates the template report" do
         request
         template_report.reload
-        expect(template_report.observations).to eq("Updated template")
         expect(template_report.field_values.dig("measurements", "1739280000")).to eq("230.0")
       end
 
@@ -353,6 +373,11 @@ RSpec.describe "Reports", type: :request do
         expect(template_report.report_tasks.where.not(id: existing_ids).pluck(:name)).to eq(["Tarea adicional"])
       end
 
+      it "adds report comments" do
+        expect { request }.to change(ReportComment, :count).by(1)
+        expect(template_report.reload.report_comments.map(&:description)).to include("Nuevo comentario")
+      end
+
       it "does not attach a PDF" do
         request
         expect(template_report.reload.pdf).not_to be_attached
@@ -363,6 +388,7 @@ RSpec.describe "Reports", type: :request do
       let(:template_report) do
         create(:report, :template_based, location_equipment: location_equipment, report_template: report_template).tap do |report|
           report.report_tasks.find_by!(name: "Limpieza general").update!(completed: true)
+          create(:report_comment, report: report, description: "Comentario visible", position: 0)
         end
       end
 
@@ -387,7 +413,6 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Tensión L1")
         expect(response.body).to include("Parámetro registrado")
         expect(response.body).to include("Imprimir / Guardar PDF")
-        expect(response.body).to include("Some observation")
       end
 
       it "renders the tasks checklist" do
@@ -397,6 +422,20 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Verificación de torque")
         expect(response.body).to include("OK / Ejecutado")
         expect(response.body).to include("Pendiente")
+      end
+
+      it "renders the comments table when comments exist" do
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).to include("Comentarios y recomendaciones técnicas")
+        expect(response.body).to include("Comentario visible")
+        expect(response.body).to include("Nº")
+        expect(response.body).to include("Descripción")
+      end
+
+      it "omits the comments section when there are no comments" do
+        ReportComment.where(report: template_report).delete_all
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).not_to include("Comentarios y recomendaciones técnicas")
       end
     end
 

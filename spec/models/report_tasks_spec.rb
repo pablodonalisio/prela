@@ -26,4 +26,41 @@ RSpec.describe Report, type: :model do
       expect(report.report_tasks.first).to be_completed
     end
   end
+
+  describe "comment seeding" do
+    let(:report_template) { create(:report_template, :with_measurements) }
+    let(:location_equipment) { create(:location_equipment) }
+    let!(:previous_report) do
+      create(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: 1.day.ago).tap do |report|
+        create(:report_comment, report: report, description: "Comentario previo A", position: 0)
+        create(:report_comment, report: report, description: "Comentario previo B", position: 1)
+      end
+    end
+
+    it "copies comments from the previous template report when none are provided" do
+      report = build(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: Time.current)
+
+      expect { report.save! }.to change(ReportComment, :count).by(2)
+      expect(report.report_comments.order(:position).map(&:description)).to eq(
+        ["Comentario previo A", "Comentario previo B"]
+      )
+    end
+
+    it "does not seed when there is no previous template report" do
+      other_equipment = create(:location_equipment)
+      report = build(:report, :template_based, location_equipment: other_equipment, report_template: report_template)
+
+      expect { report.save! }.not_to change(ReportComment, :count)
+    end
+
+    it "does not override submitted report comments" do
+      report = build(:report, :template_based, location_equipment: location_equipment, report_template: report_template)
+      report.report_comments_attributes = [
+        {description: "Comentario custom", position: 0}
+      ]
+
+      report.save!
+      expect(report.report_comments.map(&:description)).to eq(["Comentario custom"])
+    end
+  end
 end

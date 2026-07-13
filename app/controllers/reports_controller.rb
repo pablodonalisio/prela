@@ -68,7 +68,10 @@ class ReportsController < ApplicationController
     @report_template = ReportTemplate.find(params[:report_template_id])
     @report = report_for_template_fields
     @report.report_template = @report_template
-    @report.build_tasks_from_template! if @report.new_record?
+    if @report.new_record?
+      @report.build_tasks_from_template!
+      @report.build_comments_from_previous_report!
+    end
 
     render :template_fields, layout: false
   end
@@ -127,9 +130,10 @@ class ReportsController < ApplicationController
     @associated_templates = location_equipment.report_templates.order(:name)
     @all_templates = ReportTemplate.order(:name)
     @report.report_template ||= @associated_templates.first || @all_templates.first
-    return unless @report.new_record? && @report.report_template.present? && @report.report_tasks.empty?
+    return unless @report.new_record? && @report.report_template.present?
 
-    @report.build_tasks_from_template!
+    @report.build_tasks_from_template! if @report.report_tasks.empty?
+    @report.build_comments_from_previous_report! if @report.report_comments.empty?
   end
 
   def shared_report_params
@@ -138,7 +142,6 @@ class ReportsController < ApplicationController
 
   def template_report_params
     permitted = params.require(:report).permit(
-      :observations,
       :date,
       :report_template_id,
       field_values: {
@@ -148,6 +151,7 @@ class ReportsController < ApplicationController
         room_specifications: {}
       },
       report_tasks_attributes: %i[id name completed position _destroy],
+      report_comments_attributes: %i[id description position _destroy],
       images: []
     )
 

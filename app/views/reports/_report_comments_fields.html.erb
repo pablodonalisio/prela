@@ -1,0 +1,26 @@
+<%# locals: (report:) %>
+<div class="mt-3" data-controller="nested-form">
+  <h2><%= t("reports.template_report.comments_section") %></h2>
+  <div class="border rounded p-3 mb-2">
+    <div data-nested-form-target="container">
+      <% report.report_comments.each_with_index do |comment, index| %>
+        <% child_index = comment.persisted? ? comment.id : "new_#{index}" %>
+        <%= fields_for "report[report_comments_attributes][#{child_index}]", comment do |comment_form| %>
+          <%= render "report_comment_fields", f: comment_form %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <template data-nested-form-target="template">
+      <%= fields_for "report[report_comments_attributes][NEW_RECORD]", ReportComment.new do |comment_form| %>
+        <%= render "report_comment_fields", f: comment_form %>
+      <% end %>
+    </template>
+  </div>
+
+  <button type="button"
+          class="btn btn-sm btn-outline-primary"
+          data-action="nested-form#add">
+    <%= t("reports.template_report.add_comment") %>
+  </button>
+</div>

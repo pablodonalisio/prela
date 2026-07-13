@@ -98,6 +98,8 @@ es:
       report_task:
         name: "Tarea"
         completed: "Completada"
+      report_comment:
+        description: "Descripción"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
@@ -116,6 +118,7 @@ es:
       location_section: "Información de localización"
       measurements_section: "Estado de parámetros físicos y mediciones"
       tasks_section: "Protocolo de tareas y acciones realizadas"
+      comments_section: "Comentarios y recomendaciones técnicas"
       observations_section: "Observaciones y recomendaciones técnicas"
       images_section: "Imágenes"
       print_pdf: "Imprimir / Guardar PDF"
@@ -126,13 +129,17 @@ es:
       zone: "Sala"
       floor: "Piso"
       add_task: "Añadir tarea"
+      add_comment: "Añadir comentario"
       task_placeholder: "Descripción de la tarea"
+      comment_placeholder: "Descripción del comentario"
       task_completed: "OK / Ejecutado"
       task_pending: "Pendiente"
       table:
         parameter: "Parámetro registrado"
         value: "Valor obtenido"
         optimal: "Rangos normales"
+        number: "Nº"
+        description: "Descripción"
   errors:
     format: "%{attribute} %{message}"
     messages:

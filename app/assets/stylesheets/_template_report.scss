@@ -224,6 +224,13 @@
     white-space: nowrap;
   }
 
+  &__table-number {
+    width: 3.5rem;
+    text-align: center;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
   &__table-optimal {
     text-align: center;
     color: #475569;

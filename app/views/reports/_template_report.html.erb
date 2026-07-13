@@ -126,15 +126,30 @@
     </section>
   <% end %>
 
-  <% section_number += 1 %>
-  <section class="template-report__section">
-    <h2 class="template-report__section-title">
-      <%= format("%.1f", section_number) %> <%= t("reports.template_report.observations_section") %>
-    </h2>
-    <div class="template-report__observations">
-      <%= simple_format(report.observations) if report.observations.present? %>
-    </div>
-  </section>
+  <% if report.report_comments.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.comments_section") %>
+      </h2>
+      <table class="template-report__table">
+        <thead>
+          <tr>
+            <th class="template-report__table-number"><%= t("reports.template_report.table.number") %></th>
+            <th><%= t("reports.template_report.table.description") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% report.report_comments.each_with_index do |comment, index| %>
+            <tr>
+              <td class="template-report__table-number"><%= index + 1 %></td>
+              <td><%= simple_format(comment.description) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
 
   <% if report.images.attached? %>
     <% section_number += 1 %>
