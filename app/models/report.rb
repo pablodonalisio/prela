@@ -12,8 +12,13 @@ class Report < ApplicationRecord
   has_one :power_unit_report_stat, dependent: :destroy
   has_one :electrical_panel_report_stat, dependent: :destroy
   has_one :room_report_stat, dependent: :destroy
+  has_many :report_tasks, -> { order(:position) }, dependent: :destroy, inverse_of: :report
 
   accepts_nested_attributes_for :ups_report_stat, :power_unit_report_stat, :electrical_panel_report_stat, :room_report_stat
+  accepts_nested_attributes_for :report_tasks, allow_destroy: true, reject_if: :reject_blank_report_task
+
+  before_validation :seed_tasks_from_template, on: :create
+  before_validation :normalize_task_positions
 
   validates :date, presence: true
   validates :report_template, presence: true, if: :template_based?
@@ -29,7 +34,55 @@ class Report < ApplicationRecord
     field_values.fetch(section.to_s, {})
   end
 
+  def build_tasks_from_template!
+    return unless report_template
+
+    report_tasks.target.clear
+    template_tasks_for_seed.each do |template_task|
+      report_tasks.build(
+        name: template_task.name,
+        position: template_task.position,
+        completed: false
+      )
+    end
+  end
+
+  def report_tasks_attributes=(attributes)
+    @report_tasks_attributes_assigned = true
+    super
+  end
+
   private
+
+  def seed_tasks_from_template
+    return unless template_based?
+    return if @report_tasks_attributes_assigned
+    return if report_tasks.reject(&:marked_for_destruction?).any?
+    return if report_template.blank?
+
+    template_tasks_for_seed.each do |template_task|
+      report_tasks.build(
+        name: template_task.name,
+        position: template_task.position,
+        completed: false
+      )
+    end
+  end
+
+  def template_tasks_for_seed
+    report_template.report_template_tasks.reset
+    report_template.report_template_tasks.to_a
+  end
+
+  def normalize_task_positions
+    report_tasks.reject(&:marked_for_destruction?).each_with_index do |task, index|
+      task.position = index
+    end
+  end
+
+  def reject_blank_report_task(attributes)
+    attributes["name"].blank? && attributes["id"].blank?
+  end
 
   def report_template_must_exist
     return if ReportTemplate.exists?(report_template_id)

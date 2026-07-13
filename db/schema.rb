@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_26_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_13_125000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -292,6 +292,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_26_120000) do
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
   end
 
+  create_table "report_tasks", force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.string "name", null: false
+    t.boolean "completed", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id", "position"], name: "index_report_tasks_on_report_id_and_position"
+    t.index ["report_id"], name: "index_report_tasks_on_report_id"
+  end
+
+  create_table "report_template_tasks", force: :cascade do |t|
+    t.bigint "report_template_id", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_template_id", "position"], name: "index_report_template_tasks_on_report_template_id_and_position"
+    t.index ["report_template_id"], name: "index_report_template_tasks_on_report_template_id"
+  end
+
   create_table "report_templates", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "equipment_specifications", default: {}, null: false
@@ -390,6 +411,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_26_120000) do
   add_foreign_key "location_equipments_report_templates", "report_templates"
   add_foreign_key "locations", "clients"
   add_foreign_key "power_unit_report_stats", "reports"
+  add_foreign_key "report_tasks", "reports"
+  add_foreign_key "report_template_tasks", "report_templates"
   add_foreign_key "reports", "location_equipments"
   add_foreign_key "reports", "report_templates"
   add_foreign_key "room_report_stats", "reports"

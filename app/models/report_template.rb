@@ -11,8 +11,11 @@ class ReportTemplate < ApplicationRecord
 
   has_and_belongs_to_many :location_equipments
   has_many :reports, dependent: :restrict_with_error
+  has_many :report_template_tasks, -> { order(:position) }, dependent: :destroy, inverse_of: :report_template
 
-  before_validation :set_normalized_name, :normalize_field_positions
+  accepts_nested_attributes_for :report_template_tasks, allow_destroy: true, reject_if: :reject_blank_task
+
+  before_validation :set_normalized_name, :normalize_field_positions, :normalize_task_positions
 
   validates :name, presence: true
   validate :name_must_be_unique
@@ -69,5 +72,15 @@ class ReportTemplate < ApplicationRecord
         fields[key]["position"] = index
       end
     end
+  end
+
+  def normalize_task_positions
+    report_template_tasks.reject(&:marked_for_destruction?).each_with_index do |task, index|
+      task.position = index
+    end
+  end
+
+  def reject_blank_task(attributes)
+    attributes["name"].blank? && attributes["id"].blank?
   end
 end

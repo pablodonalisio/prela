@@ -86,11 +86,18 @@ es:
         optimal_value: "Valor óptimo"
         units: "Unidades"
         reorder_field: "Reordenar campo"
+        tasks: "Tareas"
+        add_task: "Añadir tarea"
         sections:
           equipment_specifications: "Especificaciones de equipo"
           location_specifications: "Especificaciones de ubicación"
           measurements: "Mediciones"
           room_specifications: "Especificaciones de sala"
+      report_template_task:
+        name: "Nombre de la tarea"
+      report_task:
+        name: "Tarea"
+        completed: "Completada"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
@@ -108,6 +115,7 @@ es:
       equipment_section: "Especificaciones del equipo"
       location_section: "Información de localización"
       measurements_section: "Estado de parámetros físicos y mediciones"
+      tasks_section: "Protocolo de tareas y acciones realizadas"
       observations_section: "Observaciones y recomendaciones técnicas"
       images_section: "Imágenes"
       print_pdf: "Imprimir / Guardar PDF"
@@ -117,6 +125,10 @@ es:
       location: "Ubicación"
       zone: "Sala"
       floor: "Piso"
+      add_task: "Añadir tarea"
+      task_placeholder: "Descripción de la tarea"
+      task_completed: "OK / Ejecutado"
+      task_pending: "Pendiente"
       table:
         parameter: "Parámetro registrado"
         value: "Valor obtenido"

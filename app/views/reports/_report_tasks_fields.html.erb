@@ -1,0 +1,26 @@
+<%# locals: (report:) %>
+<div class="mt-3" data-controller="nested-form">
+  <h2><%= t("reports.template_report.tasks_section") %></h2>
+  <div class="border rounded p-3 mb-2">
+    <div data-nested-form-target="container">
+      <% report.report_tasks.each_with_index do |task, index| %>
+        <% child_index = task.persisted? ? task.id : "new_#{index}" %>
+        <%= fields_for "report[report_tasks_attributes][#{child_index}]", task do |task_form| %>
+          <%= render "report_task_fields", f: task_form %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <template data-nested-form-target="template">
+      <%= fields_for "report[report_tasks_attributes][NEW_RECORD]", ReportTask.new do |task_form| %>
+        <%= render "report_task_fields", f: task_form %>
+      <% end %>
+    </template>
+  </div>
+
+  <button type="button"
+          class="btn btn-sm btn-outline-primary"
+          data-action="nested-form#add">
+    <%= t("reports.template_report.add_task") %>
+  </button>
+</div>

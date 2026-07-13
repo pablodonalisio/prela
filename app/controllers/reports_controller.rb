@@ -68,6 +68,7 @@ class ReportsController < ApplicationController
     @report_template = ReportTemplate.find(params[:report_template_id])
     @report = report_for_template_fields
     @report.report_template = @report_template
+    @report.build_tasks_from_template! if @report.new_record?
 
     render :template_fields, layout: false
   end
@@ -126,6 +127,9 @@ class ReportsController < ApplicationController
     @associated_templates = location_equipment.report_templates.order(:name)
     @all_templates = ReportTemplate.order(:name)
     @report.report_template ||= @associated_templates.first || @all_templates.first
+    return unless @report.new_record? && @report.report_template.present? && @report.report_tasks.empty?
+
+    @report.build_tasks_from_template!
   end
 
   def shared_report_params
@@ -143,6 +147,7 @@ class ReportsController < ApplicationController
         measurements: {},
         room_specifications: {}
       },
+      report_tasks_attributes: %i[id name completed position _destroy],
       images: []
     )
 

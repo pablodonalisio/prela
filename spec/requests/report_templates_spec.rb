@@ -4,7 +4,10 @@ RSpec.describe "/report_templates", type: :request do
   let(:valid_attributes) do
     {
       name: "Preventivo UPS",
-      measurements: {ReportTemplate.generate_field_key => {name: "Tensión L1", type: "float"}}
+      measurements: {ReportTemplate.generate_field_key => {name: "Tensión L1", type: "float"}},
+      report_template_tasks_attributes: {
+        "0" => {name: "Limpieza general", position: 0}
+      }
     }
   end
 
@@ -78,6 +81,13 @@ RSpec.describe "/report_templates", type: :request do
         expect {
           post report_templates_url, params: {report_template: valid_attributes}
         }.to change(ReportTemplate, :count).by(1)
+      end
+
+      it "creates nested template tasks" do
+        expect {
+          post report_templates_url, params: {report_template: valid_attributes}
+        }.to change(ReportTemplateTask, :count).by(1)
+        expect(ReportTemplate.last.report_template_tasks.first.name).to eq("Limpieza general")
       end
 
       it "redirects to the report templates list" do

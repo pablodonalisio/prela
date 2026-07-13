@@ -235,7 +235,7 @@ RSpec.describe "Reports", type: :request do
 
   context "template-based report" do
     let(:equipment_kind) { "ups" }
-    let(:report_template) { create(:report_template, :with_measurements) }
+    let(:report_template) { create(:report_template, :with_measurements, :with_tasks) }
     let(:template_params) do
       {
         report: {
@@ -264,6 +264,13 @@ RSpec.describe "Reports", type: :request do
         expect(response).to be_successful
         expect(response.body).to include("Tensión L1")
       end
+
+      it "preloads template tasks for a new report" do
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+        expect(response.body).to include("Limpieza general")
+        expect(response.body).to include("Verificación de torque")
+        expect(response.body).to include("Protocolo de tareas")
+      end
     end
 
     describe "POST /create" do
@@ -275,6 +282,13 @@ RSpec.describe "Reports", type: :request do
         expect { request }.to change(Report, :count).by(1)
         expect(Report.last.template_based?).to be true
         expect(Report.last.field_values.dig("measurements", "1739280000")).to eq("220.5")
+      end
+
+      it "seeds report tasks from the template" do
+        expect { request }.to change(ReportTask, :count).by(2)
+        expect(Report.last.report_tasks.order(:position).map(&:name)).to eq(
+          ["Limpieza general", "Verificación de torque"]
+        )
       end
 
       it "does not attach a PDF" do
@@ -294,7 +308,8 @@ RSpec.describe "Reports", type: :request do
     end
 
     describe "PATCH /update" do
-      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment) }
+      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment, report_template: report_template) }
+      let(:report_task) { template_report.report_tasks.find_by!(name: "Limpieza general") }
       let(:request) do
         patch location_equipment_report_path(location_equipment, template_report),
           params: {
@@ -304,6 +319,19 @@ RSpec.describe "Reports", type: :request do
               report_template_id: template_report.report_template_id,
               field_values: {
                 measurements: {"1739280000" => "230.0"}
+              },
+              report_tasks_attributes: {
+                report_task.id.to_s => {
+                  id: report_task.id,
+                  name: "Limpieza general",
+                  completed: "1",
+                  position: 0
+                },
+                "1739289999" => {
+                  name: "Tarea adicional",
+                  completed: "0",
+                  position: 1
+                }
               }
             }
           }
@@ -316,6 +344,15 @@ RSpec.describe "Reports", type: :request do
         expect(template_report.field_values.dig("measurements", "1739280000")).to eq("230.0")
       end
 
+      it "updates and adds report tasks" do
+        existing_ids = template_report.report_tasks.pluck(:id)
+        request
+        template_report.reload
+        expect(report_task.reload).to be_completed
+        expect(template_report.report_tasks.map(&:name)).to include("Tarea adicional")
+        expect(template_report.report_tasks.where.not(id: existing_ids).pluck(:name)).to eq(["Tarea adicional"])
+      end
+
       it "does not attach a PDF" do
         request
         expect(template_report.reload.pdf).not_to be_attached
@@ -323,7 +360,11 @@ RSpec.describe "Reports", type: :request do
     end
 
     describe "GET /show" do
-      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment) }
+      let(:template_report) do
+        create(:report, :template_based, location_equipment: location_equipment, report_template: report_template).tap do |report|
+          report.report_tasks.find_by!(name: "Limpieza general").update!(completed: true)
+        end
+      end
 
       it "returns a successful response" do
         get location_equipment_report_path(location_equipment, template_report)
@@ -347,6 +388,15 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Parámetro registrado")
         expect(response.body).to include("Imprimir / Guardar PDF")
         expect(response.body).to include("Some observation")
+      end
+
+      it "renders the tasks checklist" do
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).to include("Protocolo de tareas y acciones realizadas")
+        expect(response.body).to include("Limpieza general")
+        expect(response.body).to include("Verificación de torque")
+        expect(response.body).to include("OK / Ejecutado")
+        expect(response.body).to include("Pendiente")
       end
     end
 

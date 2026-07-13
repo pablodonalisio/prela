@@ -76,7 +76,8 @@ class ReportTemplatesController < ApplicationController
       equipment_specifications: {},
       location_specifications: {},
       measurements: {},
-      room_specifications: {}
+      room_specifications: {},
+      report_template_tasks_attributes: %i[id name position _destroy]
     )
 
     ReportTemplate::SECTIONS.each do |section|

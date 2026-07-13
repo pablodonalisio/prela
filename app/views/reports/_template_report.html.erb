@@ -95,6 +95,26 @@
     </section>
   <% end %>
 
+  <% if report.report_tasks.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.tasks_section") %>
+      </h2>
+      <ul class="template-report__tasks">
+        <% report.report_tasks.each_with_index do |task, index| %>
+          <li class="template-report__task">
+            <span class="template-report__task-index">[<%= format("%02d", index + 1) %>]</span>
+            <span class="template-report__task-name"><%= task.name %></span>
+            <span class="template-report__task-status <%= task.completed? ? "template-report__task-status--done" : "template-report__task-status--pending" %>">
+              <%= task.completed? ? t("reports.template_report.task_completed") : t("reports.template_report.task_pending") %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
   <% if room_rows.any? %>
     <% section_number += 1 %>
     <section class="template-report__section">

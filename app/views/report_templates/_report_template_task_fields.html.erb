@@ -1,0 +1,23 @@
+<%# locals: (f:) %>
+<div class="field-row mb-3 d-flex gap-2 align-items-end flex-wrap" data-nested-form-target="item">
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :position %>
+  <%= f.hidden_field :_destroy, value: "0" %>
+
+  <div class="flex-grow-1" style="min-width: 12rem;">
+    <%= f.input :name,
+                label: t("activerecord.attributes.report_template_task.name"),
+                label_html: {class: "form-label-sm"},
+                input_html: {class: "form-control"},
+                wrapper: false,
+                placeholder: "ej: Limpieza general" %>
+  </div>
+
+  <div class="align-self-end">
+    <button type="button"
+            class="btn btn-sm btn-outline-danger"
+            data-action="nested-form#remove">
+      X
+    </button>
+  </div>
+</div>
