@@ -121,6 +121,7 @@ es:
       comments_section: "Comentarios y recomendaciones técnicas"
       observations_section: "Observaciones y recomendaciones técnicas"
       maintenance_section: "Mantenimiento preventivo"
+      activities_section: "Últimas actividades"
       images_section: "Imágenes"
       print_pdf: "Imprimir / Guardar PDF"
       serial_number: "Número de serie"
@@ -145,6 +146,8 @@ es:
         last: "Último"
         next: "Próximo"
         overdue: "Vencido"
+        kind: "Tipo"
+        date: "Fecha"
   errors:
     format: "%{attribute} %{message}"
     messages:

@@ -58,6 +58,16 @@ module ReportsHelper
     end
   end
 
+  def template_report_activity_rows(report)
+    report.location_equipment.activities.order(date: :desc).limit(5).map do |activity|
+      {
+        description: activity.description,
+        kind: activity.kind,
+        date: activity.date.strftime("%d/%m/%Y")
+      }
+    end
+  end
+
   private
 
   def maintenance_service_name(kind)
