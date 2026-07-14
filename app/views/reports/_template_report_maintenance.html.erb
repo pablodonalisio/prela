@@ -1,0 +1,21 @@
+<%# locals: (rows:) %>
+<table class="template-report__table">
+  <thead>
+    <tr>
+      <th><%= t("reports.template_report.table.service") %></th>
+      <th><%= t("reports.template_report.table.last") %></th>
+      <th><%= t("reports.template_report.table.next") %></th>
+      <th><%= t("reports.template_report.table.overdue") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% rows.each do |row| %>
+      <tr>
+        <td><%= row[:name] %></td>
+        <td class="template-report__table-value"><%= row[:last_date] %></td>
+        <td class="template-report__table-value"><%= row[:next_date] %></td>
+        <td class="template-report__table-value"><%= row[:overdue] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

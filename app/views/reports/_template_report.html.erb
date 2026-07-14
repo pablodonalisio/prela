@@ -4,6 +4,7 @@
 <% location_spec_rows = template_report_location_specification_rows(report) %>
 <% measurement_rows = template_report_measurement_rows(report) %>
 <% room_rows = template_report_room_rows(report) %>
+<% maintenance_rows = template_report_maintenance_rows(report) %>
 <% section_number = 0 %>
 
 <article class="template-report">
@@ -148,6 +149,16 @@
           <% end %>
         </tbody>
       </table>
+    </section>
+  <% end %>
+
+  <% if maintenance_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.maintenance_section") %>
+      </h2>
+      <%= render "template_report_maintenance", rows: maintenance_rows %>
     </section>
   <% end %>
 

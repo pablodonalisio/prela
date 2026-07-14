@@ -40,7 +40,43 @@ module ReportsHelper
     template_report_card_rows(report, "room_specifications")
   end
 
+  def template_report_maintenance_rows(report)
+    location_equipment = report.location_equipment
+    next_dates = location_equipment.next_service_dates.index_by(&:kind)
+
+    location_equipment.service_kinds.map do |kind|
+      last_date = location_equipment.last_service_date(:"last_#{kind}")
+      next_date = next_dates[kind.to_s]&.date
+      next_date = next_date&.to_date if next_date.present?
+
+      {
+        name: maintenance_service_name(kind),
+        last_date: format_maintenance_date(last_date),
+        next_date: format_maintenance_date(next_date),
+        overdue: maintenance_overdue_label(next_date)
+      }
+    end
+  end
+
   private
+
+  def maintenance_service_name(kind)
+    LocationEquipment.human_attribute_name("next_#{kind}")
+      .sub(/\APróxim[oa]\s+/i, "")
+      .sub(/\A./, &:upcase)
+  end
+
+  def format_maintenance_date(date)
+    return "—" if date.blank?
+
+    I18n.l(date, format: "%B %Y")
+  end
+
+  def maintenance_overdue_label(date)
+    return "—" if date.blank?
+
+    date < Date.current ? "Sí" : "No"
+  end
 
   def template_report_card_rows(report, section)
     template = report.report_template

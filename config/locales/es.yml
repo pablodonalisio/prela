@@ -120,6 +120,7 @@ es:
       tasks_section: "Protocolo de tareas y acciones realizadas"
       comments_section: "Comentarios y recomendaciones técnicas"
       observations_section: "Observaciones y recomendaciones técnicas"
+      maintenance_section: "Mantenimiento preventivo"
       images_section: "Imágenes"
       print_pdf: "Imprimir / Guardar PDF"
       serial_number: "Número de serie"
@@ -140,6 +141,10 @@ es:
         optimal: "Rangos normales"
         number: "Nº"
         description: "Descripción"
+        service: "Servicio"
+        last: "Último"
+        next: "Próximo"
+        overdue: "Vencido"
   errors:
     format: "%{attribute} %{message}"
     messages:
