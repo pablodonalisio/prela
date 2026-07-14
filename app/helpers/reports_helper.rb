@@ -28,8 +28,22 @@ module ReportsHelper
     rows + template_report_dynamic_rows(report, "equipment_specifications")
   end
 
-  def template_report_location_specification_rows(report)
-    template_report_dynamic_rows(report, "location_specifications")
+  def template_report_location_rows(report)
+    location_equipment = report.location_equipment
+
+    rows = [
+      {label: t("reports.template_report.location"), value: location_equipment.location.name},
+      {
+        label: t("reports.template_report.zone"),
+        value: location_equipment.zone.presence || "—"
+      },
+      {
+        label: t("reports.template_report.floor"),
+        value: location_equipment.floor.present? ? humanize_floor(location_equipment.floor) : "—"
+      }
+    ]
+
+    rows + template_report_dynamic_rows(report, "location_specifications")
   end
 
   def template_report_measurement_rows(report)

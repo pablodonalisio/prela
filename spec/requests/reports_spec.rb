@@ -408,6 +408,7 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("1.0 Especificaciones del equipo")
         expect(response.body).to include(equipment.name)
         expect(response.body).to include(equipment.brand)
+        expect(response.body).to include("2.0 Información de localización")
         expect(response.body).to include(location_equipment.location.name)
         expect(response.body).to include("Estado de parámetros físicos y mediciones")
         expect(response.body).to include("Tensión L1")
