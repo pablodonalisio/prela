@@ -72,6 +72,17 @@
     </section>
   <% end %>
 
+  <% if room_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %>
+        <%= t("activerecord.attributes.report_template.sections.room_specifications") %>
+      </h2>
+      <%= render "template_report_cards", items: room_rows %>
+    </section>
+  <% end %>
+
   <% if report.report_tasks.any? %>
     <% section_number += 1 %>
     <section class="template-report__section">
@@ -89,17 +100,6 @@
           </li>
         <% end %>
       </ul>
-    </section>
-  <% end %>
-
-  <% if room_rows.any? %>
-    <% section_number += 1 %>
-    <section class="template-report__section">
-      <h2 class="template-report__section-title">
-        <%= format("%.1f", section_number) %>
-        <%= t("activerecord.attributes.report_template.sections.room_specifications") %>
-      </h2>
-      <%= render "template_report_cards", items: room_rows %>
     </section>
   <% end %>
 
