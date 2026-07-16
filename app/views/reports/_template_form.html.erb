@@ -57,3 +57,25 @@
 <% end %>
 
 <%= render "report_images", report: report, f: f %>
+
+<% selectable_signatures = Signature.kept.order(:name).to_a %>
+<% if report.persisted? %>
+  <% selectable_signatures |= report.signatures.merge(Signature.discarded).order(:name).to_a %>
+<% end %>
+<% if selectable_signatures.any? %>
+  <h2><%= t("reports.template_report.signatures_section") %></h2>
+  <div class="mb-3">
+    <%= f.collection_check_boxes :signature_ids, selectable_signatures, :id, :name do |b| %>
+      <div class="form-check">
+        <%= b.check_box class: "form-check-input" %>
+        <%= b.label class: "form-check-label" do %>
+          <%= b.text %>
+          <span class="text-muted">— <%= b.object.title %></span>
+          <% if b.object.discarded? %>
+            <span class="text-warning">(eliminada del catálogo)</span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

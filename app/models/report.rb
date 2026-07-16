@@ -14,6 +14,7 @@ class Report < ApplicationRecord
   has_one :room_report_stat, dependent: :destroy
   has_many :report_tasks, -> { order(:position) }, dependent: :destroy, inverse_of: :report
   has_many :report_comments, -> { order(:position) }, dependent: :destroy, inverse_of: :report
+  has_and_belongs_to_many :signatures
 
   accepts_nested_attributes_for :ups_report_stat, :power_unit_report_stat, :electrical_panel_report_stat, :room_report_stat
   accepts_nested_attributes_for :report_tasks, allow_destroy: true, reject_if: :reject_blank_report_task

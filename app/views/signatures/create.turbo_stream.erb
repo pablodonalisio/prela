@@ -1,0 +1,8 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash" %>
+<% end %>
+
+<%= turbo_stream.prepend "signatures" do %>
+  <%= render "signature_table_row", signature: @signature %>
+<% end %>
+<%= turbo_stream.remove "empty_signatures" %>

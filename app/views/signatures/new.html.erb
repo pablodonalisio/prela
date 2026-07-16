@@ -1,0 +1,7 @@
+<h1>Nueva Firma</h1>
+
+<%= turbo_frame_tag @signature do %>
+  <%= render "shared/remote_modal", title: "Nueva Firma" do %>
+    <%= render "form", signature: @signature %>
+  <% end %>
+<% end %>

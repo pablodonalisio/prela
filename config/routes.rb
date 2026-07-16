@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   resources :batteries, except: %i[index]
   resources :supplies, only: [:index]
   resources :users
+  resources :signatures, except: %i[show]
   resources :links, only: [:new, :create, :edit, :update, :destroy]
   resources :service_dates, only: %i[edit update show]
   resources :equipment_kinds do

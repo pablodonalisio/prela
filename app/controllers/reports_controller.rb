@@ -152,7 +152,8 @@ class ReportsController < ApplicationController
       },
       report_tasks_attributes: %i[id name completed position _destroy],
       report_comments_attributes: %i[id description position _destroy],
-      images: []
+      images: [],
+      signature_ids: []
     )
 
     ReportTemplate::SECTIONS.each do |section|
@@ -160,7 +161,20 @@ class ReportsController < ApplicationController
       permitted[:field_values][section] ||= {}
     end
 
+    permitted[:signature_ids] = merge_signature_ids(permitted[:signature_ids])
     permitted
+  end
+
+  def merge_signature_ids(submitted_ids)
+    submitted_ids = Array(submitted_ids).reject(&:blank?).map(&:to_i)
+    kept_ids = Signature.kept.where(id: submitted_ids).pluck(:id)
+    linked_discarded_ids = if @report&.persisted?
+      @report.signatures.merge(Signature.discarded).pluck("signatures.id")
+    else
+      []
+    end
+
+    (kept_ids + (linked_discarded_ids & submitted_ids)).uniq
   end
 
   def legacy_report_params

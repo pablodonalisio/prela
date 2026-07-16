@@ -1,0 +1,19 @@
+<%= content_tag :tr, id: dom_id(signature) do %>
+  <td>
+    <% if signature.image.attached? %>
+      <%= image_tag signature.image.variant(resize_to_limit: [80, 40]),
+                    alt: signature.name,
+                    class: "img-fluid" %>
+    <% end %>
+  </td>
+  <td><%= signature.name %></td>
+  <td><%= signature.title %></td>
+  <td class="d-flex justify-content-start align-items-center">
+    <%= link_to edit_signature_path(signature), class: "ms-2", data: { turbo_frame: "remote_modal" } do %>
+      <i class="fas fa-edit"></i>
+    <% end %>
+    <%= button_to signature_path(signature), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: { turbo_confirm: "¿Estas seguro?" } } do %>
+      <i class="fas fa-trash text-danger"></i>
+    <% end %>
+  </td>
+<% end %>

@@ -163,4 +163,10 @@
       </div>
     </section>
   <% end %>
+
+  <% if report.signatures.any? %>
+    <div class="template-report__signatures-footer">
+      <%= render "template_report_signatures", signatures: report.signatures.order(:name) %>
+    </div>
+  <% end %>
 </article>

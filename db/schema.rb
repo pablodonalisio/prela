@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_13_163000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_15_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -347,6 +347,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_163000) do
     t.index ["report_template_id"], name: "index_reports_on_report_template_id"
   end
 
+  create_table "reports_signatures", id: false, force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.bigint "signature_id", null: false
+    t.index ["report_id", "signature_id"], name: "index_reports_signatures_uniqueness", unique: true
+    t.index ["report_id"], name: "index_reports_signatures_on_report_id"
+    t.index ["signature_id"], name: "index_reports_signatures_on_signature_id"
+  end
+
   create_table "room_report_stats", force: :cascade do |t|
     t.bigint "report_id", null: false
     t.string "room_status"
@@ -371,6 +379,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_163000) do
     t.datetime "updated_at", null: false
     t.index ["activity_id"], name: "index_service_dates_on_activity_id"
     t.index ["location_equipment_id"], name: "index_service_dates_on_location_equipment_id"
+  end
+
+  create_table "signatures", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "title", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_signatures_on_discarded_at"
   end
 
   create_table "ups_report_stats", force: :cascade do |t|
@@ -426,6 +443,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_163000) do
   add_foreign_key "report_template_tasks", "report_templates"
   add_foreign_key "reports", "location_equipments"
   add_foreign_key "reports", "report_templates"
+  add_foreign_key "reports_signatures", "reports"
+  add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
   add_foreign_key "service_dates", "activities"
   add_foreign_key "service_dates", "location_equipments"

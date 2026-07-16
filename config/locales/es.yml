@@ -2,6 +2,10 @@
 
 es:
   activerecord:
+    models:
+      signature:
+        one: "Firma"
+        other: "Firmas"
     attributes:
       client:
         name: "Nombre"
@@ -100,6 +104,10 @@ es:
         completed: "Completada"
       report_comment:
         description: "Descripción"
+      signature:
+        name: "Nombre"
+        title: "Cargo"
+        image: "Imagen"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
@@ -123,6 +131,7 @@ es:
       maintenance_section: "Mantenimiento preventivo"
       activities_section: "Últimas actividades"
       images_section: "Imágenes"
+      signatures_section: "Firmas"
       print_pdf: "Imprimir / Guardar PDF"
       serial_number: "Número de serie"
       equipment_kind: "Tipo de equipo"

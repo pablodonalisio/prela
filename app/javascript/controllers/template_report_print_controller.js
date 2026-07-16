@@ -52,10 +52,28 @@ export default class extends Controller {
     const rootFontSize = window.getComputedStyle(document.documentElement).fontSize;
 
     const printStyles = `
-      @page { size: A4; margin: 10mm; }
+      @page {
+        size: A4;
+        margin: 10mm 10mm 15mm;
+        @bottom-center {
+          content: "Página " counter(page) " de " counter(pages);
+          font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+          font-size: 9pt;
+          color: #707070;
+        }
+      }
       html { font-size: ${rootFontSize}; }
       @media print {
-        @page { size: A4; margin: 10mm; }
+        @page {
+          size: A4;
+          margin: 10mm 10mm 15mm;
+          @bottom-center {
+            content: "Página " counter(page) " de " counter(pages);
+            font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 9pt;
+            color: #707070;
+          }
+        }
         html, body { margin: 0; padding: 0; }
         .template-report {
           width: 100% !important;

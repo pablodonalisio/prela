@@ -1,0 +1,13 @@
+<div class="template-report__signatures">
+  <% signatures.each do |signature| %>
+    <div class="template-report__signature">
+      <% if signature.image.attached? %>
+        <%= image_tag signature.image.variant(resize_to_limit: [220, 100]),
+                      alt: signature.name,
+                      class: "template-report__signature-image" %>
+      <% end %>
+      <div class="template-report__signature-name"><%= signature.name %></div>
+      <div class="template-report__signature-title"><%= signature.title %></div>
+    </div>
+  <% end %>
+</div>
