@@ -24,15 +24,28 @@ class Report < ApplicationRecord
   before_validation :seed_comments_from_previous_report, on: :create
   before_validation :normalize_task_positions
   before_validation :normalize_comment_positions
+  before_create :assign_number, if: :template_based?
 
   validates :date, presence: true
   validates :report_template, presence: true, if: :template_based?
   validate :report_template_must_exist, if: :template_based?
   validate :validate_field_values_match_template, if: :template_based?
   validate :images_count_within_limit
+  validate :number_unique_for_equipment_and_year, if: -> { number.present? && date.present? }
 
   def template_based?
     report_template_id.present?
+  end
+
+  def report_code
+    return unless template_based? && number.present? && date.present?
+
+    [
+      format("C%03d", location_equipment.client.id),
+      format("A%04d", location_equipment.id),
+      date.strftime("%y"),
+      format("%03d", number)
+    ].join("-")
   end
 
   def field_values_for(section)
@@ -73,6 +86,26 @@ class Report < ApplicationRecord
   end
 
   private
+
+  def assign_number
+    return if number.present? || date.blank? || location_equipment.blank?
+
+    self.number = next_number_for_equipment_year
+  end
+
+  def next_number_for_equipment_year
+    year_scope = location_equipment.reports.where.not(number: nil).where(date: date.beginning_of_year..date.end_of_year)
+    (year_scope.maximum(:number) || 0) + 1
+  end
+
+  def number_unique_for_equipment_and_year
+    scope = self.class.where(location_equipment_id: location_equipment_id, number: number)
+      .where(date: date.beginning_of_year..date.end_of_year)
+    scope = scope.where.not(id: id) if persisted?
+    return unless scope.exists?
+
+    errors.add(:number, :taken)
+  end
 
   def seed_tasks_from_template
     return unless template_based?

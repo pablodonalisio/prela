@@ -122,6 +122,7 @@ es:
       service_date: "Fecha y hora"
       service_type: "Tipo de servicio"
       service_type_preventive: "Preventivo"
+      report_code: "Código de Informe"
       equipment_section: "Especificaciones del equipo"
       location_section: "Información de localización"
       measurements_section: "Estado de parámetros físicos y mediciones"

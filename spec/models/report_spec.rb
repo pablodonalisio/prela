@@ -46,4 +46,45 @@ RSpec.describe Report, type: :model do
       expect(report.errors[:images]).to be_present
     end
   end
+
+  describe "report number and report_code" do
+    let(:location_equipment) { create(:location_equipment) }
+
+    it "assigns increasing numbers per equipment within the same year" do
+      first = create(:report, :template_based, location_equipment: location_equipment, date: Time.zone.local(2026, 3, 1))
+      second = create(:report, :template_based, location_equipment: location_equipment, date: Time.zone.local(2026, 8, 15))
+
+      expect(first.number).to eq(1)
+      expect(second.number).to eq(2)
+    end
+
+    it "resets the number for a new year on the same equipment" do
+      create(:report, :template_based, location_equipment: location_equipment, date: Time.zone.local(2025, 6, 1))
+      create(:report, :template_based, location_equipment: location_equipment, date: Time.zone.local(2025, 11, 1))
+      next_year = create(:report, :template_based, location_equipment: location_equipment, date: Time.zone.local(2026, 1, 10))
+
+      expect(next_year.number).to eq(1)
+    end
+
+    it "does not assign a number to legacy reports" do
+      report = create(:report, location_equipment: location_equipment)
+
+      expect(report.number).to be_nil
+      expect(report.report_code).to be_nil
+    end
+
+    it "builds report_code with C/A prefixes and zero-padded segments" do
+      report = create(
+        :report,
+        :template_based,
+        location_equipment: location_equipment,
+        date: Time.zone.local(2026, 7, 21)
+      )
+      client = location_equipment.client
+
+      expect(report.report_code).to eq(
+        format("C%03d-A%04d-26-%03d", client.id, location_equipment.id, report.number)
+      )
+    end
+  end
 end

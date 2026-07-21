@@ -14,8 +14,12 @@
       <div class="template-report__header-cell template-report__header-cell--logo">
         <%= image_tag "prela_logotipo-1.png", alt: "Prela", class: "template-report__logo" %>
       </div>
-      <div class="template-report__header-cell template-report__header-cell--title template-report__header-cell--span-3">
+      <div class="template-report__header-cell template-report__header-cell--title template-report__header-cell--span-2">
         <h1 class="template-report__title"><%= t("reports.template_report.title") %></h1>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.report_code") %></span>
+        <span class="template-report__meta-value"><%= report.report_code %></span>
       </div>
     </div>
 
