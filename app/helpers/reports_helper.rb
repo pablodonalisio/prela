@@ -21,11 +21,14 @@ module ReportsHelper
     if location_equipment.serial_number.present?
       rows << {label: t("reports.template_report.serial_number"), value: location_equipment.serial_number}
     end
+
+    rows += template_report_dynamic_rows(report, "equipment_specifications")
+
     if location_equipment.condition.present?
       rows << {label: t("reports.template_report.condition"), value: location_equipment.condition}
     end
 
-    rows + template_report_dynamic_rows(report, "equipment_specifications")
+    rows
   end
 
   def template_report_location_rows(report)
