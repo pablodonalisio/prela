@@ -26,7 +26,7 @@
     <div class="template-report__header-row">
       <div class="template-report__header-cell template-report__header-cell--logo">
         <% if client.avatar.attached? %>
-          <%= image_tag client.avatar.variant(resize_to_limit: [160, 80]),
+          <%= image_tag client.avatar.variant(resize_to_limit: [280, 140]),
                         alt: client.name,
                         class: "template-report__logo template-report__logo--client" %>
         <% end %>
