@@ -169,8 +169,12 @@
   <% end %>
 
   <% if report.signatures.any? %>
-    <div class="template-report__signatures-footer">
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.signatures_section") %>
+      </h2>
       <%= render "template_report_signatures", signatures: report.signatures.order(:name) %>
-    </div>
+    </section>
   <% end %>
 </article>
