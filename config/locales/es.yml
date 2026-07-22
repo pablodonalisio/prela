@@ -149,7 +149,7 @@ es:
       table:
         parameter: "Parámetro registrado"
         value: "Valor obtenido"
-        optimal: "Rangos normales"
+        optimal: "Valores normales"
         number: "Nº"
         description: "Descripción"
         service: "Servicio"

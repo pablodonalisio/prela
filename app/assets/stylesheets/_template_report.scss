@@ -215,6 +215,18 @@
 
     tbody td {
       color: var(--tr-text);
+
+      &.template-report__table-value--ok {
+        color: #15803d;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      &.template-report__table-value--not-ok {
+        color: #b91c1c;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
     }
   }
 

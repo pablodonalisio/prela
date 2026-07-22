@@ -12,9 +12,12 @@
   </thead>
   <tbody>
     <% items.each do |item| %>
+      <% value_classes = ["template-report__table-value"] %>
+      <% value_classes << "template-report__table-value--ok" if item[:status] == :ok %>
+      <% value_classes << "template-report__table-value--not-ok" if item[:status] == :not_ok %>
       <tr>
         <td><%= item[:name] %></td>
-        <td class="template-report__table-value"><%= item[:value] %></td>
+        <td class="<%= value_classes.join(" ") %>"><%= item[:value] %></td>
         <% if show_optimal %>
           <td class="template-report__table-optimal">
             <% if item[:optimal].present? %>

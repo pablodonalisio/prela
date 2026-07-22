@@ -110,11 +110,17 @@ module ReportsHelper
     values = report.field_values_for(section)
 
     template.fields_for(section).map do |field_key, definition|
+      measured_value = values[field_key]
       {
         name: definition["name"],
-        value: format_report_field_value(definition["type"], values[field_key], units: definition["units"]),
+        value: format_report_field_value(definition["type"], measured_value, units: definition["units"]),
         optimal: definition["optimal_value"],
-        units: definition["units"]
+        units: definition["units"],
+        status: Reports::OptimalValueStatus.call(
+          type: definition["type"],
+          measured_value: measured_value,
+          optimal_value: definition["optimal_value"]
+        )
       }
     end
   end

@@ -71,6 +71,14 @@ RSpec.describe ReportTemplate, type: :model do
     expect(report_template).to be_valid
   end
 
+  it "is valid with a range optimal value on numeric measurements" do
+    report_template = ReportTemplate.new(
+      name: "Preventivo UPS",
+      measurements: {"1739280000" => {name: "Tensión L1", type: "float", optimal_value: "220-240", units: "V"}}
+    )
+    expect(report_template).to be_valid
+  end
+
   it "is valid without optimal value and units on measurements" do
     report_template = ReportTemplate.new(
       name: "Preventivo UPS",
@@ -79,12 +87,21 @@ RSpec.describe ReportTemplate, type: :model do
     expect(report_template).to be_valid
   end
 
-  it "accepts any text for optimal value and units on measurements" do
+  it "allows free-text optimal values on non-numeric measurement fields" do
     report_template = ReportTemplate.new(
       name: "Preventivo UPS",
-      measurements: {"1739280000" => {name: "Estado", type: "string", optimal_value: "220 ± 5%", units: "V AC"}}
+      measurements: {"1739280000" => {name: "Estado", type: "string", optimal_value: "Normal", units: nil}}
     )
     expect(report_template).to be_valid
+  end
+
+  it "rejects invalid optimal values on numeric measurement fields" do
+    report_template = ReportTemplate.new(
+      name: "Preventivo UPS",
+      measurements: {"1739280000" => {name: "Tensión L1", type: "float", optimal_value: "220 ± 5%", units: "V"}}
+    )
+    expect(report_template).not_to be_valid
+    expect(report_template.errors[:measurements].first).to include("valor óptimo")
   end
 
   describe "#fields_for" do

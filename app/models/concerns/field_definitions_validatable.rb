@@ -2,6 +2,7 @@ module FieldDefinitionsValidatable
   extend ActiveSupport::Concern
 
   FIELD_TYPES = %w[string integer float date boolean].freeze
+  NUMERIC_FIELD_TYPES = %w[integer float].freeze
 
   class_methods do
     def generate_field_key
@@ -28,6 +29,9 @@ module FieldDefinitionsValidatable
       elsif !FIELD_TYPES.include?(value["type"])
         errors.add(attribute, "El tipo de campo #{value["type"]} no es válido.")
         break
+      elsif invalid_optimal_value?(value)
+        errors.add(attribute, "El valor óptimo '#{value["optimal_value"]}' no es válido. Usá un número (ej: 220) o un rango (ej: 220-240).")
+        break
       else
         normalized = self.class.normalize_name(value["name"])
         if normalized_names[normalized]
@@ -38,5 +42,12 @@ module FieldDefinitionsValidatable
         normalized_names[normalized] = true
       end
     end
+  end
+
+  def invalid_optimal_value?(value)
+    return false if value["optimal_value"].blank?
+    return false unless NUMERIC_FIELD_TYPES.include?(value["type"])
+
+    !Reports::OptimalValueStatus.valid_format?(value["optimal_value"])
   end
 end
