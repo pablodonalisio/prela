@@ -133,6 +133,7 @@ es:
       activities_section: "Últimas actividades"
       images_section: "Imágenes"
       signatures_section: "Firmas"
+      footer_report_label: "Informe"
       print_pdf: "Imprimir / Guardar PDF"
       serial_number: "Número de serie"
       equipment_kind: "Tipo de equipo"

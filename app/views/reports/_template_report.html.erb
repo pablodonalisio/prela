@@ -8,7 +8,9 @@
 <% activity_rows = template_report_activity_rows(report) %>
 <% section_number = 0 %>
 
-<article class="template-report">
+<article class="template-report"
+         data-report-code="<%= report.report_code %>"
+         data-report-footer-label="<%= t("reports.template_report.footer_report_label") %>">
   <header class="template-report__header">
     <div class="template-report__header-row">
       <div class="template-report__header-cell template-report__header-cell--logo">
