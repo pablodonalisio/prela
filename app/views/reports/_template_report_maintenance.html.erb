@@ -10,11 +10,15 @@
   </thead>
   <tbody>
     <% rows.each do |row| %>
+      <% overdue_classes = ["template-report__table-value"] %>
+      <% overdue_classes << "template-report__table-value--ok" if row[:status] == :ok %>
+      <% overdue_classes << "template-report__table-value--warning" if row[:status] == :warning %>
+      <% overdue_classes << "template-report__table-value--not-ok" if row[:status] == :not_ok %>
       <tr>
         <td><%= row[:name] %></td>
         <td class="template-report__table-value"><%= row[:last_date] %></td>
         <td class="template-report__table-value"><%= row[:next_date] %></td>
-        <td class="template-report__table-value"><%= row[:overdue] %></td>
+        <td class="<%= overdue_classes.join(" ") %>"><%= row[:overdue] %></td>
       </tr>
     <% end %>
   </tbody>

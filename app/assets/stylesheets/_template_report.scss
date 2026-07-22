@@ -222,6 +222,12 @@
         -webkit-print-color-adjust: exact;
       }
 
+      &.template-report__table-value--warning {
+        color: #b45309;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
       &.template-report__table-value--not-ok {
         color: #b91c1c;
         print-color-adjust: exact;

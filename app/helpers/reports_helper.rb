@@ -70,7 +70,8 @@ module ReportsHelper
         name: maintenance_service_name(kind),
         last_date: format_maintenance_date(last_date),
         next_date: format_maintenance_date(next_date),
-        overdue: maintenance_overdue_label(next_date)
+        overdue: maintenance_overdue_label(next_date),
+        status: maintenance_overdue_status(next_date)
       }
     end
   end
@@ -103,6 +104,18 @@ module ReportsHelper
     return "—" if date.blank?
 
     date < Date.current ? "Sí" : "No"
+  end
+
+  def maintenance_overdue_status(date)
+    return if date.blank?
+
+    if date < Date.current
+      :not_ok
+    elsif date < Date.today.months_since(3)
+      :warning
+    else
+      :ok
+    end
   end
 
   def template_report_card_rows(report, section)
