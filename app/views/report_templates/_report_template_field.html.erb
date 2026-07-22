@@ -1,4 +1,4 @@
-<% measurement_field = section == "measurements" %>
+<% optimal_fields_section = %w[measurements room_specifications].include?(section) %>
 <%= turbo_frame_tag "field_#{field_key}", data: { sortable_fields_target: "item" } do %>
   <div class="field-row mb-3 d-flex gap-2 align-items-start flex-wrap">
     <button type="button"
@@ -35,7 +35,7 @@
         <% end %>
       </select>
     </div>
-    <% if measurement_field %>
+    <% if optimal_fields_section %>
       <div style="min-width: 8rem;">
         <label class="form-label form-label-sm"><%= t("activerecord.attributes.report_template.optimal_value") %></label>
         <input type="text"
