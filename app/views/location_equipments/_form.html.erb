@@ -63,6 +63,15 @@
         <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-primary" %>.
       </p>
 
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <%= f.input :serial_number, wrapper_html: { class: "mb-3" } %>
+        </div>
+        <div class="col-sm-6">
+          <%= f.input :code, wrapper_html: { class: "mb-3" } %>
+        </div>
+      </div>
+
       <%= turbo_frame_tag "le_field_inputs",
             src: location_equipment.persisted? ?
               field_inputs_location_equipments_path(

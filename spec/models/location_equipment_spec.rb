@@ -173,15 +173,18 @@ RSpec.describe LocationEquipment, type: :model do
     end
   end
 
-  context "field_values" do
-    it "stores field values keyed by equipment kind field keys" do
-      location_equipment = create(:location_equipment)
-      expect(location_equipment.field_values["serial_number"]).to eq(location_equipment.serial_number)
+  context "model attributes" do
+    it "stores serial_number and code as columns" do
+      location_equipment = create(:location_equipment, serial_number: "SN-123", code: "ABC-123")
+      expect(location_equipment.serial_number).to eq("SN-123")
+      expect(location_equipment.code).to eq("ABC-123")
     end
+  end
 
+  context "field_values" do
     it "can store arbitrary key/value pairs" do
-      location_equipment = build(:location_equipment, field_values: {"code" => "ABC-123", "battery_change_interval" => 2})
-      expect(location_equipment.field_values["code"]).to eq("ABC-123")
+      location_equipment = build(:location_equipment, field_values: {"form_link" => "https://example.com", "battery_change_interval" => 2})
+      expect(location_equipment.field_values["form_link"]).to eq("https://example.com")
       expect(location_equipment.field_values["battery_change_interval"]).to eq(2)
     end
   end

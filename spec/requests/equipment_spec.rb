@@ -6,9 +6,9 @@ RSpec.describe "/equipments", type: :request do
     {
       equipment_kind_id: ups_equipment_kind.id,
       name: "some brand - some model",
+      brand: "some brand",
+      model: "some model",
       field_values: {
-        "brand" => "some brand",
-        "model" => "some model",
         "more_info" => "some info"
       }
     }
@@ -58,7 +58,7 @@ RSpec.describe "/equipments", type: :request do
     it "renders dynamic field inputs for the selected equipment kind" do
       get field_inputs_equipment_index_path(equipment_kind_id: ups_equipment_kind.id)
       expect(response).to be_successful
-      expect(response.body).to include("Marca")
+      expect(response.body).to include("Kva")
     end
   end
 
@@ -83,8 +83,6 @@ RSpec.describe "/equipments", type: :request do
           legacy_kind: "power_unit",
           name: "Grupo Electrógeno",
           generic_fields: {
-            "brand" => {"name" => "Marca", "type" => "string"},
-            "model" => {"name" => "Modelo", "type" => "string"},
             "motor_brand" => {"name" => "Marca del Motor", "type" => "string"},
             "motor_model" => {"name" => "Modelo del Motor", "type" => "string"},
             "generator_brand" => {"name" => "Marca del Generador", "type" => "string"},
@@ -98,9 +96,9 @@ RSpec.describe "/equipments", type: :request do
         {
           equipment_kind_id: power_unit_equipment_kind.id,
           name: "some brand - some model",
+          brand: "some brand",
+          model: "some model",
           field_values: {
-            "brand" => "some brand",
-            "model" => "some model",
             "more_info" => "some info",
             "motor_brand" => "some motor brand",
             "motor_model" => "some motor model",
@@ -115,7 +113,8 @@ RSpec.describe "/equipments", type: :request do
         expect { post equipment_index_url, params: {equipment: valid_attributes} }.to change(Equipment, :count).by(1)
         equipment = Equipment.last
         expect(equipment.legacy_kind).to eq("power_unit")
-        expect(equipment.field_values["brand"]).to eq("some brand")
+        expect(equipment.brand).to eq("some brand")
+        expect(equipment.model).to eq("some model")
         expect(equipment.field_values["motor_brand"]).to eq("some motor brand")
         expect(equipment.field_values["kva"]).to eq("10")
       end

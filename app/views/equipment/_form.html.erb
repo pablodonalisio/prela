@@ -10,6 +10,14 @@
     <%= link_to "Crear uno nuevo", new_equipment_kind_path, class: "text-primary" %>.
   </p>
   <%= f.input :name %>
+  <div class="row">
+    <div class="col-sm-6">
+      <%= f.input :brand %>
+    </div>
+    <div class="col-sm-6">
+      <%= f.input :model %>
+    </div>
+  </div>
   <%= turbo_frame_tag "eq_field_inputs",
         data: { equipment_id: equipment.id },
         src: equipment.equipment_kind_id.present? ?

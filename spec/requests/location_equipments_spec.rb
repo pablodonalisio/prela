@@ -165,14 +165,26 @@ RSpec.describe "/location_equipments", type: :request do
     end
   end
 
+  describe "PUT /update serial_number and code" do
+    let!(:location_equipment) { create(:location_equipment) }
+
+    it "updates serial_number and code on the location equipment" do
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {serial_number: "SN-999", code: "CODE-1"}}
+      location_equipment.reload
+      expect(location_equipment.serial_number).to eq("SN-999")
+      expect(location_equipment.code).to eq("CODE-1")
+    end
+  end
+
   describe "PUT /update field_values" do
     let!(:location_equipment) { create(:location_equipment) }
 
     it "updates field_values on the location equipment" do
       put location_equipment_url(location_equipment),
-        params: {location_equipment: {field_values: {"serial_number" => "SN-999"}}}
+        params: {location_equipment: {field_values: {"form_link" => "https://example.com"}}}
       location_equipment.reload
-      expect(location_equipment.field_values["serial_number"]).to eq("SN-999")
+      expect(location_equipment.field_values["form_link"]).to eq("https://example.com")
     end
   end
 

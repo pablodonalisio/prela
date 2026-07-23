@@ -151,7 +151,7 @@ RSpec.describe "/equipment_kinds", type: :request do
         {
           name: "Grupo Electrógeno",
           generic_fields: {EquipmentKind.generate_field_key => {name: "Modelo", type: "string"}},
-          specific_fields: {"serial_number" => {name: "Número de serie", type: "string"}}
+          specific_fields: {"form_link" => {name: "Link al formulario", type: "string"}}
         }
       }
 
@@ -160,7 +160,7 @@ RSpec.describe "/equipment_kinds", type: :request do
         patch equipment_kind_url(equipment_kind), params: {equipment_kind: new_attributes}
         equipment_kind.reload
         expect(equipment_kind.name).to eq "Grupo Electrógeno"
-        expect(equipment_kind.specific_fields["serial_number"]["name"]).to eq "Número de serie"
+        expect(equipment_kind.specific_fields["form_link"]["name"]).to eq "Link al formulario"
       end
 
       it "redirects to the equipment_kind" do

@@ -59,7 +59,7 @@ class EquipmentController < ApplicationController
   private
 
   def equipment_params
-    params.require(:equipment).permit(:avatar, :equipment_kind_id, :name, field_values: {})
+    params.require(:equipment).permit(:avatar, :equipment_kind_id, :name, :brand, :model, field_values: {})
   end
 
   def set_equipment

@@ -32,6 +32,8 @@ es:
       location_equipment:
         location: "Sede"
         equipment: "Equipo"
+        serial_number: "Número de serie"
+        code: "Código"
         last_service: "Último service"
         next_service: "Próximo service"
         last_battery_change: "Último cambio de batería"

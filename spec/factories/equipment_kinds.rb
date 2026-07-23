@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :equipment_kind do
     sequence(:name) { |n| "Tipo de activo #{n}" }
-    generic_fields { {"brand" => {name: "Marca", type: "string"}} }
+    generic_fields { {"kva" => {name: "Kva", type: "float"}} }
     specific_fields { {} }
 
     trait :ups do
@@ -25,7 +25,7 @@ FactoryBot.define do
     end
 
     trait :with_specific_fields do
-      specific_fields { {"serial_number" => {name: "Número de serie", type: "string"}} }
+      specific_fields { {"form_link" => {name: "Link al formulario", type: "string"}} }
     end
   end
 end
