@@ -23,6 +23,10 @@ class EquipmentKind < ApplicationRecord
     public_send(field_set) || {}
   end
 
+  def equipments_count
+    equipments.size
+  end
+
   private
 
   def set_normalized_name

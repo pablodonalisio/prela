@@ -173,4 +173,14 @@ RSpec.describe ReportTemplate, type: :model do
       expect(report_template.active_sections).to eq(%w[measurements room_specifications])
     end
   end
+
+  describe "#location_equipments_count" do
+    it "returns the number of associated location equipments" do
+      report_template = create(:report_template, :with_measurements)
+      location_equipment = create(:location_equipment)
+      report_template.location_equipments << location_equipment
+
+      expect(report_template.location_equipments_count).to eq(1)
+    end
+  end
 end

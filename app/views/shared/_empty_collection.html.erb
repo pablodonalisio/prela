@@ -1,0 +1,7 @@
+<%# locals: (id:, message:, action_text: nil, action_path: nil) %>
+<div id="<%= id %>" class="bg-secondary bg-opacity-50 rounded p-4 text-center">
+  <p class="text-white-50 mb-<%= action_text.present? ? "3" : "0" %>"><%= message %></p>
+  <% if action_text.present? && action_path.present? %>
+    <%= render "shared/button_link", text: action_text, path: action_path %>
+  <% end %>
+</div>

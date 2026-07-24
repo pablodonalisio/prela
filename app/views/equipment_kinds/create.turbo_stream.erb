@@ -2,6 +2,7 @@
   <%= render "layouts/flash"%>
 <% end %>
 
+<%= turbo_stream.remove "equipment_kinds_empty" %>
 <%= turbo_stream.append "equipment_kinds" do %>
   <%= render @equipment_kind %>
 <% end %>

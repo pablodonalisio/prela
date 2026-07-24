@@ -6,7 +6,15 @@
     <% end %>
   <% end %>
 
-  <%= turbo_frame_tag "report_templates", class: "row m-4 g-3" do %>
-    <%= render @report_templates %>
+  <%= turbo_frame_tag "report_templates", class: "d-flex flex-column gap-2 mx-4 mt-4" do %>
+    <% if @report_templates.any? %>
+      <%= render @report_templates %>
+    <% else %>
+      <%= render "shared/empty_collection",
+                 id: "report_templates_empty",
+                 message: "No hay plantillas de informe todavía.",
+                 action_text: current_user.admin? ? "Agregar" : nil,
+                 action_path: current_user.admin? ? new_report_template_path : nil %>
+    <% end %>
   <% end %>
 <% end %>

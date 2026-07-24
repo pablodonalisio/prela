@@ -25,6 +25,10 @@ class ReportTemplate < ApplicationRecord
     self.class::SECTIONS.filter { |section| fields_for(section).present? }
   end
 
+  def location_equipments_count
+    location_equipments.size
+  end
+
   def fields_for(section)
     fields = public_send(section).presence || {}
     return {} if fields.blank?

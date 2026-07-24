@@ -1,15 +1,22 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
   <%= render "location_equipments/navbar", active: "equipment_kinds" %>
 
-  <% if current_user.admin? %>
-    <div class="d-flex align-items-center flex-wrap m-4 gap-2">
+  <%= render "shared/content_header", title: "Tipos de Activos" do %>
+    <% if current_user.admin? %>
       <%= render "shared/button_link", text: "Agregar",
                                       path: new_equipment_kind_path %>
-    </div>
+    <% end %>
   <% end %>
 
-  <%= turbo_frame_tag "equipment_kinds", class: "row m-4 g-3" do %>
+  <%= turbo_frame_tag "equipment_kinds", class: "d-flex flex-column gap-2 mx-4 mt-4" do %>
+    <% if @equipment_kinds.any? %>
       <%= render @equipment_kinds %>
+    <% else %>
+      <%= render "shared/empty_collection",
+                 id: "equipment_kinds_empty",
+                 message: "No hay tipos de activos todavía.",
+                 action_text: current_user.admin? ? "Agregar" : nil,
+                 action_path: current_user.admin? ? new_equipment_kind_path : nil %>
+    <% end %>
   <% end %>
-
 <% end %>

@@ -3,3 +3,12 @@
 <% end %>
 
 <%= turbo_stream.remove @report_template %>
+<% if policy_scope(ReportTemplate).none? %>
+  <%= turbo_stream.append "report_templates" do %>
+    <%= render "shared/empty_collection",
+               id: "report_templates_empty",
+               message: "No hay plantillas de informe todavía.",
+               action_text: current_user.admin? ? "Agregar" : nil,
+               action_path: current_user.admin? ? new_report_template_path : nil %>
+  <% end %>
+<% end %>

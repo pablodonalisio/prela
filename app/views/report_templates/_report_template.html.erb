@@ -1,30 +1,37 @@
-<%= turbo_frame_tag report_template, class: "col-sm-6 col-xl-4" do %>
-  <div class="card border-secondary bg-primary bg-opacity-10 bg-gradient h-100">
-    <div class="card-body">
-      <h5 class="card-title text-center"><%= report_template.name %></h5>
+<%= turbo_frame_tag report_template do %>
+  <div class="bg-secondary rounded p-3">
+    <div class="d-flex align-items-start align-items-md-center gap-3 flex-column flex-md-row">
+      <div class="flex-grow-1 min-w-0">
+        <h5 class="mb-2 text-white"><%= report_template.name %></h5>
 
-      <% first_section = true %>
-      <% ReportTemplate::SECTIONS.each do |section| %>
-        <% fields = report_template.fields_for(section) %>
-        <% next if fields.blank? %>
+        <div class="d-flex flex-wrap gap-2">
+          <% if report_template.active_sections.any? %>
+            <% report_template.active_sections.each do |section| %>
+              <span class="badge rounded-pill bg-primary bg-opacity-25 text-light border border-primary border-opacity-25">
+                <%= t("activerecord.attributes.report_template.sections.#{section}") %>
+              </span>
+            <% end %>
+          <% else %>
+            <span class="badge rounded-pill text-bg-dark">Sin secciones</span>
+          <% end %>
 
-        <h6 class="card-subtitle mb-2 text-muted <%= "mt-3" unless first_section %>">
-          <%= t("activerecord.attributes.report_template.sections.#{section}") %>
-        </h6>
-        <%= render "field_list", fields: fields %>
-        <% first_section = false %>
-      <% end %>
+          <span class="badge rounded-pill text-bg-dark">
+            <%= report_template.location_equipments_count %>
+            <%= report_template.location_equipments_count == 1 ? "activo" : "activos" %> usándolo
+          </span>
+        </div>
+      </div>
 
-      <% if report_template.active_sections.empty? %>
-        <p class="text-muted small text-center mb-0">Sin secciones definidas.</p>
+      <% if current_user.admin? %>
+        <div class="flex-shrink-0 align-self-end align-self-md-center">
+          <%= render "shared/dropdown" do %>
+            <%= render "shared/button_box",
+                       edit_path: edit_report_template_path(report_template),
+                       delete_path: report_template_path(report_template),
+                       confirm: "¿Seguro que querés borrar esta plantilla de informe?" %>
+          <% end %>
+        </div>
       <% end %>
     </div>
-
-    <% if current_user.admin? %>
-      <div class="card-footer bg-transparent border-top-0 d-flex flex-column gap-2">
-        <%= link_to "Editar", edit_report_template_path(report_template), class: "btn btn-primary w-100", data: { turbo_frame: "remote_modal" } %>
-        <%= button_to "Eliminar", report_template_path(report_template), method: :delete, form: { data: { turbo_confirm: "¿Seguro que querés borrar esta plantilla de informe?" } }, class: "btn btn-danger w-100" %>
-      </div>
-    <% end %>
   </div>
 <% end %>

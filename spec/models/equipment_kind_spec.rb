@@ -151,4 +151,16 @@ RSpec.describe EquipmentKind, type: :model do
     )
     expect(equipment_kind).to be_valid
   end
+
+  describe "field count helpers" do
+    it "counts associated equipments" do
+      equipment_kind = EquipmentKind.create!(
+        name: "UPS",
+        generic_fields: {"1" => {name: "Marca", type: "string"}}
+      )
+      create(:equipment, equipment_kind: equipment_kind)
+
+      expect(equipment_kind.equipments_count).to eq(1)
+    end
+  end
 end
