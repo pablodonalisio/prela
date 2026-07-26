@@ -26,7 +26,7 @@ class ReportTemplate < ApplicationRecord
   end
 
   def location_equipments_count
-    location_equipments.size
+    location_equipments.merge(LocationEquipment.visible).size
   end
 
   def fields_for(section)

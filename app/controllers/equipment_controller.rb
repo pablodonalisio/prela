@@ -6,8 +6,9 @@ class EquipmentController < ApplicationController
   end
 
   def index
-    @equipment = authorize Equipment.all
+    @equipment = authorize Equipment.visible
   end
+
 
   def show
   end
@@ -42,7 +43,7 @@ class EquipmentController < ApplicationController
   end
 
   def destroy
-    @equipment.destroy!
+    @equipment.discard!
 
     respond_to do |format|
       format.html { redirect_to equipment_index_path, notice: "El equipo ha sido eliminado" }
@@ -51,8 +52,8 @@ class EquipmentController < ApplicationController
   end
 
   def field_inputs
-    @equipment_kind = EquipmentKind.find_by(id: params[:equipment_kind_id])
-    existing = Equipment.find_by(id: params[:equipment_id])
+    @equipment_kind = EquipmentKind.visible.find_by(id: params[:equipment_kind_id])
+    existing = Equipment.visible.find_by(id: params[:equipment_id])
     @field_values = existing&.field_values || {}
   end
 
@@ -63,6 +64,7 @@ class EquipmentController < ApplicationController
   end
 
   def set_equipment
-    @equipment = authorize Equipment.find(params[:id])
+    @equipment = authorize Equipment.visible.find(params[:id])
   end
 end
+

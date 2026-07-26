@@ -151,11 +151,13 @@ RSpec.describe "/clients", type: :request do
       expect(response).to redirect_to(clients_url)
     end
 
-    it "destroys the requested client" do
+    it "soft-deletes the requested client" do
       expect {
         delete client_url(client)
-      }.to change(Client, :count).by(-1)
+      }.to change(Client.kept, :count).by(-1)
+      expect(client.reload).to be_discarded
     end
+
 
     it "destroys the requested client and responds with turbo_stream" do
       delete client_url(client), as: :turbo_stream

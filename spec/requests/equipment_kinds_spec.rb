@@ -201,12 +201,14 @@ RSpec.describe "/equipment_kinds", type: :request do
   end
 
   describe "DELETE /destroy" do
-    it "destroys the requested equipment_kind" do
+    it "soft-deletes the requested equipment_kind" do
       equipment_kind = EquipmentKind.create! valid_attributes
       expect {
         delete equipment_kind_url(equipment_kind)
-      }.to change(EquipmentKind, :count).by(-1)
+      }.to change(EquipmentKind.kept, :count).by(-1)
+      expect(equipment_kind.reload).to be_discarded
     end
+
 
     it "redirects to the equipment_kinds list" do
       equipment_kind = EquipmentKind.create! valid_attributes

@@ -1,4 +1,5 @@
 class LocationEquipment < ApplicationRecord
+  include Discard::Model
   include Filterable
 
   ACTIVITY_KIND = {
@@ -39,6 +40,11 @@ class LocationEquipment < ApplicationRecord
   has_many :documents, as: :documentable, dependent: :destroy
   has_many :failures, dependent: :destroy
 
+  scope :visible, -> {
+    kept
+      .where(location_id: Location.visible.select(:id))
+      .where(equipment_id: Equipment.visible.select(:id))
+  }
   scope :by_client_ids, ->(client_id) { joins(:location).where(location: {client_id:}) }
   scope :by_location_ids, ->(location_id) { where(location_id:) }
   scope :by_status, ->(status) { where(status:) }

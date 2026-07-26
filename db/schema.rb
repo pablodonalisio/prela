@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_23_121002) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_26_172935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_121002) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_clients_on_discarded_at"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -154,6 +156,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_121002) do
     t.integer "equipment_kind_id"
     t.string "name", null: false
     t.jsonb "field_values", default: {}, null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_equipment_on_discarded_at"
   end
 
   create_table "equipment_kinds", force: :cascade do |t|
@@ -165,9 +169,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_121002) do
     t.string "legacy_kind"
     t.text "description"
     t.string "normalized_name"
-    t.index ["legacy_kind"], name: "index_equipment_kinds_on_legacy_kind", unique: true, where: "(legacy_kind IS NOT NULL)"
-    t.index ["name"], name: "index_equipment_kinds_on_name", unique: true
-    t.index ["normalized_name"], name: "index_equipment_kinds_on_normalized_name", unique: true
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_equipment_kinds_on_discarded_at"
+    t.index ["legacy_kind"], name: "index_equipment_kinds_on_legacy_kind", unique: true, where: "((legacy_kind IS NOT NULL) AND (discarded_at IS NULL))"
+    t.index ["name"], name: "index_equipment_kinds_on_name", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["normalized_name"], name: "index_equipment_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
@@ -238,6 +244,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_121002) do
     t.date "next_electrical_approval"
     t.string "condition", default: "Buena"
     t.jsonb "field_values", default: {}, null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_location_equipments_on_discarded_at"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end
@@ -255,7 +263,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_121002) do
     t.bigint "client_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
     t.index ["client_id"], name: "index_locations_on_client_id"
+    t.index ["discarded_at"], name: "index_locations_on_discarded_at"
   end
 
   create_table "power_unit_report_stats", force: :cascade do |t|

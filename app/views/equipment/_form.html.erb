@@ -1,7 +1,7 @@
 <%= simple_form_for equipment, html: { data: {controller: "dynamic-form"}} do |f| %>
   <%= f.input :avatar, label: "Foto" %>
   <%= f.input :equipment_kind_id, label: "Tipo de activo",
-                                  collection: EquipmentKind.order(:name).pluck(:name, :id),
+                                  collection: EquipmentKind.visible.order(:name).pluck(:name, :id),
                                   include_blank: "Seleccione un tipo",
                                   wrapper_html: { class: "mb-0" },
                                   input_html: { data: { dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>

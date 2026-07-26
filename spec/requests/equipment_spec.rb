@@ -181,12 +181,14 @@ RSpec.describe "/equipments", type: :request do
     describe "DELETE /destroy" do
       let!(:equipment) { create(:equipment) }
 
-      it "destroys the requested equipment and responds with HTML" do
+      it "soft-deletes the requested equipment and responds with HTML" do
         expect {
           delete equipment_url(equipment)
-        }.to change(Equipment, :count).by(-1)
+        }.to change(Equipment.kept, :count).by(-1)
+        expect(equipment.reload).to be_discarded
         expect(response).to redirect_to(equipment_index_url)
       end
+
 
       it "destroys the requested equipment and responds with turbo_stream" do
         delete equipment_url(equipment), as: :turbo_stream

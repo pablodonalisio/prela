@@ -153,14 +153,51 @@ RSpec.describe EquipmentKind, type: :model do
   end
 
   describe "field count helpers" do
-    it "counts associated equipments" do
+    it "counts associated kept equipments" do
       equipment_kind = EquipmentKind.create!(
         name: "UPS",
         generic_fields: {"1" => {name: "Marca", type: "string"}}
       )
       create(:equipment, equipment_kind: equipment_kind)
+      create(:equipment, equipment_kind: equipment_kind).discard
 
       expect(equipment_kind.equipments_count).to eq(1)
     end
   end
+
+  describe "soft delete" do
+    it "allows reusing a name after discard" do
+      equipment_kind = EquipmentKind.create!(
+        name: "Laptop",
+        generic_fields: {"kva" => {name: "Kva", type: "float"}}
+      )
+      equipment_kind.discard
+
+      reused = EquipmentKind.new(
+        name: "Laptop",
+        generic_fields: {"kva" => {name: "Kva", type: "float"}}
+      )
+
+      expect(reused).to be_valid
+      expect(reused.save).to be(true)
+    end
+
+    it "allows reusing a legacy_kind after discard" do
+      equipment_kind = EquipmentKind.create!(
+        name: "UPS Kind",
+        legacy_kind: "ups",
+        generic_fields: {"kva" => {name: "Kva", type: "float"}}
+      )
+      equipment_kind.discard
+
+      reused = EquipmentKind.new(
+        name: "Another UPS",
+        legacy_kind: "ups",
+        generic_fields: {"kva" => {name: "Kva", type: "float"}}
+      )
+
+      expect(reused).to be_valid
+    end
+  end
 end
+

@@ -20,8 +20,9 @@ RSpec.describe ClientPolicy, type: :policy do
       expect(ClientPolicy::Scope.new(user, Client).resolve).to eq([user.client])
     end
 
-    it "returns all clients for an admin" do
-      expect(ClientPolicy::Scope.new(admin, Client).resolve).to eq(Client.all)
+    it "returns all visible clients for an admin" do
+      expect(ClientPolicy::Scope.new(admin, Client).resolve).to match_array(Client.visible)
     end
+
   end
 end

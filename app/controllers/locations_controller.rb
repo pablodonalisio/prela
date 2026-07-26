@@ -33,7 +33,7 @@ class LocationsController < ApplicationController
   end
 
   def destroy
-    @location.destroy
+    @location.discard!
 
     respond_to do |format|
       format.html { redirect_to client_path(client), notice: "La sede ha sido eliminada." }
@@ -48,10 +48,11 @@ class LocationsController < ApplicationController
   end
 
   def client
-    @client ||= Client.find(params[:client_id])
+    @client ||= Client.visible.find(params[:client_id])
   end
 
   def set_location
-    @location = authorize client.locations.find(params[:id])
+    @location = authorize client.locations.kept.find(params[:id])
   end
 end
+

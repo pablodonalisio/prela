@@ -41,4 +41,35 @@ RSpec.describe User, type: :model do
       expect { client.full_role }.to raise_error(StandardError, "Undefined role")
     end
   end
+
+  describe "authentication with discarded client" do
+    it "blocks client users whose client is discarded" do
+      user = create(:user, role: :client, client: create(:client))
+      user.client.discard
+
+      expect(user).not_to be_active_for_authentication
+      expect(user.inactive_message).to eq(:client_discarded)
+    end
+
+    it "allows admin users even if their client is discarded" do
+      user = create(:user, role: :admin, client: create(:client))
+      user.client.discard
+
+      expect(user).to be_active_for_authentication
+    end
+  end
+
+  describe ".with_kept_client" do
+    it "excludes users whose client is discarded" do
+      kept_user = create(:user, role: :client, client: create(:client))
+      discarded_client_user = create(:user, role: :client, client: create(:client))
+      discarded_client_user.client.discard
+      admin = create(:user, role: :admin, client: nil)
+
+      expect(User.with_kept_client).to include(kept_user, admin)
+      expect(User.with_kept_client).not_to include(discarded_client_user)
+    end
+  end
 end
+
+

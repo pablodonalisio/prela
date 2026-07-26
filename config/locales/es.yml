@@ -170,6 +170,7 @@ es:
     failure:
       user:
         unauthenticated: "No se pudo autenticar el usuario, por favor iniciar sesión."
+      client_discarded: "Tu cliente ya no está disponible. Contactá al administrador."
     sessions:
       user:
         signed_in: "Sesión iniciada correctamente. Bienvenido."

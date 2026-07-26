@@ -21,12 +21,15 @@ class ServiceDatePolicy < ApplicationPolicy
     # NOTE: Be explicit about which records you allow access to!
     def resolve
       if user.admin?
-        scope.all
+        scope.for_visible_location_equipments
       elsif user.client?
-        scope.joins(location_equipment: :location).where(location: {client_id: user.client_id})
+        scope.for_visible_location_equipments
+          .joins(location_equipment: :location)
+          .where(location: {client_id: user.client_id})
       else
         raise Pundit::NotAuthorizedError
       end
     end
+
   end
 end

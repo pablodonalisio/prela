@@ -9,12 +9,13 @@ class ClientPolicy < ApplicationPolicy
     # NOTE: Be explicit about which records you allow access to!
     def resolve
       if user.admin?
-        scope.all
+        scope.visible
       elsif user.client?
-        scope.where(id: user.client_id)
+        scope.visible.where(id: user.client_id)
       else
         raise Pundit::NotAuthorizedError
       end
     end
+
   end
 end

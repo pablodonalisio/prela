@@ -37,10 +37,11 @@ class EquipmentKindPolicy < ApplicationPolicy
     # NOTE: Be explicit about which records you allow access to!
     def resolve
       if user.admin?
-        scope.all
+        scope.visible
       else
         raise Pundit::NotAuthorizedError
       end
     end
+
   end
 end

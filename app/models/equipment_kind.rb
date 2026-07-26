@@ -1,13 +1,14 @@
 class EquipmentKind < ApplicationRecord
+  include Discard::Model
   include FieldDefinitionsValidatable
 
-  has_many :equipments, dependent: :destroy
+  has_many :equipments
 
   before_validation :set_normalized_name
 
   validates :name, presence: true
   validates :legacy_kind, inclusion: {in: Equipment::LEGACY_KINDS}, allow_nil: true
-  validates :legacy_kind, uniqueness: true, allow_nil: true
+  validates :legacy_kind, uniqueness: {conditions: -> { kept }}, allow_nil: true
 
   validate :generic_fields_must_be_present
   validate :validate_generic_field_definitions
@@ -19,12 +20,14 @@ class EquipmentKind < ApplicationRecord
   FIELD_TYPES = FieldDefinitionsValidatable::FIELD_TYPES
   FIELD_SETS = %w[generic_fields specific_fields].freeze
 
+  scope :visible, -> { kept }
+
   def field_definitions_for(field_set)
     public_send(field_set) || {}
   end
 
   def equipments_count
-    equipments.size
+    equipments.kept.size
   end
 
   private
@@ -36,7 +39,7 @@ class EquipmentKind < ApplicationRecord
   def name_must_be_unique
     return if normalized_name.blank?
 
-    scope = self.class.where(normalized_name: normalized_name)
+    scope = self.class.kept.where(normalized_name: normalized_name)
     scope = scope.where.not(id: id) if persisted?
 
     errors.add(:name, :taken) if scope.exists?

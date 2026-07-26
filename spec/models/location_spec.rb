@@ -26,4 +26,31 @@ RSpec.describe Location, type: :model do
       expect(location.location_equipments.size).to eq(3)
     end
   end
+
+  describe ".visible" do
+    it "excludes discarded locations and locations with discarded clients" do
+      visible_location = create(:location)
+      discarded_location = create(:location)
+      discarded_location.discard
+      location_with_discarded_client = create(:location)
+      location_with_discarded_client.client.discard
+
+      expect(Location.visible).to include(visible_location)
+      expect(Location.visible).not_to include(discarded_location)
+      expect(Location.visible).not_to include(location_with_discarded_client)
+      expect(location_with_discarded_client.reload).to be_kept
+    end
+
+    it "includes locations again after undiscarding the client" do
+      location = create(:location)
+      location.client.discard
+
+      expect(Location.visible).not_to include(location)
+
+      location.client.undiscard
+
+      expect(Location.visible).to include(location)
+    end
+  end
 end
+

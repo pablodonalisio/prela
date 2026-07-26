@@ -175,12 +175,16 @@ RSpec.describe ReportTemplate, type: :model do
   end
 
   describe "#location_equipments_count" do
-    it "returns the number of associated location equipments" do
+    it "returns the number of associated visible location equipments" do
       report_template = create(:report_template, :with_measurements)
       location_equipment = create(:location_equipment)
+      discarded_location_equipment = create(:location_equipment)
+      discarded_location_equipment.discard
       report_template.location_equipments << location_equipment
+      report_template.location_equipments << discarded_location_equipment
 
       expect(report_template.location_equipments_count).to eq(1)
     end
   end
 end
+

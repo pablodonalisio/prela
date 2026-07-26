@@ -42,13 +42,14 @@ class EquipmentKindsController < ApplicationController
   end
 
   def destroy
-    @equipment_kind.destroy!
+    @equipment_kind.discard!
 
     respond_to do |format|
       format.html { redirect_to equipment_kinds_path, notice: "El tipo de activo a sido eliminado.", status: :see_other }
       format.turbo_stream { flash.now[:notice] = "El tipo de activo a sido eliminado." }
     end
   end
+
 
   def add_field
     @field_set = field_set_param
@@ -70,8 +71,9 @@ class EquipmentKindsController < ApplicationController
   private
 
   def set_equipment_kind
-    @equipment_kind = authorize EquipmentKind.find(params.expect(:id))
+    @equipment_kind = authorize EquipmentKind.visible.find(params.expect(:id))
   end
+
 
   def equipment_kind_params
     permitted = params.require(:equipment_kind).permit(:name, :description, generic_fields: {}, specific_fields: {})

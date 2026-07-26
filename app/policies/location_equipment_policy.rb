@@ -17,12 +17,13 @@ class LocationEquipmentPolicy < ApplicationPolicy
     # NOTE: Be explicit about which records you allow access to!
     def resolve
       if user.admin?
-        scope.all
+        scope.visible
       elsif user.client?
-        scope.joins(:location).where(location: {client_id: user.client_id})
+        scope.visible.joins(:location).where(location: {client_id: user.client_id})
       else
         raise Pundit::NotAuthorizedError
       end
     end
+
   end
 end

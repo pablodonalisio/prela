@@ -82,4 +82,21 @@ RSpec.describe Equipment, type: :model do
       expect(panel).to be_valid
     end
   end
+
+  describe ".visible" do
+    it "excludes discarded equipment and equipment with discarded kinds" do
+      visible_equipment = create(:equipment, equipment_kind: create(:equipment_kind))
+      discarded_equipment = create(:equipment, equipment_kind: create(:equipment_kind))
+      discarded_equipment.discard
+      equipment_with_discarded_kind = create(:equipment, equipment_kind: create(:equipment_kind))
+      equipment_with_discarded_kind.equipment_kind.discard
+
+      expect(Equipment.visible).to include(visible_equipment)
+      expect(Equipment.visible).not_to include(discarded_equipment)
+      expect(Equipment.visible).not_to include(equipment_with_discarded_kind)
+      expect(equipment_with_discarded_kind.reload).to be_kept
+    end
+  end
 end
+
+

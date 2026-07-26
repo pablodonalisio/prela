@@ -15,7 +15,7 @@
                               selected_filters: filter_params[:client_ids] %>
 
     <% if filter_params[:client_ids].present? &&
-          (locations = Location.where(client_id: filter_params[:client_ids])).present? %>
+          (locations = Location.visible.where(client_id: filter_params[:client_ids])).present? %>
       <%= render "filter_item", title: "Sede",
                                 f: f,
                                 attribute: :location_ids,
@@ -38,9 +38,10 @@
     <%= render "filter_item", title: "Tipo",
                               f: f,
                               attribute: :equipment_kind_ids,
-                              collection: EquipmentKind.order(:name),
+                              collection: EquipmentKind.visible.order(:name),
                               value: :id,
                               label: :name,
                               selected_filters: filter_params[:equipment_kind_ids] %>
+
   <% end %>
 <% end %>

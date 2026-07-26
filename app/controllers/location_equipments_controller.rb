@@ -14,8 +14,9 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def show
-    @location_equipment = authorize LocationEquipment.find(params[:id])
+    @location_equipment = authorize LocationEquipment.visible.find(params[:id])
   end
+
 
   def edit
   end
@@ -46,26 +47,27 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def location_inputs
-    @client = Client.find_by(id: params[:client_id])
-    @locations = @client ? Location.where(client_id: @client.id) : Location.none
+    @client = Client.visible.find_by(id: params[:client_id])
+    @locations = @client ? Location.visible.where(client_id: @client.id) : Location.none
     @selected_location_id = params[:location_id].presence
   end
 
   def field_inputs
-    equipment = Equipment.find_by(id: params[:equipment_id])
+    equipment = Equipment.visible.find_by(id: params[:equipment_id])
     @equipment_kind = equipment&.equipment_kind
-    existing = LocationEquipment.find_by(id: params[:location_equipment_id])
+    existing = LocationEquipment.visible.find_by(id: params[:location_equipment_id])
     @field_values = existing&.field_values || {}
   end
 
   def destroy
-    @location_equipment.destroy
+    @location_equipment.discard!
 
     respond_to do |format|
       format.html { redirect_to location_equipments_path, notice: "El equipo de la sede ha sido eliminado." }
       format.turbo_stream {}
     end
   end
+
 
   private
 
@@ -84,12 +86,13 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def location_equipment
-    @location_equipment ||= authorize LocationEquipment.find(params[:id])
+    @location_equipment ||= authorize LocationEquipment.visible.find(params[:id])
   end
 
   def set_edit_locations
-    @locations = Location.where(client_id: @location_equipment.location&.client_id)
+    @locations = Location.visible.where(client_id: @location_equipment.location&.client_id)
   end
+
 
   def filter_params
     set_client_id_filter if current_user.client?

@@ -51,6 +51,40 @@ RSpec.describe LocationEquipment, type: :model do
     end
   end
 
+  describe ".visible" do
+    it "excludes discarded records and records with discarded ancestors" do
+      visible = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      discarded = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      discarded.discard
+      with_discarded_location = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_location.location.discard
+      with_discarded_client = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_client.location.client.discard
+      with_discarded_equipment = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_equipment.equipment.discard
+      with_discarded_kind = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_kind.equipment.equipment_kind.discard
+
+      expect(LocationEquipment.visible).to include(visible)
+      expect(LocationEquipment.visible).not_to include(
+        discarded, with_discarded_location, with_discarded_client, with_discarded_equipment, with_discarded_kind
+      )
+      expect(with_discarded_client.reload).to be_kept
+    end
+
+    it "includes records again after undiscarding an ancestor" do
+      location_equipment = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      location_equipment.location.client.discard
+
+      expect(LocationEquipment.visible).not_to include(location_equipment)
+
+      location_equipment.location.client.undiscard
+
+      expect(LocationEquipment.visible).to include(location_equipment)
+    end
+  end
+
+
   context "methods" do
     let(:ups) { create(:location_equipment, equipment: create(:equipment, :ups)) }
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }

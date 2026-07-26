@@ -16,7 +16,7 @@
                   data-location-equipment-form-target="client"
                   data-action="change->location-equipment-form#loadLocations">
             <option value="">Seleccione un cliente</option>
-            <% Client.order(:name).each do |client| %>
+            <% Client.visible.order(:name).each do |client| %>
               <option value="<%= client.id %>"><%= client.name %></option>
             <% end %>
           </select>
@@ -52,7 +52,7 @@
     </div>
     <div class="card-body pb-1">
       <%= f.input :equipment_id, label: "Equipo",
-                                 collection: Equipment.all.map { |e| [e.name, e.id] },
+                                 collection: Equipment.visible.map { |e| [e.name, e.id] },
                                  prompt: "Seleccione un equipo",
                                  wrapper_html: { class: "mb-3" },
                                  input_html: { data: { controller: "searchable-select",
