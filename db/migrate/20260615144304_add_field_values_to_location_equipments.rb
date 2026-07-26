@@ -13,6 +13,10 @@ class AddFieldValuesToLocationEquipments < ActiveRecord::Migration[8.0]
 
   def up
     add_column :location_equipments, :field_values, :jsonb, default: {}, null: false
+    MigrationLocationEquipment.reset_column_information
+    MigrationEquipment.reset_column_information
+    MigrationEquipmentKind.reset_column_information
+    ActiveRecord::Base.connection.clear_cache!
 
     MigrationLocationEquipment.find_each do |le|
       equipment = MigrationEquipment.find_by(id: le.equipment_id)

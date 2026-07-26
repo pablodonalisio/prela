@@ -12,6 +12,8 @@ class KeyFieldValuesByEquipmentKindFieldKey < ActiveRecord::Migration[8.0]
   end
 
   def up
+    reset_migration_model_caches
+
     MigrationEquipment.find_each do |equipment|
       kind = MigrationEquipmentKind.find_by(id: equipment.equipment_kind_id)
       next unless kind&.generic_fields.is_a?(Hash)
@@ -31,6 +33,8 @@ class KeyFieldValuesByEquipmentKindFieldKey < ActiveRecord::Migration[8.0]
   end
 
   def down
+    reset_migration_model_caches
+
     MigrationEquipment.find_each do |equipment|
       kind = MigrationEquipmentKind.find_by(id: equipment.equipment_kind_id)
       next unless kind&.generic_fields.is_a?(Hash)
@@ -50,6 +54,13 @@ class KeyFieldValuesByEquipmentKindFieldKey < ActiveRecord::Migration[8.0]
   end
 
   private
+
+  # Previous migrations in the same db:prepare process alter equipment columns
+  # (e.g. remove kind). Clear AR/PG prepared statement caches before querying.
+  def reset_migration_model_caches
+    [MigrationEquipment, MigrationLocationEquipment, MigrationEquipmentKind].each(&:reset_column_information)
+    ActiveRecord::Base.connection.clear_cache!
+  end
 
   def remap_field_values(field_values, definitions)
     field_values = field_values.presence || {}

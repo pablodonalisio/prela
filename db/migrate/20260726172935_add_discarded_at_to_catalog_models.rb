@@ -15,9 +15,10 @@ class AddDiscardedAtToCatalogModels < ActiveRecord::Migration[7.2]
     add_column :equipment_kinds, :discarded_at, :datetime
     add_index :equipment_kinds, :discarded_at
 
-    remove_index :equipment_kinds, name: "index_equipment_kinds_on_name"
-    remove_index :equipment_kinds, name: "index_equipment_kinds_on_normalized_name"
-    remove_index :equipment_kinds, name: "index_equipment_kinds_on_legacy_kind"
+    # name unique index may not exist yet (create_equipment_kinds never added it).
+    remove_index :equipment_kinds, name: "index_equipment_kinds_on_name", if_exists: true
+    remove_index :equipment_kinds, name: "index_equipment_kinds_on_normalized_name", if_exists: true
+    remove_index :equipment_kinds, name: "index_equipment_kinds_on_legacy_kind", if_exists: true
 
     add_index :equipment_kinds, :name, unique: true, where: "discarded_at IS NULL",
       name: "index_equipment_kinds_on_name"
@@ -29,9 +30,9 @@ class AddDiscardedAtToCatalogModels < ActiveRecord::Migration[7.2]
   end
 
   def down
-    remove_index :equipment_kinds, name: "index_equipment_kinds_on_name"
-    remove_index :equipment_kinds, name: "index_equipment_kinds_on_normalized_name"
-    remove_index :equipment_kinds, name: "index_equipment_kinds_on_legacy_kind"
+    remove_index :equipment_kinds, name: "index_equipment_kinds_on_name", if_exists: true
+    remove_index :equipment_kinds, name: "index_equipment_kinds_on_normalized_name", if_exists: true
+    remove_index :equipment_kinds, name: "index_equipment_kinds_on_legacy_kind", if_exists: true
 
     add_index :equipment_kinds, :name, unique: true, name: "index_equipment_kinds_on_name"
     add_index :equipment_kinds, :normalized_name, unique: true,

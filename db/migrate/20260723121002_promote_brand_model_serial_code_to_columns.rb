@@ -3,6 +3,8 @@ class PromoteBrandModelSerialCodeToColumns < ActiveRecord::Migration[7.1]
   SPECIFIC_KEYS = %w[serial_number code].freeze
 
   def up
+    reset_migration_model_caches
+
     backfill_equipment_columns
     backfill_location_equipment_columns
     strip_equipment_kind_definitions
@@ -15,6 +17,12 @@ class PromoteBrandModelSerialCodeToColumns < ActiveRecord::Migration[7.1]
   end
 
   private
+
+  # Avoid PG "cached plan must not change result type" after earlier DDL in the same process.
+  def reset_migration_model_caches
+    [Equipment, LocationEquipment, EquipmentKind].each(&:reset_column_information)
+    ActiveRecord::Base.connection.clear_cache!
+  end
 
   def backfill_equipment_columns
     say_with_time "Backfilling equipment.brand/model from field_values" do

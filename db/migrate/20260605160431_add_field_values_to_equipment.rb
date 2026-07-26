@@ -9,6 +9,9 @@ class AddFieldValuesToEquipment < ActiveRecord::Migration[8.0]
 
   def up
     add_column :equipment, :field_values, :jsonb, default: {}, null: false
+    MigrationEquipment.reset_column_information
+    MigrationEquipmentKind.reset_column_information
+    ActiveRecord::Base.connection.clear_cache!
 
     MigrationEquipment.find_each do |equipment|
       kind_record = MigrationEquipmentKind.find_by(id: equipment.equipment_kind_id)

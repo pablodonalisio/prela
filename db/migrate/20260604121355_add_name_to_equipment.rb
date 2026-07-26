@@ -1,6 +1,8 @@
 class AddNameToEquipment < ActiveRecord::Migration[8.0]
   def up
     add_column :equipment, :name, :string
+    Equipment.reset_column_information
+    ActiveRecord::Base.connection.clear_cache!
 
     Equipment.find_each do |equipment|
       name = equipment.brand.present? ? "#{equipment.brand} - #{equipment.model}" : equipment.model
