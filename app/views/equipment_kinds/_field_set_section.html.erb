@@ -1,0 +1,36 @@
+<%# locals: (field_set:, label:, equipment_kind:) %>
+<div class="form-group mb-4">
+  <label><%= label %> <% if field_set == "generic_fields" %><span class="text-danger">*</span><% end %></label>
+  <% if field_set == "generic_fields" && equipment_kind.errors[:generic_fields].any? %>
+    <div class="invalid-feedback d-block mb-2">
+      <%= equipment_kind.errors[:generic_fields].first %>
+    </div>
+  <% end %>
+  <div class="border rounded p-3 <%= "border-danger" if field_set == "generic_fields" && equipment_kind.errors[:generic_fields].any? %>">
+    <% container_id = "fields-container-#{field_set.dasherize}" %>
+    <% no_fields_id = "no-fields-message-#{field_set.dasherize}" %>
+    <%= turbo_frame_tag container_id do %>
+      <% fields = equipment_kind.public_send(field_set) || {} %>
+      <% if fields.any? %>
+        <% fields.each do |field_key, field_data| %>
+          <%= render "equipment_kind_field",
+                     equipment_kind: equipment_kind,
+                     field_set: field_set,
+                     field_key: field_key,
+                     field_data: field_data %>
+        <% end %>
+      <% else %>
+        <%= turbo_frame_tag no_fields_id do %>
+          <p class="text-muted mb-0">No hay campos definidos.</p>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="my-2">
+    <%= link_to "Añadir campo",
+                add_field_equipment_kinds_path(field_set: field_set),
+                class: "btn btn-sm btn-outline-primary",
+                data: { turbo_stream: true } %>
+  </div>
+</div>

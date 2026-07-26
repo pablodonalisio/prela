@@ -2,7 +2,7 @@ class ClientsController < ApplicationController
   before_action :set_client, only: %i[show edit update destroy]
 
   def index
-    @clients = authorize Client.all
+    @clients = authorize Client.visible
   end
 
   def show
@@ -42,7 +42,7 @@ class ClientsController < ApplicationController
   end
 
   def destroy
-    @client.destroy!
+    @client.discard!
 
     respond_to do |format|
       format.html { redirect_to clients_url, notice: "El cliente ha sido eliminado" }
@@ -53,7 +53,7 @@ class ClientsController < ApplicationController
   private
 
   def set_client
-    @client = authorize Client.find(params[:id])
+    @client = authorize Client.visible.find(params[:id])
   end
 
   def client_params

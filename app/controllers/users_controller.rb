@@ -51,7 +51,7 @@ class UsersController < ApplicationController
   end
 
   def set_users
-    @users = authorize User.all.order(created_at: :desc)
+    @users = authorize User.with_kept_client.order(created_at: :desc)
   end
 
   def user

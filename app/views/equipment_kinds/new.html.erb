@@ -1,0 +1,7 @@
+<h1>Agregar nuevo tipo de equipo</h1>
+
+<%= turbo_frame_tag @equipment_kind do %>
+  <%= render "shared/remote_modal", title: "Nuevo Tipo de Equipo" do %>
+    <%= render "form", equipment_kind: @equipment_kind %>
+  <% end %>
+<% end %>

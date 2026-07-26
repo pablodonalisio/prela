@@ -17,16 +17,31 @@ Rails.application.routes.draw do
     resources :locations, except: [:index, :show]
   end
   resources :location_equipments do
-    resources :reports
+    get :field_inputs, on: :collection
+    get :location_inputs, on: :collection
+    resources :reports do
+      get :template_fields, on: :collection
+    end
     resources :activities
     resources :documents
     resources :failures
   end
   resources :equipment_supplies
-  resources :equipment
+  resources :equipment do
+    get :field_inputs, on: :collection
+  end
   resources :batteries, except: %i[index]
   resources :supplies, only: [:index]
   resources :users
+  resources :signatures, except: %i[show]
   resources :links, only: [:new, :create, :edit, :update, :destroy]
   resources :service_dates, only: %i[edit update show]
+  resources :equipment_kinds do
+    get "add_field", on: :collection
+    get "remove_field", on: :collection
+  end
+  resources :report_templates, except: [:show] do
+    get "add_field", on: :collection
+    get "remove_field", on: :collection
+  end
 end

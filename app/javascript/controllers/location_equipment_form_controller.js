@@ -1,44 +1,31 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = [
-    "upsInputs",
-    "powerUnitInputs",
-    "electricalPanelInputs",
-    "buildingInputs",
-    "equipment",
-  ];
+  static targets = ["client", "equipment"];
 
   connect() {
     this.displayInputsForEquipmentKind();
   }
 
-  displayInputsForEquipmentKind() {
-    let selectedOption = this.equipmentTarget.querySelector("option:checked");
-    let kind = selectedOption.dataset.kind;
-    if (kind === undefined) return;
+  loadLocations() {
+    const clientId = this.clientTarget.value;
+    const frame = document.getElementById("le_location_inputs");
+    if (!frame) return;
 
-    let inputsTargets = [
-      this.upsInputsTarget,
-      this.powerUnitInputsTarget,
-      this.electricalPanelInputsTarget,
-      this.buildingInputsTarget,
-    ];
-
-    let inputsToDisplay = this.targets.find(`${this.ToCamelCase(kind)}Inputs`);
-
-    inputsTargets = inputsTargets.forEach((input) => {
-      if (input !== inputsToDisplay) {
-        input.classList.add("d-none");
-        input.disabled = true;
-      } else {
-        input.classList.remove("d-none");
-        input.disabled = false;
-      }
-    });
+    if (clientId) {
+      frame.src = `/location_equipments/location_inputs?client_id=${clientId}`;
+    } else {
+      frame.innerHTML = "";
+      frame.removeAttribute("src");
+    }
   }
 
-  ToCamelCase(str) {
-    return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+  displayInputsForEquipmentKind() {
+    const equipmentId = this.equipmentTarget.value;
+    const frame = document.getElementById("le_field_inputs");
+
+    if (!equipmentId || !frame) return;
+
+    frame.src = `/location_equipments/field_inputs?equipment_id=${equipmentId}`;
   }
 }

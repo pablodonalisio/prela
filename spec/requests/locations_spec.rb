@@ -101,12 +101,14 @@ RSpec.describe "/locations", type: :request do
   end
 
   describe "DELETE /destroy" do
-    it "destroys the requested location" do
+    it "soft-deletes the requested location" do
       location
       expect {
         delete client_location_url(location.client, location)
-      }.to change(Location, :count).by(-1)
+      }.to change(Location.kept, :count).by(-1)
+      expect(location.reload).to be_discarded
     end
+
 
     it "redirects to the locations list" do
       delete client_location_url(location.client, location)

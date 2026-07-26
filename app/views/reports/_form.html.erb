@@ -3,91 +3,28 @@
     auto_save_target: "form",
   }
 } do |f| %>
-  <h2>Fecha</h2>
-  <%= f.input :date,
-              as: :datetime,
-              label: "Fecha",
-              value: report.date || Time.now.in_time_zone,
-              start_year: 2016,
-              end_year: Date.today.year,
-              disabled: !current_user.admin?  %>
-
-  <h2>Equipo</h2>
-  <% if location_equipment.equipment.ups?%>
-    <%= render "ups_form", form: f, is_triphase: location_equipment.equipment.is_triphase %>
-  <% elsif location_equipment.equipment.power_unit? %>
-    <%= render "power_unit_form", form: f %>
-  <% elsif location_equipment.equipment.electrical_panel? %>
-    <%= render "electrical_panel_form", form: f, is_triphase: location_equipment.equipment.is_triphase %>
+  <% if report.new_record? %>
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <%= link_to "Clásico (PDF)",
+                    new_location_equipment_report_path(location_equipment, report_mode: "legacy"),
+                    class: "nav-link #{"active" if @report_mode == "legacy"}",
+                    data: { turbo_frame: dom_id(report) } %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Plantilla",
+                    new_location_equipment_report_path(location_equipment, report_mode: "template"),
+                    class: "nav-link #{"active" if @report_mode == "template"}",
+                    data: { turbo_frame: dom_id(report) } %>
+      </li>
+    </ul>
   <% end %>
 
-  <h2>Sala</h2>
-  <%= f.simple_fields_for :room_report_stat do |room_stats_form| %>
-    <% if location_equipment.equipment.power_unit? %>
-      <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
-    <% elsif location_equipment.equipment.ups?%>
-      <%= room_stats_form.input :room_status, label: "Estado de la sala", collection: RoomReportStat::ROOM_STATUS_OPTIONS %>
-      <%= room_stats_form.input :air_conditioning, label: "Funcionamiento de los aires acondicionados", collection: RoomReportStat::AIR_CONDITIONING_OPTIONS %>
-      <%= room_stats_form.input :temperature, label: "Temperatura" %>
-      <%= room_stats_form.input :humidity, label: "Humedad" %>
-    <% elsif location_equipment.equipment.electrical_panel?%>
-      <%= room_stats_form.input :clean_and_tidy, label: "Limpia y ordenada", collection: ["Si", "No"] %>
-      <%= room_stats_form.input :ventilated, label: "Ventilada", collection: ["Si", "No"] %>
-      <%= room_stats_form.input :free_access_to_panel, label: "Libre accesso al tablero", collection: ["Si", "No"] %>
-      <%= room_stats_form.input :with_access_key, label: "Con llave de ingreso", collection: ["Si", "No"] %>
-    <% end %>
+  <% if report.template_based? || (@report_mode == "template" && report.new_record?) %>
+    <%= render "template_form", f: f, report: report, location_equipment: location_equipment %>
+  <% else %>
+    <%= render "legacy_form", f: f, report: report, location_equipment: location_equipment %>
   <% end %>
-
-  <br>
-  <br>
-  <%= f.input :observations, label: "Observaciones" %>
-
-  <h2>Imágenes</h2>
-
-  <% existing_images = report.images.attached? ? report.images.map do |img|
-       {
-         id: img.blob.id,
-         filename: img.filename.to_s,
-         url: url_for(img.variant(resize_and_pad: [120, 120])),
-         byte_size: img.byte_size
-       }
-     end : [] %>
-
-  <div data-controller="dropzone"
-       data-dropzone-direct-upload-url-value="<%= rails_direct_uploads_url %>"
-       data-dropzone-existing-files-value='<%= existing_images.to_json.html_safe %>'
-       data-dropzone-resize-height-value="250"
-       data-dropzone-max-files-value="<%= location_equipment.equipment.electrical_panel? ? 11 : 2 %>"
-       class="mb-4">
-    <div data-dropzone-target="dropzone" class="dropzone border rounded p-3">
-      <div class="dz-message text-center">Arrastra imágenes aquí o haz click para seleccionar. Se redimensionarán automáticamente.</div>
-    </div>
-    <div data-dropzone-target="hiddenInputs"></div>
-    <div data-dropzone-target="removedInputs"></div>
-  </div>
-
-  <noscript>
-    <p class="text-warning">El navegador no soporta JavaScript. Use el formulario de carga tradicional:</p>
-    <div class="my-3 row">
-      <% if location_equipment.equipment.electrical_panel? %>
-        <%= render "image_upload", report: report, title: "Plano unifilar", f: f, n: 0 %>
-        <%= render "image_upload", report: report, title: "Plano de ubicación", f: f, n: 1 %>
-        <%= render "image_upload", report: report, title: "Entorno", f: f, n: 2 %>
-        <%= render "image_upload", report: report, title: "Vista de frente", f: f, n: 3 %>
-        <%= render "image_upload", report: report, title: "Vista tablero cerrado", f: f, n: 4 %>
-        <%= render "image_upload", report: report, title: "Vista interior con plastrones", f: f, n: 5 %>
-        <%= render "image_upload", report: report, title: "Vista interior sin plastrones", f: f, n: 6 %>
-        <%= render "image_upload", report: report, title: "Vista interior puerta", f: f, n: 7 %>
-        <%= render "image_upload", report: report, title: "Terografía", f: f, n: 8 %>
-        <%= render "image_upload", report: report, title: "Foto ingreso y egreso del tablero", f: f, n: 9 %>
-        <%= render "image_upload", report: report, title: "Extra", f: f, n: 10 %>
-      <% else %>
-        <% 2.times do |n| %>
-          <%= render "image_upload", report: report, title: "Imagen #{n+1}", f: f, n: n%>
-        <% end %>
-      <% end %>
-    </div>
-  </noscript>
 
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

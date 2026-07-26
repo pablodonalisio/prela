@@ -8,8 +8,12 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   private
 
   def service_date_stats
-    create_table_with_service_dates
-    foot_notes
+    if location_equipment.service_kinds.any?
+      create_table_with_service_dates
+      foot_notes
+    else
+      @pdf.text "Sin servicios", size: 10
+    end
   end
 
   def create_table_with_service_dates
@@ -24,7 +28,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def equipment_rows
-    LocationEquipment::SERVICE_KINDS[equipment.kind].map do |service_kind|
+    location_equipment.service_kinds.map do |service_kind|
       send("#{service_kind}_dates_row")
     end
   end

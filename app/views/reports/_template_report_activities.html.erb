@@ -1,0 +1,19 @@
+<%# locals: (rows:) %>
+<table class="template-report__table">
+  <thead>
+    <tr>
+      <th><%= t("reports.template_report.table.description") %></th>
+      <th><%= t("reports.template_report.table.kind") %></th>
+      <th><%= t("reports.template_report.table.date") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% rows.each do |row| %>
+      <tr>
+        <td><%= row[:description] %></td>
+        <td class="template-report__table-value"><%= row[:kind] %></td>
+        <td class="template-report__table-value"><%= row[:date] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

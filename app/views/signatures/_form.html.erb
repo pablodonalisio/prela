@@ -1,0 +1,11 @@
+<%= simple_form_for signature do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :title, label: "Cargo" %>
+  <%= f.input :image, label: "Imagen", as: :file, input_html: { accept: "image/*" } %>
+  <% if signature.image.attached? %>
+    <div class="mb-3">
+      <%= image_tag signature.image.variant(resize_to_limit: [200, 100]), alt: signature.name, class: "img-fluid" %>
+    </div>
+  <% end %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

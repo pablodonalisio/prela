@@ -1,0 +1,14 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.remove @equipment_kind %>
+<% if policy_scope(EquipmentKind).none? %>
+  <%= turbo_stream.append "equipment_kinds" do %>
+    <%= render "shared/empty_collection",
+               id: "equipment_kinds_empty",
+               message: "No hay tipos de activos todavía.",
+               action_text: current_user.admin? ? "Agregar" : nil,
+               action_path: current_user.admin? ? new_equipment_kind_path : nil %>
+  <% end %>
+<% end %>

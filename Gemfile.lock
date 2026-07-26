@@ -133,6 +133,8 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.6.2)
+    discard (1.4.0)
+      activerecord (>= 4.2, < 9.0)
     dockerfile-rails (1.7.10)
       rails (>= 3.0.0)
     dotenv (3.1.8)
@@ -485,6 +487,7 @@ DEPENDENCIES
   dartsass-sprockets
   debug
   devise (~> 4.9)
+  discard (~> 1.4)
   dockerfile-rails (>= 1.5)
   dotenv-rails
   error_highlight (>= 0.4.0)

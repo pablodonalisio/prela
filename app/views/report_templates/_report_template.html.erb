@@ -1,0 +1,37 @@
+<%= turbo_frame_tag report_template do %>
+  <div class="bg-secondary rounded p-3">
+    <div class="d-flex align-items-start align-items-md-center gap-3 flex-column flex-md-row">
+      <div class="flex-grow-1 min-w-0">
+        <h5 class="mb-2 text-white"><%= report_template.name %></h5>
+
+        <div class="d-flex flex-wrap gap-2">
+          <% if report_template.active_sections.any? %>
+            <% report_template.active_sections.each do |section| %>
+              <span class="badge rounded-pill bg-primary bg-opacity-25 text-light border border-primary border-opacity-25">
+                <%= t("activerecord.attributes.report_template.sections.#{section}") %>
+              </span>
+            <% end %>
+          <% else %>
+            <span class="badge rounded-pill text-bg-dark">Sin secciones</span>
+          <% end %>
+
+          <span class="badge rounded-pill text-bg-dark">
+            <%= report_template.location_equipments_count %>
+            <%= report_template.location_equipments_count == 1 ? "activo" : "activos" %> usándolo
+          </span>
+        </div>
+      </div>
+
+      <% if current_user.admin? %>
+        <div class="flex-shrink-0 align-self-end align-self-md-center">
+          <%= render "shared/dropdown" do %>
+            <%= render "shared/button_box",
+                       edit_path: edit_report_template_path(report_template),
+                       delete_path: report_template_path(report_template),
+                       confirm: "¿Seguro que querés borrar esta plantilla de informe?" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

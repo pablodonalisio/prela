@@ -1,0 +1,33 @@
+<%# locals: (items:) %>
+<% show_optimal = items.any? { |item| item[:optimal].present? } %>
+<table class="template-report__table">
+  <thead>
+    <tr>
+      <th><%= t("reports.template_report.table.parameter") %></th>
+      <th><%= t("reports.template_report.table.value") %></th>
+      <% if show_optimal %>
+        <th><%= t("reports.template_report.table.optimal") %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% items.each do |item| %>
+      <% value_classes = ["template-report__table-value"] %>
+      <% value_classes << "template-report__table-value--ok" if item[:status] == :ok %>
+      <% value_classes << "template-report__table-value--not-ok" if item[:status] == :not_ok %>
+      <tr>
+        <td><%= item[:name] %></td>
+        <td class="<%= value_classes.join(" ") %>"><%= item[:value] %></td>
+        <% if show_optimal %>
+          <td class="template-report__table-optimal">
+            <% if item[:optimal].present? %>
+              <%= item[:optimal] %><% if item[:units].present? %> <%= item[:units] %><% end %>
+            <% else %>
+              —
+            <% end %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

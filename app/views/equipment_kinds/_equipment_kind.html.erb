@@ -1,0 +1,30 @@
+<%= turbo_frame_tag equipment_kind do %>
+  <div class="bg-secondary rounded p-3">
+    <div class="d-flex align-items-start align-items-md-center gap-3 flex-column flex-md-row">
+      <div class="flex-grow-1 min-w-0">
+        <h5 class="mb-1 text-white"><%= equipment_kind.name %></h5>
+        <% if equipment_kind.description.present? %>
+          <p class="text-white-50 small mb-2"><%= equipment_kind.description %></p>
+        <% end %>
+
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge rounded-pill text-bg-dark">
+            <%= equipment_kind.equipments_count %>
+            <%= equipment_kind.equipments_count == 1 ? "equipo" : "equipos" %>
+          </span>
+        </div>
+      </div>
+
+      <% if current_user.admin? %>
+        <div class="flex-shrink-0 align-self-end align-self-md-center">
+          <%= render "shared/dropdown" do %>
+            <%= render "shared/button_box",
+                       edit_path: edit_equipment_kind_path(equipment_kind),
+                       delete_path: equipment_kind_path(equipment_kind),
+                       confirm: "¿Seguro que querés borrar este tipo de equipo?" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

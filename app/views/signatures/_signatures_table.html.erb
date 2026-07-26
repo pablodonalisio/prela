@@ -1,0 +1,9 @@
+<tbody id="signatures">
+  <% if signatures.any? %>
+    <%= render partial: "signatures/signature_table_row", collection: signatures, as: :signature %>
+  <% else %>
+    <tr id="empty_signatures">
+      <td colspan="4" class="text-muted">No hay firmas cargadas.</td>
+    </tr>
+  <% end %>
+</tbody>

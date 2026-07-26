@@ -1,9 +1,11 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <%= render "shared/content_header", title: "Activos" do %>
-    <% if current_user.admin? %>
+  <%= render "navbar", active: "location_equipments" %>
+
+  <% if current_user.admin? %>
+    <div class="d-flex align-items-center flex-wrap m-4 gap-2">
       <%= render "shared/button_link", text: "Agregar",
-                                      path: new_location_equipment_path %>
-    <% end %>
+                                       path: new_location_equipment_path %>
+    </div>
   <% end %>
 
   <%= render "shared/items", collection: @location_equipments %>

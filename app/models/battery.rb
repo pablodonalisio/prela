@@ -3,4 +3,6 @@ class Battery < ApplicationRecord
   has_many :equipment_supplies, as: :suppliable, dependent: :destroy
 
   validates :model, :voltage, :amps, presence: true
+
+  alias_attribute :name, :model
 end

@@ -1,7 +1,11 @@
 <%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <%= render "shared/content_header", title: "Equipos" do %>
-    <%= render "shared/button_link", text: "Agregar",
-                                    path: new_equipment_path %>
+  <%= render "location_equipments/navbar", active: "equipment" %>
+
+  <% if current_user.admin? %>
+    <div class="d-flex align-items-center flex-wrap m-4 gap-2">
+      <%= render "shared/button_link", text: "Agregar",
+                                       path: new_equipment_path %>
+    </div>
   <% end %>
 
   <%= render "shared/items", collection: @equipment %>

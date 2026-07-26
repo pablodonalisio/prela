@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_26_172935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_clients_on_discarded_at"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -137,9 +139,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
   end
 
   create_table "equipment", force: :cascade do |t|
-    t.integer "kind", null: false
     t.string "brand"
-    t.string "model", null: false
+    t.string "model"
     t.string "technical_model"
     t.float "kva"
     t.string "manual"
@@ -152,6 +153,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
     t.string "generator_model"
     t.boolean "is_triphase"
     t.string "size"
+    t.integer "equipment_kind_id"
+    t.string "name", null: false
+    t.jsonb "field_values", default: {}, null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_equipment_on_discarded_at"
+  end
+
+  create_table "equipment_kinds", force: :cascade do |t|
+    t.string "name"
+    t.jsonb "generic_fields", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.jsonb "specific_fields", default: {}, null: false
+    t.string "legacy_kind"
+    t.text "description"
+    t.string "normalized_name"
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_equipment_kinds_on_discarded_at"
+    t.index ["legacy_kind"], name: "index_equipment_kinds_on_legacy_kind", unique: true, where: "((legacy_kind IS NOT NULL) AND (discarded_at IS NULL))"
+    t.index ["name"], name: "index_equipment_kinds_on_name", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["normalized_name"], name: "index_equipment_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
@@ -221,8 +243,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
     t.date "last_electrical_approval"
     t.date "next_electrical_approval"
     t.string "condition", default: "Buena"
+    t.jsonb "field_values", default: {}, null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_location_equipments_on_discarded_at"
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
+  end
+
+  create_table "location_equipments_report_templates", id: false, force: :cascade do |t|
+    t.bigint "location_equipment_id", null: false
+    t.bigint "report_template_id", null: false
+    t.index ["location_equipment_id", "report_template_id"], name: "index_loc_equip_report_templates_uniqueness", unique: true
+    t.index ["location_equipment_id"], name: "idx_on_location_equipment_id_8af2e704ae"
+    t.index ["report_template_id"], name: "idx_on_report_template_id_468dab9b28"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -230,7 +263,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
     t.bigint "client_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
     t.index ["client_id"], name: "index_locations_on_client_id"
+    t.index ["discarded_at"], name: "index_locations_on_discarded_at"
   end
 
   create_table "power_unit_report_stats", force: :cascade do |t|
@@ -267,13 +302,69 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
   end
 
+  create_table "report_comments", force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.text "description", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id", "position"], name: "index_report_comments_on_report_id_and_position"
+    t.index ["report_id"], name: "index_report_comments_on_report_id"
+  end
+
+  create_table "report_tasks", force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.string "name", null: false
+    t.boolean "completed", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id", "position"], name: "index_report_tasks_on_report_id_and_position"
+    t.index ["report_id"], name: "index_report_tasks_on_report_id"
+  end
+
+  create_table "report_template_tasks", force: :cascade do |t|
+    t.bigint "report_template_id", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_template_id", "position"], name: "index_report_template_tasks_on_report_template_id_and_position"
+    t.index ["report_template_id"], name: "index_report_template_tasks_on_report_template_id"
+  end
+
+  create_table "report_templates", force: :cascade do |t|
+    t.string "name", null: false
+    t.jsonb "equipment_specifications", default: {}, null: false
+    t.jsonb "location_specifications", default: {}, null: false
+    t.jsonb "measurements", default: {}, null: false
+    t.jsonb "room_specifications", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "normalized_name"
+    t.index ["normalized_name"], name: "index_report_templates_on_normalized_name", unique: true
+  end
+
   create_table "reports", force: :cascade do |t|
     t.bigint "location_equipment_id", null: false
     t.text "observations"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "date"
+    t.bigint "report_template_id"
+    t.jsonb "field_values", default: {}, null: false
+    t.integer "number"
+    t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
+    t.index ["report_template_id"], name: "index_reports_on_report_template_id"
+  end
+
+  create_table "reports_signatures", id: false, force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.bigint "signature_id", null: false
+    t.index ["report_id", "signature_id"], name: "index_reports_signatures_uniqueness", unique: true
+    t.index ["report_id"], name: "index_reports_signatures_on_report_id"
+    t.index ["signature_id"], name: "index_reports_signatures_on_signature_id"
   end
 
   create_table "room_report_stats", force: :cascade do |t|
@@ -300,6 +391,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
     t.datetime "updated_at", null: false
     t.index ["activity_id"], name: "index_service_dates_on_activity_id"
     t.index ["location_equipment_id"], name: "index_service_dates_on_location_equipment_id"
+  end
+
+  create_table "signatures", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "title", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_signatures_on_discarded_at"
   end
 
   create_table "ups_report_stats", force: :cascade do |t|
@@ -346,9 +446,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_30_144126) do
   add_foreign_key "failures", "location_equipments"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
+  add_foreign_key "location_equipments_report_templates", "location_equipments"
+  add_foreign_key "location_equipments_report_templates", "report_templates"
   add_foreign_key "locations", "clients"
   add_foreign_key "power_unit_report_stats", "reports"
+  add_foreign_key "report_comments", "reports"
+  add_foreign_key "report_tasks", "reports"
+  add_foreign_key "report_template_tasks", "report_templates"
   add_foreign_key "reports", "location_equipments"
+  add_foreign_key "reports", "report_templates"
+  add_foreign_key "reports_signatures", "reports"
+  add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
   add_foreign_key "service_dates", "activities"
   add_foreign_key "service_dates", "location_equipments"

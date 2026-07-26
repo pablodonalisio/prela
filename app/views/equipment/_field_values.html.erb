@@ -1,0 +1,37 @@
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    Tipo de activo
+  </strong>
+  <%= equipment.equipment_kind&.name || "—" %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    Nombre
+  </strong>
+  <%= equipment.name %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name(:brand) %>
+  </strong>
+  <%= equipment.brand.presence || "—" %>
+</p>
+<p>
+  <strong class="text-bg-primary p-1 rounded me-2">
+    <%= Equipment.human_attribute_name(:model) %>
+  </strong>
+  <%= equipment.model.presence || "—" %>
+</p>
+<% equipment.equipment_kind&.generic_fields&.each do |key, definition| %>
+  <% value = equipment.field_values[key] %>
+  <p>
+    <strong class="text-bg-primary p-1 rounded me-2">
+      <%= definition["name"] %>
+    </strong>
+    <% if definition["type"] == "boolean" %>
+      <%= value ? "Si" : "No" %>
+    <% else %>
+      <%= value.presence || "—" %>
+    <% end %>
+  </p>
+<% end %>

@@ -4,11 +4,33 @@ RSpec.describe "/location_equipments", type: :request do
   before { sign_in create(:admin) }
 
   describe "GET /new" do
+    it "renders a successful response with the single-step form" do
+      get new_location_equipment_url
+      expect(response).to be_successful
+      expect(response.body).to include("Cliente")
+      expect(response.body).to include("Sala")
+      expect(response.body).to include("Piso")
+      expect(response.body).to include("Condición")
+      expect(response.body).to include("Detalles")
+      expect(response.body).to include("Aceptar")
+    end
+  end
+
+  describe "GET /location_inputs" do
     let(:client) { create(:client) }
 
-    it "renders a successful response and responds with HTML" do
-      get new_location_equipment_url, params: {client_id: client.id}
+    it "returns a turbo frame with locations for the given client" do
+      location = create(:location, client: client)
+      get location_inputs_location_equipments_url, params: {client_id: client.id}
       expect(response).to be_successful
+      expect(response.body).to include("le_location_inputs")
+      expect(response.body).to include(location.name)
+    end
+
+    it "returns an empty turbo frame when client is not found" do
+      get location_inputs_location_equipments_url, params: {client_id: 0}
+      expect(response).to be_successful
+      expect(response.body).to include("le_location_inputs")
     end
   end
 
@@ -70,7 +92,7 @@ RSpec.describe "/location_equipments", type: :request do
     let(:equipment) { create(:equipment) }
     let(:location) { create(:location) }
     let(:valid_attributes) { {equipment_id: equipment.id, location_id: location.id} }
-    let(:invalid_attributes) { {equipment_id: ""} }
+    let(:invalid_attributes) { {equipment_id: "", location_id: ""} }
 
     context "with valid parameters" do
       it "creates a new LocationEquipment and responds with HTML" do
@@ -88,12 +110,46 @@ RSpec.describe "/location_equipments", type: :request do
         }.to change(LocationEquipment, :count).by(0)
         expect(response).to have_http_status(:unprocessable_entity)
       end
+
+      it "renders the new template with step 2 and responds with HTML" do
+        post location_equipments_url, params: {location_equipment: invalid_attributes}
+        expect(response.body).to include("Sede")
+        expect(response.body).to include("Sala")
+        expect(response.body).to include("Piso")
+        expect(response.body).to include("Condición")
+        expect(response.body).to include("Detalles")
+        expect(response.body).to include("Aceptar")
+      end
+    end
+  end
+
+  describe "GET /field_inputs" do
+    let(:equipment) { create(:equipment) }
+
+    it "renders a turbo frame with specific_fields inputs for the equipment's kind" do
+      get field_inputs_location_equipments_url, params: {equipment_id: equipment.id}
+      expect(response).to be_successful
+      expect(response.body).to include("turbo-frame")
+      expect(response.body).to include("le_field_inputs")
+    end
+
+    it "returns an empty turbo frame when equipment is not found" do
+      get field_inputs_location_equipments_url, params: {equipment_id: 0}
+      expect(response).to be_successful
+      expect(response.body).to include("le_field_inputs")
     end
   end
 
   describe "PUT /update" do
     let!(:location_equipment) { create(:location_equipment) }
     let(:new_attributes) { {zone: "new zone"} }
+    let(:report_template) { create(:report_template, :with_measurements) }
+
+    it "assigns report templates to the location equipment" do
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {report_template_ids: [report_template.id]}}
+      expect(location_equipment.reload.report_templates).to include(report_template)
+    end
 
     it "updates the requested location equipment and responds with HTML" do
       put location_equipment_url(location_equipment), params: {location_equipment: new_attributes}
@@ -109,15 +165,40 @@ RSpec.describe "/location_equipments", type: :request do
     end
   end
 
+  describe "PUT /update serial_number and code" do
+    let!(:location_equipment) { create(:location_equipment) }
+
+    it "updates serial_number and code on the location equipment" do
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {serial_number: "SN-999", code: "CODE-1"}}
+      location_equipment.reload
+      expect(location_equipment.serial_number).to eq("SN-999")
+      expect(location_equipment.code).to eq("CODE-1")
+    end
+  end
+
+  describe "PUT /update field_values" do
+    let!(:location_equipment) { create(:location_equipment) }
+
+    it "updates field_values on the location equipment" do
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {field_values: {"form_link" => "https://example.com"}}}
+      location_equipment.reload
+      expect(location_equipment.field_values["form_link"]).to eq("https://example.com")
+    end
+  end
+
   describe "DELETE /destroy" do
     let!(:location_equipment) { create(:location_equipment) }
 
-    it "destroys the requested location equipment and responds with HTML" do
+    it "soft-deletes the requested location equipment and responds with HTML" do
       expect {
         delete location_equipment_url(location_equipment)
-      }.to change(LocationEquipment, :count).by(-1)
+      }.to change(LocationEquipment.kept, :count).by(-1)
+      expect(location_equipment.reload).to be_discarded
       expect(response).to redirect_to(location_equipments_url)
     end
+
 
     it "destroys the requested location equipment and responds with turbo_stream" do
       delete location_equipment_url(location_equipment), as: :turbo_stream

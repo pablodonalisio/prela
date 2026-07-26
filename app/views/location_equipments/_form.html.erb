@@ -1,29 +1,126 @@
-<%= simple_form_for location_equipment, html: { data: { controller: "location-equipment-form"}} do |f| %>
-  <%= f.hidden_field :client_id, value: @client.id %>
-  <%= f.input :location_id, label: "Sede",
-                            collection: locations.pluck(:name, :id),
-                            prompt: "Seleccione una sede" %>
-  <%= f.input :zone, label: "Sala" %>
-  <%= f.input :floor, label: "Piso" %>
-  <%= f.input :equipment_id, label: "Equipo",
-                              collection: Equipment.all.map { |e| [e.model, e.id, { 'data-kind' => e.kind }] },
-                              prompt: "Seleccione un equipo",
-                              input_html: { data: { location_equipment_form_target: "equipment", action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
-  <%= f.input :condition, label: "Condición", collection: LocationEquipment::CONDITIONS.keys, include_blank: false %>
+<%= simple_form_for location_equipment,
+      html: { data: { controller: "location-equipment-form" }} do |f| %>
 
-  <fieldset data-location-equipment-form-target="upsInputs" class="d-none">
-    <%= render "location_equipments/ups_form", f: f %>
-  </fieldset>
-  <fieldset data-location-equipment-form-target="powerUnitInputs" class="d-none">
-    <%= render "location_equipments/power_unit_form", f: f %>
-  </fieldset>
-  <fieldset data-location-equipment-form-target="electricalPanelInputs" class="d-none">
-    <%= render "location_equipments/electrical_panel", f: f %>
-  </fieldset>
-  <fieldset data-location-equipment-form-target="buildingInputs" class="d-none">
-    <%= render "location_equipments/building_form", f: f %>
-  </fieldset>
+  <%# ── Location ─────────────────────────────────────────── %>
+  <div class="card mb-3 border-0 shadow-sm">
+    <div class="card-header fw-semibold text-white small text-uppercase">
+      <i class="fa fa-map-marker-alt me-2 text-primary"></i>Locación
+    </div>
+    <div class="card-body pb-1">
 
-  <%= f.input :details, label: "Detalles" %>
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+      <% unless location_equipment.persisted? %>
+        <%# Client selector — only on new records %>
+        <div class="mb-3">
+          <label class="form-label">Cliente</label>
+          <select class="form-select"
+                  data-location-equipment-form-target="client"
+                  data-action="change->location-equipment-form#loadLocations">
+            <option value="">Seleccione un cliente</option>
+            <% Client.visible.order(:name).each do |client| %>
+              <option value="<%= client.id %>"><%= client.name %></option>
+            <% end %>
+          </select>
+        </div>
+      <% end %>
+
+      <%# Location select — loaded dynamically on new, static on edit %>
+      <% if location_equipment.persisted? %>
+        <%= f.input :location_id, label: "Sede",
+                                  collection: locations.pluck(:name, :id),
+                                  prompt: "Seleccione una sede",
+                                  wrapper_html: { class: "mb-3" } %>
+      <% else %>
+        <%= turbo_frame_tag "le_location_inputs" do %>
+        <% end %>
+      <% end %>
+
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <%= f.input :zone, label: "Sala", wrapper_html: { class: "mb-3" } %>
+        </div>
+        <div class="col-sm-6">
+          <%= f.input :floor, label: "Piso", wrapper_html: { class: "mb-3" } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Equipment ───────────────────────────────────────── %>
+  <div class="card mb-3 border-0 shadow-sm">
+    <div class="card-header fw-semibold text-white small text-uppercase">
+      <i class="fa fa-plug me-2 text-primary"></i>Equipo
+    </div>
+    <div class="card-body pb-1">
+      <%= f.input :equipment_id, label: "Equipo",
+                                 collection: Equipment.visible.map { |e| [e.name, e.id] },
+                                 prompt: "Seleccione un equipo",
+                                 wrapper_html: { class: "mb-3" },
+                                 input_html: { data: { controller: "searchable-select",
+                                                       location_equipment_form_target: "equipment",
+                                                       action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
+      <p class="small text-white mt-n2 mb-3">
+        ¿No encontrás el equipo?
+        <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-primary" %>.
+      </p>
+
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <%= f.input :serial_number, wrapper_html: { class: "mb-3" } %>
+        </div>
+        <div class="col-sm-6">
+          <%= f.input :code, wrapper_html: { class: "mb-3" } %>
+        </div>
+      </div>
+
+      <%= turbo_frame_tag "le_field_inputs",
+            src: location_equipment.persisted? ?
+              field_inputs_location_equipments_path(
+                equipment_id: location_equipment.equipment_id,
+                location_equipment_id: location_equipment.id
+              ) : nil do %>
+      <% end %>
+    </div>
+  </div>
+
+      <div class="card mb-3 border-0 shadow-sm">
+    <div class="card-header fw-semibold text-white small text-uppercase">
+      <i class="fa fa-file-lines me-2 text-primary"></i>Plantillas de informe
+    </div>
+    <div class="card-body pb-1">
+      <%= f.input :report_template_ids,
+                  label: "Plantillas asociadas",
+                  collection: ReportTemplate.order(:name).map { |t| [t.name, t.id] },
+                  input_html: { multiple: true, class: "form-select" },
+                  hint: "Opcional. Facilita la selección al crear informes con plantilla.",
+                  wrapper_html: { class: "mb-3" } %>
+    </div>
+  </div>
+
+  <%# ── Others ─────────────────────────────────────────── %>
+  <div class="card mb-3 border-0 shadow-sm">
+    <div class="card-header fw-semibold text-white small text-uppercase">
+      <i class="fa fa-sliders-h me-2 text-primary"></i>Otros
+    </div>
+    <div class="card-body pb-1">
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <%= f.input :status, label: "Estado",
+                               collection: LocationEquipment.enum_attributes_for_select("status"),
+                               include_blank: false,
+                               wrapper_html: { class: "mb-3" } %>
+        </div>
+        <div class="col-sm-6">
+          <%= f.input :condition, label: "Condición",
+                                  collection: LocationEquipment::CONDITIONS.keys,
+                                  include_blank: false,
+                                  wrapper_html: { class: "mb-3" } %>
+        </div>
+      </div>
+      <%= f.input :details, label: "Detalles", input_html: { rows: 3 }, wrapper_html: { class: "mb-3" } %>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end mt-4">
+    <%= f.button :submit, "Aceptar", class: "btn btn-success px-4" %>
+  </div>
 <% end %>

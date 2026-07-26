@@ -1,0 +1,182 @@
+<% location_equipment = report.location_equipment %>
+<% client = location_equipment.client %>
+<% equipment_rows = template_report_equipment_rows(report) %>
+<% location_rows = template_report_location_rows(report) %>
+<% measurement_rows = template_report_measurement_rows(report) %>
+<% room_rows = template_report_room_rows(report) %>
+<% maintenance_rows = template_report_maintenance_rows(report) %>
+<% activity_rows = template_report_activity_rows(report) %>
+<% section_number = 0 %>
+
+<article class="template-report"
+         data-report-code="<%= report.report_code %>"
+         data-report-footer-label="<%= t("reports.template_report.footer_report_label") %>">
+  <header class="template-report__header">
+    <div class="template-report__header-row">
+      <div class="template-report__header-cell template-report__header-cell--logo">
+        <%= image_tag "prela_logotipo-1.png", alt: "Prela", class: "template-report__logo" %>
+      </div>
+      <div class="template-report__header-cell template-report__header-cell--title template-report__header-cell--span-2">
+        <h1 class="template-report__title"><%= t("reports.template_report.title") %></h1>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.report_code") %></span>
+        <span class="template-report__meta-value"><%= report.report_code %></span>
+      </div>
+    </div>
+
+    <div class="template-report__header-row">
+      <div class="template-report__header-cell template-report__header-cell--logo">
+        <% if client.avatar.attached? %>
+          <%= image_tag client.avatar.variant(resize_to_limit: [280, 140]),
+                        alt: client.name,
+                        class: "template-report__logo template-report__logo--client" %>
+        <% end %>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.client") %></span>
+        <span class="template-report__meta-value"><%= client.name %></span>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.service_date") %></span>
+        <span class="template-report__meta-value">
+          <% if report.date.present? %>
+            <%= report.date.strftime("%d/%m/%Y - %H:%M") %>
+          <% end %>
+        </span>
+      </div>
+      <div class="template-report__header-cell">
+        <span class="template-report__meta-label"><%= t("reports.template_report.service_type") %></span>
+        <span class="template-report__meta-value"><%= t("reports.template_report.service_type_preventive") %></span>
+      </div>
+    </div>
+  </header>
+
+  <% section_number += 1 %>
+  <section class="template-report__section">
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= t("reports.template_report.equipment_section") %>
+    </h2>
+    <%= render "template_report_fields", rows: equipment_rows %>
+  </section>
+
+  <% section_number += 1 %>
+  <section class="template-report__section">
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= t("reports.template_report.location_section") %>
+    </h2>
+    <%= render "template_report_fields", rows: location_rows %>
+  </section>
+
+  <% if measurement_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.measurements_section") %>
+      </h2>
+      <%= render "template_report_cards", items: measurement_rows %>
+    </section>
+  <% end %>
+
+  <% if room_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %>
+        <%= t("activerecord.attributes.report_template.sections.room_specifications") %>
+      </h2>
+      <%= render "template_report_cards", items: room_rows %>
+    </section>
+  <% end %>
+
+  <% if report.report_tasks.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.tasks_section") %>
+      </h2>
+      <ul class="template-report__tasks">
+        <% report.report_tasks.each_with_index do |task, index| %>
+          <li class="template-report__task">
+            <span class="template-report__task-index">[<%= format("%02d", index + 1) %>]</span>
+            <span class="template-report__task-name"><%= task.name %></span>
+            <span class="template-report__task-status <%= task.completed? ? "template-report__task-status--done" : "template-report__task-status--pending" %>">
+              <%= task.completed? ? t("reports.template_report.task_completed") : t("reports.template_report.task_pending") %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <% if report.report_comments.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.comments_section") %>
+      </h2>
+      <table class="template-report__table">
+        <thead>
+          <tr>
+            <th class="template-report__table-number"><%= t("reports.template_report.table.number") %></th>
+            <th><%= t("reports.template_report.table.description") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% report.report_comments.each_with_index do |comment, index| %>
+            <tr>
+              <td class="template-report__table-number"><%= index + 1 %></td>
+              <td><%= simple_format(comment.description) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
+
+  <% if maintenance_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.maintenance_section") %>
+      </h2>
+      <%= render "template_report_maintenance", rows: maintenance_rows %>
+    </section>
+  <% end %>
+
+  <% if activity_rows.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.activities_section") %>
+      </h2>
+      <%= render "template_report_activities", rows: activity_rows %>
+    </section>
+  <% end %>
+
+  <% if report.images.attached? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.images_section") %>
+      </h2>
+      <div class="template-report__images">
+        <% report.images.each do |image| %>
+          <%= link_to url_for(image), target: "_blank", rel: "noopener", class: "template-report__image-link" do %>
+            <%= image_tag image.variant(resize_to_limit: [900, 900]), alt: image.filename.to_s %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if report.signatures.any? %>
+    <% section_number += 1 %>
+    <section class="template-report__section">
+      <h2 class="template-report__section-title">
+        <%= format("%.1f", section_number) %> <%= t("reports.template_report.signatures_section") %>
+      </h2>
+      <%= render "template_report_signatures", signatures: report.signatures.order(:name) %>
+    </section>
+  <% end %>
+</article>

@@ -6,7 +6,9 @@ FactoryBot.define do
     equipment { create(:equipment) }
     details { "Tiene 2 battery pack" }
     serial_number { "lS1051004604" }
+    code { "EQ-001" }
     status { "active" }
     condition { "Buena" }
+    field_values { {} }
   end
 end

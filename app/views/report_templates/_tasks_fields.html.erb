@@ -1,0 +1,25 @@
+<%# locals: (f:, report_template:) %>
+<div class="form-group mb-4" data-controller="nested-form">
+  <label><%= t("activerecord.attributes.report_template.tasks") %></label>
+  <div class="border rounded p-3">
+    <div data-nested-form-target="container">
+      <%= f.simple_fields_for :report_template_tasks do |task_form| %>
+        <%= render "report_template_task_fields", f: task_form %>
+      <% end %>
+    </div>
+
+    <template data-nested-form-target="template">
+      <%= f.simple_fields_for :report_template_tasks, ReportTemplateTask.new, child_index: "NEW_RECORD" do |task_form| %>
+        <%= render "report_template_task_fields", f: task_form %>
+      <% end %>
+    </template>
+  </div>
+
+  <div class="my-2">
+    <button type="button"
+            class="btn btn-sm btn-outline-primary"
+            data-action="nested-form#add">
+      <%= t("activerecord.attributes.report_template.add_task") %>
+    </button>
+  </div>
+</div>

@@ -51,53 +51,50 @@ RSpec.describe LocationEquipment, type: :model do
     end
   end
 
-  context "maintenance scopes" do
-    let(:ups) { create(:equipment, kind: :ups) }
-    let(:power_unit) { create(:equipment, kind: :power_unit) }
+  describe ".visible" do
+    it "excludes discarded records and records with discarded ancestors" do
+      visible = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      discarded = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      discarded.discard
+      with_discarded_location = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_location.location.discard
+      with_discarded_client = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_client.location.client.discard
+      with_discarded_equipment = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_equipment.equipment.discard
+      with_discarded_kind = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      with_discarded_kind.equipment.equipment_kind.discard
 
-    let!(:ups_with_overdue_battery_change) { create(:location_equipment, equipment: ups) }
-    let(:ups_battery_overdue_date) { ups_with_overdue_battery_change.service_dates.create(kind: :battery_change, date: Date.yesterday) }
-
-    let!(:power_unit_close_overdue_service) { create(:location_equipment, equipment: power_unit) }
-    let(:power_unit_service_overdue_date) { power_unit_close_overdue_service.service_dates.create(kind: :service, date: 45.days.from_now) }
-    let!(:power_unit_with_overdue_battery_change) { create(:location_equipment, equipment: power_unit) }
-    let(:power_unit_battery_overdue_date) { power_unit_with_overdue_battery_change.service_dates.create(kind: :battery_change, date: Date.yesterday) }
-
-    let!(:power_unit_without_overdue_maintenance) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
-    let(:power_unit_service_date) { power_unit_without_overdue_maintenance.service_dates.create(kind: :service, date: 1.year.from_now) }
-
-    let(:ups_with_overdue_maintenance) { LocationEquipment.with_overdue_maintenance(:ups) }
-    let(:power_units_with_overdue_maintenance) { LocationEquipment.with_overdue_maintenance(:power_unit) }
-
-    before do
-      ServiceDate.delete_all # Remove default next service dates created by after_create callback
+      expect(LocationEquipment.visible).to include(visible)
+      expect(LocationEquipment.visible).not_to include(
+        discarded, with_discarded_location, with_discarded_client, with_discarded_equipment, with_discarded_kind
+      )
+      expect(with_discarded_client.reload).to be_kept
     end
 
-    it "return ups with overdue maintenance" do
-      ups_battery_overdue_date
-      expect(ups_with_overdue_maintenance.count).to eq(1)
-      expect(ups_with_overdue_maintenance).to include(ups_with_overdue_battery_change)
-    end
+    it "includes records again after undiscarding an ancestor" do
+      location_equipment = create(:location_equipment, equipment: create(:equipment, equipment_kind: create(:equipment_kind)))
+      location_equipment.location.client.discard
 
-    it "return power units with overdue maintenance" do
-      power_unit_service_overdue_date
-      power_unit_battery_overdue_date
-      power_unit_service_date
-      expect(power_units_with_overdue_maintenance.count).to eq(2)
-      expect(power_units_with_overdue_maintenance).to include(power_unit_close_overdue_service, power_unit_with_overdue_battery_change)
+      expect(LocationEquipment.visible).not_to include(location_equipment)
+
+      location_equipment.location.client.undiscard
+
+      expect(LocationEquipment.visible).to include(location_equipment)
     end
   end
 
+
   context "methods" do
-    let(:ups) { create(:location_equipment, equipment: create(:equipment, kind: :ups)) }
-    let(:power_unit) { create(:location_equipment, equipment: create(:equipment, kind: :power_unit)) }
-    let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, kind: :electrical_panel)) }
-    let(:building) { create(:location_equipment, equipment: create(:equipment, kind: :building)) }
+    let(:ups) { create(:location_equipment, equipment: create(:equipment, :ups)) }
+    let(:power_unit) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
+    let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, :electrical_panel)) }
+    let(:building) { create(:location_equipment, equipment: create(:equipment, :building)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
     describe "next_service_dates" do
       let!(:location_equipment) do
-        location_equipment = create(:location_equipment, equipment: create(:equipment, kind: :power_unit))
+        location_equipment = create(:location_equipment, equipment: create(:equipment, :power_unit))
         location_equipment.service_dates.destroy_all # Remove default next service dates created by after_create callback
         location_equipment
       end
@@ -199,7 +196,7 @@ RSpec.describe LocationEquipment, type: :model do
 
   context "SERVICE_KINDS constant" do
     it "defines service kinds for each equipment kind" do
-      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment.kinds.keys.size)
+      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment::LEGACY_KINDS.size)
     end
   end
 
@@ -207,6 +204,22 @@ RSpec.describe LocationEquipment, type: :model do
     let(:location_equipment) { create(:location_equipment, condition: "Buena") }
     it "should return condition color to display" do
       expect(location_equipment.condition_color).to eq("success")
+    end
+  end
+
+  context "model attributes" do
+    it "stores serial_number and code as columns" do
+      location_equipment = create(:location_equipment, serial_number: "SN-123", code: "ABC-123")
+      expect(location_equipment.serial_number).to eq("SN-123")
+      expect(location_equipment.code).to eq("ABC-123")
+    end
+  end
+
+  context "field_values" do
+    it "can store arbitrary key/value pairs" do
+      location_equipment = build(:location_equipment, field_values: {"form_link" => "https://example.com", "battery_change_interval" => 2})
+      expect(location_equipment.field_values["form_link"]).to eq("https://example.com")
+      expect(location_equipment.field_values["battery_change_interval"]).to eq(2)
     end
   end
 end

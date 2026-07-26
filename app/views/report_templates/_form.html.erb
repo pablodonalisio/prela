@@ -1,0 +1,13 @@
+<%= simple_form_for report_template do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+
+  <% ReportTemplate::SECTIONS.each do |section| %>
+    <%= render "section_fields",
+               section: section,
+               report_template: report_template %>
+  <% end %>
+
+  <%= render "tasks_fields", f: f, report_template: report_template %>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

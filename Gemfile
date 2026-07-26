@@ -92,3 +92,4 @@ gem "prawn"
 gem "prawn-table"
 
 gem "pundit", "~> 2.3"
+gem "discard", "~> 1.4"

@@ -1,0 +1,13 @@
+<% specific_fields = location_equipment.equipment&.equipment_kind&.specific_fields || {} %>
+<p class="text-white small text-uppercase fw-semibold mb-1 mt-2">Atributos</p>
+<dl class="row row-cols-2 g-0 mb-0 small">
+  <dt class="col text-body-secondary fw-normal"><%= LocationEquipment.human_attribute_name(:serial_number) %></dt>
+  <dd class="col mb-1"><%= location_equipment.serial_number.presence || "—" %></dd>
+  <dt class="col text-body-secondary fw-normal"><%= LocationEquipment.human_attribute_name(:code) %></dt>
+  <dd class="col mb-1"><%= location_equipment.code.presence || "—" %></dd>
+  <% specific_fields.each do |field_key, definition| %>
+    <% value = location_equipment.field_values[field_key] %>
+    <dt class="col text-body-secondary fw-normal"><%= definition["name"] %></dt>
+    <dd class="col mb-1"><%= value.presence || "—" %></dd>
+  <% end %>
+</dl>

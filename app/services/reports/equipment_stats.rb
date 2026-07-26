@@ -41,9 +41,10 @@ class Reports::EquipmentStats < Reports::Content
   end
 
   def equipment_name_row
-    return [{content: "Nombre del Tablero"}, {content: equipment.model.upcase, colspan: 2, align: :right}] if equipment.electrical_panel?
+    return [{content: "Nombre del Tablero"}, {content: equipment.name.upcase, colspan: 2, align: :right}] if equipment.electrical_panel?
 
-    [{content: "Marca - Modelo"}, {content: equipment.full_name, colspan: 2, align: :right}]
+    brand_model = [equipment.brand, equipment.model].compact.join(" - ")
+    [{content: "Marca - Modelo"}, {content: brand_model, colspan: 2, align: :right}]
   end
 
   def equipment_power_row

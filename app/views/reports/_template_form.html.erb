@@ -1,0 +1,81 @@
+<h2>Fecha</h2>
+<%= f.input :date,
+            as: :datetime,
+            label: "Fecha",
+            value: report.date || Time.now.in_time_zone,
+            start_year: 2016,
+            end_year: Date.today.year,
+            disabled: !current_user.admin? %>
+
+<% report_template = report.report_template || @all_templates&.first %>
+<% if report_template %>
+  <div data-controller="report-template-picker"
+       data-report-template-picker-base-url-value="<%= template_fields_location_equipment_reports_path(location_equipment) %>"
+       data-report-template-picker-report-id-value="<%= report.persisted? ? report.id : "" %>">
+
+    <h2>Plantilla</h2>
+
+    <% if @associated_templates&.any? %>
+      <p class="text-muted small">Plantillas asociadas al equipo</p>
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <% @associated_templates.each do |template| %>
+          <button type="button"
+                  class="btn btn-sm <%= report_template.id == template.id ? "btn-primary" : "btn-outline-primary" %>"
+                  data-action="report-template-picker#selectAssociated"
+                  data-report-template-picker-template-id-param="<%= template.id %>">
+            <%= template.name %>
+          </button>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= f.input :report_template_id,
+                label: "Buscar plantilla",
+                collection: @all_templates.map { |t| [t.name, t.id] },
+                selected: report_template.id,
+                include_blank: false,
+                input_html: {
+                  data: {
+                    report_template_picker_target: "select",
+                    action: "change->report-template-picker#reloadFields",
+                    controller: "searchable-select"
+                  }
+                } %>
+
+    <%= turbo_frame_tag "report_template_fields",
+                        src: template_fields_location_equipment_reports_path(
+                          location_equipment,
+                          report_template_id: report_template.id,
+                          report_id: (report.persisted? ? report.id : nil)
+                        ),
+                        data: { report_template_picker_target: "frame" } do %>
+      <%= render "template_fields", report: report, report_template: report_template %>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-warning">No hay plantillas de informe disponibles. Creá una desde Informes.</p>
+<% end %>
+
+<%= render "report_images", report: report, f: f %>
+
+<% selectable_signatures = Signature.kept.order(:name).to_a %>
+<% if report.persisted? %>
+  <% selectable_signatures |= report.signatures.merge(Signature.discarded).order(:name).to_a %>
+<% end %>
+<% if selectable_signatures.any? %>
+  <h2><%= t("reports.template_report.signatures_section") %></h2>
+  <div class="mb-3">
+    <%= f.collection_check_boxes :signature_ids, selectable_signatures, :id, :name do |b| %>
+      <div class="form-check">
+        <%= b.check_box class: "form-check-input" %>
+        <%= b.label class: "form-check-label" do %>
+          <%= b.text %>
+          <span class="text-muted">— <%= b.object.title %></span>
+          <% if b.object.discarded? %>
+            <span class="text-warning">(eliminada del catálogo)</span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

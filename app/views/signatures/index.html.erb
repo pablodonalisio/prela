@@ -1,0 +1,22 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <%= render "users/navbar", active: "signatures" %>
+
+  <%= render "shared/content_header", title: "Firmas" do %>
+    <%= render "shared/button_link", text: "Agregar",
+                                    path: new_signature_path %>
+  <% end %>
+
+  <div class="w-100 overflow-auto px-4">
+    <table class="table mt-4">
+      <thead class="thead-dark">
+        <tr>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Cargo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <%= render "signatures/signatures_table", signatures: @signatures %>
+    </table>
+  </div>
+<% end %>

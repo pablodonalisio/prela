@@ -1,4 +1,4 @@
-<%= render "shared/content_header", title: "#{@equipment.full_name.upcase}" do %>
+<%= render "shared/content_header", title: "#{@equipment.name.upcase}" do %>
   <%= render "shared/dropdown" do %>
     <%= render "shared/button_box", edit_path: edit_equipment_path(@equipment),
                                     delete_path: equipment_path(@equipment),
@@ -7,15 +7,7 @@
 <% end %>
 
 <div class="row mt-3">
-  <% if equipment.ups? %>
-    <%= render "ups_attributes", equipment: equipment %>
-  <% elsif equipment.power_unit? %>
-    <%= render "power_unit_attributes", equipment: equipment %>
-  <% elsif equipment.electrical_panel? %>
-    <%= render "electrical_panel_attributes", equipment: equipment %>
-  <% elsif equipment.building? %>
-    <%= render "building_attributes", equipment: equipment %>
-  <% end %>
+  <%= render "field_values", equipment: equipment %>
 </div>
 
 <div class="row mt-3">

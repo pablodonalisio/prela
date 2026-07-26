@@ -1,0 +1,16 @@
+<%= simple_form_for equipment_kind do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :description, label: "Descripción", required: false, hint: "Opcional." %>
+
+  <%= render "field_set_section",
+             field_set: "generic_fields",
+             label: "Campos genéricos",
+             equipment_kind: equipment_kind %>
+
+  <%= render "field_set_section",
+             field_set: "specific_fields",
+             label: "Campos específicos",
+             equipment_kind: equipment_kind %>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

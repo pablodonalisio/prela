@@ -16,7 +16,7 @@ RSpec.describe "Reports", type: :request do
       images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
     }.merge(equipment_report_params)}
   end
-  let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, kind: equipment_kind), location: create(:location, name: "Sala de Máquinas de Resonador")) }
+  let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, legacy_kind: equipment_kind), location: create(:location, name: "Sala de Máquinas de Resonador")) }
   let(:power_unit_report_params) do
     {
       power_unit_report_stat_attributes: {
@@ -230,6 +230,223 @@ RSpec.describe "Reports", type: :request do
       expect {
         delete location_equipment_report_path(report1.location_equipment, report1)
       }.to change(Report, :count).by(-1)
+    end
+  end
+
+  context "template-based report" do
+    let(:equipment_kind) { "ups" }
+    let(:report_template) { create(:report_template, :with_measurements, :with_tasks) }
+    let(:template_params) do
+      {
+        report: {
+          report_template_id: report_template.id,
+          date: Date.today,
+          field_values: {
+            measurements: {"1739280000" => "220.5"}
+          },
+          images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
+        }
+      }
+    end
+
+    describe "GET /new" do
+      it "renders the template form when report_mode is template" do
+        get new_location_equipment_report_path(location_equipment, report_mode: "template")
+        expect(response).to be_successful
+        expect(response.body).to include("Plantilla")
+      end
+    end
+
+    describe "GET /template_fields" do
+      it "returns dynamic fields for the selected template" do
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+        expect(response).to be_successful
+        expect(response.body).to include("Tensión L1")
+      end
+
+      it "preloads template tasks for a new report" do
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+        expect(response.body).to include("Limpieza general")
+        expect(response.body).to include("Verificación de torque")
+        expect(response.body).to include("Protocolo de tareas")
+      end
+
+      it "preloads comments from the previous template report" do
+        previous = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: 1.day.ago)
+        create(:report_comment, report: previous, description: "Comentario heredado", position: 0)
+
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+        expect(response.body).to include("Comentario heredado")
+        expect(response.body).to include("Comentarios y recomendaciones técnicas")
+      end
+    end
+
+    describe "POST /create" do
+      let(:request) do
+        post location_equipment_reports_path(location_equipment), params: template_params
+      end
+
+      it "creates a template-based report" do
+        expect { request }.to change(Report, :count).by(1)
+        expect(Report.last.template_based?).to be true
+        expect(Report.last.field_values.dig("measurements", "1739280000")).to eq("220.5")
+      end
+
+      it "seeds report tasks from the template" do
+        expect { request }.to change(ReportTask, :count).by(2)
+        expect(Report.last.report_tasks.order(:position).map(&:name)).to eq(
+          ["Limpieza general", "Verificación de torque"]
+        )
+      end
+
+      it "seeds comments from the previous template report" do
+        previous = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: 1.day.ago)
+        create(:report_comment, report: previous, description: "Comentario heredado", position: 0)
+
+        expect { request }.to change(ReportComment, :count).by(1)
+        expect(Report.order(:id).last.report_comments.map(&:description)).to eq(["Comentario heredado"])
+      end
+
+      it "does not attach a PDF" do
+        request
+        expect(Report.last.pdf).not_to be_attached
+      end
+
+      it "uploads images to the report" do
+        request
+        expect(Report.last.images).to be_attached
+      end
+
+      it "auto-assigns the template to the location equipment" do
+        request
+        expect(location_equipment.reload.report_templates).to include(report_template)
+      end
+    end
+
+    describe "PATCH /update" do
+      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment, report_template: report_template) }
+      let(:report_task) { template_report.report_tasks.find_by!(name: "Limpieza general") }
+      let(:request) do
+        patch location_equipment_report_path(location_equipment, template_report),
+          params: {
+            report: {
+              date: Date.today,
+              report_template_id: template_report.report_template_id,
+              field_values: {
+                measurements: {"1739280000" => "230.0"}
+              },
+              report_tasks_attributes: {
+                report_task.id.to_s => {
+                  id: report_task.id,
+                  name: "Limpieza general",
+                  completed: "1",
+                  position: 0
+                },
+                "1739289999" => {
+                  name: "Tarea adicional",
+                  completed: "0",
+                  position: 1
+                }
+              },
+              report_comments_attributes: {
+                "1739290000" => {
+                  description: "Nuevo comentario",
+                  position: 0
+                }
+              }
+            }
+          }
+      end
+
+      it "updates the template report" do
+        request
+        template_report.reload
+        expect(template_report.field_values.dig("measurements", "1739280000")).to eq("230.0")
+      end
+
+      it "updates and adds report tasks" do
+        existing_ids = template_report.report_tasks.pluck(:id)
+        request
+        template_report.reload
+        expect(report_task.reload).to be_completed
+        expect(template_report.report_tasks.map(&:name)).to include("Tarea adicional")
+        expect(template_report.report_tasks.where.not(id: existing_ids).pluck(:name)).to eq(["Tarea adicional"])
+      end
+
+      it "adds report comments" do
+        expect { request }.to change(ReportComment, :count).by(1)
+        expect(template_report.reload.report_comments.map(&:description)).to include("Nuevo comentario")
+      end
+
+      it "does not attach a PDF" do
+        request
+        expect(template_report.reload.pdf).not_to be_attached
+      end
+    end
+
+    describe "GET /show" do
+      let(:template_report) do
+        create(:report, :template_based, location_equipment: location_equipment, report_template: report_template).tap do |report|
+          report.report_tasks.find_by!(name: "Limpieza general").update!(completed: true)
+          create(:report_comment, report: report, description: "Comentario visible", position: 0)
+        end
+      end
+
+      it "returns a successful response" do
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "renders the modern template report layout" do
+        get location_equipment_report_path(location_equipment, template_report)
+        equipment = location_equipment.equipment
+
+        expect(response.body).to include("Informe de mantenimiento")
+        expect(response.body).to include(location_equipment.client.name)
+        expect(response.body).to include("Compañía / Cliente")
+        expect(response.body).to include("Preventivo")
+        expect(response.body).to include("1.0 Especificaciones del equipo")
+        expect(response.body).to include(equipment.name)
+        expect(response.body).to include(equipment.brand)
+        expect(response.body).to include("2.0 Información de localización")
+        expect(response.body).to include(location_equipment.location.name)
+        expect(response.body).to include("Estado de parámetros físicos y mediciones")
+        expect(response.body).to include("Tensión L1")
+        expect(response.body).to include("Parámetro registrado")
+        expect(response.body).to include("Imprimir / Guardar PDF")
+      end
+
+      it "renders the tasks checklist" do
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).to include("Protocolo de tareas y acciones realizadas")
+        expect(response.body).to include("Limpieza general")
+        expect(response.body).to include("Verificación de torque")
+        expect(response.body).to include("OK / Ejecutado")
+        expect(response.body).to include("Pendiente")
+      end
+
+      it "renders the comments table when comments exist" do
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).to include("Comentarios y recomendaciones técnicas")
+        expect(response.body).to include("Comentario visible")
+        expect(response.body).to include("Nº")
+        expect(response.body).to include("Descripción")
+      end
+
+      it "omits the comments section when there are no comments" do
+        ReportComment.where(report: template_report).delete_all
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).not_to include("Comentarios y recomendaciones técnicas")
+      end
+    end
+
+    describe "GET /edit" do
+      let(:template_report) { create(:report, :template_based, location_equipment: location_equipment) }
+
+      it "renders a successful response" do
+        get edit_location_equipment_report_path(location_equipment, template_report)
+        expect(response).to be_successful
+      end
     end
   end
 end

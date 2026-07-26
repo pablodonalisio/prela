@@ -7,7 +7,7 @@
                                       path: [:new, @client, :location] %>
     <% end %>
     <div class="mt-4" id="locations">
-      <%= render @client.locations, client: @client%>
+      <%= render @client.locations.kept, client: @client%>
     </div>
   </div>
 <% end %>

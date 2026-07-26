@@ -1,0 +1,34 @@
+<%= turbo_frame_tag "field_#{field_key}" do %>
+  <div class="field-row mb-3 d-flex gap-2 align-items-start">
+    <div class="flex-grow-1">
+      <label class="form-label form-label-sm">Nombre del campo</label>
+      <input type="text"
+             class="form-control field-name <%= 'is-invalid' if equipment_kind.errors.key?(field_set.to_sym) && field_data['name'].blank? %>"
+             placeholder="ej: Marca, Modelo"
+             value="<%= field_data['name'] %>"
+             name="equipment_kind[<%= field_set %>][<%= field_key %>][name]">
+      <% if equipment_kind.errors.key?(field_set.to_sym) && field_data["name"].blank? %>
+        <div class="invalid-feedback">El nombre del campo no puede estar vacío.</div>
+      <% end %>
+    </div>
+    <div class="flex-grow-1">
+      <label class="form-label form-label-sm">Tipo de dato</label>
+      <select class="form-control field-type" name="equipment_kind[<%= field_set %>][<%= field_key %>][type]">
+        <% EquipmentKind::FIELD_TYPES.each do |type| %>
+          <option value="<%= type %>" <%= "selected" if field_data["type"] == type %>>
+            <%= t("activerecord.attributes.equipment_kind.field_types.#{type}") %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+    <div>
+      <%= link_to "X",
+                  remove_field_equipment_kinds_path(field_key: field_key),
+                  class: "btn btn-sm btn-outline-danger",
+                  data: {
+                    turbo_stream: true,
+                    turbo_confirm: "¿Eliminar este campo? Se borrarán los valores guardados en todos los equipos/instalaciones de este tipo."
+                  } %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-md m-4">
+  <div class="container-fluid">
+    <h1 class="navbar-brand my-0">Usuarios</h1>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#usersNavbarSupportedContent" aria-controls="usersNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="usersNavbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 nav-tabs">
+        <li class="nav-item">
+          <%= link_to "Usuarios", users_path, class: "nav-link" + (active == "users" ? " active" : "") %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Firmas", signatures_path, class: "nav-link" + (active == "signatures" ? " active" : "") %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -26,8 +26,8 @@ module ApplicationHelper
     [
       {text: "Home", path: root_path, icon: "fa-house", admin: false},
       {text: "Activos", path: location_equipments_path, icon: "fa-wrench", admin: false},
+      {text: "Informes", path: report_templates_path, icon: "fa-file-lines", admin: true},
       {text: "Clientes", path: clients_path, icon: "fa-building", admin: true},
-      {text: "Equipos", path: equipment_index_path, icon: "fa-bolt", admin: true},
       {text: "Insumos", path: supplies_path, icon: "fa-car-battery", admin: true}
     ]
   end

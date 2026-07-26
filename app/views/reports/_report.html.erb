@@ -1,5 +1,18 @@
 <%= turbo_frame_tag report do %>
-  <% if report.pdf.attached? %>
+  <% if report.template_based? %>
+    <div class="template-report-wrapper"
+         data-controller="template-report-print"
+         data-template-report-print-stylesheet-value="<%= asset_path('template_report_print.css') %>">
+      <div class="template-report-actions">
+        <button type="button"
+                class="btn btn-sm btn-outline-light"
+                data-action="template-report-print#print">
+          <i class="fa fa-print me-1"></i><%= t("reports.template_report.print_pdf") %>
+        </button>
+      </div>
+      <%= render "template_report", report: report %>
+    </div>
+  <% elsif report.pdf.attached? %>
     <%= tag.iframe src: rails_blob_path(report.pdf, disposition: "inline"), width: "100%", height: "800", style: "border:0" %>
   <% else %>
     <p>No hay un PDF adjunto a este informe.</p>

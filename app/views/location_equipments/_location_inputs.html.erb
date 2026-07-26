@@ -1,0 +1,20 @@
+<%= turbo_frame_tag "le_location_inputs" do %>
+  <% if @locations.any? %>
+    <div class="mb-3">
+      <label class="form-label">Sede</label>
+      <select class="form-select"
+              name="location_equipment[location_id]"
+              id="location_equipment_location_id">
+        <option value="">Seleccione una sede</option>
+        <% @locations.each do |location| %>
+          <option value="<%= location.id %>"
+                  <%= "selected" if @selected_location_id == location.id.to_s %>>
+            <%= location.name %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+  <% elsif @client %>
+    <p class="text-muted small mb-3">Este cliente no tiene sedes registradas.</p>
+  <% end %>
+<% end %>

@@ -12,6 +12,9 @@ class ServiceDate < ApplicationRecord
   scope :by_client_id, ->(client_id) {
     joins(location_equipment: {location: :client}).where(clients: {id: client_id})
   }
+  scope :for_visible_location_equipments, -> {
+    where(location_equipment_id: LocationEquipment.visible.select(:id))
+  }
 
   class << self
     def next_service_dates(selected_columns = "*")
@@ -20,7 +23,9 @@ class ServiceDate < ApplicationRecord
 
     def overdue_next_service_dates
       subquery = next_service_dates("service_dates.id").to_sql
-      includes(:location_equipment).where("service_dates.id IN (#{subquery}) AND date < ?", 3.months.from_now)
+      for_visible_location_equipments
+        .includes(:location_equipment)
+        .where("service_dates.id IN (#{subquery}) AND date < ?", 3.months.from_now)
     end
 
     def overdue_next_service_dates_by_equipment_kind
@@ -28,3 +33,4 @@ class ServiceDate < ApplicationRecord
     end
   end
 end
+

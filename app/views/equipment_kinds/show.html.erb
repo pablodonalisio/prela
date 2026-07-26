@@ -1,0 +1,11 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <%= render "location_equipments/navbar", active: "equipment_kinds" %>
+
+  <%= render "shared/content_header", title: @equipment_kind.name do %>
+    <%= link_to "Volver", equipment_kinds_path, class: "btn btn-outline-light btn-sm", data: { turbo_frame: "_top" } %>
+  <% end %>
+
+  <div class="d-flex flex-column gap-2 mx-4 mt-4">
+    <%= render @equipment_kind %>
+  </div>
+<% end %>

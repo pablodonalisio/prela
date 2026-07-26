@@ -1,0 +1,66 @@
+<% optimal_fields_section = %w[measurements room_specifications].include?(section) %>
+<%= turbo_frame_tag "field_#{field_key}", data: { sortable_fields_target: "item" } do %>
+  <div class="field-row mb-3 d-flex gap-2 align-items-start flex-wrap">
+    <button type="button"
+            class="btn btn-sm btn-link text-muted px-1 drag-handle align-self-center"
+            style="cursor: grab"
+            draggable="true"
+            tabindex="-1"
+            aria-label="<%= t("activerecord.attributes.report_template.reorder_field") %>"
+            data-action="dragstart->sortable-fields#dragStart dragend->sortable-fields#dragEnd">
+      <i class="fa fa-grip-vertical"></i>
+    </button>
+    <input type="hidden"
+           name="report_template[<%= section %>][<%= field_key %>][position]"
+           value="<%= field_data["position"] %>"
+           data-sortable-fields-position>
+    <div class="flex-grow-1" style="min-width: 10rem;">
+      <label class="form-label form-label-sm">Nombre del campo</label>
+      <input type="text"
+             class="form-control field-name <%= 'is-invalid' if report_template.errors.key?(section.to_sym) && field_data['name'].blank? %>"
+             placeholder="ej: Tensión L1, Temperatura"
+             value="<%= field_data['name'] %>"
+             name="report_template[<%= section %>][<%= field_key %>][name]">
+      <% if report_template.errors.key?(section.to_sym) && field_data["name"].blank? %>
+        <div class="invalid-feedback">El nombre del campo no puede estar vacío.</div>
+      <% end %>
+    </div>
+    <div class="flex-grow-1" style="min-width: 8rem;">
+      <label class="form-label form-label-sm">Tipo de dato</label>
+      <select class="form-control field-type" name="report_template[<%= section %>][<%= field_key %>][type]">
+        <% ReportTemplate::FIELD_TYPES.each do |type| %>
+          <option value="<%= type %>" <%= "selected" if field_data["type"] == type %>>
+            <%= t("activerecord.attributes.equipment_kind.field_types.#{type}") %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+    <% if optimal_fields_section %>
+      <div style="min-width: 8rem;">
+        <label class="form-label form-label-sm"><%= t("activerecord.attributes.report_template.optimal_value") %></label>
+        <input type="text"
+               class="form-control"
+               placeholder="ej: 220 o 220-240"
+               value="<%= field_data['optimal_value'] %>"
+               name="report_template[<%= section %>][<%= field_key %>][optimal_value]">
+      </div>
+      <div style="min-width: 6rem;">
+        <label class="form-label form-label-sm"><%= t("activerecord.attributes.report_template.units") %></label>
+        <input type="text"
+               class="form-control"
+               placeholder="ej: V, °C"
+               value="<%= field_data['units'] %>"
+               name="report_template[<%= section %>][<%= field_key %>][units]">
+      </div>
+    <% end %>
+    <div class="align-self-end">
+      <%= link_to "X",
+                  remove_field_report_templates_path(field_key: field_key),
+                  class: "btn btn-sm btn-outline-danger",
+                  data: {
+                    turbo_stream: true,
+                    turbo_confirm: "¿Eliminar este campo?"
+                  } %>
+    </div>
+  </div>
+<% end %>

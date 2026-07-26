@@ -2,10 +2,15 @@
 
 es:
   activerecord:
+    models:
+      signature:
+        one: "Firma"
+        other: "Firmas"
     attributes:
       client:
         name: "Nombre"
       equipment:
+        name: "Nombre"
         kind: "Tipo"
         kinds:
           ups: "UPS"
@@ -27,6 +32,8 @@ es:
       location_equipment:
         location: "Sede"
         equipment: "Equipo"
+        serial_number: "Número de serie"
+        code: "Código"
         last_service: "Último service"
         next_service: "Próximo service"
         last_battery_change: "Último cambio de batería"
@@ -68,12 +75,92 @@ es:
         srt_900: "Próximo SRT-900"
         thermography: "Próxima termografía"
         electrical_approval: "Próximo apto eléctrico"
+      equipment_kind:
+        name: "Nombre"
+        description: "Descripción"
+        legacy_kind: "Tipo legacy"
+        generic_fields: "Campos genéricos"
+        specific_fields: "Campos específicos"
+        field_types:
+          string: "Texto"
+          integer: "Número entero"
+          float: "Número decimal"
+          date: "Fecha"
+          boolean: "Booleano"
+      report_template:
+        name: "Nombre"
+        optimal_value: "Valor óptimo"
+        units: "Unidades"
+        reorder_field: "Reordenar campo"
+        tasks: "Tareas"
+        add_task: "Añadir tarea"
+        sections:
+          equipment_specifications: "Especificaciones de equipo"
+          location_specifications: "Especificaciones de ubicación"
+          measurements: "Mediciones"
+          room_specifications: "Especificaciones de sala"
+      report_template_task:
+        name: "Nombre de la tarea"
+      report_task:
+        name: "Tarea"
+        completed: "Completada"
+      report_comment:
+        description: "Descripción"
+      signature:
+        name: "Nombre"
+        title: "Cargo"
+        image: "Imagen"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
         restrict_dependent_destroy:
           has_one: No se puede eliminar el registro porque existe un %{record} dependiente
           has_many: No se puede eliminar el registro porque existen %{record} dependientes
+  reports:
+    template_report:
+      title: "Informe de mantenimiento"
+      client: "Compañía / Cliente"
+      location_area: "Ubicación / Área"
+      service_date: "Fecha y hora"
+      service_type: "Tipo de servicio"
+      service_type_preventive: "Preventivo"
+      report_code: "Código de Informe"
+      equipment_section: "Especificaciones del equipo"
+      location_section: "Información de localización"
+      measurements_section: "Estado de parámetros físicos y mediciones"
+      tasks_section: "Protocolo de tareas y acciones realizadas"
+      comments_section: "Comentarios y recomendaciones técnicas"
+      observations_section: "Observaciones y recomendaciones técnicas"
+      maintenance_section: "Mantenimiento preventivo"
+      activities_section: "Últimas actividades"
+      images_section: "Imágenes"
+      signatures_section: "Firmas"
+      footer_report_label: "Informe"
+      print_pdf: "Imprimir / Guardar PDF"
+      serial_number: "Número de serie"
+      equipment_kind: "Tipo de equipo"
+      condition: "Condición"
+      location: "Ubicación"
+      zone: "Sala"
+      floor: "Piso"
+      add_task: "Añadir tarea"
+      add_comment: "Añadir comentario"
+      task_placeholder: "Descripción de la tarea"
+      comment_placeholder: "Descripción del comentario"
+      task_completed: "OK / Ejecutado"
+      task_pending: "Pendiente"
+      table:
+        parameter: "Parámetro registrado"
+        value: "Valor obtenido"
+        optimal: "Valores normales"
+        number: "Nº"
+        description: "Descripción"
+        service: "Servicio"
+        last: "Último"
+        next: "Próximo"
+        overdue: "Vencido"
+        kind: "Tipo"
+        date: "Fecha"
   errors:
     format: "%{attribute} %{message}"
     messages:
@@ -83,6 +170,7 @@ es:
     failure:
       user:
         unauthenticated: "No se pudo autenticar el usuario, por favor iniciar sesión."
+      client_discarded: "Tu cliente ya no está disponible. Contactá al administrador."
     sessions:
       user:
         signed_in: "Sesión iniciada correctamente. Bienvenido."
