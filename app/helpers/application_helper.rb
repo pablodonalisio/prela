@@ -1,4 +1,6 @@
 module ApplicationHelper
+  include Pagy::Frontend
+
   FLASH_CLASSES = {
     notice: "alert alert-info",
     success: "alert alert-success",

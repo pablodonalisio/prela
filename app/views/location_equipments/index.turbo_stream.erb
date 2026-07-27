@@ -1,5 +1,7 @@
-<%= turbo_stream.replace "location_equipments" do %>
-  <%= render "shared/items", collection: @location_equipments %>
+<%= turbo_stream.replace "location_equipments_list" do %>
+  <div id="location_equipments_list">
+    <%= render "shared/items", collection: @location_equipments, pagy: @pagy %>
+  </div>
 <% end %>
 <%= turbo_stream.replace_all ".location_equipment_filters",
                         partial: "location_equipments/filter_form",
