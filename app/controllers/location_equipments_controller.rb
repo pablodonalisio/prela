@@ -8,9 +8,13 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def index
-    @location_equipments = authorize policy_scope(LocationEquipment.filter(filter_params)
-      .includes(equipment: :avatar_blob, location: :client)
-      .order(@order))
+    scoped = policy_scope(
+      LocationEquipment.filter(filter_params)
+        .includes(equipment: :avatar_blob, location: :client)
+        .order(@order)
+    )
+    authorize scoped
+    @pagy, @location_equipments = pagy(scoped)
   end
 
   def show

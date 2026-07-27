@@ -45,6 +45,33 @@ RSpec.describe "/location_equipments", type: :request do
       end
     end
 
+    context "with more than 10 records" do
+      let!(:location_equipments) { create_list(:location_equipment, 11) }
+
+      it "paginates results 10 per page" do
+        get location_equipments_url
+        expect(response).to be_successful
+        expect(response.body.scan(/id="location_equipment_\d+"/).size).to eq(10)
+        expect(response.body).to include("page=2")
+
+        get location_equipments_url, params: {page: 2}
+        expect(response).to be_successful
+        expect(response.body.scan(/id="location_equipment_\d+"/).size).to eq(1)
+      end
+
+      it "preserves filter params across pages" do
+        location = create(:location)
+        create_list(:location_equipment, 11, location: location)
+        create(:location_equipment) # different client, filtered out
+
+        get location_equipments_url, params: {client_ids: [location.client_id], page: 2}
+        expect(response).to be_successful
+        expect(response.body.scan(/id="location_equipment_\d+"/).size).to eq(1)
+        expect(response.body).to include("page=1")
+        expect(response.body).to include(location.client_id.to_s)
+      end
+    end
+
     context "with filter params" do
       it "filter by client" do
         get location_equipments_url, params: {client_ids: [location_equipments.first.location.client_id]}

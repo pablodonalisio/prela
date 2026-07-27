@@ -6,7 +6,8 @@ class EquipmentController < ApplicationController
   end
 
   def index
-    @equipment = authorize Equipment.visible
+    authorize Equipment
+    @pagy, @equipment = pagy(Equipment.visible)
   end
 
 

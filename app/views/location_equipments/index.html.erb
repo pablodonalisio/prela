@@ -8,5 +8,7 @@
     </div>
   <% end %>
 
-  <%= render "shared/items", collection: @location_equipments %>
+  <div id="location_equipments_list">
+    <%= render "shared/items", collection: @location_equipments, pagy: @pagy %>
+  </div>
 <% end %>
