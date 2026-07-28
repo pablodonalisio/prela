@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_26_172935) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_28_102651) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,25 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_26_172935) do
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
     t.index ["discarded_at"], name: "index_clients_on_discarded_at"
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.bigint "location_id"
+    t.bigint "reports_to_id"
+    t.string "name", null: false
+    t.string "work_area", null: false
+    t.text "description"
+    t.string "email"
+    t.string "phone"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "job_position", default: "", null: false
+    t.index ["client_id"], name: "index_contacts_on_client_id"
+    t.index ["discarded_at"], name: "index_contacts_on_discarded_at"
+    t.index ["location_id"], name: "index_contacts_on_location_id"
+    t.index ["reports_to_id"], name: "index_contacts_on_reports_to_id"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -442,6 +461,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_26_172935) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "location_equipments"
+  add_foreign_key "contacts", "clients"
+  add_foreign_key "contacts", "contacts", column: "reports_to_id"
+  add_foreign_key "contacts", "locations"
   add_foreign_key "electrical_panel_report_stats", "reports"
   add_foreign_key "failures", "location_equipments"
   add_foreign_key "location_equipments", "equipment"

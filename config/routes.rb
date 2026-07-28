@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   get "home/index"
   resources :clients do
     resources :locations, except: [:index, :show]
+    resources :contacts, except: [:index, :show]
   end
   resources :location_equipments do
     get :field_inputs, on: :collection

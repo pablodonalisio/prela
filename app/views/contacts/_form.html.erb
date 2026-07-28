@@ -1,0 +1,14 @@
+<%= simple_form_for [client, contact] do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :job_position, label: "Puesto" %>
+  <%= f.input :work_area, label: "Área de trabajo" %>
+  <%= f.input :location_id, collection: client.locations.kept, label: "Sede", include_blank: "Sin sede" %>
+  <%= f.input :reports_to_id,
+              collection: manager_options_for(client, contact),
+              label: "Reporta a",
+              include_blank: "Sin superior" %>
+  <%= f.input :email, label: "Email" %>
+  <%= f.input :phone, label: "Teléfono" %>
+  <%= f.input :description, label: "Comentario", as: :text %>
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

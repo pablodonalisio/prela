@@ -1,0 +1,41 @@
+<%= content_tag :tr, id: dom_id(contact) do %>
+  <td>
+    <div class="fw-semibold"><%= contact.name %></div>
+    <% if contact.description.present? %>
+      <div class="small text-white-50 text-truncate" style="max-width: 18rem;">
+        <%= contact.description %>
+      </div>
+    <% end %>
+  </td>
+  <td><%= contact.job_position %></td>
+  <td>
+    <span class="badge rounded-pill text-bg-dark"><%= contact.work_area %></span>
+  </td>
+  <td class="text-white-50">
+    <%= contact.location&.name || "—" %>
+  </td>
+  <td>
+    <% if contact.email.present? %>
+      <%= mail_to contact.email, contact.email, class: "link-light link-underline-opacity-0 link-underline-opacity-75-hover" %>
+    <% else %>
+      <span class="text-white-50">—</span>
+    <% end %>
+  </td>
+  <td class="text-white-50">
+    <%= contact.phone.presence || "—" %>
+  </td>
+  <td class="text-end">
+    <div class="d-inline-flex align-items-center justify-content-end gap-2">
+      <%= link_to [:edit, client, contact], class: "btn btn-sm btn-link text-white-50", data: {turbo_frame: "remote_modal"} do %>
+        <i class="fas fa-edit"></i>
+      <% end %>
+      <%= button_to [client, contact],
+                    method: :delete,
+                    class: "btn btn-sm btn-link text-danger",
+                    form_class: "d-inline",
+                    form: {data: {turbo_confirm: "¿Seguro querés borrar el contacto?"}} do %>
+        <i class="fas fa-trash"></i>
+      <% end %>
+    </div>
+  </td>
+<% end %>

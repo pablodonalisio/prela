@@ -1,0 +1,21 @@
+<li>
+  <div class="organigram-card">
+    <div class="fw-semibold"><%= contact.name %></div>
+    <div class="small"><%= contact.job_position %></div>
+    <div class="small text-white-50"><%= contact.work_area %></div>
+    <% if contact.location.present? %>
+      <div class="small mt-1">
+        <i class="fa-solid fa-location-dot text-primary me-1"></i>
+        <%= contact.location.name %>
+      </div>
+    <% end %>
+  </div>
+  <% reports = contact.direct_reports.kept.includes(:location, :direct_reports) %>
+  <% if reports.any? %>
+    <ul class="organigram-children">
+      <% reports.each do |child| %>
+        <%= render "contacts/organigram_node", contact: child %>
+      <% end %>
+    </ul>
+  <% end %>
+</li>

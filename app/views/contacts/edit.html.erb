@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @contact do %>
+  <%= render "shared/remote_modal", title: "Editar Contacto" do %>
+    <%= render "form", client: @client, contact: @contact %>
+  <% end %>
+<% end %>

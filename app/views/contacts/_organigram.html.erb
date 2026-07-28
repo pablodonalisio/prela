@@ -1,0 +1,10 @@
+<% roots = client.contacts.roots.includes(:location, :direct_reports) %>
+<% if roots.any? %>
+  <ul class="list-unstyled mb-0">
+    <% roots.each do |contact| %>
+      <%= render "contacts/organigram_node", contact: contact %>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-white-50 small mb-0">Agregá contactos y asigná “Reporta a” para armar el organigrama.</p>
+<% end %>

@@ -3,6 +3,7 @@ class Location < ApplicationRecord
 
   belongs_to :client
   has_many :location_equipments
+  has_many :contacts, dependent: :nullify
 
   validates :name, presence: true
 

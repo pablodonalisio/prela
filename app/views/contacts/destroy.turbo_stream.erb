@@ -1,0 +1,15 @@
+<%= turbo_stream.remove @contact %>
+
+<% if @client.contacts.kept.none? %>
+  <%= turbo_stream.append "contacts" do %>
+    <tr id="empty_contacts">
+      <td colspan="7" class="text-white-50 small py-4 text-center">
+        Todavía no hay contactos cargados.
+      </td>
+    </tr>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "organigram" do %>
+  <%= render "contacts/organigram", client: @client %>
+<% end %>
