@@ -6,7 +6,9 @@ class DocumentPolicy < ApplicationPolicy
   # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
 
   def show?
-    user.admin? || user.client?
+    return true if user.admin?
+
+    user.client? && record.public?
   end
 
   def index?
@@ -31,5 +33,17 @@ class DocumentPolicy < ApplicationPolicy
 
   def destroy?
     user.admin?
+  end
+
+  class Scope < ApplicationPolicy::Scope
+    def resolve
+      if user.admin?
+        scope.all
+      elsif user.client?
+        scope.client_visible
+      else
+        raise Pundit::NotAuthorizedError
+      end
+    end
   end
 end
