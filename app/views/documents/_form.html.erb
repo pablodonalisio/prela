@@ -2,6 +2,7 @@
   <%= f.hidden_field :documentable_type, value: documentable.class.name %>
   <%= f.hidden_field :documentable_id, value: documentable.id %>
   <%= f.input :description, label: "Descripción" %>
+  <%= f.input :public, as: :boolean, label: "Público (visible para el cliente)" %>
 
   <div class="my-3 border col-sm-6 p-2">
     <h4>Archivo</h4>

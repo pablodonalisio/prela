@@ -102,7 +102,7 @@
                                                    path: new_location_equipment_document_path(@location_equipment, document: {documentable_type: @location_equipment.class.name, documentable_id: @location_equipment.id}) %>
                 <% end %>
               <% end %>
-              <%= render "documents/documents", documents: @location_equipment.documents.order(created_at: :desc), documentable: @location_equipment %>
+              <%= render "documents/documents", documents: policy_scope(@location_equipment.documents).order(created_at: :desc), documentable: @location_equipment %>
             </div>
           </div>
 

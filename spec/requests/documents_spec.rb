@@ -77,6 +77,29 @@ RSpec.describe "/documents", type: :request do
       request
       expect(response).to be_successful
     end
+
+    context "as client user" do
+      let(:user) { create(:user) }
+
+      context "with a public document" do
+        let(:document) { create(:document, documentable: documentable, public: true) }
+
+        it "renders a successful response" do
+          request
+          expect(response).to be_successful
+        end
+      end
+
+      context "with a private document" do
+        let(:document) { create(:document, documentable: documentable, public: false) }
+
+        it "denies access" do
+          request
+          expect(response).to redirect_to(root_path)
+          expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+        end
+      end
+    end
   end
 
   describe "POST /create" do

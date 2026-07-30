@@ -64,7 +64,7 @@ class DocumentsController < ApplicationController
   end
 
   def document_params
-    params.require(:document).permit(:description, :file)
+    params.require(:document).permit(:description, :file, :public)
   end
 
   def documentable_type
@@ -76,6 +76,6 @@ class DocumentsController < ApplicationController
   end
 
   def documents
-    @documents ||= documentable.documents.order(created_at: :desc)
+    @documents ||= policy_scope(documentable.documents).order(created_at: :desc)
   end
 end
