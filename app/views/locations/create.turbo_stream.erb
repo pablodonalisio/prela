@@ -1,5 +1,7 @@
 <%= turbo_stream.update nested_dom_id(@client, Location.new), "" %>
 
+<%= turbo_stream.remove "empty_locations" %>
+
 <%= turbo_stream.append "locations" do %>
   <%= render @location, client: @client %>
 <% end %>

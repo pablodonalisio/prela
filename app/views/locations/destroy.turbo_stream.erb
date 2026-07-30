@@ -1,1 +1,9 @@
 <%= turbo_stream.remove @location %>
+
+<% if @client.locations.kept.none? %>
+  <%= turbo_stream.append "locations" do %>
+    <div id="empty_locations" class="w-100 text-white-50 small">
+      Todavía no hay sedes cargadas.
+    </div>
+  <% end %>
+<% end %>

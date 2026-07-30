@@ -1,12 +1,13 @@
 <%= turbo_frame_tag location do %>
-  <div class="border text-center p-3 d-flex">
-      <div class="flex-grow-1">
-        <%= location.name %>
-      </div>
-      <%= render "shared/dropdown" do %>
-        <%= render "shared/button_box", edit_path: [:edit, client, location],
-                                        delete_path: [ client, location ],
-                                        confirm: "Seguro queres borrar la Sede?" %>
-      <% end %>
+  <div class="location-chip">
+    <span class="d-inline-flex align-items-center gap-2">
+      <i class="fa-solid fa-location-dot text-primary"></i>
+      <span><%= location.name %></span>
+    </span>
+    <%= render "shared/dropdown" do %>
+      <%= render "shared/button_box", edit_path: [:edit, client, location],
+                                      delete_path: [client, location],
+                                      confirm: "¿Seguro querés borrar la sede?" %>
+    <% end %>
   </div>
 <% end %>

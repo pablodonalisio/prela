@@ -1,13 +1,128 @@
 <%= turbo_frame_tag "main_content" do %>
-  <%= render "shared/content_header", title: @client.name %>
+  <div class="client-show mx-3 mx-md-4 mt-3 mb-5">
+    <div class="d-flex justify-content-start mb-2">
+      <%= link_to "← Volver a clientes", clients_path,
+                  class: "link-light link-underline-opacity-0 link-underline-opacity-75-hover small",
+                  data: {turbo_frame: "_top"} %>
+    </div>
 
-  <div class="col mt-3">
-    <%= render "shared/content_header", title: "Sedes" do %>
-      <%= render "shared/button_link", text: "Agregar",
-                                      path: [:new, @client, :location] %>
-    <% end %>
-    <div class="mt-4" id="locations">
-      <%= render @client.locations.kept, client: @client%>
+    <div class="client-hero mb-4">
+      <% if @client.avatar.attached? %>
+        <%= image_tag @client.avatar.variant(resize_to_limit: [128, 128]),
+                      class: "client-hero-avatar",
+                      alt: @client.name %>
+      <% else %>
+        <div class="client-hero-avatar client-hero-avatar-fallback">
+          <i class="fa-solid fa-building"></i>
+        </div>
+      <% end %>
+      <div class="min-w-0 flex-grow-1">
+        <p class="text-white-50 small text-uppercase mb-1 mb-0">Cliente</p>
+        <h2 class="mb-0 text-wrap"><%= @client.name %></h2>
+      </div>
+    </div>
+
+    <ul class="nav nav-tabs client-tabs mb-3" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="client-sedes-tab" data-bs-toggle="tab"
+                data-bs-target="#client-sedes" type="button" role="tab"
+                aria-controls="client-sedes" aria-selected="true">
+          Sedes
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="client-contactos-tab" data-bs-toggle="tab"
+                data-bs-target="#client-contactos" type="button" role="tab"
+                aria-controls="client-contactos" aria-selected="false">
+          Contactos
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="client-organigrama-tab" data-bs-toggle="tab"
+                data-bs-target="#client-organigrama" type="button" role="tab"
+                aria-controls="client-organigrama" aria-selected="false">
+          Organigrama
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="client-sedes" role="tabpanel"
+           aria-labelledby="client-sedes-tab" tabindex="0">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3>Sedes</h3>
+            <%= render "shared/button_link", text: "Agregar",
+                                            path: [:new, @client, :location] %>
+          </div>
+          <div class="section-card-body">
+            <div id="locations" class="d-flex flex-wrap gap-2">
+              <% kept_locations = @client.locations.kept %>
+              <% if kept_locations.any? %>
+                <%= render kept_locations, client: @client %>
+              <% else %>
+                <div id="empty_locations" class="w-100 text-white-50 small">
+                  Todavía no hay sedes cargadas.
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="client-contactos" role="tabpanel"
+           aria-labelledby="client-contactos-tab" tabindex="0">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3>Contactos</h3>
+            <%= render "shared/button_link", text: "Agregar",
+                                            path: [:new, @client, :contact] %>
+          </div>
+          <div class="section-card-body pt-2">
+            <div class="table-responsive">
+              <table class="table contacts-table align-middle">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Puesto</th>
+                    <th>Área</th>
+                    <th>Sede</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th class="text-end">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="contacts">
+                  <% kept_contacts = @client.contacts.kept.includes(:location) %>
+                  <% if kept_contacts.any? %>
+                    <%= render kept_contacts, client: @client %>
+                  <% else %>
+                    <tr id="empty_contacts">
+                      <td colspan="7" class="text-white-50 small py-4 text-center">
+                        Todavía no hay contactos cargados.
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="client-organigrama" role="tabpanel"
+           aria-labelledby="client-organigrama-tab" tabindex="0">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3>Organigrama</h3>
+          </div>
+          <div class="section-card-body">
+            <div id="organigram">
+              <%= render "contacts/organigram", client: @client %>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 <% end %>

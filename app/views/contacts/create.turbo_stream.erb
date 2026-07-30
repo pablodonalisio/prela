@@ -1,0 +1,11 @@
+<%= turbo_stream.update nested_dom_id(@client, Contact.new), "" %>
+
+<%= turbo_stream.remove "empty_contacts" %>
+
+<%= turbo_stream.append "contacts" do %>
+  <%= render @contact, client: @client %>
+<% end %>
+
+<%= turbo_stream.update "organigram" do %>
+  <%= render "contacts/organigram", client: @client %>
+<% end %>

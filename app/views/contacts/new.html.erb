@@ -1,0 +1,5 @@
+<%= turbo_frame_tag nested_dom_id(@client, Contact.new) do %>
+  <%= render "shared/remote_modal", title: "Nuevo Contacto" do %>
+    <%= render "form", client: @client, contact: @contact %>
+  <% end %>
+<% end %>

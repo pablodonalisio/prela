@@ -1,0 +1,7 @@
+<%= turbo_stream.replace @contact do %>
+  <%= render @contact, client: @client %>
+<% end %>
+
+<%= turbo_stream.update "organigram" do %>
+  <%= render "contacts/organigram", client: @client %>
+<% end %>
