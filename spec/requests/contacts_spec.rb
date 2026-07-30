@@ -34,6 +34,23 @@ RSpec.describe "/contacts", type: :request do
         }.to change(Contact, :count).by(1)
       end
 
+      it "persists distance_above for a root" do
+        post client_contacts_url(client), params: {contact: valid_attributes.merge(distance_above: 2)}
+
+        expect(Contact.order(:id).last.distance_above).to eq(2)
+      end
+
+      it "persists distance_above when reporting to a superior" do
+        manager = create(:contact, client:, name: "Manager")
+
+        post client_contacts_url(client),
+          params: {contact: valid_attributes.merge(reports_to_id: manager.id, distance_above: 2)}
+
+        created = Contact.order(:id).last
+        expect(created.reports_to).to eq(manager)
+        expect(created.distance_above).to eq(2)
+      end
+
       it "redirects to the client" do
         post client_contacts_url(client), params: {contact: valid_attributes}
         expect(response).to redirect_to(client_path(client))
@@ -66,6 +83,21 @@ RSpec.describe "/contacts", type: :request do
         expect(contact.name).to eq("Ana Actualizada")
         expect(contact.job_position).to eq("Gerente")
         expect(contact.work_area).to eq("Compras")
+      end
+
+      it "persists distance_above" do
+        patch client_contact_url(client, contact), params: {contact: {distance_above: 2}}
+        expect(contact.reload.distance_above).to eq(2)
+      end
+
+      it "persists distance_above for a report under a superior" do
+        manager = create(:contact, client:, name: "Manager")
+        patch client_contact_url(client, contact),
+          params: {contact: {reports_to_id: manager.id, distance_above: 3}}
+
+        contact.reload
+        expect(contact.reports_to).to eq(manager)
+        expect(contact.distance_above).to eq(3)
       end
 
       it "redirects to the client" do

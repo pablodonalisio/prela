@@ -1,4 +1,5 @@
-<%= simple_form_for [client, contact] do |f| %>
+<%= simple_form_for [client, contact],
+                    html: { data: { controller: "contact-distance" } } do |f| %>
   <%= f.input :name, label: "Nombre" %>
   <%= f.input :job_position, label: "Puesto" %>
   <%= f.input :work_area, label: "Área de trabajo" %>
@@ -6,7 +7,20 @@
   <%= f.input :reports_to_id,
               collection: manager_options_for(client, contact),
               label: "Reporta a",
-              include_blank: "Sin superior" %>
+              include_blank: "Sin superior",
+              input_html: {
+                data: {
+                  contact_distance_target: "reportsTo",
+                  action: "change->contact-distance#syncDistance"
+                }
+              } %>
+  <%= f.input :distance_above,
+              label: "Niveles de distancia a su superior (para organigrama)",
+              hint: "0 solo si no tiene superior (tope del organigrama). Con superior, mínimo 1. Mayor = más separación.",
+              input_html: {
+                min: 0,
+                data: { contact_distance_target: "distanceAbove" }
+              } %>
   <%= f.input :email, label: "Email" %>
   <%= f.input :phone, label: "Teléfono" %>
   <%= f.input :description, label: "Comentario", as: :text %>

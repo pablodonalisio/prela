@@ -1,6 +1,6 @@
-<% roots = client.contacts.roots.includes(:location, :direct_reports) %>
+<% roots = client.contacts.roots.includes(:location, :direct_reports).order(:distance_above, :name) %>
 <% if roots.any? %>
-  <ul class="list-unstyled mb-0">
+  <ul class="organigram-tree">
     <% roots.each do |contact| %>
       <%= render "contacts/organigram_node", contact: contact %>
     <% end %>

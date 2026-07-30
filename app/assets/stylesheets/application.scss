@@ -119,32 +119,118 @@
     }
   }
 
+  // Fixed level grid: each distance_above step is one card row + stem,
+  // so contacts at the same path depth line up across branches.
+  $organigram-line: 2px solid rgba(103, 96, 250, 0.45);
+  $organigram-card-h: 7.25rem;
+  $organigram-stem: 1.25rem;
+  $organigram-level: $organigram-card-h + $organigram-stem;
+
+  .organigram-tree,
+  .organigram-children {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .organigram-tree {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    justify-content: flex-start;
+    gap: 1.5rem;
+  }
+
+  .organigram-node {
+    position: relative;
+    padding: 0 0.65rem;
+    text-align: center;
+  }
+
+  .organigram-node--root {
+    padding-top: calc(var(--organigram-distance, 0) * #{$organigram-level});
+  }
+
+  .organigram-children > .organigram-node {
+    padding-top: calc(var(--organigram-distance, 1) * #{$organigram-level} - #{$organigram-card-h});
+  }
+
+  .organigram-children > .organigram-node::before,
+  .organigram-children > .organigram-node::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 50%;
+    border-top: $organigram-line;
+    width: 50%;
+    height: calc(var(--organigram-distance, 1) * #{$organigram-level} - #{$organigram-card-h});
+  }
+
+  .organigram-children > .organigram-node::after {
+    right: auto;
+    left: 50%;
+    border-left: $organigram-line;
+  }
+
+  .organigram-children > .organigram-node:only-child::before {
+    display: none;
+  }
+
+  .organigram-children > .organigram-node:only-child::after {
+    left: 50%;
+    border-top: none;
+    border-left: $organigram-line;
+    width: 0;
+    transform: translateX(-1px);
+  }
+
+  .organigram-children > .organigram-node:first-child:not(:only-child)::before {
+    border-top: none;
+  }
+
+  .organigram-children > .organigram-node:first-child:not(:only-child)::after {
+    border-radius: 0.35rem 0 0 0;
+  }
+
+  .organigram-children > .organigram-node:last-child:not(:only-child)::after {
+    border-top: none;
+  }
+
+  .organigram-children > .organigram-node:last-child:not(:only-child)::before {
+    border-right: $organigram-line;
+    border-radius: 0 0.35rem 0 0;
+  }
+
   .organigram-card {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+    box-sizing: border-box;
+    height: $organigram-card-h;
     background-color: rgba(0, 0, 0, 0.28);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 0.65rem;
-    padding: 0.85rem 1rem;
-    max-width: 26rem;
-  }
-
-  .organigram-children {
-    list-style: none;
-    margin: 0.75rem 0 0;
-    padding: 0 0 0 1.25rem;
-    border-left: 2px solid rgba(103, 96, 250, 0.45);
-  }
-
-  .organigram-children > li {
+    padding: 0.65rem 0.85rem;
+    width: 13.5rem;
+    text-align: left;
     position: relative;
-    margin-top: 0.75rem;
+    z-index: 1;
+    overflow: hidden;
   }
 
-  .organigram-children > li::before {
-    content: "";
-    position: absolute;
-    left: -1.25rem;
-    top: 1.25rem;
-    width: 1.1rem;
-    border-top: 2px solid rgba(103, 96, 250, 0.45);
+  .organigram-card-line {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .organigram-card-name {
+    font-weight: 600;
   }
 }
