@@ -55,9 +55,27 @@ function reportCodeFooterOverride(report) {
   `;
 }
 
+function contactFooterOverride(contactFooter) {
+  if (!contactFooter) return "";
+
+  const lines = contactFooter
+    .split("\n")
+    .map((line) => escapeCssString(line))
+    .join("\\A ");
+
+  return `
+    @page {
+      @bottom-left {
+        content: "${lines}";
+      }
+    }
+  `;
+}
+
 export default class extends Controller {
   static values = {
     stylesheet: String,
+    contactFooter: String,
   };
 
   print() {
@@ -70,6 +88,7 @@ export default class extends Controller {
     const rootFontSize = window.getComputedStyle(document.documentElement).fontSize;
     const printStyles = `
       html { font-size: ${rootFontSize}; }
+      ${contactFooterOverride(this.contactFooterValue)}
       ${reportCodeFooterOverride(report)}
     `;
 

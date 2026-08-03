@@ -1,15 +1,39 @@
-<nav class="navbar bg-primary sticky-top justify-content-between px-2" style="height: 95px">
-  <%= link_to image_tag('prela_logotipo-1.png', height: "100%"),
+<nav class="navbar navbar-company bg-primary sticky-top px-2 px-md-3">
+  <%= link_to image_tag("prela_logotipo-1.png", height: "100%"),
               root_path,
-              class: "navbar-brand bg-light rounded h-100" %>
+              class: "navbar-brand bg-light rounded h-100 mb-0" %>
+
+  <div class="company-contact d-none d-md-flex">
+    <%= render "shared/company_contact_items" %>
+  </div>
+
+  <div class="company-contact d-md-none">
+    <%= render "shared/company_contact_items", variant: :emergency %>
+  </div>
+
   <% if user_signed_in? %>
-    <div class="dropdown">
+    <div class="dropdown ms-auto">
       <a class="text-bg-primary link-underline link-underline-opacity-0 fs-6" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <span class="navbar-toggler-icon"></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
         <li>
           <p class="dropdown-header"><%= current_user.email %></p>
+        </li>
+
+        <li class="d-md-none">
+          <hr class="dropdown-divider">
+        </li>
+        <li class="d-md-none">
+          <h6 class="dropdown-header">Contacto</h6>
+        </li>
+        <li class="d-md-none px-3 pb-2">
+          <div class="company-contact company-contact--menu">
+            <%= render "shared/company_contact_items", variant: :secondary %>
+          </div>
+        </li>
+        <li class="d-md-none">
+          <hr class="dropdown-divider">
         </li>
 
         <% if current_user.admin? %>

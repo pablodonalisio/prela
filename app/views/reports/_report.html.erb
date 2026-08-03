@@ -2,7 +2,8 @@
   <% if report.template_based? %>
     <div class="template-report-wrapper"
          data-controller="template-report-print"
-         data-template-report-print-stylesheet-value="<%= asset_path('template_report_print.css') %>">
+         data-template-report-print-stylesheet-value="<%= asset_path('template_report_print.css') %>"
+         data-template-report-print-contact-footer-value="<%= CompanyInfo.footer_lines.join("\n") %>">
       <div class="template-report-actions">
         <button type="button"
                 class="btn btn-sm btn-outline-light"
