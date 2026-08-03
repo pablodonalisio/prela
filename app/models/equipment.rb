@@ -29,4 +29,8 @@ class Equipment < ApplicationRecord
   def kind
     legacy_kind
   end
+
+  def is_triphase?
+    ActiveModel::Type::Boolean.new.cast(field_values["is_triphase"])
+  end
 end
