@@ -19,6 +19,6 @@ class UpsReportStat < ApplicationRecord
   end
 
   def ups_triphase?
-    report.location_equipment.equipment.is_triphase
+    report.location_equipment.equipment.is_triphase?
   end
 end

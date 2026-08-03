@@ -50,6 +50,16 @@ RSpec.describe Equipment, type: :model do
     end
   end
 
+  describe "#is_triphase?" do
+    it "reads the Trifásica boolean from field_values" do
+      equipment = build(:equipment, field_values: {"is_triphase" => true})
+      expect(equipment.is_triphase?).to be true
+
+      equipment.field_values["is_triphase"] = "0"
+      expect(equipment.is_triphase?).to be false
+    end
+  end
+
   context "legacy_kind" do
     it "returns legacy_kind from equipment_kind" do
       equipment_kind = create(:equipment_kind, :ups)

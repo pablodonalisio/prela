@@ -39,7 +39,7 @@ class ElectricalPanelReportStat < ApplicationRecord
   validates :pat_splices_presence, inclusion: {in: [true, false]}
 
   def is_triphase?
-    report.location_equipment.equipment.is_triphase
+    report.location_equipment.equipment.is_triphase?
   end
 
   def is_monophase?
