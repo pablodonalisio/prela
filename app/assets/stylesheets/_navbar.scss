@@ -1,0 +1,108 @@
+.navbar-company {
+  height: 95px;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.company-contact {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  min-width: 0;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.company-contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.82rem;
+  white-space: nowrap;
+
+  i {
+    flex-shrink: 0;
+    width: 1rem;
+    text-align: center;
+    opacity: 0.85;
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+}
+
+.company-contact-item--static {
+  cursor: default;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.company-contact-item--emergency {
+  font-weight: 600;
+
+  i {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .company-contact-item--emergency {
+    align-items: flex-start;
+
+    i {
+      margin-top: 0.15rem;
+    }
+
+    .company-contact-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .company-contact-label {
+      display: block;
+      margin-right: 0;
+    }
+
+    .company-contact-value {
+      font-size: 0.9rem;
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
+  }
+}
+
+.company-contact-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  margin-right: 0.2rem;
+}
+
+.company-contact--menu {
+  color: var(--bs-dropdown-link-color);
+
+  .company-contact-item {
+    color: var(--bs-dropdown-link-color);
+    width: 100%;
+    padding: 0.3rem 0;
+    white-space: normal;
+
+    &:hover {
+      color: var(--bs-dropdown-link-hover-color);
+    }
+  }
+
+  .company-contact-label {
+    color: var(--bs-secondary-color);
+  }
+}

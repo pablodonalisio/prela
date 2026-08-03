@@ -68,11 +68,9 @@ class Reports::PdfGenerator < PdfGenerator
 
   def add_contact_info
     @pdf.repeat(:all) do
-      @pdf.bounding_box([0, 0], width: @pdf.bounds.width, height: 50) do
-        @pdf.font "Helvetica", size: 10
-        @pdf.text "Tel: 3512 44 6662 | 3516 70 4660"
-        @pdf.text "Email: contacto@prela.com.ar"
-        @pdf.text "Dir: Hualfin 758 - Córdoba"
+      @pdf.bounding_box([0, 0], width: @pdf.bounds.width, height: 60) do
+        @pdf.font "Helvetica", size: 9
+        CompanyInfo.footer_lines.each { |line| @pdf.text line }
       end
     end
   end
@@ -102,7 +100,7 @@ class Reports::PdfGenerator < PdfGenerator
   def document_options
     {
       top_margin: 130,
-      bottom_margin: 70
+      bottom_margin: 80
     }
   end
 end
