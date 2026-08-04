@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_30_130100) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_04_184031) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -70,7 +70,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_130100) do
 
   create_table "contacts", force: :cascade do |t|
     t.bigint "client_id", null: false
-    t.bigint "location_id"
     t.bigint "reports_to_id"
     t.string "name", null: false
     t.string "work_area", null: false
@@ -84,8 +83,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_130100) do
     t.integer "distance_above", default: 0, null: false
     t.index ["client_id"], name: "index_contacts_on_client_id"
     t.index ["discarded_at"], name: "index_contacts_on_discarded_at"
-    t.index ["location_id"], name: "index_contacts_on_location_id"
     t.index ["reports_to_id"], name: "index_contacts_on_reports_to_id"
+  end
+
+  create_table "contacts_locations", id: false, force: :cascade do |t|
+    t.bigint "contact_id", null: false
+    t.bigint "location_id", null: false
+    t.index ["contact_id", "location_id"], name: "index_contacts_locations_uniqueness", unique: true
+    t.index ["contact_id"], name: "index_contacts_locations_on_contact_id"
+    t.index ["location_id"], name: "index_contacts_locations_on_location_id"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -465,7 +471,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_130100) do
   add_foreign_key "activities", "location_equipments"
   add_foreign_key "contacts", "clients"
   add_foreign_key "contacts", "contacts", column: "reports_to_id"
-  add_foreign_key "contacts", "locations"
+  add_foreign_key "contacts_locations", "contacts"
+  add_foreign_key "contacts_locations", "locations"
   add_foreign_key "electrical_panel_report_stats", "reports"
   add_foreign_key "failures", "location_equipments"
   add_foreign_key "location_equipments", "equipment"

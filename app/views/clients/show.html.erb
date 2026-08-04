@@ -86,14 +86,14 @@
                     <th>Nombre</th>
                     <th>Puesto</th>
                     <th>Área</th>
-                    <th>Sede</th>
+                    <th>Sedes</th>
                     <th>Email</th>
                     <th>Teléfono</th>
                     <th class="text-end">Acciones</th>
                   </tr>
                 </thead>
                 <tbody id="contacts">
-                  <% kept_contacts = @client.contacts.kept.includes(:location) %>
+                  <% kept_contacts = @client.contacts.kept.includes(:locations) %>
                   <% if kept_contacts.any? %>
                     <%= render kept_contacts, client: @client %>
                   <% else %>

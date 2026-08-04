@@ -2,15 +2,15 @@ class Contact < ApplicationRecord
   include Discard::Model
 
   belongs_to :client
-  belongs_to :location, optional: true
   belongs_to :reports_to, class_name: "Contact", optional: true
   has_many :direct_reports, class_name: "Contact", foreign_key: :reports_to_id, dependent: :nullify,
     inverse_of: :reports_to
+  has_and_belongs_to_many :locations
 
   validates :name, :work_area, :job_position, presence: true
   validates :email, format: {with: URI::MailTo::EMAIL_REGEXP}, allow_blank: true
   validates :distance_above, numericality: {only_integer: true, greater_than_or_equal_to: 0}
-  validate :location_belongs_to_client
+  validate :locations_belong_to_client
   validate :reports_to_belongs_to_client
   validate :reports_to_must_not_create_cycle
   validate :distance_above_must_be_positive_with_superior
@@ -53,10 +53,12 @@ class Contact < ApplicationRecord
     errors.add(:distance_above, "debe ser al menos 1 cuando tiene superior")
   end
 
-  def location_belongs_to_client
-    return if location_id.blank? || location.blank?
+  def locations_belong_to_client
+    return if locations.empty?
 
-    errors.add(:location, "debe pertenecer al mismo cliente") if location.client_id != client_id
+    if locations.any? { |location| location.client_id != client_id }
+      errors.add(:locations, "deben pertenecer al mismo cliente")
+    end
   end
 
   def reports_to_belongs_to_client

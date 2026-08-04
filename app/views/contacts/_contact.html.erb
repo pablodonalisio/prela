@@ -12,7 +12,8 @@
     <span class="badge rounded-pill text-bg-dark"><%= contact.work_area %></span>
   </td>
   <td class="text-white-50">
-    <%= contact.location&.name || "—" %>
+    <% location_names = contact.locations.select(&:kept?).map(&:name) %>
+    <%= location_names.any? ? location_names.join(", ") : "—" %>
   </td>
   <td>
     <% if contact.email.present? %>

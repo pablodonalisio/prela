@@ -1,16 +1,17 @@
 <li class="organigram-node<%= " organigram-node--root" if contact.reports_to_id.blank? %>"
     style="--organigram-distance: <%= contact.distance_above %>;">
-  <div class="organigram-card" title="<%= [contact.name, contact.job_position, contact.work_area, contact.location&.name].compact.join(" · ") %>">
+  <% location_names = contact.locations.select(&:kept?).map(&:name) %>
+  <div class="organigram-card" title="<%= [contact.name, contact.job_position, contact.work_area, *location_names].compact.join(" · ") %>">
     <div class="organigram-card-line organigram-card-name" title="<%= contact.name %>"><%= contact.name %></div>
     <div class="organigram-card-line small" title="<%= contact.job_position %>"><%= contact.job_position %></div>
     <div class="organigram-card-line small text-white-50" title="<%= contact.work_area %>"><%= contact.work_area %></div>
-    <% if contact.location.present? %>
-      <div class="organigram-card-line small mt-1" title="<%= contact.location.name %>">
-        <i class="fa-solid fa-location-dot text-primary me-1"></i><%= contact.location.name %>
+    <% if location_names.any? %>
+      <div class="organigram-card-line small mt-1" title="<%= location_names.join(", ") %>">
+        <i class="fa-solid fa-location-dot text-primary me-1"></i><%= location_names.join(", ") %>
       </div>
     <% end %>
   </div>
-  <% reports = contact.direct_reports.kept.includes(:location, :direct_reports).order(:distance_above, :name) %>
+  <% reports = contact.direct_reports.kept.includes(:locations, :direct_reports).order(:distance_above, :name) %>
   <% if reports.any? %>
     <ul class="organigram-children">
       <% reports.each do |child| %>

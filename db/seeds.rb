@@ -1,7 +1,7 @@
 # Demo clients with contact org charts for local UI review.
 # Safe to re-run: rebuilds contacts for these two demo clients only.
 
-def seed_contact!(client:, location: nil, reports_to: nil, distance_above: nil, **attrs)
+def seed_contact!(client:, locations: [], reports_to: nil, distance_above: nil, **attrs)
   distance_above = if distance_above.nil?
     reports_to ? 1 : 0
   else
@@ -9,7 +9,7 @@ def seed_contact!(client:, location: nil, reports_to: nil, distance_above: nil, 
   end
 
   client.contacts.create!(
-    location:,
+    locations: Array(locations),
     reports_to:,
     distance_above:,
     email: attrs[:email],
@@ -41,35 +41,37 @@ puts "Seeding demo client org charts..."
 small = Client.find_or_create_by!(name: "Demo Org 5")
 reset_demo_contacts!(small)
 small_hq = ensure_location!(small, "Sede Central")
+small_plant = ensure_location!(small, "Planta Anexo")
 
 ceo = seed_contact!(
   client: small,
-  location: small_hq,
+  locations: [small_hq, small_plant],
   distance_above: 0,
   name: "Laura Méndez",
   job_position: "Directora General",
   work_area: "Dirección",
   email: "laura.mendez@demo5.prela",
   phone: "11-4000-1001",
-  description: "Raíz en el tope (distance_above: 0)"
+  description: "A cargo de ambas sedes (distance_above: 0)"
 )
 
 ops = seed_contact!(
   client: small,
-  location: small_hq,
+  locations: [small_hq, small_plant],
   reports_to: ceo,
   distance_above: 1,
   name: "Martín Rivas",
   job_position: "Jefe de Operaciones",
   work_area: "Operaciones",
   email: "martin.rivas@demo5.prela",
-  phone: "11-4000-1002"
+  phone: "11-4000-1002",
+  description: "Coordina operaciones en ambas sedes"
 )
 
 # Gap under ops: missing intermediate supervisor (distance_above: 2)
 seed_contact!(
   client: small,
-  location: small_hq,
+  locations: [small_plant],
   reports_to: ops,
   distance_above: 2,
   name: "Sofía Acosta",
@@ -82,7 +84,7 @@ seed_contact!(
 
 seed_contact!(
   client: small,
-  location: small_hq,
+  locations: [small_hq],
   reports_to: ops,
   distance_above: 1,
   name: "Diego Farías",
@@ -94,7 +96,7 @@ seed_contact!(
 
 seed_contact!(
   client: small,
-  location: small_hq,
+  locations: [small_hq],
   reports_to: ceo,
   distance_above: 1,
   name: "Valentina Ruiz",
@@ -107,17 +109,17 @@ seed_contact!(
 # Disconnected mid-level root: no superior in system, starts 2 bands down
 seed_contact!(
   client: small,
-  location: small_hq,
+  locations: [small_hq, small_plant],
   distance_above: 2,
   name: "Gustavo Herrera",
   job_position: "Consultor externo EHS",
   work_area: "Seguridad",
   email: "gustavo.herrera@demo5.prela",
   phone: "11-4000-1006",
-  description: "Raíz desconectada a mitad de organigrama (distance_above: 2)"
+  description: "Raíz desconectada a mitad de organigrama; cubre ambas sedes"
 )
 
-puts "  Demo Org 5: #{small.contacts.kept.count} contacts"
+puts "  Demo Org 5: #{small.contacts.kept.count} contacts, #{small.locations.kept.count} locations"
 
 # --- 20-person org ----------------------------------------------------------
 large = Client.find_or_create_by!(name: "Demo Org 20")
@@ -126,34 +128,36 @@ reset_demo_contacts!(large)
 hq = ensure_location!(large, "Casa Central")
 north = ensure_location!(large, "Planta Norte")
 south = ensure_location!(large, "Planta Sur")
+all_sites = [hq, north, south]
 
 gm = seed_contact!(
   client: large,
-  location: hq,
+  locations: all_sites,
   distance_above: 0,
   name: "Ricardo Peña",
   job_position: "Gerente General",
   work_area: "Dirección",
   email: "ricardo.pena@demo20.prela",
   phone: "11-5000-2001",
-  description: "Raíz en el tope (distance_above: 0)"
+  description: "A cargo de todas las sedes (distance_above: 0)"
 )
 
 ops_dir = seed_contact!(
   client: large,
-  location: hq,
+  locations: all_sites,
   reports_to: gm,
   distance_above: 1,
   name: "Carolina Vázquez",
   job_position: "Directora de Operaciones",
   work_area: "Operaciones",
   email: "carolina.vazquez@demo20.prela",
-  phone: "11-5000-2002"
+  phone: "11-5000-2002",
+  description: "Opera las tres sedes"
 )
 
 fin_dir = seed_contact!(
   client: large,
-  location: hq,
+  locations: [hq],
   reports_to: gm,
   distance_above: 1,
   name: "Andrés Molina",
@@ -165,19 +169,20 @@ fin_dir = seed_contact!(
 
 hr_dir = seed_contact!(
   client: large,
-  location: hq,
+  locations: all_sites,
   reports_to: gm,
   distance_above: 1,
   name: "Patricia Gómez",
   job_position: "Directora de RRHH",
   work_area: "Recursos Humanos",
   email: "patricia.gomez@demo20.prela",
-  phone: "11-5000-2004"
+  phone: "11-5000-2004",
+  description: "RRHH corporativo para todas las plantas"
 )
 
 north_mgr = seed_contact!(
   client: large,
-  location: north,
+  locations: [north],
   reports_to: ops_dir,
   distance_above: 1,
   name: "Julián Castro",
@@ -189,7 +194,7 @@ north_mgr = seed_contact!(
 
 south_mgr = seed_contact!(
   client: large,
-  location: south,
+  locations: [south],
   reports_to: ops_dir,
   distance_above: 1,
   name: "Elena Quiroga",
@@ -202,7 +207,7 @@ south_mgr = seed_contact!(
 # Gap under ops: coordinator reports with distance_above 2 (missing middle layer)
 maint_coord = seed_contact!(
   client: large,
-  location: hq,
+  locations: all_sites,
   reports_to: ops_dir,
   distance_above: 2,
   name: "Héctor Blanco",
@@ -210,12 +215,12 @@ maint_coord = seed_contact!(
   work_area: "Mantenimiento",
   email: "hector.blanco@demo20.prela",
   phone: "11-5000-2005",
-  description: "Hueco visual bajo Operaciones (distance_above: 2)"
+  description: "Hueco visual bajo Operaciones; cubre las tres sedes"
 )
 
 seed_contact!(
   client: large,
-  location: hq,
+  locations: [hq],
   reports_to: fin_dir,
   name: "Marina Ortega",
   job_position: "Analista de Cuentas",
@@ -226,7 +231,7 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: hq,
+  locations: [hq],
   reports_to: fin_dir,
   name: "Pablo Núñez",
   job_position: "Analista de Costos",
@@ -237,18 +242,19 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: hq,
+  locations: [hq, north],
   reports_to: hr_dir,
   name: "Lucía Ferreyra",
   job_position: "Analista de RRHH",
   work_area: "Recursos Humanos",
   email: "lucia.ferreyra@demo20.prela",
-  phone: "11-5000-2008"
+  phone: "11-5000-2008",
+  description: "Soporta Casa Central y Planta Norte"
 )
 
 seed_contact!(
   client: large,
-  location: north,
+  locations: [north],
   reports_to: north_mgr,
   name: "Tomás Ibarra",
   job_position: "Supervisor de turno",
@@ -259,7 +265,7 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: north,
+  locations: [north],
   reports_to: north_mgr,
   name: "Nadia Pereyra",
   job_position: "Supervisora de calidad",
@@ -270,7 +276,7 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: north,
+  locations: [north],
   reports_to: north_mgr,
   name: "Bruno Salas",
   job_position: "Técnico electricista",
@@ -281,7 +287,7 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: south,
+  locations: [south],
   reports_to: south_mgr,
   name: "Camila Duarte",
   job_position: "Supervisora de turno",
@@ -292,7 +298,7 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: south,
+  locations: [south],
   reports_to: south_mgr,
   name: "Federico López",
   job_position: "Técnico mecánico",
@@ -303,7 +309,7 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: south,
+  locations: [south],
   reports_to: south_mgr,
   name: "Agustina Roldán",
   job_position: "Analista de calidad",
@@ -314,19 +320,19 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: hq,
+  locations: [hq, north, south],
   reports_to: maint_coord,
   name: "Nicolás Benítez",
   job_position: "Técnico UPS",
   work_area: "Mantenimiento",
   email: "nicolas.benitez@demo20.prela",
   phone: "11-5000-2009",
-  description: "Referente técnico para equipos UPS"
+  description: "Referente técnico UPS itinerante entre sedes"
 )
 
 seed_contact!(
   client: large,
-  location: hq,
+  locations: [hq],
   reports_to: maint_coord,
   name: "Romina Aguirre",
   job_position: "Técnica de tableros",
@@ -337,18 +343,19 @@ seed_contact!(
 
 seed_contact!(
   client: large,
-  location: north,
+  locations: [north, south],
   reports_to: maint_coord,
   name: "Sebastián Ponce",
   job_position: "Técnico de campo",
   work_area: "Mantenimiento",
   email: "sebastian.ponce@demo20.prela",
-  phone: "11-5000-2110"
+  phone: "11-5000-2110",
+  description: "Cubre Planta Norte y Planta Sur"
 )
 
 seed_contact!(
   client: large,
-  location: south,
+  locations: [south],
   reports_to: maint_coord,
   name: "Florencia Medina",
   job_position: "Técnica de campo",
@@ -360,19 +367,19 @@ seed_contact!(
 # Disconnected plant contact: boss not in system, aligned mid-chart
 seed_contact!(
   client: large,
-  location: north,
+  locations: [north, south],
   distance_above: 2,
   name: "Omar Villalba",
   job_position: "Jefe de Seguridad e Higiene",
   work_area: "EHS",
   email: "omar.villalba@demo20.prela",
   phone: "11-5000-2111",
-  description: "Raíz desconectada a mitad de organigrama (distance_above: 2)"
+  description: "Raíz desconectada; EHS en ambas plantas"
 )
 
 seed_contact!(
   client: large,
-  location: north,
+  locations: [north],
   distance_above: 3,
   name: "Inés Cabrera",
   job_position: "Auditora interna",
@@ -382,6 +389,7 @@ seed_contact!(
   description: "Raíz desconectada más abajo (distance_above: 3)"
 )
 
-puts "  Demo Org 20: #{large.contacts.kept.count} contacts"
+puts "  Demo Org 20: #{large.contacts.kept.count} contacts, #{large.locations.kept.count} locations"
 puts "Done. Open clients 'Demo Org 5' and 'Demo Org 20'."
-puts "Look for distance_above spacers: disconnected roots and gaps under Operaciones."
+puts "Look for multi-sede contacts (e.g. Gerente General, Coordinador de Mantenimiento)"
+puts "and distance_above spacers: disconnected roots and gaps under Operaciones."

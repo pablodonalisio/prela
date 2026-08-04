@@ -27,19 +27,20 @@ RSpec.describe Contact, type: :model do
     expect(build(:contact, client:, email: "")).to be_valid
   end
 
-  it "belongs to an optional location of the same client" do
-    location = create(:location, client:)
-    contact = create(:contact, client:, location:)
+  it "can have many locations of the same client" do
+    location1 = create(:location, client:)
+    location2 = create(:location, client:)
+    contact = create(:contact, client:, locations: [location1, location2])
 
-    expect(contact.location).to eq(location)
+    expect(contact.locations).to contain_exactly(location1, location2)
   end
 
   it "rejects a location from another client" do
     other_location = create(:location)
-    contact = build(:contact, client:, location: other_location)
+    contact = build(:contact, client:, locations: [other_location])
 
     expect(contact).not_to be_valid
-    expect(contact.errors[:location]).to be_present
+    expect(contact.errors[:locations]).to be_present
   end
 
   it "rejects a manager from another client" do
