@@ -45,8 +45,8 @@ class ContactsController < ApplicationController
 
   def contact_params
     params.require(:contact).permit(
-      :name, :work_area, :job_position, :description, :email, :phone, :location_id, :reports_to_id,
-      :distance_above
+      :name, :work_area, :job_position, :description, :email, :phone, :reports_to_id,
+      :distance_above, location_ids: []
     )
   end
 

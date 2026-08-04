@@ -3,7 +3,18 @@
   <%= f.input :name, label: "Nombre" %>
   <%= f.input :job_position, label: "Puesto" %>
   <%= f.input :work_area, label: "Área de trabajo" %>
-  <%= f.input :location_id, collection: client.locations.kept, label: "Sede", include_blank: "Sin sede" %>
+  <% kept_locations = client.locations.kept.order(:name) %>
+  <% if kept_locations.any? %>
+    <div class="mb-3">
+      <label class="form-label">Sedes</label>
+      <%= f.collection_check_boxes :location_ids, kept_locations, :id, :name do |b| %>
+        <div class="form-check">
+          <%= b.check_box class: "form-check-input" %>
+          <%= b.label class: "form-check-label" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
   <%= f.input :reports_to_id,
               collection: manager_options_for(client, contact),
               label: "Reporta a",

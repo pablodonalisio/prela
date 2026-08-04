@@ -51,6 +51,17 @@ RSpec.describe "/contacts", type: :request do
         expect(created.distance_above).to eq(2)
       end
 
+      it "persists associated locations" do
+        location1 = create(:location, client:)
+        location2 = create(:location, client:)
+
+        post client_contacts_url(client),
+          params: {contact: valid_attributes.merge(location_ids: [location1.id, location2.id])}
+
+        created = Contact.order(:id).last
+        expect(created.locations).to contain_exactly(location1, location2)
+      end
+
       it "redirects to the client" do
         post client_contacts_url(client), params: {contact: valid_attributes}
         expect(response).to redirect_to(client_path(client))
@@ -98,6 +109,17 @@ RSpec.describe "/contacts", type: :request do
         contact.reload
         expect(contact.reports_to).to eq(manager)
         expect(contact.distance_above).to eq(3)
+      end
+
+      it "updates associated locations" do
+        old_location = create(:location, client:)
+        new_location = create(:location, client:)
+        contact.locations = [old_location]
+
+        patch client_contact_url(client, contact),
+          params: {contact: {location_ids: [new_location.id]}}
+
+        expect(contact.reload.locations).to contain_exactly(new_location)
       end
 
       it "redirects to the client" do
