@@ -53,6 +53,18 @@ RSpec.describe "/location_equipments", type: :request do
       end
     end
 
+    it "filters by active status by default" do
+      inactive = create(:location_equipment, status: :out_of_service)
+
+      get location_equipments_url
+
+      expect(response).to be_successful
+      location_equipments.each do |location_equipment|
+        expect(response.body).to include("location_equipment_#{location_equipment.id}")
+      end
+      expect(response.body).not_to include("location_equipment_#{inactive.id}")
+    end
+
     context "with more than 10 records" do
       let!(:location_equipments) { create_list(:location_equipment, 11) }
 

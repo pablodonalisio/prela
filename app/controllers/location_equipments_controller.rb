@@ -93,6 +93,7 @@ class LocationEquipmentsController < ApplicationController
 
   def filter_params
     set_client_id_filter if current_user.client?
+    set_default_status_filter
     add_location_ids_filter if any_client_selected?
 
     @filter_params = params.slice(*filters)
@@ -112,6 +113,10 @@ class LocationEquipmentsController < ApplicationController
 
   def set_client_id_filter
     params[:client_ids] = [current_user.client_id.to_s]
+  end
+
+  def set_default_status_filter
+    params[:status] = ["active"] if params[:status].blank?
   end
 
   def create_location_equipment
