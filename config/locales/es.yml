@@ -31,7 +31,9 @@ es:
         size: "Tamaño"
       location_equipment:
         location: "Sede"
+        location_id: "Sede"
         equipment: "Equipo"
+        equipment_id: "Equipo"
         serial_number: "Número de serie"
         code: "Código"
         last_service: "Último service"
