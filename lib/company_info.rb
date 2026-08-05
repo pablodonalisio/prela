@@ -29,6 +29,10 @@ module CompanyInfo
     "Hualfin 758 - Córdoba"
   end
 
+  def maps_url
+    "https://www.google.com/maps/search/?api=1&query=#{ERB::Util.url_encode(address)}"
+  end
+
   def footer_lines
     [
       "#{emergency_phone_label}: #{emergency_phone}",

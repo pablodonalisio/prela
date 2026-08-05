@@ -30,8 +30,11 @@
     <span><%= CompanyInfo.email %></span>
   <% end %>
 
-  <span class="company-contact-item company-contact-item--static">
+  <%= link_to CompanyInfo.maps_url,
+              class: "company-contact-item",
+              target: "_blank",
+              rel: "noopener noreferrer" do %>
     <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
     <span><%= CompanyInfo.address %></span>
-  </span>
+  <% end %>
 <% end %>
