@@ -2,6 +2,6 @@
 
 <%= turbo_frame_tag @location_equipment do %>
   <%= render "shared/remote_modal", title: "Nuevo Equipo de Sede" do %>
-    <%= render "form", location_equipment: @location_equipment, locations: [] %>
+    <%= render "form", location_equipment: @location_equipment %>
   <% end %>
 <% end %>

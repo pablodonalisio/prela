@@ -8,29 +8,33 @@
     </div>
     <div class="card-body pb-1">
 
-      <% unless location_equipment.persisted? %>
-        <%# Client selector — only on new records %>
-        <div class="mb-3">
-          <label class="form-label">Cliente</label>
-          <select class="form-select"
-                  data-location-equipment-form-target="client"
-                  data-action="change->location-equipment-form#loadLocations">
-            <option value="">Seleccione un cliente</option>
-            <% Client.visible.order(:name).each do |client| %>
-              <option value="<%= client.id %>"><%= client.name %></option>
-            <% end %>
-          </select>
-        </div>
-      <% end %>
+      <% selected_client_id = params[:client_id].presence || location_equipment.location&.client_id %>
+      <div class="mb-3">
+        <label class="form-label">Cliente</label>
+        <select name="client_id"
+                class="form-select"
+                data-location-equipment-form-target="client"
+                data-action="change->location-equipment-form#loadLocations">
+          <option value="">Seleccione un cliente</option>
+          <% Client.visible.order(:name).each do |client| %>
+            <option value="<%= client.id %>" <%= "selected" if selected_client_id.to_s == client.id.to_s %>>
+              <%= client.name %>
+            </option>
+          <% end %>
+        </select>
+      </div>
 
-      <%# Location select — loaded dynamically on new, static on edit %>
-      <% if location_equipment.persisted? %>
-        <%= f.input :location_id, label: "Sede",
-                                  collection: locations.pluck(:name, :id),
-                                  prompt: "Seleccione una sede",
-                                  wrapper_html: { class: "mb-3" } %>
-      <% else %>
-        <%= turbo_frame_tag "le_location_inputs" do %>
+      <%= turbo_frame_tag "le_location_inputs" do %>
+        <% if selected_client_id.present? %>
+          <% client_locations = Location.visible.where(client_id: selected_client_id).order(:name) %>
+          <% if client_locations.any? %>
+            <%= f.input :location_id, label: "Sede",
+                                      collection: client_locations.pluck(:name, :id),
+                                      prompt: "Seleccione una sede",
+                                      wrapper_html: { class: "mb-3" } %>
+          <% else %>
+            <p class="text-muted small mb-3">Este cliente no tiene sedes registradas.</p>
+          <% end %>
         <% end %>
       <% end %>
 

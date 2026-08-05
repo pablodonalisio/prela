@@ -27,6 +27,14 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include(location.name)
     end
 
+    it "selects the given location_id" do
+      location = create(:location, client: client)
+      get location_inputs_location_equipments_url, params: {client_id: client.id, location_id: location.id}
+      expect(response).to be_successful
+      expect(response.body).to include("selected")
+      expect(response.body).to include(location.id.to_s)
+    end
+
     it "returns an empty turbo frame when client is not found" do
       get location_inputs_location_equipments_url, params: {client_id: 0}
       expect(response).to be_successful
@@ -113,6 +121,16 @@ RSpec.describe "/location_equipments", type: :request do
       get edit_location_equipment_url(location_equipment)
       expect(response).to be_successful
     end
+
+    it "includes the client selector with the current client selected" do
+      get edit_location_equipment_url(location_equipment)
+      expect(response.body).to include("Cliente")
+      expect(response.body).to include(location_equipment.client.name)
+      expect(response.body).to include(%(value="#{location_equipment.client.id}"))
+      expect(response.body).to include("le_location_inputs")
+      expect(response.body).to include("Sede")
+      expect(response.body).to include(location_equipment.location.name)
+    end
   end
 
   describe "POST /create" do
@@ -189,6 +207,35 @@ RSpec.describe "/location_equipments", type: :request do
       put location_equipment_url(location_equipment), params: {location_equipment: new_attributes}, as: :turbo_stream
       expect(response.media_type).to eq Mime[:turbo_stream]
       expect(response.body).to include("turbo-stream action=\"replace\" target=\"location_equipment_#{location_equipment.id}\"")
+    end
+
+    it "moves the location equipment to a location belonging to a different client" do
+      other_location = create(:location)
+      expect(other_location.client_id).not_to eq(location_equipment.client.id)
+
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {location_id: other_location.id}}
+
+      location_equipment.reload
+      expect(location_equipment.location_id).to eq(other_location.id)
+      expect(location_equipment.client.id).to eq(other_location.client_id)
+      expect(response).to redirect_to(location_equipments_url)
+    end
+
+    it "preserves the selected client and shows location errors when location is blank" do
+      other_client = create(:client)
+      other_location = create(:location, client: other_client)
+
+      put location_equipment_url(location_equipment),
+        params: {client_id: other_client.id, location_equipment: {location_id: ""}}
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include(%(value="#{other_client.id}"))
+      expect(response.body).to include("selected")
+      expect(response.body).to include(other_client.name)
+      expect(response.body).to include(other_location.name)
+      expect(response.body).to include("Sede")
+      expect(response.body).to include("Sede no puede estar en blanco")
     end
   end
 

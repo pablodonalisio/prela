@@ -1,6 +1,5 @@
 class LocationEquipmentsController < ApplicationController
   before_action :location_equipment, only: %i[edit update destroy]
-  before_action :set_edit_locations, only: %i[edit]
   before_action :set_order, only: :index
 
   def new
@@ -45,7 +44,6 @@ class LocationEquipmentsController < ApplicationController
         format.turbo_stream {}
       end
     else
-      set_edit_locations
       render :edit, status: :unprocessable_entity
     end
   end
@@ -92,11 +90,6 @@ class LocationEquipmentsController < ApplicationController
   def location_equipment
     @location_equipment ||= authorize LocationEquipment.visible.find(params[:id])
   end
-
-  def set_edit_locations
-    @locations = Location.visible.where(client_id: @location_equipment.location&.client_id)
-  end
-
 
   def filter_params
     set_client_id_filter if current_user.client?
