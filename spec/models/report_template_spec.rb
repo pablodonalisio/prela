@@ -51,7 +51,7 @@ RSpec.describe ReportTemplate, type: :model do
       }
     )
     expect(report_template).not_to be_valid
-    expect(report_template.errors[:measurements]).to include("El nombre de campo 'Tensi?n' ya est? en uso.")
+    expect(report_template.errors[:measurements]).to include("El nombre de campo 'Tensi?n' ya está en uso.")
   end
 
   it "is valid with the same field name in different sections" do
@@ -101,7 +101,7 @@ RSpec.describe ReportTemplate, type: :model do
       measurements: {"1739280000" => {name: "Tensi?n L1", type: "float", optimal_value: "220 ? 5%", units: "V"}}
     )
     expect(report_template).not_to be_valid
-    expect(report_template.errors[:measurements].first).to include("valor ?ptimo")
+    expect(report_template.errors[:measurements].first).to include("valor óptimo")
   end
 
   it "is valid with a range optimal value on numeric room specifications" do
