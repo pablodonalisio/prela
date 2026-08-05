@@ -44,13 +44,13 @@ RSpec.describe "/equipments", type: :request do
       expect(response.body).to include(equipment.third.name)
     end
 
-    context "with more than 10 records" do
-      let!(:equipment) { create_list(:equipment, 11) }
+    context "with more than one page of records" do
+      let!(:equipment) { create_list(:equipment, 13) }
 
-      it "paginates results 10 per page" do
+      it "paginates results 12 per page" do
         get equipment_index_url
         expect(response).to be_successful
-        expect(response.body.scan(/id="equipment_\d+"/).size).to eq(10)
+        expect(response.body.scan(/id="equipment_\d+"/).size).to eq(12)
         expect(response.body).to include("page=2")
 
         get equipment_index_url, params: {page: 2}

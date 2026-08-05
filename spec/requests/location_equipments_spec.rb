@@ -53,13 +53,25 @@ RSpec.describe "/location_equipments", type: :request do
       end
     end
 
-    context "with more than 10 records" do
-      let!(:location_equipments) { create_list(:location_equipment, 11) }
+    it "filters by active status by default" do
+      inactive = create(:location_equipment, status: :out_of_service)
 
-      it "paginates results 10 per page" do
+      get location_equipments_url
+
+      expect(response).to be_successful
+      location_equipments.each do |location_equipment|
+        expect(response.body).to include("location_equipment_#{location_equipment.id}")
+      end
+      expect(response.body).not_to include("location_equipment_#{inactive.id}")
+    end
+
+    context "with more than one page of records" do
+      let!(:location_equipments) { create_list(:location_equipment, 13) }
+
+      it "paginates results 12 per page" do
         get location_equipments_url
         expect(response).to be_successful
-        expect(response.body.scan(/id="location_equipment_\d+"/).size).to eq(10)
+        expect(response.body.scan(/id="location_equipment_\d+"/).size).to eq(12)
         expect(response.body).to include("page=2")
 
         get location_equipments_url, params: {page: 2}
@@ -69,7 +81,7 @@ RSpec.describe "/location_equipments", type: :request do
 
       it "preserves filter params across pages" do
         location = create(:location)
-        create_list(:location_equipment, 11, location: location)
+        create_list(:location_equipment, 13, location: location)
         create(:location_equipment) # different client, filtered out
 
         get location_equipments_url, params: {client_ids: [location.client_id], page: 2}
