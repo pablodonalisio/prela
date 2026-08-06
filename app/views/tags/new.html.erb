@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @tag do %>
+  <%= render "shared/remote_modal", title: "Nueva etiqueta" do %>
+    <%= render "form", tag: @tag %>
+  <% end %>
+<% end %>

@@ -12,7 +12,14 @@
                     style: "height: 300px;" %>
     <% end %>
     <div class="card-body">
-      <h6 class="card-title" style="height: 40px;"><%= item.name %></h6>
+      <h6 class="card-title d-flex flex-wrap gap-1 align-items-center" style="min-height: 40px;">
+        <span><%= item.name %></span>
+        <% if item.respond_to?(:tags) %>
+          <% item.tags.kept.order(:name).each do |tag| %>
+            <%= render "tags/badge", tag: tag %>
+          <% end %>
+        <% end %>
+      </h6>
       <% if lookup_context.template_exists?("item_info", item.class.to_s.underscore.pluralize, true)%>
         <%= render partial: "#{item.class.to_s.underscore.pluralize}/item_info", locals: {item: item} %>
       <% end %>

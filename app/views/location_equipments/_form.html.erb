@@ -120,6 +120,11 @@
                                   wrapper_html: { class: "mb-3" } %>
         </div>
       </div>
+      <%= f.input :tag_ids,
+                  label: "Etiquetas",
+                  collection: Tag.visible.order(:name).map { |t| [t.name, t.id] },
+                  input_html: { multiple: true, class: "form-select" },
+                  wrapper_html: { class: "mb-3" } %>
       <%= f.input :details, label: "Detalles", input_html: { rows: 3 }, wrapper_html: { class: "mb-3" } %>
     </div>
   </div>

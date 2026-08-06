@@ -49,6 +49,24 @@ RSpec.describe LocationEquipment, type: :model do
     it "returns location equipments by status" do
       expect(LocationEquipment.by_status(LocationEquipment.statuses.keys[0]).count).to eq(1)
     end
+
+    it "returns location equipments by tag ids" do
+      tag = create(:tag)
+      location_equipment1.tags << tag
+
+      expect(LocationEquipment.by_tag_ids([tag.id])).to contain_exactly(location_equipment1)
+    end
+  end
+
+  describe "tags" do
+    it "can be associated with tags through taggings" do
+      location_equipment = create(:location_equipment)
+      tag = create(:tag)
+      location_equipment.tags << tag
+
+      expect(location_equipment.tags).to include(tag)
+      expect(tag.taggings.first.taggable).to eq(location_equipment)
+    end
   end
 
   describe ".visible" do

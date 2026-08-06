@@ -114,6 +114,14 @@ RSpec.describe "/location_equipments", type: :request do
         expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
         expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
       end
+
+      it "filter by tag ids" do
+        tag = create(:tag)
+        location_equipments.first.tags << tag
+        get location_equipments_url, params: {tag_ids: [tag.id]}
+        expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
+        expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
+      end
     end
   end
 
@@ -206,6 +214,13 @@ RSpec.describe "/location_equipments", type: :request do
       put location_equipment_url(location_equipment),
         params: {location_equipment: {report_template_ids: [report_template.id]}}
       expect(location_equipment.reload.report_templates).to include(report_template)
+    end
+
+    it "assigns tags to the location equipment" do
+      tag = create(:tag)
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {tag_ids: [tag.id]}}
+      expect(location_equipment.reload.tags).to include(tag)
     end
 
     it "updates the requested location equipment and responds with HTML" do
