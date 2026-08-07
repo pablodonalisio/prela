@@ -109,10 +109,18 @@ RSpec.describe "/location_equipments", type: :request do
       end
 
       it "filter by status" do
-        location_equipments.last.update(status: LocationEquipment.statuses.keys[1])
-        get location_equipments_url, params: {status: LocationEquipment.statuses.keys[0]}
+        location_equipments.last.update(status: :out_of_service)
+        get location_equipments_url, params: {status: :active}
         expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
         expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
+      end
+
+      it "only offers active and out_of_service in the status filter" do
+        get location_equipments_url
+        expect(response.body).to include("En servicio")
+        expect(response.body).to include("Fuera de servicio")
+        expect(response.body).not_to include("PRELA para revisar")
+        expect(response.body).not_to include("Inaccesible")
       end
 
       it "filter by tag ids" do
