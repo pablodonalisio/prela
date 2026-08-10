@@ -100,4 +100,27 @@ class LocationEquipment < ApplicationRecord
   def condition_color
     CONDITIONS[condition][:color]
   end
+
+  def failure_metrics_start_at
+    [created_at, FAILURE_METRICS_START_DATE.beginning_of_day].max
+  end
+
+  def failures_since_metrics_start
+    failures.where(date: failure_metrics_start_at.to_date..Date.current).count
+  end
+
+  def active_seconds_since_metrics_start
+    ActiveDuration.new(self).seconds
+  end
+
+  def active_years_since_metrics_start
+    ActiveDuration.new(self).years
+  end
+
+  def average_failures_per_active_year
+    years = active_years_since_metrics_start
+    return if years <= 0
+
+    failures_since_metrics_start / years.to_f
+  end
 end
