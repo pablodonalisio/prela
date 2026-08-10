@@ -15,6 +15,9 @@
         <li class="nav-item">
           <%= link_to "Tipos de Activos", equipment_kinds_path, class: "nav-link" + (active == "equipment_kinds" ? " active" : "") %>
         </li>
+        <li class="nav-item">
+          <%= link_to "Etiquetas", tags_path, class: "nav-link" + (active == "tags" ? " active" : "") %>
+        </li>
       </ul>
     </div>
   </div>

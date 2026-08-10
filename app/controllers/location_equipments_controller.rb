@@ -9,7 +9,7 @@ class LocationEquipmentsController < ApplicationController
   def index
     scoped = policy_scope(
       LocationEquipment.filter(filter_params)
-        .includes(equipment: :avatar_blob, location: :client)
+        .includes(:tags, equipment: :avatar_blob, location: :client)
         .order(@order)
     )
     authorize scoped
@@ -84,7 +84,8 @@ class LocationEquipmentsController < ApplicationController
         :thermography_interval, :last_thermography, :next_thermography,
         :electrical_approval_interval, :last_electrical_approval, :next_electrical_approval,
         field_values: {},
-        report_template_ids: [])
+        report_template_ids: [],
+        tag_ids: [])
   end
 
   def location_equipment
@@ -100,7 +101,7 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def filters
-    @filters ||= %i[client_ids status equipment_kind_ids]
+    @filters ||= %i[client_ids status equipment_kind_ids tag_ids]
   end
 
   def add_location_ids_filter

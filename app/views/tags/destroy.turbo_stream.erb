@@ -1,0 +1,14 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.remove @tag %>
+<% if policy_scope(Tag).none? %>
+  <%= turbo_stream.append "tags" do %>
+    <%= render "shared/empty_collection",
+               id: "tags_empty",
+               message: "No hay etiquetas todavía.",
+               action_text: current_user.admin? ? "Agregar" : nil,
+               action_path: current_user.admin? ? new_tag_path : nil %>
+  <% end %>
+<% end %>

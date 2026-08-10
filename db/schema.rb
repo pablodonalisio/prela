@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_04_184031) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_07_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -429,6 +429,29 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_04_184031) do
     t.index ["discarded_at"], name: "index_signatures_on_discarded_at"
   end
 
+  create_table "taggings", force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.string "taggable_type", null: false
+    t.bigint "taggable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id", "taggable_type", "taggable_id"], name: "index_taggings_on_tag_and_taggable", unique: true
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "color", default: "#6c757d", null: false
+    t.string "normalized_name", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_tags_on_discarded_at"
+    t.index ["name"], name: "index_tags_on_name", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["normalized_name"], name: "index_tags_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+  end
+
   create_table "ups_report_stats", force: :cascade do |t|
     t.bigint "report_id", null: false
     t.string "operating_mode"
@@ -491,6 +514,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_04_184031) do
   add_foreign_key "room_report_stats", "reports"
   add_foreign_key "service_dates", "activities"
   add_foreign_key "service_dates", "location_equipments"
+  add_foreign_key "taggings", "tags"
   add_foreign_key "ups_report_stats", "reports"
   add_foreign_key "users", "clients"
 end

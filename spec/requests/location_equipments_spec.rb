@@ -109,8 +109,24 @@ RSpec.describe "/location_equipments", type: :request do
       end
 
       it "filter by status" do
-        location_equipments.last.update(status: LocationEquipment.statuses.keys[1])
-        get location_equipments_url, params: {status: LocationEquipment.statuses.keys[0]}
+        location_equipments.last.update(status: :out_of_service)
+        get location_equipments_url, params: {status: :active}
+        expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
+        expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
+      end
+
+      it "only offers active and out_of_service in the status filter" do
+        get location_equipments_url
+        expect(response.body).to include("En servicio")
+        expect(response.body).to include("Fuera de servicio")
+        expect(response.body).not_to include("PRELA para revisar")
+        expect(response.body).not_to include("Inaccesible")
+      end
+
+      it "filter by tag ids" do
+        tag = create(:tag)
+        location_equipments.first.tags << tag
+        get location_equipments_url, params: {tag_ids: [tag.id]}
         expect(response.body).to match("location_equipment_" + location_equipments.first.id.to_s)
         expect(response.body).not_to match("location_equipment_" + location_equipments.last.id.to_s)
       end
@@ -206,6 +222,13 @@ RSpec.describe "/location_equipments", type: :request do
       put location_equipment_url(location_equipment),
         params: {location_equipment: {report_template_ids: [report_template.id]}}
       expect(location_equipment.reload.report_templates).to include(report_template)
+    end
+
+    it "assigns tags to the location equipment" do
+      tag = create(:tag)
+      put location_equipment_url(location_equipment),
+        params: {location_equipment: {tag_ids: [tag.id]}}
+      expect(location_equipment.reload.tags).to include(tag)
     end
 
     it "updates the requested location equipment and responds with HTML" do
