@@ -1,6 +1,25 @@
 require "rails_helper"
 
 RSpec.describe LocationEquipment, type: :model do
+  describe "paper_trail" do
+    it "creates a version on create" do
+      location_equipment = create(:location_equipment)
+
+      expect(location_equipment.versions.count).to eq(1)
+      expect(location_equipment.versions.last.event).to eq("create")
+    end
+
+    it "creates a version on update" do
+      location_equipment = create(:location_equipment)
+
+      expect {
+        location_equipment.update!(status: :out_of_service)
+      }.to change { location_equipment.versions.count }.by(1)
+
+      expect(location_equipment.versions.last.event).to eq("update")
+    end
+  end
+
   context "associations" do
     let(:location_equipment) { create(:location_equipment) }
 

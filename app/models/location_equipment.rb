@@ -2,6 +2,12 @@ class LocationEquipment < ApplicationRecord
   include Discard::Model
   include Filterable
 
+  has_paper_trail
+
+  # Metrics (failures average, etc.) start at this date for equipment created earlier.
+  # Equipment created on/after this date use created_at instead.
+  FAILURE_METRICS_START_DATE = Date.new(2026, 8, 10)
+
   ACTIVITY_KIND = {
     last_battery_change: Activity::BATTERY_CHANGE,
     last_service: Activity::SERVICE,
