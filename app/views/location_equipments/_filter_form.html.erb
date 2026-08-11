@@ -43,5 +43,15 @@
                               label: :name,
                               selected_filters: filter_params[:equipment_kind_ids] %>
 
+    <% if Tag.visible.any? %>
+      <%= render "filter_item", title: "Etiquetas",
+                                f: f,
+                                attribute: :tag_ids,
+                                collection: Tag.visible.order(:name),
+                                value: :id,
+                                label: :name,
+                                selected_filters: filter_params[:tag_ids] %>
+    <% end %>
+
   <% end %>
 <% end %>

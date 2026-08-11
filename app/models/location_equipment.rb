@@ -1,6 +1,7 @@
 class LocationEquipment < ApplicationRecord
   include Discard::Model
   include Filterable
+  include Taggable
 
   has_paper_trail
 
@@ -55,8 +56,9 @@ class LocationEquipment < ApplicationRecord
   scope :by_location_ids, ->(location_id) { where(location_id:) }
   scope :by_status, ->(status) { where(status:) }
   scope :by_equipment_kind_ids, ->(equipment_kind_ids) { joins(:equipment).where(equipment: {equipment_kind_id: equipment_kind_ids}) }
+  scope :by_tag_ids, ->(tag_ids) { joins(:tags).where(tags: {id: tag_ids}).distinct }
 
-  enum :status, {active: 0, out_of_service: 1, prela_to_check: 2, prela_to_deliver: 3, prela_on_service: 4, inaccessible: 5}
+  enum :status, {active: 0, out_of_service: 1}
 
   delegate :avatar, :name, :model, :kind, to: :equipment
   delegate :client, to: :location

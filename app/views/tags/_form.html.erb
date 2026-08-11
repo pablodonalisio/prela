@@ -1,0 +1,12 @@
+<%= simple_form_for tag do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :color, label: "Color",
+                      as: :string,
+                      input_html: {
+                        type: "color",
+                        value: tag.color.presence || Tag::DEFAULT_COLOR,
+                        class: "form-control form-control-color"
+                      } %>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

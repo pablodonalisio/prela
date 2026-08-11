@@ -1,6 +1,5 @@
 class LocationEquipmentsController < ApplicationController
   before_action :location_equipment, only: %i[edit update destroy]
-  before_action :set_edit_locations, only: %i[edit]
   before_action :set_order, only: :index
 
   def new
@@ -10,7 +9,7 @@ class LocationEquipmentsController < ApplicationController
   def index
     scoped = policy_scope(
       LocationEquipment.filter(filter_params)
-        .includes(equipment: :avatar_blob, location: :client)
+        .includes(:tags, equipment: :avatar_blob, location: :client)
         .order(@order)
     )
     authorize scoped
@@ -45,7 +44,6 @@ class LocationEquipmentsController < ApplicationController
         format.turbo_stream {}
       end
     else
-      set_edit_locations
       render :edit, status: :unprocessable_entity
     end
   end
@@ -86,27 +84,24 @@ class LocationEquipmentsController < ApplicationController
         :thermography_interval, :last_thermography, :next_thermography,
         :electrical_approval_interval, :last_electrical_approval, :next_electrical_approval,
         field_values: {},
-        report_template_ids: [])
+        report_template_ids: [],
+        tag_ids: [])
   end
 
   def location_equipment
     @location_equipment ||= authorize LocationEquipment.visible.find(params[:id])
   end
 
-  def set_edit_locations
-    @locations = Location.visible.where(client_id: @location_equipment.location&.client_id)
-  end
-
-
   def filter_params
     set_client_id_filter if current_user.client?
+    set_default_status_filter
     add_location_ids_filter if any_client_selected?
 
     @filter_params = params.slice(*filters)
   end
 
   def filters
-    @filters ||= %i[client_ids status equipment_kind_ids]
+    @filters ||= %i[client_ids status equipment_kind_ids tag_ids]
   end
 
   def add_location_ids_filter
@@ -119,6 +114,10 @@ class LocationEquipmentsController < ApplicationController
 
   def set_client_id_filter
     params[:client_ids] = [current_user.client_id.to_s]
+  end
+
+  def set_default_status_filter
+    params[:status] = ["active"] if params[:status].blank?
   end
 
   def create_location_equipment

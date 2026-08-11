@@ -21,9 +21,14 @@
         <p class="text-white-50 small mb-1">
           <%= location_equipment.location.client.name %> · <%= location_equipment.location.name %>
         </p>
-        <span class="badge bg-<%= location_equipment.condition_color %> rounded-pill">
-          Condición: <%= location_equipment.condition %>
-        </span>
+        <div class="d-flex flex-wrap gap-1 align-items-center">
+          <span class="badge bg-<%= location_equipment.condition_color %> rounded-pill">
+            Condición: <%= location_equipment.condition %>
+          </span>
+          <% location_equipment.tags.kept.order(:name).each do |tag| %>
+            <%= render "tags/badge", tag: tag %>
+          <% end %>
+        </div>
       </div>
       <% if current_user.admin? %>
         <div class="flex-shrink-0">

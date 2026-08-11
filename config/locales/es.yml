@@ -31,7 +31,9 @@ es:
         size: "Tamaño"
       location_equipment:
         location: "Sede"
+        location_id: "Sede"
         equipment: "Equipo"
+        equipment_id: "Equipo"
         serial_number: "Número de serie"
         code: "Código"
         last_service: "Último service"
@@ -54,10 +56,6 @@ es:
         statuses:
           active: "En servicio"
           out_of_service: "Fuera de servicio"
-          prela_on_service: "PRELA en service"
-          prela_to_check: "PRELA para revisar"
-          prela_to_deliver: "PRELA para entregar"
-          inaccessible: "Inaccesible"
       battery:
         model: "Modelo"
         voltage: "Voltaje"
