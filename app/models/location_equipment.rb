@@ -3,6 +3,12 @@ class LocationEquipment < ApplicationRecord
   include Filterable
   include Taggable
 
+  has_paper_trail
+
+  # Metrics (failures average, etc.) start at this date for equipment created earlier.
+  # Equipment created on/after this date use created_at instead.
+  FAILURE_METRICS_START_DATE = Date.new(2026, 8, 10)
+
   ACTIVITY_KIND = {
     last_battery_change: Activity::BATTERY_CHANGE,
     last_service: Activity::SERVICE,
@@ -95,5 +101,32 @@ class LocationEquipment < ApplicationRecord
 
   def condition_color
     CONDITIONS[condition][:color]
+  end
+
+  def failure_metrics_start_at
+    [created_at, FAILURE_METRICS_START_DATE.beginning_of_day].max
+  end
+
+  def failures_since_metrics_start
+    failures.where(date: failure_metrics_start_at.to_date..Date.current).count
+  end
+
+  def failures_last_year_count
+    failures.where(date: 1.year.ago.to_date..Date.current).count
+  end
+
+  def active_seconds_since_metrics_start
+    ActiveDuration.new(self).seconds
+  end
+
+  def active_years_since_metrics_start
+    ActiveDuration.new(self).years
+  end
+
+  def average_failures_per_active_year
+    years = active_years_since_metrics_start
+    return if years <= 0
+
+    failures_since_metrics_start / years.to_f
   end
 end

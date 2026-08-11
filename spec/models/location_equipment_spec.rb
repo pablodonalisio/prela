@@ -1,6 +1,129 @@
 require "rails_helper"
 
 RSpec.describe LocationEquipment, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
+
+  describe "paper_trail" do
+    it "creates a version on create" do
+      location_equipment = create(:location_equipment)
+
+      expect(location_equipment.versions.count).to eq(1)
+      expect(location_equipment.versions.last.event).to eq("create")
+    end
+
+    it "creates a version on update" do
+      location_equipment = create(:location_equipment)
+
+      expect {
+        location_equipment.update!(status: :out_of_service)
+      }.to change { location_equipment.versions.count }.by(1)
+
+      expect(location_equipment.versions.last.event).to eq("update")
+    end
+  end
+
+  describe "failure metrics" do
+    describe "#failure_metrics_start_at" do
+      it "uses the implementation cutoff for equipment created before it" do
+        location_equipment = create(:location_equipment, created_at: Date.new(2025, 1, 1).beginning_of_day)
+
+        expect(location_equipment.failure_metrics_start_at).to eq(
+          LocationEquipment::FAILURE_METRICS_START_DATE.beginning_of_day
+        )
+      end
+
+      it "uses created_at for equipment created on or after the cutoff" do
+        created_at = LocationEquipment::FAILURE_METRICS_START_DATE.beginning_of_day + 2.days
+        location_equipment = create(:location_equipment, created_at:)
+
+        expect(location_equipment.failure_metrics_start_at).to eq(created_at)
+      end
+    end
+
+    describe "#failures_since_metrics_start" do
+      it "counts only failures on or after the metrics start date" do
+        travel_to LocationEquipment::FAILURE_METRICS_START_DATE + 10.days do
+          location_equipment = create(:location_equipment, created_at: Date.new(2025, 1, 1).beginning_of_day)
+          create(:failure, location_equipment:, date: Date.new(2025, 6, 1))
+          create(:failure, location_equipment:, date: LocationEquipment::FAILURE_METRICS_START_DATE)
+          create(:failure, location_equipment:, date: LocationEquipment::FAILURE_METRICS_START_DATE + 1.day)
+
+          expect(location_equipment.failures_since_metrics_start).to eq(2)
+        end
+      end
+    end
+
+    describe "#failures_last_year_count" do
+      it "counts failures in the rolling last 365 days" do
+        travel_to Date.new(2026, 8, 11) do
+          location_equipment = create(:location_equipment)
+          create(:failure, location_equipment:, date: Date.new(2025, 8, 10)) # outside window
+          create(:failure, location_equipment:, date: Date.new(2025, 8, 11)) # on boundary
+          create(:failure, location_equipment:, date: Date.new(2026, 1, 15))
+          create(:failure, location_equipment:, date: Date.new(2026, 8, 11))
+
+          expect(location_equipment.failures_last_year_count).to eq(3)
+        end
+      end
+    end
+
+    describe "#active_years_since_metrics_start and #average_failures_per_active_year" do
+      it "returns nil average when there is no active time" do
+        travel_to LocationEquipment::FAILURE_METRICS_START_DATE.beginning_of_day + 1.day do
+          location_equipment = create(
+            :location_equipment,
+            status: :out_of_service,
+            created_at: Date.new(2025, 1, 1).beginning_of_day
+          )
+          PaperTrail::Version.create!(
+            item_type: "LocationEquipment",
+            item_id: location_equipment.id,
+            event: "update",
+            whodunnit: "baseline",
+            created_at: LocationEquipment::FAILURE_METRICS_START_DATE.beginning_of_day,
+            object_changes: PaperTrail.serializer.dump("status" => [nil, "out_of_service"])
+          )
+
+          expect(location_equipment.active_years_since_metrics_start).to eq(0)
+          expect(location_equipment.average_failures_per_active_year).to be_nil
+        end
+      end
+
+      it "counts only time spent in active status for the average" do
+        start_at = LocationEquipment::FAILURE_METRICS_START_DATE.beginning_of_day
+
+        travel_to start_at do
+          @location_equipment = create(
+            :location_equipment,
+            status: :active,
+            created_at: Date.new(2025, 1, 1).beginning_of_day
+          )
+          PaperTrail::Version.create!(
+            item_type: "LocationEquipment",
+            item_id: @location_equipment.id,
+            event: "update",
+            whodunnit: "baseline",
+            created_at: start_at,
+            object_changes: PaperTrail.serializer.dump("status" => [nil, "active"])
+          )
+        end
+
+        travel_to start_at + 6.months do
+          @location_equipment.update!(status: :out_of_service)
+        end
+
+        travel_to start_at + 1.year do
+          create(:failure, location_equipment: @location_equipment, date: Date.current)
+          create(:failure, location_equipment: @location_equipment, date: Date.current)
+
+          # 2 failures over ~0.5 active years => ~4.0 / year
+          expect(@location_equipment.active_years_since_metrics_start).to be_within(0.02).of(0.5)
+          expect(@location_equipment.average_failures_per_active_year).to be_within(0.2).of(4.0)
+        end
+      end
+    end
+  end
+
   context "associations" do
     let(:location_equipment) { create(:location_equipment) }
 

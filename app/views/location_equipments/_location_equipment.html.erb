@@ -81,6 +81,7 @@
                                                    path: new_location_equipment_failure_path(@location_equipment) %>
                 <% end %>
               <% end %>
+              <%= render "failure_metrics", location_equipment: @location_equipment %>
               <%= render "failures/failures", failures: @location_equipment.failures.order(date: :desc), location_equipment: @location_equipment %>
             </div>
           </div>
