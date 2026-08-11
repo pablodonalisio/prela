@@ -53,6 +53,20 @@ RSpec.describe LocationEquipment, type: :model do
       end
     end
 
+    describe "#failures_last_year_count" do
+      it "counts failures in the rolling last 365 days" do
+        travel_to Date.new(2026, 8, 11) do
+          location_equipment = create(:location_equipment)
+          create(:failure, location_equipment:, date: Date.new(2025, 8, 10)) # outside window
+          create(:failure, location_equipment:, date: Date.new(2025, 8, 11)) # on boundary
+          create(:failure, location_equipment:, date: Date.new(2026, 1, 15))
+          create(:failure, location_equipment:, date: Date.new(2026, 8, 11))
+
+          expect(location_equipment.failures_last_year_count).to eq(3)
+        end
+      end
+    end
+
     describe "#active_years_since_metrics_start and #average_failures_per_active_year" do
       it "returns nil average when there is no active time" do
         travel_to LocationEquipment::FAILURE_METRICS_START_DATE.beginning_of_day + 1.day do

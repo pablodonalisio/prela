@@ -109,6 +109,10 @@ class LocationEquipment < ApplicationRecord
     failures.where(date: failure_metrics_start_at.to_date..Date.current).count
   end
 
+  def failures_last_year_count
+    failures.where(date: 1.year.ago.to_date..Date.current).count
+  end
+
   def active_seconds_since_metrics_start
     ActiveDuration.new(self).seconds
   end

@@ -25,6 +25,10 @@ module LocationEquipmentsHelper
     end
   end
 
+  def failures_last_year_indicator(location_equipment)
+    "Último año: #{location_equipment.failures_last_year_count}"
+  end
+
   def average_failures_indicator(location_equipment)
     average = location_equipment.average_failures_per_active_year
     return "—" if average.nil?

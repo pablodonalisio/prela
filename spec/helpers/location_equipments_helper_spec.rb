@@ -1,6 +1,15 @@
 require "rails_helper"
 
 RSpec.describe LocationEquipmentsHelper, type: :helper do
+  describe "#failures_last_year_indicator" do
+    it "shows the last-year failure count" do
+      location_equipment = build_stubbed(:location_equipment)
+      allow(location_equipment).to receive(:failures_last_year_count).and_return(3)
+
+      expect(helper.failures_last_year_indicator(location_equipment)).to eq("Último año: 3")
+    end
+  end
+
   describe "#average_failures_indicator" do
     it "returns a dash when average is unavailable" do
       location_equipment = build_stubbed(:location_equipment)
