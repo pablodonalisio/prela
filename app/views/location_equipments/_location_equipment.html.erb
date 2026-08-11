@@ -54,6 +54,20 @@
       </div>
     </div>
 
+    <%# ── Comments ────────────────────────────────────────── %>
+    <div class="border-top border-white border-opacity-10 pb-2">
+      <%= render "shared/content_header", title: "Comentarios" do %>
+        <% if current_user.admin? %>
+          <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                           text: "",
+                                           path: new_location_equipment_comment_path(location_equipment) %>
+        <% end %>
+      <% end %>
+      <%= render "comments/comments",
+                 comments: location_equipment.comments.order(updated_at: :desc),
+                 location_equipment: location_equipment %>
+    </div>
+
       <div class="col-12 p-3">
         <div class="row gx-5">
 

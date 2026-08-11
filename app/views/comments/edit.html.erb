@@ -1,0 +1,7 @@
+<h1>Editar Comentario</h1>
+
+<%= turbo_frame_tag @comment do %>
+  <%= render "shared/remote_modal", title: "Editar Comentario" do %>
+    <%= render "form", comment: @comment, location_equipment: @location_equipment %>
+  <% end %>
+<% end %>

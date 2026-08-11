@@ -46,6 +46,7 @@ class LocationEquipment < ApplicationRecord
   has_many :service_dates, dependent: :destroy
   has_many :documents, as: :documentable, dependent: :destroy
   has_many :failures, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   scope :visible, -> {
     kept
