@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     resources :activities
     resources :documents
     resources :failures
+    resources :comments
   end
   resources :equipment_supplies
   resources :equipment do

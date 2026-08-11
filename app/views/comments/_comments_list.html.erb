@@ -1,0 +1,7 @@
+<div id="comments">
+  <% if comments.empty? %>
+    <p id="empty_comments" class="text-white-50 mb-0 px-3">Sin comentarios</p>
+  <% else %>
+    <%= render partial: "comments/comment", collection: comments, as: :comment, locals: { location_equipment: location_equipment } %>
+  <% end %>
+</div>
