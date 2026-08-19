@@ -12,6 +12,7 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include("Piso")
       expect(response.body).to include("Condición")
       expect(response.body).to include("Detalles")
+      expect(response.body).to include("Foto")
       expect(response.body).to include("Aceptar")
     end
   end
@@ -174,6 +175,16 @@ RSpec.describe "/location_equipments", type: :request do
         }.to change(LocationEquipment, :count).by(1)
         expect(response).to redirect_to(location_equipments_url)
       end
+
+      it "attaches an avatar to the location equipment, not the equipment" do
+        avatar = fixture_file_upload(Rails.root.join("spec/test_files/placeholder-img.jpeg"), "image/jpeg")
+
+        post location_equipments_url, params: {location_equipment: valid_attributes.merge(avatar: avatar)}
+
+        location_equipment = LocationEquipment.last
+        expect(location_equipment.avatar).to be_attached
+        expect(equipment.reload.avatar).not_to be_attached
+      end
     end
 
     context "with invalid parameters" do
@@ -236,6 +247,16 @@ RSpec.describe "/location_equipments", type: :request do
       location_equipment.reload
       expect(location_equipment.zone).to eq("new zone")
       expect(response).to redirect_to(location_equipments_url)
+    end
+
+    it "attaches an avatar to the location equipment, not the equipment" do
+      avatar = fixture_file_upload(Rails.root.join("spec/test_files/placeholder-img.jpeg"), "image/jpeg")
+
+      put location_equipment_url(location_equipment), params: {location_equipment: {avatar: avatar}}
+
+      location_equipment.reload
+      expect(location_equipment.avatar).to be_attached
+      expect(location_equipment.equipment.avatar).not_to be_attached
     end
 
     it "updates the requested location equipment and responds with turbo_stream" do

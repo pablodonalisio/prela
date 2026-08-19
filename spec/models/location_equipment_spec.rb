@@ -157,6 +157,38 @@ RSpec.describe LocationEquipment, type: :model do
     end
   end
 
+  describe "avatar" do
+    let(:location_equipment) { create(:location_equipment) }
+    let(:avatar_file) { Rails.root.join("spec", "test_files", "placeholder-img.jpeg") }
+
+    it "can have an attached avatar" do
+      location_equipment.avatar.attach(io: File.open(avatar_file), filename: "placeholder-img.jpeg", content_type: "image/jpeg")
+
+      expect(location_equipment.avatar).to be_attached
+    end
+
+    describe "#display_avatar" do
+      it "returns the location equipment avatar when attached" do
+        location_equipment.avatar.attach(io: File.open(avatar_file), filename: "le-avatar.jpeg", content_type: "image/jpeg")
+        location_equipment.equipment.avatar.attach(io: File.open(avatar_file), filename: "equipment-avatar.jpeg", content_type: "image/jpeg")
+
+        expect(location_equipment.display_avatar).to eq(location_equipment.avatar)
+        expect(location_equipment.display_avatar.filename.to_s).to eq("le-avatar.jpeg")
+      end
+
+      it "falls back to the equipment avatar when the location equipment has none" do
+        location_equipment.equipment.avatar.attach(io: File.open(avatar_file), filename: "equipment-avatar.jpeg", content_type: "image/jpeg")
+
+        expect(location_equipment.display_avatar).to eq(location_equipment.equipment.avatar)
+        expect(location_equipment.display_avatar).to be_attached
+      end
+
+      it "returns an unattached avatar when neither is attached" do
+        expect(location_equipment.display_avatar).not_to be_attached
+      end
+    end
+  end
+
   describe "status enum" do
     it "only allows active and out_of_service" do
       expect(LocationEquipment.statuses.keys).to contain_exactly("active", "out_of_service")

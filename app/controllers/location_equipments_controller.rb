@@ -9,7 +9,7 @@ class LocationEquipmentsController < ApplicationController
   def index
     scoped = policy_scope(
       LocationEquipment.filter(filter_params)
-        .includes(:tags, equipment: :avatar_blob, location: :client)
+        .includes(:tags, :avatar_blob, equipment: :avatar_blob, location: :client)
         .order(@order)
     )
     authorize scoped
@@ -75,7 +75,7 @@ class LocationEquipmentsController < ApplicationController
 
   def location_equipment_params
     params.require(:location_equipment)
-      .permit(:zone, :floor, :location_id, :equipment_id, :status, :condition, :details,
+      .permit(:avatar, :zone, :floor, :location_id, :equipment_id, :status, :condition, :details,
         :serial_number, :code, :form_link,
         :last_service, :next_service, :last_battery_change, :next_battery_change,
         :last_belt_change, :next_belt_change, :engine_serial_number, :power_unit_serial_number, :service_interval,

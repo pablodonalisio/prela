@@ -35,6 +35,7 @@ class LocationEquipment < ApplicationRecord
 
   after_create :create_next_service_dates
 
+  has_one_attached :avatar
   belongs_to :location
   belongs_to :equipment
   has_many :equipment_supplies, dependent: :destroy, as: :equipmentable
@@ -61,10 +62,14 @@ class LocationEquipment < ApplicationRecord
 
   enum :status, {active: 0, out_of_service: 1}
 
-  delegate :avatar, :name, :model, :kind, to: :equipment
+  delegate :name, :model, :kind, to: :equipment
   delegate :client, to: :location
 
   validates :location_id, :equipment_id, presence: true
+
+  def display_avatar
+    avatar.attached? ? avatar : equipment.avatar
+  end
 
   def associate_report_template!(report_template)
     return if report_template.blank?
