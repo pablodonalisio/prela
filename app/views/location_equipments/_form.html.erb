@@ -67,6 +67,10 @@
         <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-primary" %>.
       </p>
 
+      <%= f.input :avatar, label: "Foto",
+                           hint: "Opcional. Si no se adjunta, se usa la foto del equipo.",
+                           wrapper_html: { class: "mb-3" } %>
+
       <div class="row g-3">
         <div class="col-sm-6">
           <%= f.input :serial_number, wrapper_html: { class: "mb-3" } %>

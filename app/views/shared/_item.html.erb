@@ -1,7 +1,8 @@
 <%= turbo_frame_tag item, class: "col-sm-6 col-md-4 col-xl-3" do %>
   <div class="card">
-    <% if item.avatar.attached? %>
-      <%= image_tag item.avatar.variant(resize_and_pad: [300, 300]),
+    <% card_avatar = item.respond_to?(:display_avatar) ? item.display_avatar : item.avatar %>
+    <% if card_avatar.attached? %>
+      <%= image_tag card_avatar.variant(resize_and_pad: [300, 300]),
                     alt: "Imagen de Item",
                     class:"img-fluid rounded-top bg-light",
                     style: "height: 300px;" %>
