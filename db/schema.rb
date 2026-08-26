@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_26_100502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -426,6 +426,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
     t.datetime "updated_at", null: false
     t.index ["activity_id"], name: "index_service_dates_on_activity_id"
     t.index ["location_equipment_id"], name: "index_service_dates_on_location_equipment_id"
+  end
+
+  create_table "service_kinds", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.integer "default_interval", default: 1, null: false
+    t.integer "interval_unit", default: 0, null: false
+    t.integer "priority", default: 1, null: false
+    t.string "legacy_key"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_service_kinds_on_discarded_at"
+    t.index ["legacy_key"], name: "index_service_kinds_on_legacy_key", unique: true, where: "(legacy_key IS NOT NULL)"
+    t.index ["normalized_name"], name: "index_service_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
   end
 
   create_table "signatures", force: :cascade do |t|

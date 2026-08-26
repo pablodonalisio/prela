@@ -1,0 +1,14 @@
+<%= simple_form_for service_kind do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :default_interval, label: "Intervalo", as: :integer %>
+  <%= f.input :interval_unit,
+              label: "Unidad",
+              collection: ServiceKind.interval_unit_options,
+              include_blank: false %>
+  <%= f.input :priority,
+              label: "Prioridad",
+              collection: ServiceKind.priority_options,
+              include_blank: false %>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

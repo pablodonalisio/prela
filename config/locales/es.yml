@@ -85,6 +85,19 @@ es:
           float: "Número decimal"
           date: "Fecha"
           boolean: "Booleano"
+      service_kind:
+        name: "Nombre"
+        default_interval: "Intervalo"
+        interval_unit: "Unidad"
+        priority: "Prioridad"
+        interval_units:
+          years: "años"
+          months: "meses"
+          weeks: "semanas"
+        priorities:
+          critical: "Crítico"
+          normal: "Normal"
+          low: "Baja"
       report_template:
         name: "Nombre"
         optimal_value: "Valor óptimo"

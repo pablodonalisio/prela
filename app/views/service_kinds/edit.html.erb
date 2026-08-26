@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @service_kind do %>
+  <%= render "shared/remote_modal", title: "Editar tipo de servicio" do %>
+    <%= render "form", service_kind: @service_kind %>
+  <% end %>
+<% end %>
