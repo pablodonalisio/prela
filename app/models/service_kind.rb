@@ -12,7 +12,19 @@ class ServiceKind < ApplicationRecord
     {legacy_key: "electrical_approval", name: "Apto eléctrico", default_interval: 1}
   ].freeze
 
+  # Maps EquipmentKind.legacy_kind → ServiceKind.legacy_key so we can seed the
+  # HABTM join to match LocationEquipment::SERVICE_KINDS until runtime reads
+  # assignments from equipment_kinds_service_kinds instead of that constant.
+  LEGACY_EQUIPMENT_ASSIGNMENTS = {
+    "ups" => %w[battery_change],
+    "power_unit" => %w[service battery_change belt_change],
+    "electrical_panel" => %w[service torque cleaning],
+    "building" => %w[srt_900 thermography electrical_approval]
+  }.freeze
+
   attr_readonly :legacy_key
+
+  has_and_belongs_to_many :equipment_kinds
 
   before_validation :set_normalized_name
 
@@ -56,6 +68,23 @@ class ServiceKind < ApplicationRecord
           priority: :normal
         )
         service_kind.save!
+      end
+    end
+  end
+
+  def self.ensure_legacy_equipment_assignments!
+    ensure_legacy_kinds!
+
+    LEGACY_EQUIPMENT_ASSIGNMENTS.each do |legacy_kind, legacy_keys|
+      equipment_kind = EquipmentKind.find_by(legacy_kind: legacy_kind)
+      next if equipment_kind.nil?
+
+      legacy_keys.each do |legacy_key|
+        service_kind = find_by(legacy_key: legacy_key)
+        next if service_kind.nil?
+        next if equipment_kind.service_kinds.exists?(service_kind.id)
+
+        equipment_kind.service_kinds << service_kind
       end
     end
   end

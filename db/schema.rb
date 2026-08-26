@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_26_100502) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_26_141852) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -209,6 +209,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_26_100502) do
     t.index ["legacy_kind"], name: "index_equipment_kinds_on_legacy_kind", unique: true, where: "((legacy_kind IS NOT NULL) AND (discarded_at IS NULL))"
     t.index ["name"], name: "index_equipment_kinds_on_name", unique: true, where: "(discarded_at IS NULL)"
     t.index ["normalized_name"], name: "index_equipment_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+  end
+
+  create_table "equipment_kinds_service_kinds", id: false, force: :cascade do |t|
+    t.bigint "equipment_kind_id", null: false
+    t.bigint "service_kind_id", null: false
+    t.index ["equipment_kind_id", "service_kind_id"], name: "index_equipment_kinds_service_kinds_uniqueness", unique: true
+    t.index ["equipment_kind_id"], name: "index_equipment_kinds_service_kinds_on_equipment_kind_id"
+    t.index ["service_kind_id"], name: "index_equipment_kinds_service_kinds_on_service_kind_id"
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
@@ -532,6 +540,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_26_100502) do
   add_foreign_key "contacts_locations", "contacts"
   add_foreign_key "contacts_locations", "locations"
   add_foreign_key "electrical_panel_report_stats", "reports"
+  add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
+  add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
   add_foreign_key "failures", "location_equipments"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"

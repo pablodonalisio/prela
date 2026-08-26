@@ -2,7 +2,7 @@ class ServiceKindsController < ApplicationController
   before_action :set_service_kind, only: %i[edit update destroy]
 
   def index
-    @service_kinds = policy_scope(ServiceKind).order(:name)
+    @service_kinds = policy_scope(ServiceKind).includes(:equipment_kinds).order(:name)
   end
 
   def new

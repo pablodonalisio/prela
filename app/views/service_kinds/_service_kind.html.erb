@@ -11,6 +11,9 @@
           <span class="badge rounded-pill text-bg-dark">
             <%= service_kind.priority_label %>
           </span>
+          <% service_kind.equipment_kinds.visible.order(:name).each do |equipment_kind| %>
+            <span class="badge rounded-pill text-bg-primary"><%= equipment_kind.name %></span>
+          <% end %>
         </div>
       </div>
 

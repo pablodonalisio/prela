@@ -189,6 +189,29 @@ RSpec.describe "/equipment_kinds", type: :request do
 
         expect(equipment.reload.field_values).to eq(field_key.to_s => "APC")
       end
+
+      it "assigns service kinds" do
+        equipment_kind = EquipmentKind.create! valid_attributes
+        service_kind = create(:service_kind, name: "Inspección especial")
+
+        patch equipment_kind_url(equipment_kind), params: {
+          equipment_kind: valid_attributes.merge(service_kind_ids: [service_kind.id])
+        }
+
+        expect(equipment_kind.reload.service_kinds).to contain_exactly(service_kind)
+      end
+
+      it "clears service kinds when none are selected" do
+        equipment_kind = EquipmentKind.create! valid_attributes
+        service_kind = create(:service_kind, name: "Inspección especial")
+        equipment_kind.service_kinds << service_kind
+
+        patch equipment_kind_url(equipment_kind), params: {
+          equipment_kind: valid_attributes.merge(service_kind_ids: [""])
+        }
+
+        expect(equipment_kind.reload.service_kinds).to be_empty
+      end
     end
 
     context "with invalid parameters" do

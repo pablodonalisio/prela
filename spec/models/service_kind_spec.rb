@@ -57,6 +57,25 @@ RSpec.describe ServiceKind, type: :model do
     expect(described_class.where(legacy_key: described_class::LEGACY_KINDS.map { |k| k[:legacy_key] }).count).to eq(8)
   end
 
+  it "ensures legacy assignments to equipment kinds" do
+    ups = EquipmentKind.find_by(legacy_kind: "ups") || create(:equipment_kind, :ups)
+    described_class.ensure_legacy_equipment_assignments!
+
+    battery_change = described_class.find_by!(legacy_key: "battery_change")
+    expect(ups.service_kinds).to include(battery_change)
+    expect(battery_change.equipment_kinds).to include(ups)
+  end
+
+  it "can belong to many equipment kinds" do
+    service_kind = create(:service_kind)
+    ups = create(:equipment_kind, :ups)
+    panel = create(:equipment_kind, :electrical_panel)
+
+    service_kind.equipment_kinds << [ups, panel]
+
+    expect(service_kind.equipment_kinds).to contain_exactly(ups, panel)
+  end
+
   describe ".normalize_name" do
     it "downcases, strips, and removes accents" do
       expect(described_class.normalize_name("  Apto Eléctrico  ")).to eq("apto electrico")

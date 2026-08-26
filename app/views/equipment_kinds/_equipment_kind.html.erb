@@ -12,6 +12,9 @@
             <%= equipment_kind.equipments_count %>
             <%= equipment_kind.equipments_count == 1 ? "equipo" : "equipos" %>
           </span>
+          <% equipment_kind.service_kinds.visible.order(:name).each do |service_kind| %>
+            <span class="badge rounded-pill text-bg-primary"><%= service_kind.name %></span>
+          <% end %>
         </div>
       </div>
 
