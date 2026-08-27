@@ -87,9 +87,11 @@ es:
           boolean: "Booleano"
       service_kind:
         name: "Nombre"
+        recurring: "Recurrente"
         default_interval: "Intervalo"
         interval_unit: "Unidad"
         priority: "Prioridad"
+        one_time: "Único"
         interval_units:
           years: "años"
           months: "meses"

@@ -1,20 +1,42 @@
-<%= simple_form_for [location_equipment, location_equipment_service] do |f| %>
+<% recurring_map = if location_equipment_service.new_record?
+  location_equipment.available_service_kinds_for_assignment.to_h { |sk| [sk.id.to_s, sk.recurring?] }
+else
+  {location_equipment_service.service_kind_id.to_s => location_equipment_service.service_kind.recurring?}
+end %>
+<% recurring = location_equipment_service.recurring? %>
+
+<%= simple_form_for [location_equipment, location_equipment_service],
+                    html: {
+                      data: {
+                        controller: "recurring-interval",
+                        recurring_interval_recurring_map_value: recurring_map.to_json,
+                        recurring_interval_recurring_value: recurring
+                      }
+                    } do |f| %>
   <% if location_equipment_service.new_record? %>
     <%= f.input :service_kind_id,
                 label: "Servicio",
                 collection: location_equipment.available_service_kinds_for_assignment,
                 label_method: :name,
                 value_method: :id,
-                include_blank: false %>
+                include_blank: false,
+                input_html: {
+                  data: {
+                    recurring_interval_target: "kindSelect",
+                    action: "change->recurring-interval#kindChanged"
+                  }
+                } %>
   <% else %>
     <p class="mb-2"><strong><%= location_equipment_service.service_kind.name %></strong></p>
   <% end %>
 
-  <%= f.input :interval, label: "Intervalo", as: :integer %>
-  <%= f.input :interval_unit,
-              label: "Unidad",
-              collection: LocationEquipmentService.interval_unit_options,
-              include_blank: false %>
+  <div data-recurring-interval-target="intervalFields" class="<%= "d-none" unless recurring %>">
+    <%= f.input :interval, label: "Intervalo", as: :integer %>
+    <%= f.input :interval_unit,
+                label: "Unidad",
+                collection: LocationEquipmentService.interval_unit_options,
+                include_blank: false %>
+  </div>
 
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>

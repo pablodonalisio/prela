@@ -54,6 +54,6 @@ class ServiceKindsController < ApplicationController
   end
 
   def service_kind_params
-    params.require(:service_kind).permit(:name, :default_interval, :interval_unit, :priority)
+    params.require(:service_kind).permit(:name, :recurring, :default_interval, :interval_unit, :priority)
   end
 end

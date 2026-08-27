@@ -9,9 +9,25 @@ RSpec.describe ServiceKind, type: :model do
     expect(build(:service_kind, name: nil)).not_to be_valid
   end
 
-  it "is not valid with a non-positive interval" do
+  it "is not valid with a non-positive interval when recurring" do
     expect(build(:service_kind, default_interval: 0)).not_to be_valid
     expect(build(:service_kind, default_interval: -1)).not_to be_valid
+  end
+
+  it "defaults recurring to true" do
+    service_kind = build(:service_kind)
+    expect(service_kind.recurring).to be(true)
+  end
+
+  it "is valid as one-time without interval fields" do
+    expect(build(:service_kind, :one_time)).to be_valid
+  end
+
+  it "clears interval fields when not recurring" do
+    service_kind = build(:service_kind, recurring: false, default_interval: 1, interval_unit: :years)
+    expect(service_kind).to be_valid
+    expect(service_kind.default_interval).to be_nil
+    expect(service_kind.interval_unit).to be_nil
   end
 
   it "is not valid with a duplicate name" do
@@ -86,6 +102,11 @@ RSpec.describe ServiceKind, type: :model do
     it "combines interval and unit" do
       service_kind = build(:service_kind, default_interval: 2, interval_unit: :years)
       expect(service_kind.interval_label).to eq("2 años")
+    end
+
+    it "returns the one-time label when not recurring" do
+      service_kind = build(:service_kind, :one_time)
+      expect(service_kind.interval_label).to eq("Único")
     end
   end
 

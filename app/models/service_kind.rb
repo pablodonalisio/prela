@@ -24,20 +24,25 @@ class ServiceKind < ApplicationRecord
 
   attr_readonly :legacy_key
 
+  attribute :recurring, :boolean, default: true
+
   has_and_belongs_to_many :equipment_kinds
   has_many :location_equipment_services, dependent: :restrict_with_error
 
+  before_validation :normalize_recurring_interval
+  before_validation :set_recurring_defaults
   before_validation :set_normalized_name
 
-  enum :interval_unit, {years: 0, months: 1, weeks: 2}, default: :years
+  enum :interval_unit, {years: 0, months: 1, weeks: 2}, validate: {allow_nil: true}
   enum :priority, {critical: 0, normal: 1, low: 2}, default: :normal
 
   validates :name, presence: true
-  validates :default_interval, presence: true, numericality: {only_integer: true, greater_than: 0}
-  validates :interval_unit, presence: true
   validates :priority, presence: true
   validates :legacy_key, uniqueness: true, allow_nil: true
+  validates :default_interval, presence: true, numericality: {only_integer: true, greater_than: 0}, if: :recurring?
+  validates :interval_unit, presence: true, if: :recurring?
   validate :name_must_be_unique
+  validate :interval_must_be_blank_when_not_recurring
 
   scope :visible, -> { kept }
 
@@ -66,7 +71,8 @@ class ServiceKind < ApplicationRecord
           name: attrs[:name],
           default_interval: attrs[:default_interval],
           interval_unit: :years,
-          priority: :normal
+          priority: :normal,
+          recurring: true
         )
         service_kind.save!
       end
@@ -91,8 +97,14 @@ class ServiceKind < ApplicationRecord
   end
 
   def interval_label
+    return one_time_label unless recurring?
+
     unit = I18n.t("activerecord.attributes.service_kind.interval_units.#{interval_unit}")
     "#{default_interval} #{unit}"
+  end
+
+  def one_time_label
+    I18n.t("activerecord.attributes.service_kind.one_time")
   end
 
   def priority_label
@@ -100,6 +112,26 @@ class ServiceKind < ApplicationRecord
   end
 
   private
+
+  def normalize_recurring_interval
+    return if recurring?
+
+    self.default_interval = nil
+    self.interval_unit = nil
+  end
+
+  def set_recurring_defaults
+    return unless recurring?
+
+    self.interval_unit ||= :years
+  end
+
+  def interval_must_be_blank_when_not_recurring
+    return if recurring?
+
+    errors.add(:default_interval, :present) if default_interval.present?
+    errors.add(:interval_unit, :present) if interval_unit.present?
+  end
 
   def set_normalized_name
     self.normalized_name = self.class.normalize_name(name)

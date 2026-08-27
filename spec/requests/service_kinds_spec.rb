@@ -91,6 +91,23 @@ RSpec.describe "/service_kinds", type: :request do
         expect(response).to redirect_to(service_kinds_url)
       end
 
+      it "creates a one-time service kind without interval fields" do
+        expect {
+          post service_kinds_url, params: {
+            service_kind: {
+              name: "Inspección inicial",
+              recurring: "0",
+              priority: "normal"
+            }
+          }
+        }.to change(ServiceKind, :count).by(1)
+
+        service_kind = ServiceKind.order(:id).last
+        expect(service_kind).not_to be_recurring
+        expect(service_kind.default_interval).to be_nil
+        expect(service_kind.interval_unit).to be_nil
+      end
+
       it "appends the service kind via turbo stream" do
         post service_kinds_url, params: {service_kind: valid_attributes}, as: :turbo_stream
         expect(response.media_type).to eq Mime[:turbo_stream]

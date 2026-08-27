@@ -99,13 +99,15 @@ class LocationEquipment < ApplicationRecord
 
     kinds.each do |kind|
       next_date = calculate_next_service_date(kind, from_date)
+      next if next_date.nil?
+
       service_dates.create(kind: kind, date: next_date)
     end
   end
 
   def calculate_next_service_date(service_kind, from_date = Time.current)
     les = location_equipment_service_for(service_kind)
-    return les.advance(from_date) if les
+    return les.advance(from_date) if les&.recurring?
 
     from_date + send("#{service_kind}_interval").years
   end
@@ -169,6 +171,8 @@ class LocationEquipment < ApplicationRecord
   private
 
   def interval_attrs_for_service_kind(service_kind)
+    return {interval: nil, interval_unit: nil} unless service_kind.recurring?
+
     if service_kind.legacy_key.present? && respond_to?("#{service_kind.legacy_key}_interval")
       value = public_send("#{service_kind.legacy_key}_interval")
       {

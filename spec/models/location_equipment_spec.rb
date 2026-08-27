@@ -368,6 +368,18 @@ RSpec.describe LocationEquipment, type: :model do
         expect(ups.location_equipment_services.map(&:service_kind)).to include(battery_change)
         expect(ups.location_equipment_services.find_by!(service_kind: battery_change).interval).to eq(ups.battery_change_interval)
       end
+
+      it "creates location equipment services with nil interval for one-time kinds" do
+        equipment_kind = EquipmentKind.find_by!(legacy_kind: "ups")
+        one_time_kind = create(:service_kind, :one_time, name: "Calibración única")
+        equipment_kind.service_kinds << one_time_kind unless equipment_kind.service_kinds.exists?(one_time_kind.id)
+
+        location_equipment = create(:location_equipment, equipment: create(:equipment, equipment_kind: equipment_kind))
+        les = location_equipment.location_equipment_services.find_by!(service_kind: one_time_kind)
+
+        expect(les.interval).to be_nil
+        expect(les.interval_unit).to be_nil
+      end
     end
 
     describe "calculate_next_service_date" do

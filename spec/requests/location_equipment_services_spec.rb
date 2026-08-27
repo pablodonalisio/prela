@@ -34,6 +34,24 @@ RSpec.describe "/location_equipments/:location_equipment_id/location_equipment_s
       expect(les.interval).to eq(3)
       expect(les.interval_unit).to eq("months")
     end
+
+    it "creates a one-time location equipment service without interval" do
+      location_equipment.location_equipment_services.destroy_all
+      one_time_kind = create(:service_kind, :one_time, name: "Inspección inicial")
+
+      expect {
+        post location_equipment_location_equipment_services_url(location_equipment),
+          params: {
+            location_equipment_service: {
+              service_kind_id: one_time_kind.id
+            }
+          }
+      }.to change(LocationEquipmentService, :count).by(1)
+
+      les = location_equipment.reload.location_equipment_services.find_by!(service_kind: one_time_kind)
+      expect(les.interval).to be_nil
+      expect(les.interval_unit).to be_nil
+    end
   end
 
   describe "PATCH /update" do
