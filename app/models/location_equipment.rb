@@ -33,6 +33,7 @@ class LocationEquipment < ApplicationRecord
     "Deficiente" => {color: "danger"}
   }
 
+  after_create :sync_location_equipment_services!
   after_create :create_next_service_dates
 
   has_one_attached :avatar
@@ -45,6 +46,7 @@ class LocationEquipment < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :activities, dependent: :destroy
   has_many :service_dates, dependent: :destroy
+  has_many :location_equipment_services, dependent: :destroy
   has_many :documents, as: :documentable, dependent: :destroy
   has_many :failures, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -96,13 +98,41 @@ class LocationEquipment < ApplicationRecord
     return if kinds.blank?
 
     kinds.each do |kind|
-      next_date = from_date + send("#{kind}_interval").years
+      next_date = calculate_next_service_date(kind, from_date)
       service_dates.create(kind: kind, date: next_date)
     end
   end
 
   def calculate_next_service_date(service_kind, from_date = Time.current)
+    les = location_equipment_service_for(service_kind)
+    return les.advance(from_date) if les
+
     from_date + send("#{service_kind}_interval").years
+  end
+
+  def sync_location_equipment_services!
+    equipment_kind = equipment&.equipment_kind
+    return if equipment_kind.nil?
+
+    equipment_kind.service_kinds.visible.each do |service_kind|
+      next if location_equipment_services.exists?(service_kind_id: service_kind.id)
+
+      location_equipment_services.create!(
+        service_kind: service_kind,
+        **interval_attrs_for_service_kind(service_kind)
+      )
+    end
+  end
+
+  def available_service_kinds_for_assignment
+    assigned_ids = location_equipment_services.select(:service_kind_id)
+    ServiceKind.visible.where.not(id: assigned_ids).order(:name)
+  end
+
+  def location_equipment_service_for(kind_key)
+    location_equipment_services
+      .joins(:service_kind)
+      .find_by(service_kinds: {legacy_key: kind_key.to_s})
   end
 
   def condition_color
@@ -134,5 +164,22 @@ class LocationEquipment < ApplicationRecord
     return if years <= 0
 
     failures_since_metrics_start / years.to_f
+  end
+
+  private
+
+  def interval_attrs_for_service_kind(service_kind)
+    if service_kind.legacy_key.present? && respond_to?("#{service_kind.legacy_key}_interval")
+      value = public_send("#{service_kind.legacy_key}_interval")
+      {
+        interval: value.presence || service_kind.default_interval,
+        interval_unit: :years
+      }
+    else
+      {
+        interval: service_kind.default_interval,
+        interval_unit: service_kind.interval_unit
+      }
+    end
   end
 end

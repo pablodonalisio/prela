@@ -1,0 +1,20 @@
+<%= simple_form_for [location_equipment, location_equipment_service] do |f| %>
+  <% if location_equipment_service.new_record? %>
+    <%= f.input :service_kind_id,
+                label: "Servicio",
+                collection: location_equipment.available_service_kinds_for_assignment,
+                label_method: :name,
+                value_method: :id,
+                include_blank: false %>
+  <% else %>
+    <p class="mb-2"><strong><%= location_equipment_service.service_kind.name %></strong></p>
+  <% end %>
+
+  <%= f.input :interval, label: "Intervalo", as: :integer %>
+  <%= f.input :interval_unit,
+              label: "Unidad",
+              collection: LocationEquipmentService.interval_unit_options,
+              include_blank: false %>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

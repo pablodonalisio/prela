@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     resources :documents
     resources :failures
     resources :comments
+    resources :location_equipment_services, only: %i[new create edit update destroy]
   end
   resources :equipment_supplies
   resources :equipment do

@@ -266,6 +266,13 @@ RSpec.describe LocationEquipment, type: :model do
 
 
   context "methods" do
+    before do
+      %i[ups power_unit electrical_panel building].each do |kind|
+        create(:equipment_kind, kind) unless EquipmentKind.exists?(legacy_kind: kind.to_s)
+      end
+      ServiceKind.ensure_legacy_equipment_assignments!
+    end
+
     let(:ups) { create(:location_equipment, equipment: create(:equipment, :ups)) }
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
     let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, :electrical_panel)) }
@@ -352,6 +359,31 @@ RSpec.describe LocationEquipment, type: :model do
         expect(building.next_service_dates.srt_900.first.date).to eq(1.year.from_now)
         expect(building.next_service_dates.thermography.first.date).to eq(1.year.from_now)
         expect(building.next_service_dates.electrical_approval.first.date).to eq(1.year.from_now)
+      end
+    end
+
+    describe "sync_location_equipment_services!" do
+      it "creates location equipment services from the equipment kind on create" do
+        battery_change = ServiceKind.find_by!(legacy_key: "battery_change")
+        expect(ups.location_equipment_services.map(&:service_kind)).to include(battery_change)
+        expect(ups.location_equipment_services.find_by!(service_kind: battery_change).interval).to eq(ups.battery_change_interval)
+      end
+    end
+
+    describe "calculate_next_service_date" do
+      it "prefers the location equipment service interval when present" do
+        freeze_time
+        les = ups.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "battery_change"})
+        les.update!(interval: 6, interval_unit: :months)
+
+        expect(ups.calculate_next_service_date(:battery_change).to_date).to eq(6.months.from_now.to_date)
+      end
+
+      it "falls back to the legacy interval column when no LES exists" do
+        freeze_time
+        ups.location_equipment_services.destroy_all
+
+        expect(ups.calculate_next_service_date(:battery_change).to_date).to eq(2.years.from_now.to_date)
       end
     end
 

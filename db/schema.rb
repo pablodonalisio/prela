@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_26_141852) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_26_152546) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -245,6 +245,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_26_141852) do
     t.string "url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "location_equipment_services", force: :cascade do |t|
+    t.bigint "location_equipment_id", null: false
+    t.bigint "service_kind_id", null: false
+    t.integer "interval", default: 1, null: false
+    t.integer "interval_unit", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_equipment_id", "service_kind_id"], name: "index_location_equipment_services_uniqueness", unique: true
+    t.index ["location_equipment_id"], name: "index_location_equipment_services_on_location_equipment_id"
+    t.index ["service_kind_id"], name: "index_location_equipment_services_on_service_kind_id"
   end
 
   create_table "location_equipments", force: :cascade do |t|
@@ -543,6 +555,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_26_141852) do
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
   add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
   add_foreign_key "failures", "location_equipments"
+  add_foreign_key "location_equipment_services", "location_equipments"
+  add_foreign_key "location_equipment_services", "service_kinds"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "location_equipments_report_templates", "location_equipments"

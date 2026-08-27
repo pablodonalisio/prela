@@ -25,6 +25,7 @@ class ServiceKind < ApplicationRecord
   attr_readonly :legacy_key
 
   has_and_belongs_to_many :equipment_kinds
+  has_many :location_equipment_services, dependent: :restrict_with_error
 
   before_validation :set_normalized_name
 

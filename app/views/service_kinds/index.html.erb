@@ -9,8 +9,9 @@
   <% end %>
 
   <p class="text-body-secondary small mx-4 mt-2 mb-0">
-    Catálogo de tipos de servicio (intervalo y prioridad), asignables a tipos de activo.
-    El seguimiento por activo y vencimientos todavía usa el flujo anterior.
+    Catálogo de tipos de servicio (intervalo y prioridad).
+    Asignarlos a un tipo de activo solo define los servicios por defecto al crear un activo;
+    después cada activo puede tener cualquier servicio del catálogo.
   </p>
 
   <%= turbo_frame_tag "service_kinds", class: "d-flex flex-column gap-2 mx-4 mt-4" do %>

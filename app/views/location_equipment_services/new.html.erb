@@ -1,0 +1,7 @@
+<%= turbo_frame_tag @location_equipment_service do %>
+  <%= render "shared/remote_modal", title: "Asignar servicio" do %>
+    <%= render "form",
+               location_equipment: @location_equipment,
+               location_equipment_service: @location_equipment_service %>
+  <% end %>
+<% end %>
