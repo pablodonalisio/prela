@@ -1,0 +1,8 @@
+<p class="card-text m-0 text-truncate">
+  <small class="text-body-secondary">
+    <label><%= service_occurrence.service_kind.name %>: </label>
+    <span class="<%= service_date_color(service_occurrence.due_on) %>">
+      <%= service_occurrence.due_on.strftime("%d/%m/%Y") %>
+    </span>
+  </small>
+</p>

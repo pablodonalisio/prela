@@ -19,8 +19,17 @@
           <%= form.collection_select :client_id, policy_scope(Client).all, :id, :name, { include_blank: "Todos", selected: params[:client_id] }, class: "form-control"  %>
         </div>
         <div class="col-auto">
-          <%= form.label :kind, "Tipo de servicio", class: "form-label" %>
-          <%= form.select :kind, options_for_select(ServiceDate.kinds.keys.map { |k| [ServiceDate.human_attribute_name(k), k] }, params[:kind]), { include_blank: "Todos", selected: params[:kind] }, class: "form-control" %>
+          <%= form.label :service_kind_id, "Tipo de servicio", class: "form-label" %>
+          <% selected_service_kind_id = params[:service_kind_id].presence %>
+          <% if selected_service_kind_id.nil? && params[:kind].present? %>
+            <% selected_service_kind_id = ServiceKind.visible.find_by(legacy_key: params[:kind])&.id %>
+          <% end %>
+          <%= form.collection_select :service_kind_id,
+                                     ServiceKind.visible.order(:name),
+                                     :id,
+                                     :name,
+                                     {include_blank: "Todos", selected: selected_service_kind_id},
+                                     class: "form-control" %>
         </div>
         <div class="col-auto">
           <%= form.submit "Filtrar", class: "btn btn-primary", data: { bs_dismiss:"offcanvas"} %>

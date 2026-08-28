@@ -1,7 +1,14 @@
 require "rails_helper"
 
 RSpec.describe "Homes", type: :request do
-  before { sign_in create(:admin) }
+  before do
+    sign_in create(:admin)
+    ServiceKind.ensure_legacy_kinds!
+    %i[ups power_unit electrical_panel building].each do |kind|
+      create(:equipment_kind, kind) unless EquipmentKind.exists?(legacy_kind: kind.to_s)
+    end
+    ServiceKind.ensure_legacy_equipment_assignments!
+  end
 
   describe "GET /index" do
     it "returns http success" do
@@ -14,19 +21,21 @@ RSpec.describe "Homes", type: :request do
         allow_any_instance_of(LocationEquipment).to receive(:create_next_service_dates).and_return(nil)
       end
 
-      let!(:location_equipment) { create(:location_equipment) }
+      let!(:location_equipment) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
+      let(:service_kind) { ServiceKind.find_by!(legacy_key: "service") }
+      let(:battery_change_kind) { ServiceKind.find_by!(legacy_key: "battery_change") }
       let!(:overdue_service_date) { create(:service_date, location_equipment:, kind: :service, date: 2.months.ago) }
       let!(:non_overdue_service_date) { create(:service_date, location_equipment:, kind: :battery_change, date: 4.months.from_now) }
 
-      it "shows all services with overdue maintenance to admins" do
+      it "shows services due for attention to admins" do
         get "/home/index"
-        expect(response.body).to include(/Tipo: #{ServiceDate.human_attribute_name(overdue_service_date.kind)}/)
-        expect(response.body).not_to include(/Tipo: #{ServiceDate.human_attribute_name(non_overdue_service_date.kind)}/)
+        expect(response.body).to include("Tipo: #{service_kind.name}")
+        expect(response.body).not_to include("Tipo: #{battery_change_kind.name}")
       end
 
       context "when user is not admin" do
         let(:user) { create(:user, client: create(:client)) }
-        let!(:client_location_equipment) { create(:location_equipment, location: create(:location, client: user.client)) }
+        let!(:client_location_equipment) { create(:location_equipment, location: create(:location, client: user.client), equipment: create(:equipment, :power_unit)) }
         let!(:client_overdue_service_date) { create(:service_date, location_equipment: client_location_equipment, kind: :service, date: 2.months.ago) }
         let!(:client_non_overdue_service_date) { create(:service_date, location_equipment: client_location_equipment, kind: :battery_change, date: 4.months.from_now) }
         let!(:non_client_overdue_service_date) { create(:service_date, location_equipment:, kind: :service, date: 3.months.ago) }

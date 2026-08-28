@@ -131,6 +131,14 @@ class LocationEquipment < ApplicationRecord
     ServiceKind.visible.where.not(id: assigned_ids).order(:name)
   end
 
+  def pending_service_occurrences
+    ServiceOccurrence.pending
+      .joins(location_equipment_service: :service_kind)
+      .where(location_equipment_services: {location_equipment_id: id})
+      .includes(location_equipment_service: :service_kind)
+      .order("service_kinds.name")
+  end
+
   def location_equipment_service_for(kind_key)
     location_equipment_services
       .joins(:service_kind)

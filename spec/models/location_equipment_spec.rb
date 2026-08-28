@@ -393,7 +393,10 @@ RSpec.describe LocationEquipment, type: :model do
 
       it "falls back to the legacy interval column when no LES exists" do
         freeze_time
-        ups.location_equipment_services.destroy_all
+        ups.location_equipment_services.find_each do |les|
+          les.service_occurrences.destroy_all
+          les.destroy!
+        end
 
         expect(ups.calculate_next_service_date(:battery_change).to_date).to eq(2.years.from_now.to_date)
       end

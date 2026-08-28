@@ -2,6 +2,9 @@ class LocationEquipmentService < ApplicationRecord
   belongs_to :location_equipment
   belongs_to :service_kind
 
+  has_many :service_occurrences, dependent: :restrict_with_error
+  has_one :pending_service_occurrence, -> { pending }, class_name: "ServiceOccurrence"
+
   enum :interval_unit, {years: 0, months: 1, weeks: 2}, validate: {allow_nil: true}
 
   before_validation :normalize_interval_for_kind
