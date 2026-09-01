@@ -2,42 +2,12 @@ require "rails_helper"
 
 RSpec.describe ServiceDate, type: :model do
   before do
-    allow_any_instance_of(LocationEquipment).to receive(:create_next_service_dates).and_return(nil)
+    allow_any_instance_of(LocationEquipment).to receive(:create_initial_pending_occurrences!).and_return(nil)
     ServiceKind.ensure_legacy_kinds!
     %i[ups power_unit electrical_panel building].each do |kind|
       create(:equipment_kind, kind) unless EquipmentKind.exists?(legacy_kind: kind.to_s)
     end
     ServiceKind.ensure_legacy_equipment_assignments!
-  end
-
-  describe "service occurrence bridge" do
-    let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
-    let(:les) { location_equipment.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "service"}) }
-
-    it "creates a pending occurrence when a service date is created" do
-      expect {
-        create(:service_date, location_equipment:, kind: :service, date: 2.months.from_now)
-      }.to change(ServiceOccurrence.pending, :count).by(1)
-
-      occurrence = les.reload.pending_service_occurrence
-      expect(occurrence.due_on).to eq(2.months.from_now.to_date)
-    end
-
-    it "updates the pending occurrence when a newer service date is saved" do
-      create(:service_date, location_equipment:, kind: :service, date: 1.month.from_now)
-      create(:service_date, location_equipment:, kind: :service, date: 4.months.from_now)
-
-      expect(les.reload.pending_service_occurrence.due_on).to eq(4.months.from_now.to_date)
-    end
-
-    it "destroys the pending occurrence when the last service date is removed" do
-      service_date = create(:service_date, location_equipment:, kind: :service, date: 1.month.from_now)
-      expect(les.reload.pending_service_occurrence).to be_present
-
-      service_date.destroy!
-
-      expect(les.reload.pending_service_occurrence).to be_nil
-    end
   end
 
   describe ".overdue_next_service_dates" do

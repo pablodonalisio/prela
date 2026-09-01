@@ -34,7 +34,7 @@ class LocationEquipment < ApplicationRecord
   }
 
   after_create :sync_location_equipment_services!
-  after_create :create_next_service_dates
+  after_create :create_initial_pending_occurrences!
 
   has_one_attached :avatar
   belongs_to :location
@@ -47,6 +47,7 @@ class LocationEquipment < ApplicationRecord
   has_many :activities, dependent: :destroy
   has_many :service_dates, dependent: :destroy
   has_many :location_equipment_services, dependent: :destroy
+  has_many :service_occurrences, through: :location_equipment_services
   has_many :documents, as: :documentable, dependent: :destroy
   has_many :failures, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -88,28 +89,35 @@ class LocationEquipment < ApplicationRecord
     SERVICE_KINDS[kind] || []
   end
 
-  def last_service_date(service_kind)
-    raise "Undefined activity kind" unless ACTIVITY_KIND.key?(service_kind)
+  def last_service_date(last_key)
+    raise "Undefined activity kind" unless ACTIVITY_KIND.key?(last_key)
 
-    activities.where(kind: ACTIVITY_KIND[service_kind]).order(date: :desc).first&.date&.to_date || send(service_kind) # send(service_kind) is for legacy behaviour
+    legacy_key = Activity::KINDS[ACTIVITY_KIND[last_key]]
+    last_completed_occurrence_for(legacy_key)&.completed_on
   end
 
-  def create_next_service_dates(from_date = Time.current, kinds = service_kinds)
-    return if kinds.blank?
+  def pending_occurrence_for(legacy_key)
+    location_equipment_service_for(legacy_key)&.pending_service_occurrence
+  end
 
-    kinds.each do |kind|
-      next_date = calculate_next_service_date(kind, from_date)
-      next if next_date.nil?
+  def last_completed_occurrence_for(legacy_key)
+    les = location_equipment_service_for(legacy_key)
+    return unless les
 
-      service_dates.create(kind: kind, date: next_date)
+    les.service_occurrences.completed.order(completed_on: :desc).first
+  end
+
+  def next_service_due_on(legacy_key)
+    pending_occurrence_for(legacy_key)&.due_on
+  end
+
+  def create_initial_pending_occurrences!
+    location_equipment_services.includes(:service_kind).find_each do |les|
+      next if les.service_occurrences.pending.exists?
+      next unless les.recurring?
+
+      les.service_occurrences.create!(status: :pending, due_on: les.advance(created_at))
     end
-  end
-
-  def calculate_next_service_date(service_kind, from_date = Time.current)
-    les = location_equipment_service_for(service_kind)
-    return les.advance(from_date) if les&.recurring?
-
-    from_date + send("#{service_kind}_interval").years
   end
 
   def sync_location_equipment_services!

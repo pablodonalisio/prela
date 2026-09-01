@@ -1,29 +1,56 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["recurringInput", "intervalFields", "kindSelect"];
+  static targets = [
+    "recurringInput",
+    "intervalFields",
+    "kindSelect",
+    "intervalInput",
+    "intervalUnitInput"
+  ];
   static values = {
     recurringMap: Object,
+    intervalDefaultsMap: Object,
     recurring: Boolean
   };
 
   connect() {
-    this.syncIntervalFields();
+    this.syncFields();
   }
 
   toggle() {
-    this.syncIntervalFields();
+    this.syncFields();
   }
 
   kindChanged() {
-    this.syncIntervalFields();
+    this.syncFields();
   }
 
-  syncIntervalFields() {
+  syncFields() {
+    const recurring = this.recurringForCurrentSelection();
+    this.syncIntervalFields(recurring);
+    this.syncIntervalDefaults(recurring);
+  }
+
+  syncIntervalFields(recurring) {
     if (!this.hasIntervalFieldsTarget) return;
 
-    const recurring = this.recurringForCurrentSelection();
     this.intervalFieldsTarget.classList.toggle("d-none", !recurring);
+  }
+
+  syncIntervalDefaults(recurring) {
+    if (!recurring || !this.hasKindSelectTarget || !this.hasIntervalDefaultsMapValue) return;
+
+    const defaults = this.intervalDefaultsMapValue[this.kindSelectTarget.value];
+    if (!defaults) return;
+
+    if (this.hasIntervalInputTarget && defaults.interval != null) {
+      this.intervalInputTarget.value = defaults.interval;
+    }
+
+    if (this.hasIntervalUnitInputTarget && defaults.interval_unit != null) {
+      this.intervalUnitInputTarget.value = defaults.interval_unit;
+    }
   }
 
   recurringForCurrentSelection() {

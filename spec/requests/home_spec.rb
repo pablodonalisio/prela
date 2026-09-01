@@ -17,15 +17,19 @@ RSpec.describe "Homes", type: :request do
     end
 
     context "control panel" do
-      before do
-        allow_any_instance_of(LocationEquipment).to receive(:create_next_service_dates).and_return(nil)
-      end
-
       let!(:location_equipment) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
       let(:service_kind) { ServiceKind.find_by!(legacy_key: "service") }
       let(:battery_change_kind) { ServiceKind.find_by!(legacy_key: "battery_change") }
-      let!(:overdue_service_date) { create(:service_date, location_equipment:, kind: :service, date: 2.months.ago) }
-      let!(:non_overdue_service_date) { create(:service_date, location_equipment:, kind: :battery_change, date: 4.months.from_now) }
+      let!(:overdue_occurrence) {
+        les = location_equipment.location_equipment_services.find_by!(service_kind: service_kind)
+        les.service_occurrences.pending.destroy_all
+        create(:service_occurrence, :overdue, location_equipment_service: les, due_on: Date.new(2020, 1, 15))
+      }
+      let!(:non_overdue_occurrence) {
+        les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
+        les.service_occurrences.pending.destroy_all
+        create(:service_occurrence, due_on: 4.months.from_now.to_date, location_equipment_service: les)
+      }
 
       it "shows services due for attention to admins" do
         get "/home/index"
@@ -36,21 +40,28 @@ RSpec.describe "Homes", type: :request do
       context "when user is not admin" do
         let(:user) { create(:user, client: create(:client)) }
         let!(:client_location_equipment) { create(:location_equipment, location: create(:location, client: user.client), equipment: create(:equipment, :power_unit)) }
-        let!(:client_overdue_service_date) { create(:service_date, location_equipment: client_location_equipment, kind: :service, date: 2.months.ago) }
-        let!(:client_non_overdue_service_date) { create(:service_date, location_equipment: client_location_equipment, kind: :battery_change, date: 4.months.from_now) }
-        let!(:non_client_overdue_service_date) { create(:service_date, location_equipment:, kind: :service, date: 3.months.ago) }
+        let!(:client_overdue_occurrence) {
+          les = client_location_equipment.location_equipment_services.find_by!(service_kind: service_kind)
+          les.service_occurrences.pending.destroy_all
+          create(:service_occurrence, :overdue, location_equipment_service: les, due_on: Date.new(2021, 2, 20))
+        }
+        let!(:client_non_overdue_occurrence) {
+          les = client_location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
+          les.service_occurrences.pending.destroy_all
+          create(:service_occurrence, due_on: 4.months.from_now.to_date, location_equipment_service: les)
+        }
+        let!(:non_client_overdue_occurrence) { overdue_occurrence }
 
         before do
           sign_in user
-          allow_any_instance_of(LocationEquipment).to receive(:create_next_service_dates).and_return(nil)
         end
 
         it "only shows services that belongs to the user's client" do
           get "/home/index"
           expect(response.body).to include("Cliente: #{user.client.name}")
-          expect(response.body).to include("Fecha: #{client_overdue_service_date.date.strftime("%d/%m/%Y")}")
-          expect(response.body).not_to include("Fecha: #{client_non_overdue_service_date.date.strftime("%d/%m/%Y")}")
-          expect(response.body).not_to include("Fecha: #{non_client_overdue_service_date.date.strftime("%d/%m/%Y")}")
+          expect(response.body).to include("Fecha: #{client_overdue_occurrence.due_on.strftime("%d/%m/%Y")}")
+          expect(response.body).not_to include("Fecha: #{client_non_overdue_occurrence.due_on.strftime("%d/%m/%Y")}")
+          expect(response.body).not_to include("Fecha: #{non_client_overdue_occurrence.due_on.strftime("%d/%m/%Y")}")
         end
       end
     end

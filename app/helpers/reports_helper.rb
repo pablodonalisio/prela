@@ -59,12 +59,10 @@ module ReportsHelper
 
   def template_report_maintenance_rows(report)
     location_equipment = report.location_equipment
-    next_dates = location_equipment.next_service_dates.index_by(&:kind)
 
     location_equipment.service_kinds.map do |kind|
       last_date = location_equipment.last_service_date(:"last_#{kind}")
-      next_date = next_dates[kind.to_s]&.date
-      next_date = next_date&.to_date if next_date.present?
+      next_date = location_equipment.next_service_due_on(kind)
 
       {
         name: maintenance_service_name(kind),
@@ -80,7 +78,6 @@ module ReportsHelper
     report.location_equipment.activities.order(date: :desc).limit(5).map do |activity|
       {
         description: activity.description,
-        kind: activity.kind,
         date: activity.date.strftime("%d/%m/%Y")
       }
     end

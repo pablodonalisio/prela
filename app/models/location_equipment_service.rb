@@ -5,6 +5,8 @@ class LocationEquipmentService < ApplicationRecord
   has_many :service_occurrences, dependent: :restrict_with_error
   has_one :pending_service_occurrence, -> { pending }, class_name: "ServiceOccurrence"
 
+  attr_accessor :due_on
+
   enum :interval_unit, {years: 0, months: 1, weeks: 2}, validate: {allow_nil: true}
 
   before_validation :normalize_interval_for_kind
@@ -13,6 +15,26 @@ class LocationEquipmentService < ApplicationRecord
   validates :interval, presence: true, numericality: {only_integer: true, greater_than: 0}, if: :recurring?
   validates :interval_unit, presence: true, if: :recurring?
   validate :interval_must_be_blank_when_not_recurring
+
+  def create_pending_occurrence!
+    return if service_occurrences.pending.exists?
+    return if due_on.blank?
+
+    service_occurrences.create!(status: :pending, due_on: due_on.to_date)
+  end
+
+  def apply_service_kind_defaults!
+    return if service_kind.blank?
+
+    unless service_kind.recurring?
+      self.interval = nil
+      self.interval_unit = nil
+      return
+    end
+
+    self.interval = service_kind.default_interval
+    self.interval_unit = service_kind.interval_unit
+  end
 
   def self.interval_unit_options
     interval_units.keys.map do |unit|

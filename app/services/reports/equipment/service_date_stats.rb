@@ -72,7 +72,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def next_service_date
-    @next_service_date ||= location_equipment.next_service_dates.find_by(kind: "service")&.date
+    @next_service_date ||= location_equipment.next_service_due_on(:service)
   end
 
   def last_battery_change_date
@@ -80,7 +80,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def next_battery_change_date
-    @next_battery_change_date ||= location_equipment.next_service_dates.find_by(kind: "battery_change")&.date
+    @next_battery_change_date ||= location_equipment.next_service_due_on(:battery_change)
   end
 
   def last_belt_change_date
@@ -88,7 +88,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def next_belt_change_date
-    @next_belt_change_date ||= location_equipment.next_service_dates.find_by(kind: "belt_change")&.date
+    @next_belt_change_date ||= location_equipment.next_service_due_on(:belt_change)
   end
 
   def last_torque_date
@@ -96,7 +96,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def next_torque_date
-    @next_torque_date ||= location_equipment.next_service_dates.find_by(kind: "torque")&.date
+    @next_torque_date ||= location_equipment.next_service_due_on(:torque)
   end
 
   def last_cleaning_date
@@ -104,7 +104,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def next_cleaning_date
-    @next_cleaning_date ||= location_equipment.next_service_dates.find_by(kind: "cleaning")&.date
+    @next_cleaning_date ||= location_equipment.next_service_due_on(:cleaning)
   end
 
   def date_past?(date)

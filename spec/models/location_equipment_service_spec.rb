@@ -47,6 +47,28 @@ RSpec.describe LocationEquipmentService, type: :model do
     expect(les).to be_valid
   end
 
+  describe "#apply_service_kind_defaults!" do
+    it "sets interval and unit from the service kind" do
+      service_kind = create(:service_kind, default_interval: 4, interval_unit: :months)
+      les = build(:location_equipment_service, service_kind: service_kind, interval: nil, interval_unit: nil)
+
+      les.apply_service_kind_defaults!
+
+      expect(les.interval).to eq(4)
+      expect(les.interval_unit).to eq("months")
+    end
+
+    it "clears interval fields for one-time service kinds" do
+      service_kind = create(:service_kind, :one_time)
+      les = build(:location_equipment_service, service_kind: service_kind, interval: 2, interval_unit: :years)
+
+      les.apply_service_kind_defaults!
+
+      expect(les.interval).to be_nil
+      expect(les.interval_unit).to be_nil
+    end
+  end
+
   describe "#advance" do
     it "advances by years" do
       les = build(:location_equipment_service, interval: 2, interval_unit: :years)

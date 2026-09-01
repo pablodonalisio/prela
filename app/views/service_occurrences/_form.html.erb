@@ -1,0 +1,11 @@
+<%= simple_form_for [location_equipment, service_occurrence] do |f| %>
+  <%= f.input :due_on,
+              label: "Próximo vencimiento",
+              as: :date,
+              end_year: Date.today.year + 90,
+              start_year: Date.today.year - 30,
+              order: [:day, :month, :year],
+              include_blank: false %>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

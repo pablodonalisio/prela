@@ -7,7 +7,7 @@ RSpec.describe ServiceOccurrence, type: :model do
       create(:equipment_kind, kind) unless EquipmentKind.exists?(legacy_kind: kind.to_s)
     end
     ServiceKind.ensure_legacy_equipment_assignments!
-    allow_any_instance_of(LocationEquipment).to receive(:create_next_service_dates).and_return(nil)
+    allow_any_instance_of(LocationEquipment).to receive(:create_initial_pending_occurrences!).and_return(nil)
   end
 
   it "is valid with required attributes" do
@@ -88,6 +88,52 @@ RSpec.describe ServiceOccurrence, type: :model do
 
       expect(grouped["power_unit"]).to include(power_unit_occurrence)
       expect(grouped["ups"]).to include(ups_occurrence)
+    end
+  end
+
+  describe "#complete!" do
+    let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
+    let(:recurring_les) { location_equipment.location_equipment_service_for(:service) }
+    let!(:pending_occurrence) {
+      recurring_les.service_occurrences.pending.destroy_all
+      create(:service_occurrence, location_equipment_service: recurring_les, due_on: 1.month.from_now.to_date)
+    }
+
+    it "marks the occurrence completed and spawns the next pending for recurring services" do
+      freeze_time
+      completed_on = Date.current
+
+      expect {
+        pending_occurrence.complete!(completed_on: completed_on)
+      }.to change(ServiceOccurrence.pending, :count).by(0) # one completed, one new pending
+
+      expect(pending_occurrence.reload).to be_completed
+      expect(pending_occurrence.completed_on).to eq(completed_on)
+      next_pending = recurring_les.service_occurrences.pending.first
+      expect(next_pending.due_on).to eq(recurring_les.advance(completed_on))
+    end
+
+    it "does not spawn a pending occurrence for one-time services" do
+      one_time_kind = create(:service_kind, :one_time, name: "Inspección única")
+      one_time_les = create(:location_equipment_service,
+        location_equipment: location_equipment,
+        service_kind: one_time_kind,
+        interval: nil,
+        interval_unit: nil)
+      occurrence = create(:service_occurrence, location_equipment_service: one_time_les, due_on: 1.month.from_now.to_date)
+
+      expect {
+        occurrence.complete!(completed_on: Date.current)
+      }.to change { one_time_les.service_occurrences.pending.count }.from(1).to(0)
+
+      expect(one_time_les.service_occurrences.completed.count).to eq(1)
+    end
+
+    it "attaches a document to the completed occurrence" do
+      file = fixture_file_upload(Rails.root.join("spec/fixtures/files/test.pdf"), "application/pdf")
+      pending_occurrence.complete!(completed_on: Date.current, document: file)
+
+      expect(pending_occurrence.reload.document).to be_attached
     end
   end
 

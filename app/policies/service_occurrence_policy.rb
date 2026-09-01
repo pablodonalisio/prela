@@ -3,6 +3,18 @@ class ServiceOccurrencePolicy < ApplicationPolicy
     user.admin? || user.client?
   end
 
+  def update?
+    user.admin? || user.editor?
+  end
+
+  def edit?
+    update?
+  end
+
+  def complete?
+    update?
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       if user.admin?

@@ -5,11 +5,14 @@ class ServiceOccurrence < ApplicationRecord
 
   belongs_to :location_equipment_service
 
+  has_one_attached :document
+
   delegate :location_equipment, :service_kind, to: :location_equipment_service
 
   enum :status, {pending: 0, completed: 1}
 
-  validates :due_on, presence: true
+  validates :due_on, presence: true, if: :pending?
+  validates :completed_on, presence: true, if: :completed?
   validates :status, presence: true
   validate :only_one_pending_per_location_equipment_service, if: :pending?
 
@@ -46,6 +49,23 @@ class ServiceOccurrence < ApplicationRecord
 
   def due_soon?
     pending? && due_on >= Date.current && due_on < self.class.due_soon_until
+  end
+
+  def complete!(completed_on:, document: nil)
+    raise ArgumentError, "only pending occurrences can be completed" unless pending?
+
+    transaction do
+      update!(status: :completed, completed_on: completed_on.to_date, due_on: completed_on.to_date)
+      document.present? ? self.document.attach(document) : nil
+
+      les = location_equipment_service
+      if les.recurring?
+        les.service_occurrences.create!(
+          status: :pending,
+          due_on: les.advance(completed_on.to_date)
+        )
+      end
+    end
   end
 
   class << self

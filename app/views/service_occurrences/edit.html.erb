@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @service_occurrence do %>
+  <%= render "shared/remote_modal", title: "Editar vencimiento — #{@service_occurrence.service_kind.name}" do %>
+    <%= render "form", service_occurrence: @service_occurrence, location_equipment: @location_equipment %>
+  <% end %>
+<% end %>

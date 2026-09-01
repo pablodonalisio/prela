@@ -28,6 +28,11 @@ Rails.application.routes.draw do
     resources :failures
     resources :comments
     resources :location_equipment_services, only: %i[new create edit update destroy]
+    resources :service_occurrences, only: %i[edit update] do
+      member do
+        match :complete, via: %i[get post]
+      end
+    end
   end
   resources :equipment_supplies
   resources :equipment do
@@ -38,7 +43,7 @@ Rails.application.routes.draw do
   resources :users
   resources :signatures, except: %i[show]
   resources :links, only: [:new, :create, :edit, :update, :destroy]
-  resources :service_dates, only: %i[edit update show]
+  resources :service_dates, only: %i[show]
   resources :equipment_kinds do
     get "add_field", on: :collection
     get "remove_field", on: :collection
