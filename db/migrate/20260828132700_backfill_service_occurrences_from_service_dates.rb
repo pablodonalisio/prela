@@ -1,4 +1,12 @@
 class BackfillServiceOccurrencesFromServiceDates < ActiveRecord::Migration[8.0]
+  class ServiceDate < ApplicationRecord
+    self.table_name = "service_dates"
+
+    belongs_to :location_equipment
+
+    enum :kind, {service: 0, battery_change: 1, belt_change: 2, torque: 3, cleaning: 4, srt_900: 5, thermography: 6, electrical_approval: 7}
+  end
+
   def up
     ServiceKind.ensure_legacy_kinds!
 

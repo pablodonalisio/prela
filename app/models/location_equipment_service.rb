@@ -59,6 +59,14 @@ class LocationEquipmentService < ApplicationRecord
     from_date + interval.public_send(interval_unit)
   end
 
+  def last_completed_on
+    service_occurrences.completed.maximum(:completed_on)
+  end
+
+  def next_due_on
+    pending_service_occurrence&.due_on
+  end
+
   private
 
   def normalize_interval_for_kind

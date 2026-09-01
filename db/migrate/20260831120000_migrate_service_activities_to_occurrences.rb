@@ -1,11 +1,20 @@
 class MigrateServiceActivitiesToOccurrences < ActiveRecord::Migration[8.0]
+  SERVICE_ACTIVITY_KINDS = {
+    "Service general" => :service,
+    "Cambio batería" => :battery_change,
+    "Cambio correas" => :belt_change,
+    "Torqueo" => :torque,
+    "Limpieza" => :cleaning,
+    "SRT-900" => :srt_900,
+    "Termografía" => :thermography,
+    "Apto eléctrico" => :electrical_approval
+  }.freeze
+
   def up
     ServiceKind.ensure_legacy_kinds!
 
-    service_kinds = Activity::KINDS.except(Activity::OTHER)
-
-    Activity.where(kind: service_kinds.keys).find_each do |activity|
-      legacy_key = Activity::KINDS[activity.kind]
+    Activity.where(kind: SERVICE_ACTIVITY_KINDS.keys).find_each do |activity|
+      legacy_key = SERVICE_ACTIVITY_KINDS[activity.kind]
       location_equipment = activity.location_equipment
       les = location_equipment.location_equipment_services
         .joins(:service_kind)

@@ -1,0 +1,16 @@
+<%= turbo_frame_tag "service_occurrences" do %>
+  <p class="text-white small text-uppercase fw-semibold mb-1 mt-2">Fechas de servicio</p>
+  <% pending_occurrences = location_equipment.pending_service_occurrences %>
+  <% assigned_services = location_equipment.location_equipment_services.includes(:service_kind).order("service_kinds.name") %>
+  <% if pending_occurrences.any? || assigned_services.any? %>
+    <% assigned_services.each do |les| %>
+      <%= render "location_equipments/last_service_date",
+                 label: "Último #{les.service_kind.name.downcase}",
+                 date: les.last_completed_on,
+                 location_equipment: location_equipment %>
+    <% end %>
+    <%= render pending_occurrences %>
+  <% else %>
+    <p class="text-white-50 small">Sin servicios</p>
+  <% end %>
+<% end %>

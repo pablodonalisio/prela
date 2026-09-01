@@ -2,7 +2,7 @@
   <%= render "layouts/flash"%>
 <% end %>
 
-<%= turbo_stream.replace "service_dates", partial: "location_equipments/service_dates", locals: {location_equipment: @location_equipment} %>
+<%= turbo_stream.replace "service_occurrences", partial: "location_equipments/service_occurrences", locals: {location_equipment: @location_equipment} %>
 
 <%= turbo_stream.update "remote_modal" do %>
 <% end %>

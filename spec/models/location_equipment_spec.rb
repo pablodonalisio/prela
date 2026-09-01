@@ -279,49 +279,12 @@ RSpec.describe LocationEquipment, type: :model do
     let(:building) { create(:location_equipment, equipment: create(:equipment, :building)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
-    describe "next_service_dates" do
-      let!(:location_equipment) do
-        location_equipment = create(:location_equipment, equipment: create(:equipment, :power_unit))
-        location_equipment.service_dates.destroy_all # Remove default next service dates created by after_create callback
-        location_equipment
-      end
-      let!(:older_battery_change) { create(:service_date, kind: :battery_change, date: 2.years.ago, location_equipment: location_equipment) }
-      let!(:older_service) { create(:service_date, kind: :service, date: 1.years.ago, location_equipment: location_equipment) }
-      let!(:older_belt_change) { create(:service_date, kind: :belt_change, date: 5.years.ago, location_equipment: location_equipment) }
-      let!(:next_battery_change) { create(:service_date, kind: :battery_change, date: Date.current, location_equipment: location_equipment) }
-      let!(:next_service) { create(:service_date, kind: :service, date: Date.current, location_equipment: location_equipment) }
-      let!(:next_belt_change) { create(:service_date, kind: :belt_change, date: Date.current, location_equipment: location_equipment) }
-
-      it "returns next service dates for location equipment" do
-        expect(location_equipment.next_service_dates.map { |sd| sd.date.to_date }).to all(eq(Date.current))
-        expect(location_equipment.next_service_dates.size).to eq(LocationEquipment::SERVICE_KINDS[location_equipment.kind].size)
-      end
-    end
-
-    describe "last_service_date" do
-      let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
-      let(:les) {
-        location_equipment.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "battery_change"})
-      }
-      let!(:completed_occurrence) {
-        les.service_occurrences.pending.destroy_all
-        create(:service_occurrence, :completed, location_equipment_service: les, completed_on: Date.today, due_on: Date.today)
-      }
-
-      it "returns last completed occurrence date" do
-        expect(location_equipment.last_service_date(:last_battery_change).to_date).to eq(Date.today)
-      end
-
-      it "should raise error for undefined activity kind" do
-        expect { location_equipment.last_service_date(:undefined_kind) }.to raise_error("Undefined activity kind")
-      end
-    end
-
     describe "create_initial_pending_occurrences!" do
       it "creates pending occurrences for recurring services after location equipment creation" do
         freeze_time
 
-        expect(power_unit.service_occurrences.pending.count).to eq(LocationEquipment::SERVICE_KINDS[power_unit.kind].size)
+        expect(power_unit.location_equipment_services.count).to eq(3)
+        expect(power_unit.service_occurrences.pending.count).to eq(3)
         expect(power_unit.location_equipment_service_for(:service).pending_service_occurrence.due_on).to eq(1.year.from_now.to_date)
         expect(power_unit.location_equipment_service_for(:battery_change).pending_service_occurrence.due_on).to eq(2.years.from_now.to_date)
         expect(power_unit.location_equipment_service_for(:belt_change).pending_service_occurrence.due_on).to eq(5.years.from_now.to_date)
@@ -332,10 +295,6 @@ RSpec.describe LocationEquipment, type: :model do
 
         expect(ups.service_occurrences.pending.count).to eq(1)
         expect(ups.location_equipment_service_for(:battery_change).pending_service_occurrence.due_on).to eq(2.years.from_now.to_date)
-      end
-
-      it "does not create service dates after location equipment creation" do
-        expect(power_unit.service_dates).to be_empty
       end
     end
 
@@ -358,12 +317,6 @@ RSpec.describe LocationEquipment, type: :model do
         expect(les.interval_unit).to be_nil
         expect(les.pending_service_occurrence).to be_nil
       end
-    end
-  end
-
-  context "SERVICE_KINDS constant" do
-    it "defines service kinds for each equipment kind" do
-      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment::LEGACY_KINDS.size)
     end
   end
 

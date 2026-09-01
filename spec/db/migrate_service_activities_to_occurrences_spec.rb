@@ -14,7 +14,7 @@ RSpec.describe MigrateServiceActivitiesToOccurrences do
   it "migrates service activities to completed occurrences and copies documents" do
     location_equipment = create(:location_equipment, equipment: create(:equipment, :power_unit))
     les = location_equipment.location_equipment_service_for(:service)
-    activity = create(:activity, kind: Activity::SERVICE, date: 1.month.ago, location_equipment: location_equipment)
+    activity = create(:activity, kind: "Service general", date: 1.month.ago, location_equipment: location_equipment)
     activity.document.attach(
       io: File.open(Rails.root.join("spec/fixtures/files/test.pdf")),
       filename: "test.pdf",

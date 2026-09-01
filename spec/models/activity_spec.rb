@@ -10,12 +10,6 @@ RSpec.describe Activity, type: :model do
   end
 
   describe "service decoupling" do
-    it "does not create a service date when an activity is created" do
-      expect {
-        create(:activity, date: Time.current)
-      }.not_to change(ServiceDate, :count)
-    end
-
     it "does not create a pending occurrence when an activity is created" do
       expect {
         create(:activity, date: Time.current)

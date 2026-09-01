@@ -9,24 +9,6 @@ class LocationEquipment < ApplicationRecord
   # Equipment created on/after this date use created_at instead.
   FAILURE_METRICS_START_DATE = Date.new(2026, 8, 10)
 
-  ACTIVITY_KIND = {
-    last_battery_change: Activity::BATTERY_CHANGE,
-    last_service: Activity::SERVICE,
-    last_belt_change: Activity::BELT_CHANGE,
-    last_torque: Activity::TORQUE,
-    last_cleaning: Activity::CLEANING,
-    last_srt_900: Activity::SRT_900,
-    last_thermography: Activity::THERMOGRAPHY,
-    last_electrical_approval: Activity::ELECTRICAL_APPROVAL
-  }
-
-  SERVICE_KINDS = {
-    "ups" => %i[battery_change],
-    "power_unit" => %i[service battery_change belt_change],
-    "electrical_panel" => %i[service torque cleaning],
-    "building" => %i[srt_900 thermography electrical_approval]
-  }
-
   CONDITIONS = {
     "Buena" => {color: "success"},
     "Aceptable" => {color: "warning"},
@@ -45,7 +27,6 @@ class LocationEquipment < ApplicationRecord
   has_and_belongs_to_many :report_templates
   has_many :reports, dependent: :destroy
   has_many :activities, dependent: :destroy
-  has_many :service_dates, dependent: :destroy
   has_many :location_equipment_services, dependent: :destroy
   has_many :service_occurrences, through: :location_equipment_services
   has_many :documents, as: :documentable, dependent: :destroy
@@ -79,36 +60,6 @@ class LocationEquipment < ApplicationRecord
     return if report_templates.exists?(report_template.id)
 
     report_templates << report_template
-  end
-
-  def next_service_dates
-    service_dates.select("DISTINCT ON (kind) *").order(:kind, date: :desc)
-  end
-
-  def service_kinds
-    SERVICE_KINDS[kind] || []
-  end
-
-  def last_service_date(last_key)
-    raise "Undefined activity kind" unless ACTIVITY_KIND.key?(last_key)
-
-    legacy_key = Activity::KINDS[ACTIVITY_KIND[last_key]]
-    last_completed_occurrence_for(legacy_key)&.completed_on
-  end
-
-  def pending_occurrence_for(legacy_key)
-    location_equipment_service_for(legacy_key)&.pending_service_occurrence
-  end
-
-  def last_completed_occurrence_for(legacy_key)
-    les = location_equipment_service_for(legacy_key)
-    return unless les
-
-    les.service_occurrences.completed.order(completed_on: :desc).first
-  end
-
-  def next_service_due_on(legacy_key)
-    pending_occurrence_for(legacy_key)&.due_on
   end
 
   def create_initial_pending_occurrences!

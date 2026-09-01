@@ -13,7 +13,7 @@ class ServiceKind < ApplicationRecord
   ].freeze
 
   # Maps EquipmentKind.legacy_kind → ServiceKind.legacy_key so we can seed the
-  # HABTM join to match LocationEquipment::SERVICE_KINDS until runtime reads
+  # HABTM join for equipment ↔ service kind assignment
   # assignments from equipment_kinds_service_kinds instead of that constant.
   LEGACY_EQUIPMENT_ASSIGNMENTS = {
     "ups" => %w[battery_change],

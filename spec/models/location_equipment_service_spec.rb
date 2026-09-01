@@ -69,6 +69,25 @@ RSpec.describe LocationEquipmentService, type: :model do
     end
   end
 
+  describe "#last_completed_on and #next_due_on" do
+    let(:les) { create(:location_equipment_service, interval: 1, interval_unit: :years) }
+
+    it "returns the latest completed occurrence date" do
+      les.service_occurrences.destroy_all
+      create(:service_occurrence, :completed, location_equipment_service: les, completed_on: 1.year.ago.to_date, due_on: 1.year.ago.to_date)
+      create(:service_occurrence, :completed, location_equipment_service: les, completed_on: Date.current, due_on: Date.current)
+
+      expect(les.last_completed_on).to eq(Date.current)
+    end
+
+    it "returns the pending occurrence due_on" do
+      les.service_occurrences.destroy_all
+      create(:service_occurrence, location_equipment_service: les, due_on: 2.months.from_now.to_date)
+
+      expect(les.next_due_on).to eq(2.months.from_now.to_date)
+    end
+  end
+
   describe "#advance" do
     it "advances by years" do
       les = build(:location_equipment_service, interval: 2, interval_unit: :years)

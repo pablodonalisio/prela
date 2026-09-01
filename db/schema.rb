@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_31_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_01_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -437,17 +437,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_31_120000) do
     t.index ["report_id"], name: "index_room_report_stats_on_report_id"
   end
 
-  create_table "service_dates", force: :cascade do |t|
-    t.integer "kind"
-    t.datetime "date"
-    t.bigint "location_equipment_id", null: false
-    t.bigint "activity_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["activity_id"], name: "index_service_dates_on_activity_id"
-    t.index ["location_equipment_id"], name: "index_service_dates_on_location_equipment_id"
-  end
-
   create_table "service_kinds", force: :cascade do |t|
     t.string "name", null: false
     t.string "normalized_name", null: false
@@ -583,8 +572,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_31_120000) do
   add_foreign_key "reports_signatures", "reports"
   add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
-  add_foreign_key "service_dates", "activities"
-  add_foreign_key "service_dates", "location_equipments"
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "taggings", "tags"
   add_foreign_key "ups_report_stats", "reports"

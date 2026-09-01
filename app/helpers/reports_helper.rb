@@ -60,13 +60,12 @@ module ReportsHelper
   def template_report_maintenance_rows(report)
     location_equipment = report.location_equipment
 
-    location_equipment.service_kinds.map do |kind|
-      last_date = location_equipment.last_service_date(:"last_#{kind}")
-      next_date = location_equipment.next_service_due_on(kind)
+    location_equipment.location_equipment_services.includes(:service_kind).order("service_kinds.name").map do |les|
+      next_date = les.next_due_on
 
       {
-        name: maintenance_service_name(kind),
-        last_date: format_maintenance_date(last_date),
+        name: les.service_kind.name,
+        last_date: format_maintenance_date(les.last_completed_on),
         next_date: format_maintenance_date(next_date),
         overdue: maintenance_overdue_label(next_date),
         status: maintenance_overdue_status(next_date)
@@ -84,12 +83,6 @@ module ReportsHelper
   end
 
   private
-
-  def maintenance_service_name(kind)
-    LocationEquipment.human_attribute_name("next_#{kind}")
-      .sub(/\APróxim[oa]\s+/i, "")
-      .sub(/\A./, &:upcase)
-  end
 
   def format_maintenance_date(date)
     return "—" if date.blank?

@@ -43,7 +43,6 @@ Rails.application.routes.draw do
   resources :users
   resources :signatures, except: %i[show]
   resources :links, only: [:new, :create, :edit, :update, :destroy]
-  resources :service_dates, only: %i[show]
   resources :equipment_kinds do
     get "add_field", on: :collection
     get "remove_field", on: :collection
