@@ -4,15 +4,17 @@ class ServiceOccurrencesController < ApplicationController
 
   def edit
     authorize @service_occurrence
+    @intent = intent
   end
 
   def update
     authorize @service_occurrence
+    @intent = intent
 
-    if @service_occurrence.update(update_params)
+    if ServiceOccurrences::Update.call(@service_occurrence, update_params)
       respond_to do |format|
-        format.html { redirect_to @location_equipment, notice: "La fecha de servicio se actualizó correctamente." }
-        format.turbo_stream { flash.now[:notice] = "La fecha de servicio se actualizó correctamente." }
+        format.html { redirect_to @location_equipment, notice: update_notice }
+        format.turbo_stream { flash.now[:notice] = update_notice }
       end
     else
       respond_to do |format|
@@ -27,18 +29,14 @@ class ServiceOccurrencesController < ApplicationController
 
     if request.get?
       render :complete
-    else
-      @service_occurrence.complete!(
-        completed_on: complete_params[:completed_on],
-        document: complete_params[:document]
-      )
+    elsif ServiceOccurrences::Update.call(@service_occurrence, complete_params)
       respond_to do |format|
         format.html { redirect_to @location_equipment, notice: "El servicio se registró correctamente." }
         format.turbo_stream { flash.now[:notice] = "El servicio se registró correctamente." }
       end
+    else
+      render :complete, status: :unprocessable_entity
     end
-  rescue ActiveRecord::RecordInvalid, ArgumentError
-    render :complete, status: :unprocessable_entity
   end
 
   private
@@ -51,11 +49,24 @@ class ServiceOccurrencesController < ApplicationController
     @service_occurrence = @location_equipment.service_occurrences.find(params[:id])
   end
 
+  def intent
+    params[:intent].presence_in(%w[due_on suspend schedule revert]) || "due_on"
+  end
+
   def update_params
-    params.require(:service_occurrence).permit(:due_on)
+    params.require(:service_occurrence).permit(:status, :due_on, :planned_on, :notes)
   end
 
   def complete_params
-    params.fetch(:service_occurrence, {}).permit(:completed_on, :document)
+    params.fetch(:service_occurrence, {}).permit(:completed_on, :document).merge(status: :completed)
+  end
+
+  def update_notice
+    case @service_occurrence.status
+    when "suspended" then "El servicio quedó suspendido."
+    when "scheduled" then "El servicio se programó correctamente."
+    when "pending" then (@intent == "revert") ? "El servicio volvió a pendiente." : "La fecha de servicio se actualizó correctamente."
+    else "El servicio se actualizó correctamente."
+    end
   end
 end

@@ -119,62 +119,6 @@ RSpec.describe ServiceOccurrence, type: :model do
     end
   end
 
-  describe "#complete!" do
-    let(:location_equipment) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
-    let(:recurring_les) { location_equipment.location_equipment_service_for(:service) }
-    let!(:pending_occurrence) {
-      recurring_les.service_occurrences.pending.destroy_all
-      create(:service_occurrence, location_equipment_service: recurring_les, due_on: 1.month.from_now.to_date)
-    }
-
-    it "marks the occurrence completed and spawns the next pending for recurring services" do
-      freeze_time
-      completed_on = Date.current
-
-      expect {
-        pending_occurrence.complete!(completed_on: completed_on)
-      }.to change(ServiceOccurrence.pending, :count).by(0) # one completed, one new pending
-
-      expect(pending_occurrence.reload).to be_completed
-      expect(pending_occurrence.completed_on).to eq(completed_on)
-      next_pending = recurring_les.service_occurrences.pending.first
-      expect(next_pending.due_on).to eq(recurring_les.advance(completed_on))
-    end
-
-    it "does not spawn a pending occurrence for one-time services" do
-      one_time_kind = create(:service_kind, :one_time, name: "Inspección única")
-      one_time_les = create(:location_equipment_service,
-        location_equipment: location_equipment,
-        service_kind: one_time_kind,
-        interval: nil,
-        interval_unit: nil)
-      occurrence = create(:service_occurrence, location_equipment_service: one_time_les, due_on: 1.month.from_now.to_date)
-
-      expect {
-        occurrence.complete!(completed_on: Date.current)
-      }.to change { one_time_les.service_occurrences.pending.count }.from(1).to(0)
-
-      expect(one_time_les.service_occurrences.completed.count).to eq(1)
-    end
-
-    it "attaches a document to the completed occurrence" do
-      file = fixture_file_upload(Rails.root.join("spec/fixtures/files/test.pdf"), "application/pdf")
-      pending_occurrence.complete!(completed_on: Date.current, document: file)
-
-      expect(pending_occurrence.reload.document).to be_attached
-    end
-
-    it "completes from a scheduled occurrence" do
-      recurring_les.service_occurrences.destroy_all
-      scheduled = create(:service_occurrence, :scheduled, location_equipment_service: recurring_les)
-
-      scheduled.complete!(completed_on: Date.current)
-
-      expect(scheduled.reload).to be_completed
-      expect(recurring_les.service_occurrences.pending).to exist
-    end
-  end
-
   describe ".suspended_by_equipment_kind" do
     it "groups suspended occurrences by equipment kind" do
       power_unit = create(:location_equipment, equipment: create(:equipment, :power_unit))

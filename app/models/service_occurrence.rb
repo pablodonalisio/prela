@@ -65,21 +65,8 @@ class ServiceOccurrence < ApplicationRecord
     open? && due_on >= Date.current && due_on < self.class.due_soon_until
   end
 
-  def complete!(completed_on:, document: nil)
-    raise ArgumentError, "only open occurrences can be completed" unless open?
-
-    transaction do
-      update!(status: :completed, completed_on: completed_on.to_date, due_on: completed_on.to_date)
-      document.present? ? self.document.attach(document) : nil
-
-      les = location_equipment_service
-      if les.recurring?
-        les.service_occurrences.create!(
-          status: :pending,
-          due_on: les.advance(completed_on.to_date)
-        )
-      end
-    end
+  def status_label
+    I18n.t("activerecord.attributes.service_occurrence.statuses.#{status}")
   end
 
   class << self

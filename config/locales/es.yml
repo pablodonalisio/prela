@@ -73,6 +73,16 @@ es:
         srt_900: "Próximo SRT-900"
         thermography: "Próxima termografía"
         electrical_approval: "Próximo apto eléctrico"
+      service_occurrence:
+        due_on: "Próximo vencimiento"
+        planned_on: "Fecha programada"
+        notes: "Notas"
+        statuses:
+          pending: "Pendiente"
+          suspended: "Suspendido"
+          scheduled: "Programado"
+          completed: "Completado"
+          cancelled: "Cancelado"
       equipment_kind:
         name: "Nombre"
         description: "Descripción"

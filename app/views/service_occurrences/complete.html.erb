@@ -7,11 +7,8 @@
       <%= f.input :completed_on,
                   label: "Fecha de realización",
                   as: :date,
-                  input_html: {value: Date.current},
-                  end_year: Date.today.year + 90,
-                  start_year: Date.today.year - 30,
-                  order: [:day, :month, :year],
-                  include_blank: false %>
+                  html5: true,
+                  input_html: {value: Date.current} %>
 
       <div class="my-3 border col-sm-6 p-2">
         <h4>Documento</h4>

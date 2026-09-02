@@ -1,22 +1,72 @@
-<p class="card-text m-0 text-truncate">
+<% location_equipment = service_occurrence.location_equipment %>
+<p class="card-text m-0">
   <small class="text-body-secondary">
     <label><%= service_occurrence.service_kind.name %>: </label>
     <%= turbo_frame_tag service_occurrence do %>
       <span class="<%= service_date_color(service_occurrence.due_on) %>">
         <%= service_occurrence.due_on.strftime("%d/%m/%Y") %>
       </span>
+
+      <% if service_occurrence.suspended? %>
+        <span class="badge bg-secondary ms-1"><%= service_occurrence.status_label %></span>
+      <% elsif service_occurrence.scheduled? %>
+        <span class="badge bg-info text-dark ms-1"><%= service_occurrence.status_label %></span>
+        <span class="ms-1">(<%= service_occurrence.planned_on.strftime("%d/%m/%Y") %>)</span>
+      <% end %>
+
+      <% if service_occurrence.notes.present? && (service_occurrence.suspended? || service_occurrence.scheduled?) %>
+        <span class="ms-1" title="<%= service_occurrence.notes %>">
+          <i class="fas fa-sticky-note"></i>
+        </span>
+      <% end %>
+
       <% if current_user.admin? || current_user.editor? %>
-        <%= link_to complete_location_equipment_service_occurrence_path(service_occurrence.location_equipment, service_occurrence),
+        <%= link_to complete_location_equipment_service_occurrence_path(location_equipment, service_occurrence),
                     class: "ms-2",
                     data: {turbo_frame: "remote_modal"},
                     title: "Registrar servicio" do %>
           <i class="fas fa-check"></i>
         <% end %>
-        <%= link_to edit_location_equipment_service_occurrence_path(service_occurrence.location_equipment, service_occurrence),
-                    class: "ms-2",
-                    data: {turbo_frame: "remote_modal"},
-                    title: "Editar vencimiento" do %>
-          <i class="fas fa-edit"></i>
+
+        <% if service_occurrence.pending? %>
+          <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "due_on"),
+                      class: "ms-2",
+                      data: {turbo_frame: "remote_modal"},
+                      title: "Editar vencimiento" do %>
+            <i class="fas fa-edit"></i>
+          <% end %>
+          <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "suspend"),
+                      class: "ms-2",
+                      data: {turbo_frame: "remote_modal"},
+                      title: "Suspender" do %>
+            <i class="fas fa-pause"></i>
+          <% end %>
+          <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
+                      class: "ms-2",
+                      data: {turbo_frame: "remote_modal"},
+                      title: "Programar" do %>
+            <i class="fas fa-calendar-plus"></i>
+          <% end %>
+        <% elsif service_occurrence.suspended? %>
+          <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
+                      class: "ms-2",
+                      data: {turbo_frame: "remote_modal"},
+                      title: "Programar" do %>
+            <i class="fas fa-calendar-plus"></i>
+          <% end %>
+          <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
+                      class: "ms-2",
+                      data: {turbo_frame: "remote_modal"},
+                      title: "Volver a pendiente" do %>
+            <i class="fas fa-undo"></i>
+          <% end %>
+        <% elsif service_occurrence.scheduled? %>
+          <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
+                      class: "ms-2",
+                      data: {turbo_frame: "remote_modal"},
+                      title: "Volver a pendiente" do %>
+            <i class="fas fa-undo"></i>
+          <% end %>
         <% end %>
       <% end %>
     <% end %>

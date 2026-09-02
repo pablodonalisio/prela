@@ -1,11 +1,38 @@
 <%= simple_form_for [location_equipment, service_occurrence] do |f| %>
-  <%= f.input :due_on,
-              label: "Próximo vencimiento",
-              as: :date,
-              end_year: Date.today.year + 90,
-              start_year: Date.today.year - 30,
-              order: [:day, :month, :year],
-              include_blank: false %>
+  <%= hidden_field_tag :intent, intent %>
 
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <% case intent %>
+  <% when "suspend" %>
+    <%= f.hidden_field :status, value: "suspended" %>
+    <%= f.input :notes,
+                label: "Motivo (opcional)",
+                as: :text,
+                input_html: {rows: 3} %>
+    <%= f.button :submit, "Suspender", class: "btn btn-warning" %>
+
+  <% when "schedule" %>
+    <%= f.hidden_field :status, value: "scheduled" %>
+    <%= f.input :planned_on,
+                label: "Fecha programada",
+                as: :date,
+                html5: true,
+                input_html: {value: service_occurrence.planned_on || Date.current} %>
+    <%= f.input :notes,
+                label: "Notas (opcional)",
+                as: :text,
+                input_html: {rows: 3} %>
+    <%= f.button :submit, "Programar", class: "btn btn-success" %>
+
+  <% when "revert" %>
+    <%= f.hidden_field :status, value: "pending" %>
+    <p class="mb-3">El servicio volverá a estado pendiente y se quitará la fecha programada.</p>
+    <%= f.button :submit, "Volver a pendiente", class: "btn btn-secondary" %>
+
+  <% else %>
+    <%= f.input :due_on,
+                label: "Próximo vencimiento",
+                as: :date,
+                html5: true %>
+    <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <% end %>
 <% end %>

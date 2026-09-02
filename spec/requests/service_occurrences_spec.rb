@@ -50,10 +50,47 @@ RSpec.describe "ServiceOccurrences", type: :request do
 
     it "updates the pending due_on date" do
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
-        params: {service_occurrence: {due_on: new_due_on}},
+        params: {intent: "due_on", service_occurrence: {due_on: new_due_on}},
         headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
       expect(pending_occurrence.reload.due_on).to eq(new_due_on)
+      expect(response).to have_http_status(:success)
+    end
+
+    it "suspends the occurrence" do
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {intent: "suspend", service_occurrence: {status: "suspended", notes: "Espera cliente"}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      pending_occurrence.reload
+      expect(pending_occurrence).to be_suspended
+      expect(pending_occurrence.notes).to eq("Espera cliente")
+      expect(response).to have_http_status(:success)
+    end
+
+    it "schedules the occurrence" do
+      planned_on = 1.week.from_now.to_date
+
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {intent: "schedule", service_occurrence: {status: "scheduled", planned_on: planned_on}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      pending_occurrence.reload
+      expect(pending_occurrence).to be_scheduled
+      expect(pending_occurrence.planned_on).to eq(planned_on)
+      expect(response).to have_http_status(:success)
+    end
+
+    it "reverts a scheduled occurrence to pending" do
+      pending_occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {intent: "revert", service_occurrence: {status: "pending"}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      pending_occurrence.reload
+      expect(pending_occurrence).to be_pending
+      expect(pending_occurrence.planned_on).to be_nil
       expect(response).to have_http_status(:success)
     end
   end
