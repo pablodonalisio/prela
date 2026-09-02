@@ -64,7 +64,7 @@ class LocationEquipment < ApplicationRecord
 
   def create_initial_pending_occurrences!
     location_equipment_services.includes(:service_kind).find_each do |les|
-      next if les.service_occurrences.pending.exists?
+      next if les.service_occurrences.open.exists?
       next unless les.recurring?
 
       les.service_occurrences.create!(status: :pending, due_on: les.advance(created_at))
@@ -90,13 +90,15 @@ class LocationEquipment < ApplicationRecord
     ServiceKind.visible.where.not(id: assigned_ids).order(:name)
   end
 
-  def pending_service_occurrences
-    ServiceOccurrence.pending
+  def open_service_occurrences
+    ServiceOccurrence.open
       .joins(location_equipment_service: :service_kind)
       .where(location_equipment_services: {location_equipment_id: id})
       .includes(location_equipment_service: :service_kind)
       .order("service_kinds.name")
   end
+
+  alias_method :pending_service_occurrences, :open_service_occurrences
 
   def location_equipment_service_for(kind_key)
     location_equipment_services

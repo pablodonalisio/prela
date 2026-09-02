@@ -3,6 +3,7 @@ class LocationEquipmentService < ApplicationRecord
   belongs_to :service_kind
 
   has_many :service_occurrences, dependent: :restrict_with_error
+  has_one :open_service_occurrence, -> { open }, class_name: "ServiceOccurrence"
   has_one :pending_service_occurrence, -> { pending }, class_name: "ServiceOccurrence"
 
   attr_accessor :due_on
@@ -17,7 +18,7 @@ class LocationEquipmentService < ApplicationRecord
   validate :interval_must_be_blank_when_not_recurring
 
   def create_pending_occurrence!
-    return if service_occurrences.pending.exists?
+    return if service_occurrences.open.exists?
     return if due_on.blank?
 
     service_occurrences.create!(status: :pending, due_on: due_on.to_date)
@@ -64,7 +65,7 @@ class LocationEquipmentService < ApplicationRecord
   end
 
   def next_due_on
-    pending_service_occurrence&.due_on
+    open_service_occurrence&.due_on
   end
 
   private

@@ -2,6 +2,7 @@ class ServiceOccurrence < ApplicationRecord
   include Filterable
 
   DUE_SOON_WINDOW = 3.months
+  OPEN_STATUSES = %w[pending suspended scheduled].freeze
 
   belongs_to :location_equipment_service
 
@@ -9,26 +10,35 @@ class ServiceOccurrence < ApplicationRecord
 
   delegate :location_equipment, :service_kind, to: :location_equipment_service
 
-  enum :status, {pending: 0, completed: 1}
+  enum :status, {pending: 0, completed: 1, suspended: 2, scheduled: 3, cancelled: 4}
 
-  validates :due_on, presence: true, if: :pending?
+  validates :due_on, presence: true, if: :open?
+  validates :planned_on, presence: true, if: :scheduled?
   validates :completed_on, presence: true, if: :completed?
   validates :status, presence: true
-  validate :only_one_pending_per_location_equipment_service, if: :pending?
+  validate :only_one_open_per_location_equipment_service, if: :open?
 
-  scope :open, -> { pending }
+  scope :open, -> { where(status: OPEN_STATUSES) }
+  scope :suspended, -> { where(status: :suspended) }
+  scope :scheduled, -> { where(status: :scheduled) }
   scope :for_visible_location_equipments, -> {
     joins(location_equipment_service: :location_equipment)
       .where(location_equipment_services: {location_equipment_id: LocationEquipment.visible.select(:id)})
   }
   scope :overdue, -> {
-    pending.where(service_occurrences: {due_on: ...Date.current})
+    open.where(service_occurrences: {due_on: ...Date.current})
   }
   scope :due_soon, -> {
-    pending.where(due_on: Date.current...due_soon_until)
+    open.where(due_on: Date.current...due_soon_until)
   }
   scope :due_for_attention, -> {
+    open.where("service_occurrences.due_on < ?", due_soon_until)
+  }
+  scope :actionable_for_attention, -> {
     pending.where("service_occurrences.due_on < ?", due_soon_until)
+  }
+  scope :for_agenda, ->(range) {
+    scheduled.where(planned_on: range).order(:planned_on)
   }
   scope :by_client_id, ->(client_id) {
     joins(location_equipment_service: {location_equipment: :location})
@@ -43,16 +53,20 @@ class ServiceOccurrence < ApplicationRecord
       .where(service_kinds: {legacy_key: legacy_key})
   }
 
+  def open?
+    pending? || suspended? || scheduled?
+  end
+
   def overdue?
-    pending? && due_on < Date.current
+    open? && due_on < Date.current
   end
 
   def due_soon?
-    pending? && due_on >= Date.current && due_on < self.class.due_soon_until
+    open? && due_on >= Date.current && due_on < self.class.due_soon_until
   end
 
   def complete!(completed_on:, document: nil)
-    raise ArgumentError, "only pending occurrences can be completed" unless pending?
+    raise ArgumentError, "only open occurrences can be completed" unless open?
 
     transaction do
       update!(status: :completed, completed_on: completed_on.to_date, due_on: completed_on.to_date)
@@ -74,7 +88,14 @@ class ServiceOccurrence < ApplicationRecord
     end
 
     def due_for_attention_by_equipment_kind(scope = all)
-      scope.due_for_attention
+      scope.actionable_for_attention
+        .for_visible_location_equipments
+        .includes(location_equipment_service: {location_equipment: [:equipment, {location: :client}], service_kind: []})
+        .group_by { |occurrence| occurrence.location_equipment.equipment.kind }
+    end
+
+    def suspended_by_equipment_kind(scope = all)
+      scope.suspended
         .for_visible_location_equipments
         .includes(location_equipment_service: {location_equipment: [:equipment, {location: :client}], service_kind: []})
         .group_by { |occurrence| occurrence.location_equipment.equipment.kind }
@@ -83,10 +104,10 @@ class ServiceOccurrence < ApplicationRecord
 
   private
 
-  def only_one_pending_per_location_equipment_service
-    return unless pending?
+  def only_one_open_per_location_equipment_service
+    return unless open?
 
-    existing = self.class.pending
+    existing = self.class.open
       .where(location_equipment_service_id: location_equipment_service_id)
       .where.not(id: id)
 

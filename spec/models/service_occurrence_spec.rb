@@ -18,13 +18,28 @@ RSpec.describe ServiceOccurrence, type: :model do
     expect(build(:service_occurrence, due_on: nil)).not_to be_valid
   end
 
-  it "allows only one pending occurrence per location equipment service" do
+  it "allows only one open occurrence per location equipment service" do
     les = create(:location_equipment_service)
     create(:service_occurrence, location_equipment_service: les)
 
     duplicate = build(:service_occurrence, location_equipment_service: les)
     expect(duplicate).not_to be_valid
     expect(duplicate.errors[:status]).to be_present
+  end
+
+  it "allows a completed occurrence alongside a new open one" do
+    les = create(:location_equipment_service)
+    create(:service_occurrence, :completed, location_equipment_service: les)
+    open = build(:service_occurrence, location_equipment_service: les)
+
+    expect(open).to be_valid
+  end
+
+  it "requires planned_on when scheduled" do
+    occurrence = build(:service_occurrence, status: :scheduled, planned_on: nil)
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:planned_on]).to be_present
   end
 
   describe ".overdue" do
@@ -45,13 +60,26 @@ RSpec.describe ServiceOccurrence, type: :model do
     end
   end
 
-  describe ".due_for_attention" do
-    it "includes overdue and due soon pending occurrences" do
+  describe ".actionable_for_attention" do
+    it "includes pending due soon or overdue but not suspended or scheduled" do
       overdue = create(:service_occurrence, :overdue)
       due_soon = create(:service_occurrence, :due_soon)
+      create(:service_occurrence, :overdue, status: :suspended)
+      create(:service_occurrence, :scheduled)
       create(:service_occurrence, due_on: 4.months.from_now.to_date)
 
-      expect(described_class.due_for_attention).to contain_exactly(overdue, due_soon)
+      expect(described_class.actionable_for_attention).to contain_exactly(overdue, due_soon)
+    end
+  end
+
+  describe ".due_for_attention" do
+    it "includes overdue and due soon open occurrences including suspended" do
+      overdue = create(:service_occurrence, :overdue)
+      due_soon = create(:service_occurrence, :due_soon)
+      suspended = create(:service_occurrence, :overdue, status: :suspended)
+      create(:service_occurrence, due_on: 4.months.from_now.to_date)
+
+      expect(described_class.due_for_attention).to contain_exactly(overdue, due_soon, suspended)
     end
   end
 
@@ -134,6 +162,29 @@ RSpec.describe ServiceOccurrence, type: :model do
       pending_occurrence.complete!(completed_on: Date.current, document: file)
 
       expect(pending_occurrence.reload.document).to be_attached
+    end
+
+    it "completes from a scheduled occurrence" do
+      recurring_les.service_occurrences.destroy_all
+      scheduled = create(:service_occurrence, :scheduled, location_equipment_service: recurring_les)
+
+      scheduled.complete!(completed_on: Date.current)
+
+      expect(scheduled.reload).to be_completed
+      expect(recurring_les.service_occurrences.pending).to exist
+    end
+  end
+
+  describe ".suspended_by_equipment_kind" do
+    it "groups suspended occurrences by equipment kind" do
+      power_unit = create(:location_equipment, equipment: create(:equipment, :power_unit))
+      les = power_unit.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "service"})
+      les.service_occurrences.destroy_all
+      suspended = create(:service_occurrence, :overdue, status: :suspended, location_equipment_service: les)
+
+      grouped = described_class.suspended_by_equipment_kind
+
+      expect(grouped["power_unit"]).to include(suspended)
     end
   end
 
