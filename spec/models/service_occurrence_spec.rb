@@ -103,8 +103,26 @@ RSpec.describe ServiceOccurrence, type: :model do
     end
   end
 
+  describe ".control_panel_by_equipment_kind" do
+    it "groups actionable and suspended occurrences by equipment kind" do
+      power_unit = create(:location_equipment, equipment: create(:equipment, :power_unit))
+      les = power_unit.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "service"})
+      les.service_occurrences.destroy_all
+      overdue = create(:service_occurrence, :overdue, location_equipment_service: les)
+
+      battery_les = power_unit.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "battery_change"})
+      battery_les.service_occurrences.destroy_all
+      suspended = create(:service_occurrence, :overdue, status: :suspended, location_equipment_service: battery_les)
+
+      grouped = described_class.control_panel_by_equipment_kind
+      occurrences = grouped[power_unit.equipment.equipment_kind]
+
+      expect(occurrences).to include(overdue, suspended)
+    end
+  end
+
   describe ".due_for_attention_by_equipment_kind" do
-    it "groups due occurrences by equipment kind" do
+    it "groups due occurrences by equipment kind record" do
       power_unit = create(:location_equipment, equipment: create(:equipment, :power_unit))
       ups = create(:location_equipment, equipment: create(:equipment, :ups))
       power_unit_occurrence = create(:service_occurrence, :overdue,
@@ -114,13 +132,13 @@ RSpec.describe ServiceOccurrence, type: :model do
 
       grouped = described_class.due_for_attention_by_equipment_kind
 
-      expect(grouped["power_unit"]).to include(power_unit_occurrence)
-      expect(grouped["ups"]).to include(ups_occurrence)
+      expect(grouped[power_unit.equipment.equipment_kind]).to include(power_unit_occurrence)
+      expect(grouped[ups.equipment.equipment_kind]).to include(ups_occurrence)
     end
   end
 
   describe ".suspended_by_equipment_kind" do
-    it "groups suspended occurrences by equipment kind" do
+    it "groups suspended occurrences by equipment kind record" do
       power_unit = create(:location_equipment, equipment: create(:equipment, :power_unit))
       les = power_unit.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "service"})
       les.service_occurrences.destroy_all
@@ -128,7 +146,7 @@ RSpec.describe ServiceOccurrence, type: :model do
 
       grouped = described_class.suspended_by_equipment_kind
 
-      expect(grouped["power_unit"]).to include(suspended)
+      expect(grouped[power_unit.equipment.equipment_kind]).to include(suspended)
     end
   end
 

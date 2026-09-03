@@ -3,7 +3,7 @@ class HomeController < ApplicationController
     authorize :home, :index?
     @links = Link.all if current_user.admin?
     scope = policy_scope(ServiceOccurrence.filter(service_filter_params))
-    @overdue_services = ServiceOccurrence.due_for_attention_by_equipment_kind(scope)
+    @control_panel_services = ServiceOccurrence.control_panel_by_equipment_kind(scope)
   end
 
   private

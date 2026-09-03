@@ -37,6 +37,14 @@ class ServiceOccurrence < ApplicationRecord
   scope :actionable_for_attention, -> {
     pending.where("service_occurrences.due_on < ?", due_soon_until)
   }
+  scope :for_control_panel, -> {
+    where(
+      "(service_occurrences.status = :pending AND service_occurrences.due_on < :until) OR service_occurrences.status = :suspended",
+      pending: statuses[:pending],
+      until: due_soon_until,
+      suspended: statuses[:suspended]
+    )
+  }
   scope :for_agenda, ->(range) {
     scheduled.where(planned_on: range).order(:planned_on)
   }
@@ -77,15 +85,22 @@ class ServiceOccurrence < ApplicationRecord
     def due_for_attention_by_equipment_kind(scope = all)
       scope.actionable_for_attention
         .for_visible_location_equipments
-        .includes(location_equipment_service: {location_equipment: [:equipment, {location: :client}], service_kind: []})
-        .group_by { |occurrence| occurrence.location_equipment.equipment.kind }
+        .includes(location_equipment_service: {location_equipment: [{equipment: :equipment_kind}, {location: :client}], service_kind: []})
+        .group_by { |occurrence| occurrence.location_equipment.equipment.equipment_kind }
+    end
+
+    def control_panel_by_equipment_kind(scope = all)
+      scope.for_control_panel
+        .for_visible_location_equipments
+        .includes(location_equipment_service: {location_equipment: [{equipment: :equipment_kind}, {location: :client}], service_kind: []})
+        .group_by { |occurrence| occurrence.location_equipment.equipment.equipment_kind }
     end
 
     def suspended_by_equipment_kind(scope = all)
       scope.suspended
         .for_visible_location_equipments
-        .includes(location_equipment_service: {location_equipment: [:equipment, {location: :client}], service_kind: []})
-        .group_by { |occurrence| occurrence.location_equipment.equipment.kind }
+        .includes(location_equipment_service: {location_equipment: [{equipment: :equipment_kind}, {location: :client}], service_kind: []})
+        .group_by { |occurrence| occurrence.location_equipment.equipment.equipment_kind }
     end
   end
 
