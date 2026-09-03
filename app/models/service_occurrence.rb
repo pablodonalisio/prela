@@ -46,7 +46,17 @@ class ServiceOccurrence < ApplicationRecord
     )
   }
   scope :for_agenda, ->(range) {
-    scheduled.where(planned_on: range).order(:planned_on)
+    where(
+      <<~SQL.squish,
+        (service_occurrences.status = :scheduled AND service_occurrences.planned_on BETWEEN :from AND :to)
+        OR (service_occurrences.status IN (:pending, :suspended) AND service_occurrences.due_on BETWEEN :from AND :to)
+      SQL
+      scheduled: statuses[:scheduled],
+      pending: statuses[:pending],
+      suspended: statuses[:suspended],
+      from: range.begin,
+      to: range.end
+    ).order(Arel.sql("COALESCE(service_occurrences.planned_on, service_occurrences.due_on)"))
   }
   scope :by_client_id, ->(client_id) {
     joins(location_equipment_service: {location_equipment: :location})
@@ -75,6 +85,10 @@ class ServiceOccurrence < ApplicationRecord
 
   def status_label
     I18n.t("activerecord.attributes.service_occurrence.statuses.#{status}")
+  end
+
+  def agenda_date
+    scheduled? ? planned_on : due_on
   end
 
   class << self

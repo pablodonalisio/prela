@@ -1,0 +1,25 @@
+<% location_equipment = service_occurrence.location_equipment %>
+<tr id="<%= dom_id(service_occurrence, :agenda) %>">
+  <td><%= service_occurrence.agenda_date.strftime("%d/%m/%Y") %></td>
+  <td><%= location_equipment.client.name %></td>
+  <td><%= location_equipment.location.name %></td>
+  <td>
+    <%= link_to location_equipment.model.capitalize,
+                location_equipment_path(location_equipment),
+                data: {turbo_frame: :_top} %>
+  </td>
+  <td><%= service_occurrence.service_kind.name %></td>
+  <td class="text-body-secondary small"><%= service_occurrence.notes.presence || "—" %></td>
+  <td>
+    <% if service_occurrence.scheduled? %>
+      <span class="badge bg-info text-dark rounded-pill">Programado</span>
+    <% elsif service_occurrence.suspended? %>
+      <span class="badge bg-secondary rounded-pill">Suspendido</span>
+    <% else %>
+      <span class="badge bg-warning rounded-pill">Falta Programar</span>
+    <% end %>
+  </td>
+  <td class="text-nowrap">
+    <%= render "service_occurrences/actions", service_occurrence: service_occurrence, class: "me-2" %>
+  </td>
+</tr>

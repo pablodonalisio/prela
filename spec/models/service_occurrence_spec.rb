@@ -83,6 +83,22 @@ RSpec.describe ServiceOccurrence, type: :model do
     end
   end
 
+  describe "#agenda_date" do
+    it "uses planned_on when scheduled" do
+      occurrence = build(:service_occurrence, :scheduled, planned_on: Date.current, due_on: 1.month.from_now.to_date)
+
+      expect(occurrence.agenda_date).to eq(Date.current)
+    end
+
+    it "uses due_on when pending or suspended" do
+      pending = build(:service_occurrence, due_on: Date.current)
+      suspended = build(:service_occurrence, :suspended, due_on: Date.yesterday)
+
+      expect(pending.agenda_date).to eq(Date.current)
+      expect(suspended.agenda_date).to eq(Date.yesterday)
+    end
+  end
+
   describe "#overdue?" do
     it "is true when pending and past due" do
       expect(build(:service_occurrence, :overdue)).to be_overdue

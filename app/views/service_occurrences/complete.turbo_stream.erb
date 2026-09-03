@@ -4,5 +4,7 @@
 
 <%= turbo_stream.replace "service_occurrences", partial: "location_equipments/service_occurrences", locals: {location_equipment: @location_equipment} %>
 
+<%= turbo_stream.remove dom_id(@service_occurrence, :agenda) %>
+
 <%= turbo_stream.update "remote_modal" do %>
 <% end %>

@@ -1,0 +1,52 @@
+<button class="btn btn-primary d-md-none mt-3"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#agendaFilters"
+        aria-controls="agendaFilters">
+  <i class="fa-solid fa-filter"></i>
+</button>
+
+<div class="offcanvas-md offcanvas-start px-3" tabindex="-1" id="agendaFilters" data-bs-scroll="true" aria-labelledby="agendaFiltersLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="agendaFiltersLabel">Filtros</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#agendaFilters" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <%= form_with(url: agenda_index_path, method: :get) do |form| %>
+      <div class="row g-3 align-items-end my-3">
+        <div class="col-auto">
+          <%= form.label :from, "Desde", class: "form-label" %>
+          <%= form.date_field :from, value: from, class: "form-control" %>
+        </div>
+        <div class="col-auto">
+          <%= form.label :to, "Hasta", class: "form-label" %>
+          <%= form.date_field :to, value: to, class: "form-control" %>
+        </div>
+        <div class="col-auto">
+          <%= form.label :client_id, "Cliente", class: "form-label" %>
+          <%= form.collection_select :client_id,
+                                     policy_scope(Client).all,
+                                     :id,
+                                     :name,
+                                     {include_blank: "Todos", selected: params[:client_id]},
+                                     class: "form-control" %>
+        </div>
+        <div class="col-auto">
+          <%= form.label :service_kind_id, "Tipo de servicio", class: "form-label" %>
+          <%= form.collection_select :service_kind_id,
+                                     ServiceKind.visible.order(:name),
+                                     :id,
+                                     :name,
+                                     {include_blank: "Todos", selected: params[:service_kind_id]},
+                                     class: "form-control" %>
+        </div>
+        <div class="col-auto">
+          <%= form.submit "Filtrar", class: "btn btn-primary", data: {bs_dismiss: "offcanvas"} %>
+        </div>
+        <div class="col-auto">
+          <%= link_to "Limpiar filtros", agenda_index_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
