@@ -266,117 +266,57 @@ RSpec.describe LocationEquipment, type: :model do
 
 
   context "methods" do
+    before do
+      %i[ups power_unit electrical_panel building].each do |kind|
+        create(:equipment_kind, kind) unless EquipmentKind.exists?(legacy_kind: kind.to_s)
+      end
+      ServiceKind.ensure_legacy_equipment_assignments!
+    end
+
     let(:ups) { create(:location_equipment, equipment: create(:equipment, :ups)) }
     let(:power_unit) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
     let(:electrical_panel) { create(:location_equipment, equipment: create(:equipment, :electrical_panel)) }
     let(:building) { create(:location_equipment, equipment: create(:equipment, :building)) }
     let(:undefined_equipment) { create(:location_equipment) }
 
-    describe "next_service_dates" do
-      let!(:location_equipment) do
-        location_equipment = create(:location_equipment, equipment: create(:equipment, :power_unit))
-        location_equipment.service_dates.destroy_all # Remove default next service dates created by after_create callback
-        location_equipment
-      end
-      let!(:older_battery_change) { create(:service_date, kind: :battery_change, date: 2.years.ago, location_equipment: location_equipment) }
-      let!(:older_service) { create(:service_date, kind: :service, date: 1.years.ago, location_equipment: location_equipment) }
-      let!(:older_belt_change) { create(:service_date, kind: :belt_change, date: 5.years.ago, location_equipment: location_equipment) }
-      let!(:next_battery_change) { create(:service_date, kind: :battery_change, date: Date.current, location_equipment: location_equipment) }
-      let!(:next_service) { create(:service_date, kind: :service, date: Date.current, location_equipment: location_equipment) }
-      let!(:next_belt_change) { create(:service_date, kind: :belt_change, date: Date.current, location_equipment: location_equipment) }
+    describe "create_initial_pending_occurrences!" do
+      it "creates pending occurrences for recurring services after location equipment creation" do
+        freeze_time
 
-      it "returns next service dates for location equipment" do
-        expect(location_equipment.next_service_dates.map { |sd| sd.date.to_date }).to all(eq(Date.current))
-        expect(location_equipment.next_service_dates.size).to eq(LocationEquipment::SERVICE_KINDS[location_equipment.kind].size)
+        expect(power_unit.location_equipment_services.count).to eq(3)
+        expect(power_unit.service_occurrences.pending.count).to eq(3)
+        expect(power_unit.location_equipment_service_for(:service).pending_service_occurrence.due_on).to eq(1.year.from_now.to_date)
+        expect(power_unit.location_equipment_service_for(:battery_change).pending_service_occurrence.due_on).to eq(2.years.from_now.to_date)
+        expect(power_unit.location_equipment_service_for(:belt_change).pending_service_occurrence.due_on).to eq(5.years.from_now.to_date)
+      end
+
+      it "creates pending occurrences for ups" do
+        freeze_time
+
+        expect(ups.service_occurrences.pending.count).to eq(1)
+        expect(ups.location_equipment_service_for(:battery_change).pending_service_occurrence.due_on).to eq(2.years.from_now.to_date)
       end
     end
 
-    describe "last_service_date" do
-      let(:location_equipment) { create(:location_equipment) }
-      let!(:activity) { create(:activity, kind: Activity::BATTERY_CHANGE, date: Date.today, location_equipment: location_equipment) }
-
-      it "returns last service date" do
-        expect(location_equipment.last_service_date(:last_battery_change).to_date).to eq(Date.today)
+    describe "sync_location_equipment_services!" do
+      it "creates location equipment services from the equipment kind on create" do
+        battery_change = ServiceKind.find_by!(legacy_key: "battery_change")
+        expect(ups.location_equipment_services.map(&:service_kind)).to include(battery_change)
+        expect(ups.location_equipment_services.find_by!(service_kind: battery_change).interval).to eq(battery_change.default_interval)
       end
 
-      it "should raise error for undefined activity kind" do
-        expect { location_equipment.last_service_date(:undefined_kind) }.to raise_error("Undefined activity kind")
+      it "does not create pending occurrences for one-time kinds" do
+        equipment_kind = EquipmentKind.find_by!(legacy_kind: "ups")
+        one_time_kind = create(:service_kind, :one_time, name: "Calibración única")
+        equipment_kind.service_kinds << one_time_kind unless equipment_kind.service_kinds.exists?(one_time_kind.id)
+
+        location_equipment = create(:location_equipment, equipment: create(:equipment, equipment_kind: equipment_kind))
+        les = location_equipment.location_equipment_services.find_by!(service_kind: one_time_kind)
+
+        expect(les.interval).to be_nil
+        expect(les.interval_unit).to be_nil
+        expect(les.pending_service_occurrence).to be_nil
       end
-    end
-
-    describe "create_next_service_dates" do
-      let(:service_kinds) { %i[service battery_change belt_change] }
-
-      it "creates first next service dates after location equipment creation" do
-        freeze_time
-
-        expect(power_unit.next_service_dates.size).to eq(LocationEquipment::SERVICE_KINDS[power_unit.kind].size)
-        expect(power_unit.next_service_dates.service.first.date).to eq(1.year.from_now)
-        expect(power_unit.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
-        expect(power_unit.next_service_dates.belt_change.first.date).to eq(5.years.from_now)
-      end
-
-      it "creates new next service dates for power unit from specific time" do
-        freeze_time
-        power_unit.create_next_service_dates(Time.current, service_kinds)
-
-        expect(power_unit.next_service_dates.size).to eq(LocationEquipment::SERVICE_KINDS[power_unit.kind].size)
-        expect(power_unit.next_service_dates.service.first.date).to eq(1.year.from_now)
-        expect(power_unit.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
-        expect(power_unit.next_service_dates.belt_change.first.date).to eq(5.years.from_now)
-      end
-
-      it "creates new next service dates for ups" do
-        freeze_time
-        ups.create_next_service_dates(Time.current)
-
-        expect(ups.next_service_dates.size).to eq(1)
-        expect(ups.next_service_dates.battery_change.first.date).to eq(2.years.from_now)
-      end
-
-      it "creates new next service dates for electrical panel" do
-        freeze_time
-        electrical_panel.create_next_service_dates(Time.current)
-
-        expect(electrical_panel.next_service_dates.size).to eq(3)
-        expect(electrical_panel.next_service_dates.service.first.date).to eq(1.year.from_now)
-        expect(electrical_panel.next_service_dates.torque.first.date).to eq(1.year.from_now)
-        expect(electrical_panel.next_service_dates.cleaning.first.date).to eq(1.year.from_now)
-      end
-
-      it "creates new next service dates for building" do
-        freeze_time
-        building.create_next_service_dates(Time.current)
-
-        expect(building.next_service_dates.size).to eq(3)
-        expect(building.next_service_dates.srt_900.first.date).to eq(1.year.from_now)
-        expect(building.next_service_dates.thermography.first.date).to eq(1.year.from_now)
-        expect(building.next_service_dates.electrical_approval.first.date).to eq(1.year.from_now)
-      end
-    end
-
-    describe "calculate_next_service_date" do
-      it "calculates next service date for specific service kind" do
-        freeze_time
-
-        expect(power_unit.calculate_next_service_date(:service)).to eq(1.year.from_now)
-        expect(power_unit.calculate_next_service_date(:battery_change)).to eq(2.years.from_now)
-        expect(power_unit.calculate_next_service_date(:belt_change)).to eq(5.years.from_now)
-      end
-
-      it "calculates next service date for specific service kind from specific time" do
-        freeze_time
-
-        expect(power_unit.calculate_next_service_date(:service, 1.year.from_now)).to eq(2.years.from_now)
-        expect(power_unit.calculate_next_service_date(:battery_change, 2.years.from_now)).to eq(4.years.from_now)
-        expect(power_unit.calculate_next_service_date(:belt_change, 5.years.from_now)).to eq(10.years.from_now)
-      end
-    end
-  end
-
-  context "SERVICE_KINDS constant" do
-    it "defines service kinds for each equipment kind" do
-      expect(LocationEquipment::SERVICE_KINDS.keys.size).to eq(Equipment::LEGACY_KINDS.size)
     end
   end
 
@@ -397,9 +337,8 @@ RSpec.describe LocationEquipment, type: :model do
 
   context "field_values" do
     it "can store arbitrary key/value pairs" do
-      location_equipment = build(:location_equipment, field_values: {"form_link" => "https://example.com", "battery_change_interval" => 2})
+      location_equipment = build(:location_equipment, field_values: {"form_link" => "https://example.com"})
       expect(location_equipment.field_values["form_link"]).to eq("https://example.com")
-      expect(location_equipment.field_values["battery_change_interval"]).to eq(2)
     end
   end
 end

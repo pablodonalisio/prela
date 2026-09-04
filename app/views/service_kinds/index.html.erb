@@ -1,0 +1,28 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <%= render "location_equipments/navbar", active: "service_kinds" %>
+
+  <%= render "shared/content_header", title: "Tipos de servicio" do %>
+    <% if current_user.admin? %>
+      <%= render "shared/button_link", text: "Agregar",
+                                      path: new_service_kind_path %>
+    <% end %>
+  <% end %>
+
+  <p class="text-body-secondary small mx-4 mt-2 mb-0">
+    Catálogo de tipos de servicio (intervalo y prioridad).
+    Asignarlos a un tipo de activo solo define los servicios por defecto al crear un activo;
+    después cada activo puede tener cualquier servicio del catálogo.
+  </p>
+
+  <%= turbo_frame_tag "service_kinds", class: "d-flex flex-column gap-2 mx-4 mt-4" do %>
+    <% if @service_kinds.any? %>
+      <%= render @service_kinds %>
+    <% else %>
+      <%= render "shared/empty_collection",
+                 id: "service_kinds_empty",
+                 message: "No hay tipos de servicio todavía.",
+                 action_text: current_user.admin? ? "Agregar" : nil,
+                 action_path: current_user.admin? ? new_service_kind_path : nil %>
+    <% end %>
+  <% end %>
+<% end %>

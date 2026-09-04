@@ -1,0 +1,35 @@
+<%= turbo_frame_tag "main_content", class: "w-100" do %>
+  <div class="row justify-content-around mt-4 gy-5">
+    <div class="col-md-10 text-bg-secondary rounded p-3">
+      <%= render "shared/content_header", title: "Agenda" %>
+
+      <div class="mx-4">
+        <%= render "agenda/filter_form", from: @from, to: @to %>
+
+        <% if @agenda_services.blank? %>
+          <p class="text-center text-body-secondary my-4">No hay servicios en este período</p>
+        <% else %>
+          <div class="table-responsive mt-4">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Sede</th>
+                  <th>Equipo</th>
+                  <th>Tipo</th>
+                  <th>Notas</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= render partial: "agenda/row", collection: @agenda_services, as: :service_occurrence %>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

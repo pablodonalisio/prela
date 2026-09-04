@@ -4,16 +4,18 @@
   <%= turbo_frame_tag "overdue_service_date_list" do %>
     <%= render "control_panel/service_date_filter_form" %>
 
-    <div class="accordion my-4" id="serviceDateControl">
-      <%= render "control_panel/overdue_service_dates", title: "UPS",
-                                                        overdue_services: overdue_services["ups"],
-                                                        collapse: "collapseOne" %>
-      <%= render "control_panel/overdue_service_dates", title: "Grupos electrógenos",
-                                                        overdue_services: overdue_services["power_unit"],
-                                                        collapse: "collapseTwo" %>
-      <%= render "control_panel/overdue_service_dates", title: "Tableros eléctricos",
-                                                        overdue_services: overdue_services["electrical_panel"],
-                                                        collapse: "collapseThree" %>
-    </div>
+    <% if control_panel_services.blank? %>
+      <p class="text-center text-body-secondary my-4">No hay servicios para mostrar</p>
+    <% else %>
+      <div class="accordion my-4" id="locationEquipmentsControl">
+        <% control_panel_services.sort_by { |equipment_kind, _| equipment_kind.name }.each do |equipment_kind, occurrences| %>
+          <%= render "control_panel/overdue_service_dates",
+                     title: equipment_kind.name,
+                     overdue_services: occurrences,
+                     collapse: "equipment-kind-#{equipment_kind.id}",
+                     parent: "locationEquipmentsControl" %>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 </div>

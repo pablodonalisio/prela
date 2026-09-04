@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_04_140234) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -211,6 +211,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
     t.index ["normalized_name"], name: "index_equipment_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
   end
 
+  create_table "equipment_kinds_service_kinds", id: false, force: :cascade do |t|
+    t.bigint "equipment_kind_id", null: false
+    t.bigint "service_kind_id", null: false
+    t.index ["equipment_kind_id", "service_kind_id"], name: "index_equipment_kinds_service_kinds_uniqueness", unique: true
+    t.index ["equipment_kind_id"], name: "index_equipment_kinds_service_kinds_on_equipment_kind_id"
+    t.index ["service_kind_id"], name: "index_equipment_kinds_service_kinds_on_service_kind_id"
+  end
+
   create_table "equipment_supplies", force: :cascade do |t|
     t.string "equipmentable_type", null: false
     t.bigint "equipmentable_id", null: false
@@ -239,6 +247,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "location_equipment_services", force: :cascade do |t|
+    t.bigint "location_equipment_id", null: false
+    t.bigint "service_kind_id", null: false
+    t.integer "interval"
+    t.integer "interval_unit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_equipment_id", "service_kind_id"], name: "index_location_equipment_services_uniqueness", unique: true
+    t.index ["location_equipment_id"], name: "index_location_equipment_services_on_location_equipment_id"
+    t.index ["service_kind_id"], name: "index_location_equipment_services_on_service_kind_id"
+  end
+
   create_table "location_equipments", force: :cascade do |t|
     t.string "zone"
     t.integer "floor"
@@ -247,36 +267,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "serial_number"
-    t.date "last_service"
-    t.date "next_service"
-    t.date "last_battery_change"
-    t.date "next_battery_change"
     t.text "details"
     t.string "form_link"
     t.string "code"
     t.integer "status", default: 0
-    t.date "last_belt_change"
-    t.date "next_belt_change"
     t.string "engine_serial_number"
     t.string "power_unit_serial_number"
-    t.integer "service_interval", default: 1
-    t.integer "battery_change_interval", default: 2
-    t.integer "belt_change_interval", default: 5
-    t.integer "torque_interval", default: 1
-    t.date "last_torque"
-    t.date "next_torque"
-    t.integer "cleaning_interval", default: 1
-    t.date "last_cleaning"
-    t.date "next_cleaning"
-    t.integer "srt_900_interval", default: 1
-    t.date "last_srt_900"
-    t.date "next_srt_900"
-    t.integer "thermography_interval", default: 1
-    t.date "last_thermography"
-    t.date "next_thermography"
-    t.integer "electrical_approval_interval", default: 1
-    t.date "last_electrical_approval"
-    t.date "next_electrical_approval"
     t.string "condition", default: "Buena"
     t.jsonb "field_values", default: {}, null: false
     t.datetime "discarded_at"
@@ -417,15 +413,33 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
     t.index ["report_id"], name: "index_room_report_stats_on_report_id"
   end
 
-  create_table "service_dates", force: :cascade do |t|
-    t.integer "kind"
-    t.datetime "date"
-    t.bigint "location_equipment_id", null: false
-    t.bigint "activity_id"
+  create_table "service_kinds", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.integer "default_interval"
+    t.integer "interval_unit"
+    t.integer "priority", default: 1, null: false
+    t.string "legacy_key"
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["activity_id"], name: "index_service_dates_on_activity_id"
-    t.index ["location_equipment_id"], name: "index_service_dates_on_location_equipment_id"
+    t.boolean "recurring", default: true, null: false
+    t.index ["discarded_at"], name: "index_service_kinds_on_discarded_at"
+    t.index ["legacy_key"], name: "index_service_kinds_on_legacy_key", unique: true, where: "(legacy_key IS NOT NULL)"
+    t.index ["normalized_name"], name: "index_service_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+  end
+
+  create_table "service_occurrences", force: :cascade do |t|
+    t.bigint "location_equipment_service_id", null: false
+    t.date "due_on", null: false
+    t.integer "status", default: 0, null: false
+    t.date "completed_on"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "planned_on"
+    t.text "notes"
+    t.index ["location_equipment_service_id"], name: "index_service_occurrences_on_location_equipment_service_id"
+    t.index ["location_equipment_service_id"], name: "index_service_occurrences_one_open_per_les", unique: true, where: "(status = ANY (ARRAY[0, 2, 3]))"
   end
 
   create_table "signatures", force: :cascade do |t|
@@ -517,7 +531,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
   add_foreign_key "contacts_locations", "contacts"
   add_foreign_key "contacts_locations", "locations"
   add_foreign_key "electrical_panel_report_stats", "reports"
+  add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
+  add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
   add_foreign_key "failures", "location_equipments"
+  add_foreign_key "location_equipment_services", "location_equipments"
+  add_foreign_key "location_equipment_services", "service_kinds"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "location_equipments_report_templates", "location_equipments"
@@ -532,8 +550,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_140422) do
   add_foreign_key "reports_signatures", "reports"
   add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
-  add_foreign_key "service_dates", "activities"
-  add_foreign_key "service_dates", "location_equipments"
+  add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "taggings", "tags"
   add_foreign_key "ups_report_stats", "reports"
   add_foreign_key "users", "clients"

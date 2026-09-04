@@ -1,0 +1,14 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash"%>
+<% end %>
+
+<%= turbo_stream.remove @service_kind %>
+<% if policy_scope(ServiceKind).none? %>
+  <%= turbo_stream.append "service_kinds" do %>
+    <%= render "shared/empty_collection",
+               id: "service_kinds_empty",
+               message: "No hay tipos de servicio todavía.",
+               action_text: current_user.admin? ? "Agregar" : nil,
+               action_path: current_user.admin? ? new_service_kind_path : nil %>
+  <% end %>
+<% end %>

@@ -1,0 +1,17 @@
+<% title = case @intent
+           when "suspend" then "Suspender servicio — #{@service_occurrence.service_kind.name}"
+           when "schedule" then "Programar servicio — #{@service_occurrence.service_kind.name}"
+           when "revert" then "Volver a pendiente — #{@service_occurrence.service_kind.name}"
+           when "completed" then "Editar servicio — #{@service_occurrence.service_kind.name}"
+           when "notes" then "Editar notas — #{@service_occurrence.service_kind.name}"
+           else "Editar vencimiento — #{@service_occurrence.service_kind.name}"
+           end %>
+
+<%= turbo_frame_tag @service_occurrence do %>
+  <%= render "shared/remote_modal", title: title do %>
+    <%= render "form",
+               service_occurrence: @service_occurrence,
+               location_equipment: @location_equipment,
+               intent: @intent %>
+  <% end %>
+<% end %>

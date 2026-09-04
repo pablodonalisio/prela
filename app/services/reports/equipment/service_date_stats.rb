@@ -8,7 +8,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   private
 
   def service_date_stats
-    if location_equipment.service_kinds.any?
+    if assigned_services.any?
       create_table_with_service_dates
       foot_notes
     else
@@ -28,83 +28,30 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def equipment_rows
-    location_equipment.service_kinds.map do |service_kind|
-      send("#{service_kind}_dates_row")
-    end
+    assigned_services.map { |les| maintenance_row(les) }
+  end
+
+  def assigned_services
+    @assigned_services ||= location_equipment.location_equipment_services.includes(:service_kind).order("service_kinds.name")
   end
 
   def dates_header
     [{content: "Mantenimiento preventivo", colspan: 6, background_color: PRIMARY_COLOR, font_style: :bold, align: :center}]
   end
 
-  def service_dates_row
-    [{content: "Último Servicio", background_color: PRIMARY_COLOR}, {content: formated_date(last_service_date)},
-      {content: "Próximo Servicio", background_color: PRIMARY_COLOR}, {content: formated_date(next_service_date)},
-      {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_service_date)}]
-  end
+  def maintenance_row(les)
+    last_label = "Último #{les.service_kind.name}"
+    next_label = les.recurring? ? "Próximo #{les.service_kind.name}" : "Vencimiento #{les.service_kind.name}"
+    next_date = les.next_due_on
 
-  def battery_change_dates_row
-    [{content: "Último Cambio de Batería", background_color: PRIMARY_COLOR}, {content: formated_date(last_battery_change_date)},
-      {content: "Próximo Cambio de Batería", background_color: PRIMARY_COLOR}, {content: formated_date(next_battery_change_date)},
-      {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_battery_change_date)}]
-  end
-
-  def belt_change_dates_row
-    [{content: "Último Cambio de Correa", background_color: PRIMARY_COLOR}, {content: formated_date(last_belt_change_date)},
-      {content: "Próximo Cambio de Correa", background_color: PRIMARY_COLOR}, {content: formated_date(next_belt_change_date)},
-      {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_belt_change_date)}]
-  end
-
-  def torque_dates_row
-    [{content: "Último Torqueo", background_color: PRIMARY_COLOR}, {content: formated_date(last_torque_date)},
-      {content: "Próximo Torqueo", background_color: PRIMARY_COLOR}, {content: formated_date(next_torque_date)},
-      {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_torque_date)}]
-  end
-
-  def cleaning_dates_row
-    [{content: "Última Limpieza", background_color: PRIMARY_COLOR}, {content: formated_date(last_cleaning_date)},
-      {content: "Próxima Limpieza", background_color: PRIMARY_COLOR}, {content: formated_date(next_cleaning_date)},
-      {content: "Vencido", background_color: PRIMARY_COLOR}, {content: date_past?(next_cleaning_date)}]
-  end
-
-  def last_service_date
-    @last_service_date ||= location_equipment.last_service_date(:last_service)
-  end
-
-  def next_service_date
-    @next_service_date ||= location_equipment.next_service_dates.find_by(kind: "service")&.date
-  end
-
-  def last_battery_change_date
-    @last_battery_change_date ||= location_equipment.last_service_date(:last_battery_change)
-  end
-
-  def next_battery_change_date
-    @next_battery_change_date ||= location_equipment.next_service_dates.find_by(kind: "battery_change")&.date
-  end
-
-  def last_belt_change_date
-    @last_belt_change_date ||= location_equipment.last_service_date(:last_belt_change)
-  end
-
-  def next_belt_change_date
-    @next_belt_change_date ||= location_equipment.next_service_dates.find_by(kind: "belt_change")&.date
-  end
-
-  def last_torque_date
-    @last_torque_date ||= location_equipment.last_service_date(:last_torque)
-  end
-
-  def next_torque_date
-    @next_torque_date ||= location_equipment.next_service_dates.find_by(kind: "torque")&.date
-  end
-
-  def last_cleaning_date
-    @last_cleaning_date ||= location_equipment.last_service_date(:last_cleaning)
-  end
-
-  def next_cleaning_date
-    @next_cleaning_date ||= location_equipment.next_service_dates.find_by(kind: "cleaning")&.date
+    [
+      {content: last_label, background_color: PRIMARY_COLOR},
+      {content: formated_date(les.last_completed_on)},
+      {content: next_label, background_color: PRIMARY_COLOR},
+      {content: formated_date(next_date)},
+      {content: "Vencido", background_color: PRIMARY_COLOR},
+      {content: date_past?(next_date)}
+    ]
   end
 
   def date_past?(date)
@@ -125,9 +72,5 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
       @pdf.move_down 10
       @pdf.text "*Los cambios de baterías y correas de los grupos electrógenos dependen del tipo y tiempo de uso, por lo que las próximas fechas son estimativas.", size: 10
     end
-  end
-
-  def next_service_dates
-    @next_service_dates ||= location_equipment.next_service_dates
   end
 end

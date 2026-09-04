@@ -1,0 +1,21 @@
+<%= content_tag :li, id: dom_id(location_equipment_service), class: "d-flex justify-content-between align-items-start gap-2 mb-2" do %>
+  <div class="min-w-0">
+    <p class="text-white small mb-0"><%= location_equipment_service.service_kind.name %></p>
+    <p class="text-white-50 small mb-0"><%= location_equipment_service.interval_label %></p>
+  </div>
+  <% if policy(location_equipment_service).update? %>
+    <div class="flex-shrink-0 d-flex gap-1">
+      <%= link_to edit_location_equipment_location_equipment_service_path(location_equipment, location_equipment_service),
+                  class: "btn btn-sm btn-outline-light py-0 px-1",
+                  data: {turbo_frame: "remote_modal"} do %>
+        <i class="fas fa-edit"></i>
+      <% end %>
+      <%= button_to location_equipment_location_equipment_service_path(location_equipment, location_equipment_service),
+                    method: :delete,
+                    class: "btn btn-sm btn-outline-danger py-0 px-1",
+                    form: {data: {turbo_confirm: "¿Seguro que querés quitar este servicio?"}} do %>
+        <i class="fas fa-trash"></i>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

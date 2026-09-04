@@ -9,31 +9,14 @@ class LocationEquipment < ApplicationRecord
   # Equipment created on/after this date use created_at instead.
   FAILURE_METRICS_START_DATE = Date.new(2026, 8, 10)
 
-  ACTIVITY_KIND = {
-    last_battery_change: Activity::BATTERY_CHANGE,
-    last_service: Activity::SERVICE,
-    last_belt_change: Activity::BELT_CHANGE,
-    last_torque: Activity::TORQUE,
-    last_cleaning: Activity::CLEANING,
-    last_srt_900: Activity::SRT_900,
-    last_thermography: Activity::THERMOGRAPHY,
-    last_electrical_approval: Activity::ELECTRICAL_APPROVAL
-  }
-
-  SERVICE_KINDS = {
-    "ups" => %i[battery_change],
-    "power_unit" => %i[service battery_change belt_change],
-    "electrical_panel" => %i[service torque cleaning],
-    "building" => %i[srt_900 thermography electrical_approval]
-  }
-
   CONDITIONS = {
     "Buena" => {color: "success"},
     "Aceptable" => {color: "warning"},
     "Deficiente" => {color: "danger"}
   }
 
-  after_create :create_next_service_dates
+  after_create :sync_location_equipment_services!
+  after_create :create_initial_pending_occurrences!
 
   has_one_attached :avatar
   belongs_to :location
@@ -44,7 +27,8 @@ class LocationEquipment < ApplicationRecord
   has_and_belongs_to_many :report_templates
   has_many :reports, dependent: :destroy
   has_many :activities, dependent: :destroy
-  has_many :service_dates, dependent: :destroy
+  has_many :location_equipment_services, dependent: :destroy
+  has_many :service_occurrences, through: :location_equipment_services
   has_many :documents, as: :documentable, dependent: :destroy
   has_many :failures, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -78,31 +62,48 @@ class LocationEquipment < ApplicationRecord
     report_templates << report_template
   end
 
-  def next_service_dates
-    service_dates.select("DISTINCT ON (kind) *").order(:kind, date: :desc)
-  end
+  def create_initial_pending_occurrences!
+    location_equipment_services.includes(:service_kind).find_each do |les|
+      next if les.service_occurrences.open.exists?
+      next unless les.recurring?
 
-  def service_kinds
-    SERVICE_KINDS[kind] || []
-  end
-
-  def last_service_date(service_kind)
-    raise "Undefined activity kind" unless ACTIVITY_KIND.key?(service_kind)
-
-    activities.where(kind: ACTIVITY_KIND[service_kind]).order(date: :desc).first&.date&.to_date || send(service_kind) # send(service_kind) is for legacy behaviour
-  end
-
-  def create_next_service_dates(from_date = Time.current, kinds = service_kinds)
-    return if kinds.blank?
-
-    kinds.each do |kind|
-      next_date = from_date + send("#{kind}_interval").years
-      service_dates.create(kind: kind, date: next_date)
+      les.service_occurrences.create!(status: :pending, due_on: les.advance(created_at))
     end
   end
 
-  def calculate_next_service_date(service_kind, from_date = Time.current)
-    from_date + send("#{service_kind}_interval").years
+  def sync_location_equipment_services!
+    equipment_kind = equipment&.equipment_kind
+    return if equipment_kind.nil?
+
+    equipment_kind.service_kinds.visible.each do |service_kind|
+      next if location_equipment_services.exists?(service_kind_id: service_kind.id)
+
+      location_equipment_services.create!(
+        service_kind: service_kind,
+        **interval_attrs_for_service_kind(service_kind)
+      )
+    end
+  end
+
+  def available_service_kinds_for_assignment
+    assigned_ids = location_equipment_services.select(:service_kind_id)
+    ServiceKind.visible.where.not(id: assigned_ids).order(:name)
+  end
+
+  def open_service_occurrences
+    ServiceOccurrence.open
+      .joins(location_equipment_service: :service_kind)
+      .where(location_equipment_services: {location_equipment_id: id})
+      .includes(location_equipment_service: :service_kind)
+      .order("service_kinds.name")
+  end
+
+  alias_method :pending_service_occurrences, :open_service_occurrences
+
+  def location_equipment_service_for(kind_key)
+    location_equipment_services
+      .joins(:service_kind)
+      .find_by(service_kinds: {legacy_key: kind_key.to_s})
   end
 
   def condition_color
@@ -134,5 +135,16 @@ class LocationEquipment < ApplicationRecord
     return if years <= 0
 
     failures_since_metrics_start / years.to_f
+  end
+
+  private
+
+  def interval_attrs_for_service_kind(service_kind)
+    return {interval: nil, interval_unit: nil} unless service_kind.recurring?
+
+    {
+      interval: service_kind.default_interval,
+      interval_unit: service_kind.interval_unit
+    }
   end
 end

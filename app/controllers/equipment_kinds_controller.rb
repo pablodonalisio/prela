@@ -2,7 +2,7 @@ class EquipmentKindsController < ApplicationController
   before_action :set_equipment_kind, only: %i[show edit update destroy]
 
   def index
-    @equipment_kinds = policy_scope(EquipmentKind)
+    @equipment_kinds = policy_scope(EquipmentKind).includes(:service_kinds)
   end
 
   def show
@@ -76,9 +76,16 @@ class EquipmentKindsController < ApplicationController
 
 
   def equipment_kind_params
-    permitted = params.require(:equipment_kind).permit(:name, :description, generic_fields: {}, specific_fields: {})
+    permitted = params.require(:equipment_kind).permit(
+      :name,
+      :description,
+      generic_fields: {},
+      specific_fields: {},
+      service_kind_ids: []
+    )
     permitted[:generic_fields] ||= {}
     permitted[:specific_fields] ||= {}
+    permitted[:service_kind_ids] ||= []
     permitted
   end
 

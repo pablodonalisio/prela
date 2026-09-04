@@ -1,0 +1,63 @@
+<% available_kinds = location_equipment.available_service_kinds_for_assignment %>
+<% recurring_map = if location_equipment_service.new_record?
+  available_kinds.to_h { |sk| [sk.id.to_s, sk.recurring?] }
+else
+  {location_equipment_service.service_kind_id.to_s => location_equipment_service.service_kind.recurring?}
+end %>
+<% interval_defaults_map = available_kinds.to_h { |sk|
+  [sk.id.to_s, {interval: sk.default_interval, interval_unit: sk.interval_unit}]
+} %>
+<% selected_kind = available_kinds.find { |sk| sk.id == location_equipment_service.service_kind_id } || available_kinds.first %>
+<% recurring = selected_kind&.recurring? %>
+
+<%= simple_form_for [location_equipment, location_equipment_service],
+                    html: {
+                      data: {
+                        controller: "recurring-interval",
+                        recurring_interval_recurring_map_value: recurring_map.to_json,
+                        recurring_interval_interval_defaults_map_value: interval_defaults_map.to_json,
+                        recurring_interval_recurring_value: recurring
+                      }
+                    } do |f| %>
+  <% if location_equipment_service.new_record? %>
+    <%= f.input :service_kind_id,
+                label: "Servicio",
+                collection: available_kinds,
+                label_method: :name,
+                value_method: :id,
+                include_blank: false,
+                input_html: {
+                  data: {
+                    recurring_interval_target: "kindSelect",
+                    action: "change->recurring-interval#kindChanged"
+                  }
+                } %>
+  <% else %>
+    <p class="mb-2"><strong><%= location_equipment_service.service_kind.name %></strong></p>
+  <% end %>
+
+  <div data-recurring-interval-target="intervalFields" class="<%= "d-none" unless recurring %>">
+    <%= f.input :interval,
+                label: "Intervalo",
+                as: :integer,
+                input_html: {data: {recurring_interval_target: "intervalInput"}} %>
+    <%= f.input :interval_unit,
+                label: "Unidad",
+                collection: LocationEquipmentService.interval_unit_options,
+                include_blank: false,
+                input_html: {data: {recurring_interval_target: "intervalUnitInput"}} %>
+  </div>
+
+  <% if location_equipment_service.new_record? %>
+    <%= f.input :due_on,
+                label: "Próximo vencimiento",
+                as: :date,
+                end_year: Date.today.year + 90,
+                start_year: Date.today.year - 30,
+                order: [:day, :month, :year],
+                required: true,
+                input_html: {value: (location_equipment_service.due_on || Date.current).to_s} %>
+  <% end %>
+
+  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+<% end %>

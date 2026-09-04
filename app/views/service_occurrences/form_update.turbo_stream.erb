@@ -1,0 +1,6 @@
+<%= turbo_stream.update "remote_modal_body" do %>
+  <%= render "form",
+             service_occurrence: @service_occurrence,
+             location_equipment: @location_equipment,
+             intent: @intent %>
+<% end %>

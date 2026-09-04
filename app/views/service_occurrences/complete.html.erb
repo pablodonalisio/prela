@@ -1,0 +1,27 @@
+<%= turbo_frame_tag @service_occurrence do %>
+  <%= render "shared/remote_modal", title: "Registrar servicio — #{@service_occurrence.service_kind.name}" do %>
+    <%= simple_form_for [@location_equipment, @service_occurrence],
+                        url: complete_location_equipment_service_occurrence_path(@location_equipment, @service_occurrence),
+                        method: :post,
+                        html: {multipart: true} do |f| %>
+      <%= f.input :completed_on,
+                  label: "Fecha de realización",
+                  as: :date,
+                  html5: true,
+                  input_html: {value: Date.current} %>
+
+      <div class="my-3 border col-sm-6 p-2">
+        <h4>Documento</h4>
+        <%= render "shared/file_upload", file: nil,
+                                         form: f,
+                                         resize: [nil, 250],
+                                         file_field: :document,
+                                         new_label: "Nuevo documento",
+                                         accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
+                                         multiple: false %>
+      </div>
+
+      <%= f.button :submit, "Registrar servicio", class: "btn btn-success" %>
+    <% end %>
+  <% end %>
+<% end %>

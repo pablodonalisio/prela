@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   get "home/index"
+  resources :agenda, only: [:index]
   resources :clients do
     resources :locations, except: [:index, :show]
     resources :contacts, except: [:index, :show]
@@ -27,6 +28,12 @@ Rails.application.routes.draw do
     resources :documents
     resources :failures
     resources :comments
+    resources :location_equipment_services, only: %i[new create edit update destroy]
+    resources :service_occurrences, only: %i[edit update] do
+      member do
+        match :complete, via: %i[get post]
+      end
+    end
   end
   resources :equipment_supplies
   resources :equipment do
@@ -37,11 +44,11 @@ Rails.application.routes.draw do
   resources :users
   resources :signatures, except: %i[show]
   resources :links, only: [:new, :create, :edit, :update, :destroy]
-  resources :service_dates, only: %i[edit update show]
   resources :equipment_kinds do
     get "add_field", on: :collection
     get "remove_field", on: :collection
   end
+  resources :service_kinds, except: %i[show]
   resources :report_templates, except: [:show] do
     get "add_field", on: :collection
     get "remove_field", on: :collection

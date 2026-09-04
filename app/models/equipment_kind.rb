@@ -3,6 +3,7 @@ class EquipmentKind < ApplicationRecord
   include FieldDefinitionsValidatable
 
   has_many :equipments
+  has_and_belongs_to_many :service_kinds
 
   before_validation :set_normalized_name
 

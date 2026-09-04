@@ -98,6 +98,16 @@ RSpec.describe EquipmentKind, type: :model do
     expect(equipment_kind).not_to be_valid
   end
 
+  it "can be assigned many service kinds" do
+    equipment_kind = create(:equipment_kind)
+    first_service = create(:service_kind)
+    second_service = create(:service_kind)
+
+    equipment_kind.service_kinds = [first_service, second_service]
+
+    expect(equipment_kind.service_kinds).to contain_exactly(first_service, second_service)
+  end
+
   it "is not valid with an invalid field type" do
     equipment_kind = EquipmentKind.new(
       name: "UPS",

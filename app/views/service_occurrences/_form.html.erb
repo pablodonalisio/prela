@@ -1,0 +1,70 @@
+<%= simple_form_for [location_equipment, service_occurrence],
+                    html: (intent == "completed") ? {multipart: true} : {} do |f| %>
+  <%= hidden_field_tag :intent, intent %>
+
+  <% case intent %>
+  <% when "suspend" %>
+    <%= f.hidden_field :status, value: "suspended" %>
+    <%= f.input :notes,
+                label: "Motivo (opcional)",
+                as: :text,
+                input_html: {rows: 3} %>
+    <%= f.button :submit, "Suspender", class: "btn btn-warning" %>
+
+  <% when "schedule" %>
+    <%= f.hidden_field :status, value: "scheduled" %>
+    <%= f.input :planned_on,
+                label: "Fecha programada",
+                as: :date,
+                html5: true,
+                input_html: {value: service_occurrence.planned_on || Date.current} %>
+    <%= f.input :notes,
+                label: "Notas (opcional)",
+                as: :text,
+                input_html: {rows: 3} %>
+    <%= f.button :submit, "Programar", class: "btn btn-success" %>
+
+  <% when "revert" %>
+    <%= f.hidden_field :status, value: "pending" %>
+    <p class="mb-3">El servicio volverá a estado pendiente y se quitará la fecha programada.</p>
+    <%= f.button :submit, "Volver a pendiente", class: "btn btn-secondary" %>
+
+  <% when "completed" %>
+    <%= f.input :completed_on,
+                label: "Fecha de realización",
+                as: :date,
+                html5: true,
+                input_html: {value: service_occurrence.completed_on || Date.current} %>
+    <%= f.input :notes,
+                label: "Notas (opcional)",
+                as: :text,
+                input_html: {rows: 3} %>
+
+    <div class="my-3 border col-sm-6 p-2">
+      <h4>Documento</h4>
+      <%= render "shared/file_upload", file: service_occurrence.document.attached? ? service_occurrence.document : nil,
+                                       form: f,
+                                       resize: [nil, 250],
+                                       file_field: :document,
+                                       new_label: "Nuevo documento",
+                                       accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
+                                       multiple: false %>
+    </div>
+
+    <%= f.button :submit, "Guardar", class: "btn btn-success" %>
+
+  <% when "notes" %>
+    <%= f.input :notes,
+                label: "Notas",
+                as: :text,
+                input_html: {rows: 3} %>
+    <%= f.button :submit, "Guardar", class: "btn btn-success" %>
+
+  <% else %>
+    <%= f.input :due_on,
+                label: "Próximo vencimiento",
+                as: :date,
+                html5: true %>
+    <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <% end %>
+<% end %>
