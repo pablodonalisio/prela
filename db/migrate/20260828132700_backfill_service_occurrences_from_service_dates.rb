@@ -16,8 +16,13 @@ class BackfillServiceOccurrencesFromServiceDates < ActiveRecord::Migration[8.0]
 
     latest_service_dates.find_each do |service_date|
       location_equipment = service_date.location_equipment
-      service_kind = ServiceKind.find_by!(legacy_key: service_date.kind)
-      les = location_equipment.location_equipment_services.find_by!(service_kind: service_kind)
+      next if location_equipment.nil?
+
+      service_kind = ServiceKind.find_by(legacy_key: service_date.kind)
+      next if service_kind.nil?
+
+      les = location_equipment.location_equipment_services.find_by(service_kind: service_kind)
+      next if les.nil?
 
       next if ServiceOccurrence.pending.exists?(location_equipment_service_id: les.id)
 
