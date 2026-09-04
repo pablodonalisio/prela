@@ -50,11 +50,18 @@ class ServiceOccurrencesController < ApplicationController
   end
 
   def intent
-    params[:intent].presence_in(%w[due_on suspend schedule revert]) || "due_on"
+    params[:intent].presence_in(%w[due_on suspend schedule revert completed notes]) || "due_on"
   end
 
   def update_params
-    params.require(:service_occurrence).permit(:status, :due_on, :planned_on, :notes)
+    case intent
+    when "completed"
+      params.require(:service_occurrence).permit(:completed_on, :notes, :document)
+    when "notes"
+      params.require(:service_occurrence).permit(:notes)
+    else
+      params.require(:service_occurrence).permit(:status, :due_on, :planned_on, :notes)
+    end
   end
 
   def complete_params
@@ -62,11 +69,16 @@ class ServiceOccurrencesController < ApplicationController
   end
 
   def update_notice
-    case @service_occurrence.status
-    when "suspended" then "El servicio quedó suspendido."
-    when "scheduled" then "El servicio se programó correctamente."
-    when "pending" then (@intent == "revert") ? "El servicio volvió a pendiente." : "La fecha de servicio se actualizó correctamente."
-    else "El servicio se actualizó correctamente."
+    case @intent
+    when "completed" then "El servicio se actualizó correctamente."
+    when "notes" then "Las notas se actualizaron correctamente."
+    else
+      case @service_occurrence.status
+      when "suspended" then "El servicio quedó suspendido."
+      when "scheduled" then "El servicio se programó correctamente."
+      when "pending" then (@intent == "revert") ? "El servicio volvió a pendiente." : "La fecha de servicio se actualizó correctamente."
+      else "El servicio se actualizó correctamente."
+      end
     end
   end
 end

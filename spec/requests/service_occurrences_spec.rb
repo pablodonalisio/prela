@@ -93,6 +93,23 @@ RSpec.describe "ServiceOccurrences", type: :request do
       expect(pending_occurrence.planned_on).to be_nil
       expect(response).to have_http_status(:success)
     end
+
+    it "updates a completed occurrence" do
+      pending_occurrence.update!(status: :completed, completed_on: Date.current, due_on: Date.current)
+
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {
+          intent: "completed",
+          service_occurrence: {completed_on: Date.yesterday, notes: "Corregido"}
+        },
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      pending_occurrence.reload
+      expect(pending_occurrence.completed_on).to eq(Date.yesterday)
+      expect(pending_occurrence.notes).to eq("Corregido")
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("service_occurrences")
+    end
   end
 
   context "when user is a client" do

@@ -49,10 +49,18 @@ class ServiceOccurrences::Update
   end
 
   def completing?
-    target_status == "completed"
+    target_status == "completed" && !occurrence.completed?
   end
 
   def valid_change?
+    if occurrence.completed? && !status_changing?
+      return true
+    end
+
+    if occurrence.cancelled? && !status_changing?
+      return true
+    end
+
     if status_changing?
       return true if ALLOWED_TRANSITIONS.fetch(occurrence.status, []).include?(target_status)
 
@@ -69,6 +77,16 @@ class ServiceOccurrences::Update
   end
 
   def apply_workflow_update!
+    if occurrence.completed? && !status_changing?
+      update_completed!
+      return
+    end
+
+    if occurrence.cancelled? && !status_changing?
+      occurrence.update!(notes: attrs[:notes]) if attrs.key?(:notes)
+      return
+    end
+
     assignment = {}
 
     if status_changing?
@@ -82,6 +100,21 @@ class ServiceOccurrences::Update
     end
 
     occurrence.update!(assignment)
+  end
+
+  def update_completed!
+    assignment = {}
+    if date_attr_present?(:completed_on)
+      completed_on = date_value_for(:completed_on)
+      raise ArgumentError, "completed_on is required" if completed_on.blank?
+
+      assignment[:completed_on] = completed_on
+      assignment[:due_on] = completed_on
+    end
+    assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
+
+    occurrence.update!(assignment)
+    occurrence.document.attach(attrs[:document]) if attrs[:document].present?
   end
 
   def complete!

@@ -2,51 +2,67 @@
 <% extra_class = local_assigns.fetch(:class, "ms-2") %>
 
 <% if current_user.admin? || current_user.editor? %>
-  <%= link_to complete_location_equipment_service_occurrence_path(location_equipment, service_occurrence),
-              class: extra_class,
-              data: {turbo_frame: "remote_modal"},
-              title: "Registrar servicio" do %>
-    <i class="fas fa-check"></i>
-  <% end %>
-
-  <% if service_occurrence.pending? %>
-    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "due_on"),
+  <% if service_occurrence.open? %>
+    <%= link_to complete_location_equipment_service_occurrence_path(location_equipment, service_occurrence),
                 class: extra_class,
                 data: {turbo_frame: "remote_modal"},
-                title: "Editar vencimiento" do %>
+                title: "Registrar servicio" do %>
+      <i class="fas fa-check"></i>
+    <% end %>
+
+    <% if service_occurrence.pending? %>
+      <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "due_on"),
+                  class: extra_class,
+                  data: {turbo_frame: "remote_modal"},
+                  title: "Editar vencimiento" do %>
+        <i class="fas fa-edit"></i>
+      <% end %>
+      <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "suspend"),
+                  class: extra_class,
+                  data: {turbo_frame: "remote_modal"},
+                  title: "Suspender" do %>
+        <i class="fas fa-pause"></i>
+      <% end %>
+      <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
+                  class: extra_class,
+                  data: {turbo_frame: "remote_modal"},
+                  title: "Programar" do %>
+        <i class="fas fa-calendar-plus"></i>
+      <% end %>
+    <% elsif service_occurrence.suspended? %>
+      <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
+                  class: extra_class,
+                  data: {turbo_frame: "remote_modal"},
+                  title: "Programar" do %>
+        <i class="fas fa-calendar-plus"></i>
+      <% end %>
+      <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
+                  class: extra_class,
+                  data: {turbo_frame: "remote_modal"},
+                  title: "Volver a pendiente" do %>
+        <i class="fas fa-undo"></i>
+      <% end %>
+    <% elsif service_occurrence.scheduled? %>
+      <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
+                  class: extra_class,
+                  data: {turbo_frame: "remote_modal"},
+                  title: "Volver a pendiente" do %>
+        <i class="fas fa-undo"></i>
+      <% end %>
+    <% end %>
+  <% elsif service_occurrence.completed? %>
+    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "completed"),
+                class: extra_class,
+                data: {turbo_frame: "remote_modal"},
+                title: "Editar servicio" do %>
       <i class="fas fa-edit"></i>
     <% end %>
-    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "suspend"),
+  <% elsif service_occurrence.cancelled? %>
+    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "notes"),
                 class: extra_class,
                 data: {turbo_frame: "remote_modal"},
-                title: "Suspender" do %>
-      <i class="fas fa-pause"></i>
-    <% end %>
-    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
-                class: extra_class,
-                data: {turbo_frame: "remote_modal"},
-                title: "Programar" do %>
-      <i class="fas fa-calendar-plus"></i>
-    <% end %>
-  <% elsif service_occurrence.suspended? %>
-    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
-                class: extra_class,
-                data: {turbo_frame: "remote_modal"},
-                title: "Programar" do %>
-      <i class="fas fa-calendar-plus"></i>
-    <% end %>
-    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
-                class: extra_class,
-                data: {turbo_frame: "remote_modal"},
-                title: "Volver a pendiente" do %>
-      <i class="fas fa-undo"></i>
-    <% end %>
-  <% elsif service_occurrence.scheduled? %>
-    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
-                class: extra_class,
-                data: {turbo_frame: "remote_modal"},
-                title: "Volver a pendiente" do %>
-      <i class="fas fa-undo"></i>
+                title: "Editar notas" do %>
+      <i class="fas fa-edit"></i>
     <% end %>
   <% end %>
 <% end %>

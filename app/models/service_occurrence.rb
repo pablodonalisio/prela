@@ -91,6 +91,13 @@ class ServiceOccurrence < ApplicationRecord
     scheduled? ? planned_on : due_on
   end
 
+  def service_date
+    return planned_on if scheduled? && planned_on.present?
+    return completed_on if completed? && completed_on.present?
+
+    due_on
+  end
+
   class << self
     def due_soon_until
       DUE_SOON_WINDOW.from_now.to_date

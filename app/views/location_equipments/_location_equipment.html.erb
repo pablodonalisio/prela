@@ -13,7 +13,7 @@
             <%= link_to location_equipment.equipment.name,
                         equipment_path(location_equipment.equipment),
                         class: "text-white text-decoration-none",
-                        data: { turbo_frame: "_top" } %>
+                        data: {turbo_frame: "_top"} %>
           </h5>
         <% else %>
           <h5 class="mb-0"><%= location_equipment.equipment.name %></h5>
@@ -41,106 +41,175 @@
       <% end %>
     </div>
 
-    <%# ── Data columns ────────────────────────────────────── %>
+    <%# ── Identity columns ────────────────────────────────── %>
     <div class="row g-0 border-top border-white border-opacity-10 px-3 pb-3">
-      <div class="col-12 col-md-4 pt-3 pe-md-3">
+      <div class="col-12 col-md-6 pt-3 pe-md-3">
         <%= render "details", location_equipment: location_equipment %>
       </div>
-      <div class="col-12 col-md-4 pt-3 px-md-3 border-md-start border-white border-opacity-10">
+      <div class="col-12 col-md-6 pt-3 ps-md-3 border-md-start border-white border-opacity-10">
         <%= render "field_values", location_equipment: location_equipment %>
       </div>
-      <div class="col-12 col-md-4 pt-3 ps-md-3 border-md-start border-white border-opacity-10">
-        <%= render "location_equipment_services/list", location_equipment: location_equipment %>
-        <%= render "service_occurrences", location_equipment: location_equipment %>
-      </div>
     </div>
 
-    <%# ── Comments ────────────────────────────────────────── %>
-    <div class="border-top border-white border-opacity-10 pb-2">
-      <%= render "shared/content_header", title: "Comentarios" do %>
+    <%# ── Tabs ────────────────────────────────────────────── %>
+    <% tab_prefix = dom_id(location_equipment, :tab) %>
+    <div class="border-top border-white border-opacity-10 px-3 pb-3">
+      <ul class="nav nav-tabs content-tabs mb-3" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="<%= tab_prefix %>-informes-tab"
+                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-informes"
+                  type="button" role="tab" aria-controls="<%= tab_prefix %>-informes" aria-selected="true">
+            Informes
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="<%= tab_prefix %>-servicios-tab"
+                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-servicios"
+                  type="button" role="tab" aria-controls="<%= tab_prefix %>-servicios" aria-selected="false">
+            Servicios
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="<%= tab_prefix %>-fallas-tab"
+                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-fallas"
+                  type="button" role="tab" aria-controls="<%= tab_prefix %>-fallas" aria-selected="false">
+            Fallas
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="<%= tab_prefix %>-actividades-tab"
+                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-actividades"
+                  type="button" role="tab" aria-controls="<%= tab_prefix %>-actividades" aria-selected="false">
+            Actividades
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="<%= tab_prefix %>-documentos-tab"
+                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-documentos"
+                  type="button" role="tab" aria-controls="<%= tab_prefix %>-documentos" aria-selected="false">
+            Documentos
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="<%= tab_prefix %>-comentarios-tab"
+                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-comentarios"
+                  type="button" role="tab" aria-controls="<%= tab_prefix %>-comentarios" aria-selected="false">
+            Comentarios
+          </button>
+        </li>
         <% if current_user.admin? %>
-          <%= render "shared/button_link", icon: "fa-solid fa-plus",
-                                           text: "",
-                                           path: new_location_equipment_comment_path(location_equipment) %>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="<%= tab_prefix %>-insumos-tab"
+                    data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-insumos"
+                    type="button" role="tab" aria-controls="<%= tab_prefix %>-insumos" aria-selected="false">
+              Insumos
+            </button>
+          </li>
         <% end %>
-      <% end %>
-      <%= render "comments/comments",
-                 comments: location_equipment.comments.order(updated_at: :desc),
-                 location_equipment: location_equipment %>
-    </div>
+      </ul>
 
-      <div class="col-12 p-3">
-        <div class="row gx-5">
-
-          <% unless location_equipment.equipment.building? %>
-            <div class="col-12 col-md-6 col-xxl-3">
-              <div class="col">
-                <%= render "shared/content_header", title: "Informes" do %>
-                  <% if current_user.admin? || current_user.editor? %>
-                    <%= render "shared/button_link", icon: "fa-solid fa-plus",
-                                                     text: "",
-                                                    path: new_location_equipment_report_path(@location_equipment) %>
-                  <% end %>
-                <% end %>
-                <%= render "reports/reports", reports: @location_equipment.reports.order(date: :desc), location_equipment: @location_equipment %>
-              </div>
-            </div>
-          <% end %>
-
-          <div class="col-12 col-md-6 col-xxl-3">
-            <div class="col">
-              <%= render "shared/content_header", title: "Fallas" do %>
-                <% if current_user.admin? %>
-                  <%= render "shared/button_link", icon: "fa-solid fa-plus",
-                                                   text: "",
-                                                   path: new_location_equipment_failure_path(@location_equipment) %>
-                <% end %>
-              <% end %>
-              <%= render "failure_metrics", location_equipment: @location_equipment %>
-              <%= render "failures/failures", failures: @location_equipment.failures.order(date: :desc), location_equipment: @location_equipment %>
-            </div>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="<%= tab_prefix %>-informes" role="tabpanel"
+             aria-labelledby="<%= tab_prefix %>-informes-tab" tabindex="0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+            <h3 class="h6 text-white text-uppercase mb-0">Informes</h3>
+            <% if current_user.admin? || current_user.editor? %>
+              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                               text: "",
+                                               path: new_location_equipment_report_path(location_equipment) %>
+            <% end %>
           </div>
-
-          <div class="col-12 col-md-6 col-xxl-3">
-            <div class="col">
-              <%= render "shared/content_header", title: "Actividades" do %>
-                <% if current_user.admin? || current_user.editor? %>
-                  <%= render "shared/button_link", icon: "fa-solid fa-plus",
-                                                   text: "",
-                                                   path: new_location_equipment_activity_path(@location_equipment) %>
-                <% end %>
-              <% end %>
-              <%= render "activities/activities", activities: @location_equipment.activities.order(date: :desc), location_equipment: @location_equipment %>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-6 col-xxl-3">
-            <div class="col">
-              <%= render "shared/content_header", title: "Documentos" do %>
-                <% if current_user.admin? %>
-                  <%= render "shared/button_link", icon: "fa-solid fa-plus",
-                                                   text: "",
-                                                   path: new_location_equipment_document_path(@location_equipment, document: {documentable_type: @location_equipment.class.name, documentable_id: @location_equipment.id}) %>
-                <% end %>
-              <% end %>
-              <%= render "documents/documents", documents: policy_scope(@location_equipment.documents).order(created_at: :desc), documentable: @location_equipment %>
-            </div>
-          </div>
-
-          <% if current_user.admin? %>
-            <div class="col-12">
-              <%= render "shared/content_header", title: "Insumos" %>
-              <div class="row">
-                <div class="w-auto">
-                  <h5 class="text-center">Bateria</h5>
-                  <%= turbo_frame_tag "equipment_battery" do %>
-                    <%= render "equipment_supplies/equipment_battery", equipment: location_equipment %>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          <% end %>
+          <%= render "reports/reports",
+                     reports: location_equipment.reports.order(date: :desc),
+                     location_equipment: location_equipment %>
         </div>
+
+        <div class="tab-pane fade" id="<%= tab_prefix %>-servicios" role="tabpanel"
+             aria-labelledby="<%= tab_prefix %>-servicios-tab" tabindex="0">
+          <%= render "location_equipment_services/list", location_equipment: location_equipment %>
+          <%= render "service_occurrences", location_equipment: location_equipment %>
+        </div>
+
+        <div class="tab-pane fade" id="<%= tab_prefix %>-fallas" role="tabpanel"
+             aria-labelledby="<%= tab_prefix %>-fallas-tab" tabindex="0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+            <h3 class="h6 text-white text-uppercase mb-0">Fallas</h3>
+            <% if current_user.admin? %>
+              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                               text: "",
+                                               path: new_location_equipment_failure_path(location_equipment) %>
+            <% end %>
+          </div>
+          <%= render "failure_metrics", location_equipment: location_equipment %>
+          <%= render "failures/failures",
+                     failures: location_equipment.failures.order(date: :desc),
+                     location_equipment: location_equipment %>
+        </div>
+
+        <div class="tab-pane fade" id="<%= tab_prefix %>-actividades" role="tabpanel"
+             aria-labelledby="<%= tab_prefix %>-actividades-tab" tabindex="0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+            <h3 class="h6 text-white text-uppercase mb-0">Actividades</h3>
+            <% if current_user.admin? || current_user.editor? %>
+              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                               text: "",
+                                               path: new_location_equipment_activity_path(location_equipment) %>
+            <% end %>
+          </div>
+          <%= render "activities/activities",
+                     activities: location_equipment.activities.order(date: :desc),
+                     location_equipment: location_equipment %>
+        </div>
+
+        <div class="tab-pane fade" id="<%= tab_prefix %>-documentos" role="tabpanel"
+             aria-labelledby="<%= tab_prefix %>-documentos-tab" tabindex="0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+            <h3 class="h6 text-white text-uppercase mb-0">Documentos</h3>
+            <% if current_user.admin? %>
+              <%= render "shared/button_link",
+                         icon: "fa-solid fa-plus",
+                         text: "",
+                         path: new_location_equipment_document_path(
+                           location_equipment,
+                           document: {
+                             documentable_type: location_equipment.class.name,
+                             documentable_id: location_equipment.id
+                           }
+                         ) %>
+            <% end %>
+          </div>
+          <%= render "documents/documents",
+                     documents: policy_scope(location_equipment.documents).order(created_at: :desc),
+                     documentable: location_equipment %>
+        </div>
+
+        <div class="tab-pane fade" id="<%= tab_prefix %>-comentarios" role="tabpanel"
+             aria-labelledby="<%= tab_prefix %>-comentarios-tab" tabindex="0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+            <h3 class="h6 text-white text-uppercase mb-0">Comentarios</h3>
+            <% if current_user.admin? %>
+              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+                                               text: "",
+                                               path: new_location_equipment_comment_path(location_equipment) %>
+            <% end %>
+          </div>
+          <%= render "comments/comments",
+                     comments: location_equipment.comments.order(updated_at: :desc),
+                     location_equipment: location_equipment %>
+        </div>
+
+        <% if current_user.admin? %>
+          <div class="tab-pane fade" id="<%= tab_prefix %>-insumos" role="tabpanel"
+               aria-labelledby="<%= tab_prefix %>-insumos-tab" tabindex="0">
+            <h3 class="h6 text-white text-uppercase mb-3">Insumos</h3>
+            <div class="w-auto">
+              <h5 class="text-center">Bateria</h5>
+              <%= turbo_frame_tag "equipment_battery" do %>
+                <%= render "equipment_supplies/equipment_battery", equipment: location_equipment %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

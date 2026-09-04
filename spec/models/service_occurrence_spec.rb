@@ -83,6 +83,26 @@ RSpec.describe ServiceOccurrence, type: :model do
     end
   end
 
+  describe "#service_date" do
+    it "uses planned_on when scheduled" do
+      occurrence = build(:service_occurrence, :scheduled, planned_on: Date.current, due_on: 1.month.from_now.to_date)
+
+      expect(occurrence.service_date).to eq(Date.current)
+    end
+
+    it "uses completed_on when completed" do
+      occurrence = build(:service_occurrence, :completed, completed_on: Date.yesterday, due_on: Date.yesterday)
+
+      expect(occurrence.service_date).to eq(Date.yesterday)
+    end
+
+    it "uses due_on when pending" do
+      occurrence = build(:service_occurrence, due_on: Date.current)
+
+      expect(occurrence.service_date).to eq(Date.current)
+    end
+  end
+
   describe "#agenda_date" do
     it "uses planned_on when scheduled" do
       occurrence = build(:service_occurrence, :scheduled, planned_on: Date.current, due_on: 1.month.from_now.to_date)

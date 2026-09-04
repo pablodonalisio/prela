@@ -154,4 +154,28 @@ RSpec.describe ServiceOccurrences::Update do
       expect(recurring_les.service_occurrences.pending).to exist
     end
   end
+
+  describe "editing a completed occurrence" do
+    before do
+      described_class.call(occurrence, status: :completed, completed_on: Date.current)
+    end
+
+    it "updates completed_on and notes" do
+      new_date = Date.yesterday
+
+      expect(
+        described_class.call(
+          occurrence.reload,
+          completed_on: new_date,
+          notes: "Actualizado"
+        )
+      ).to be(true)
+
+      occurrence.reload
+      expect(occurrence.completed_on).to eq(new_date)
+      expect(occurrence.due_on).to eq(new_date)
+      expect(occurrence.notes).to eq("Actualizado")
+      expect(occurrence).to be_completed
+    end
+  end
 end

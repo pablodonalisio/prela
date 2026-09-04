@@ -135,11 +135,67 @@ RSpec.describe "/location_equipments", type: :request do
   end
 
   describe "GET /show" do
-    let!(:location_equipment) { create(:location_equipment) }
+    before do
+      ServiceKind.ensure_legacy_kinds!
+      %i[ups power_unit electrical_panel building].each do |kind|
+        create(:equipment_kind, kind) unless EquipmentKind.exists?(legacy_kind: kind.to_s)
+      end
+      ServiceKind.ensure_legacy_equipment_assignments!
+    end
+
+    let!(:location_equipment) { create(:location_equipment, equipment: create(:equipment, :power_unit)) }
 
     it "renders a successful response and responds with HTML" do
       get location_equipment_url(location_equipment)
       expect(response).to be_successful
+    end
+
+    it "renders content tabs with Informes as the default active tab" do
+      get location_equipment_url(location_equipment)
+
+      expect(response.body).to include("content-tabs")
+      expect(response.body).to include("Informes")
+      expect(response.body).to include("Servicios")
+      expect(response.body).to include("Fallas")
+      expect(response.body).to include("Actividades")
+      expect(response.body).to include("Documentos")
+      expect(response.body).to include("Comentarios")
+      expect(response.body).to include("Insumos")
+      expect(response.body).to match(/class="tab-pane fade show active"[^>]*id="tab_location_equipment_#{location_equipment.id}-informes"/)
+    end
+
+    it "shows Informes for building equipment" do
+      building = create(:location_equipment, equipment: create(:equipment, :building))
+
+      get location_equipment_url(building)
+
+      expect(response).to be_successful
+      expect(response.body).to include("Informes")
+      expect(response.body).to match(/id="tab_location_equipment_#{building.id}-informes"/)
+    end
+
+    it "lists every service occurrence with status and actions in the Servicios tab" do
+      les = location_equipment.location_equipment_services.joins(:service_kind).find_by!(service_kinds: {legacy_key: "service"})
+      les.service_occurrences.destroy_all
+      completed = create(:service_occurrence, :completed,
+        location_equipment_service: les,
+        completed_on: Date.current,
+        due_on: Date.current)
+      pending = create(:service_occurrence,
+        location_equipment_service: les,
+        due_on: 1.month.from_now.to_date)
+
+      get location_equipment_url(location_equipment)
+
+      expect(response.body).to include("Estado")
+      expect(response.body).to include("Completado")
+      expect(response.body).to include("Pendiente")
+      expect(response.body).to include(ServiceKind.find_by!(legacy_key: "service").name)
+      expect(response.body).to include(completed.completed_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include(pending.due_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include("Registrar servicio")
+      expect(response.body).to include("Editar servicio")
+      expect(response.body).not_to include("completed_service_occurrences")
     end
   end
 
