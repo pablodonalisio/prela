@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_02_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_04_140234) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -267,36 +267,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_02_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "serial_number"
-    t.date "last_service"
-    t.date "next_service"
-    t.date "last_battery_change"
-    t.date "next_battery_change"
     t.text "details"
     t.string "form_link"
     t.string "code"
     t.integer "status", default: 0
-    t.date "last_belt_change"
-    t.date "next_belt_change"
     t.string "engine_serial_number"
     t.string "power_unit_serial_number"
-    t.integer "service_interval", default: 1
-    t.integer "battery_change_interval", default: 2
-    t.integer "belt_change_interval", default: 5
-    t.integer "torque_interval", default: 1
-    t.date "last_torque"
-    t.date "next_torque"
-    t.integer "cleaning_interval", default: 1
-    t.date "last_cleaning"
-    t.date "next_cleaning"
-    t.integer "srt_900_interval", default: 1
-    t.date "last_srt_900"
-    t.date "next_srt_900"
-    t.integer "thermography_interval", default: 1
-    t.date "last_thermography"
-    t.date "next_thermography"
-    t.integer "electrical_approval_interval", default: 1
-    t.date "last_electrical_approval"
-    t.date "next_electrical_approval"
     t.string "condition", default: "Buena"
     t.jsonb "field_values", default: {}, null: false
     t.datetime "discarded_at"

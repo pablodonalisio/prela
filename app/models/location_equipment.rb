@@ -142,17 +142,9 @@ class LocationEquipment < ApplicationRecord
   def interval_attrs_for_service_kind(service_kind)
     return {interval: nil, interval_unit: nil} unless service_kind.recurring?
 
-    if service_kind.legacy_key.present? && respond_to?("#{service_kind.legacy_key}_interval")
-      value = public_send("#{service_kind.legacy_key}_interval")
-      {
-        interval: value.presence || service_kind.default_interval,
-        interval_unit: :years
-      }
-    else
-      {
-        interval: service_kind.default_interval,
-        interval_unit: service_kind.interval_unit
-      }
-    end
+    {
+      interval: service_kind.default_interval,
+      interval_unit: service_kind.interval_unit
+    }
   end
 end

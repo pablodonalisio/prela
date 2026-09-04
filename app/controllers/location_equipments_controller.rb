@@ -77,12 +77,7 @@ class LocationEquipmentsController < ApplicationController
     params.require(:location_equipment)
       .permit(:avatar, :zone, :floor, :location_id, :equipment_id, :status, :condition, :details,
         :serial_number, :code, :form_link,
-        :last_service, :next_service, :last_battery_change, :next_battery_change,
-        :last_belt_change, :next_belt_change, :engine_serial_number, :power_unit_serial_number, :service_interval,
-        :battery_change_interval, :belt_change_interval, :torque_interval, :last_torque, :next_torque,
-        :cleaning_interval, :last_cleaning, :next_cleaning, :srt_900_interval, :last_srt_900, :next_srt_900,
-        :thermography_interval, :last_thermography, :next_thermography,
-        :electrical_approval_interval, :last_electrical_approval, :next_electrical_approval,
+        :engine_serial_number, :power_unit_serial_number,
         field_values: {},
         report_template_ids: [],
         tag_ids: [])
@@ -126,6 +121,6 @@ class LocationEquipmentsController < ApplicationController
   end
 
   def set_order
-    @order = params[:order] || "next_service"
+    @order = params[:order].presence_in(%w[code zone]) || "code"
   end
 end

@@ -302,7 +302,7 @@ RSpec.describe LocationEquipment, type: :model do
       it "creates location equipment services from the equipment kind on create" do
         battery_change = ServiceKind.find_by!(legacy_key: "battery_change")
         expect(ups.location_equipment_services.map(&:service_kind)).to include(battery_change)
-        expect(ups.location_equipment_services.find_by!(service_kind: battery_change).interval).to eq(ups.battery_change_interval)
+        expect(ups.location_equipment_services.find_by!(service_kind: battery_change).interval).to eq(battery_change.default_interval)
       end
 
       it "does not create pending occurrences for one-time kinds" do
@@ -337,9 +337,8 @@ RSpec.describe LocationEquipment, type: :model do
 
   context "field_values" do
     it "can store arbitrary key/value pairs" do
-      location_equipment = build(:location_equipment, field_values: {"form_link" => "https://example.com", "battery_change_interval" => 2})
+      location_equipment = build(:location_equipment, field_values: {"form_link" => "https://example.com"})
       expect(location_equipment.field_values["form_link"]).to eq("https://example.com")
-      expect(location_equipment.field_values["battery_change_interval"]).to eq(2)
     end
   end
 end

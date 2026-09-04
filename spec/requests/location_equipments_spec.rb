@@ -54,6 +54,18 @@ RSpec.describe "/location_equipments", type: :request do
       end
     end
 
+    it "orders by code by default and does not offer service-date sorting" do
+      get location_equipments_url
+
+      expect(response).to be_successful
+      expect(response.body).to include("Código")
+      expect(response.body).to include("Sala")
+      expect(response.body).not_to include("Prox Service")
+      expect(response.body).not_to include("Prox Cambio de batería")
+      expect(response.body).not_to include("next_service")
+      expect(response.body).not_to include("next_battery_change")
+    end
+
     it "filters by active status by default" do
       inactive = create(:location_equipment, status: :out_of_service)
 
