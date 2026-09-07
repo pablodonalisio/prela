@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_04_140234) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_07_125657) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -65,6 +65,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_04_140234) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
+    t.boolean "has_subscription", default: true, null: false
     t.index ["discarded_at"], name: "index_clients_on_discarded_at"
   end
 

@@ -14,7 +14,7 @@ require "rails_helper"
 
 RSpec.describe "/clients", type: :request do
   let(:valid_attributes) {
-    {name: "Gea"}
+    {name: "Gea", has_subscription: true}
   }
 
   let(:invalid_attributes) {
@@ -104,13 +104,14 @@ RSpec.describe "/clients", type: :request do
 
     context "with valid parameters" do
       let(:new_attributes) {
-        {name: "New name"}
+        {name: "New name", has_subscription: false}
       }
 
       it "updates the requested client" do
         patch client_url(client), params: {client: new_attributes}
         client.reload
         expect(client.name).to eq("New name")
+        expect(client.has_subscription).to be(false)
       end
 
       it "redirects to the client" do

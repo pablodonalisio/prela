@@ -37,6 +37,21 @@ RSpec.describe Client, type: :model do
     end
   end
 
+  describe "subscription scopes" do
+    it "filters clients with and without subscription" do
+      with_subscription = create(:client)
+      without_subscription = create(:client, :without_subscription)
+
+      expect(Client.with_subscription).to include(with_subscription)
+      expect(Client.with_subscription).not_to include(without_subscription)
+      expect(Client.without_subscription).to contain_exactly(without_subscription)
+    end
+
+    it "defaults has_subscription to true" do
+      expect(create(:client).has_subscription).to be(true)
+    end
+  end
+
 
   it "can have an attached avatar" do
     client.avatar.attach(io: File.open(Rails.root.join("spec", "test_files", "placeholder-img.jpeg")), filename: "placeholder-img.jpeg", content_type: "image/jpg")

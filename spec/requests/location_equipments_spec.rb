@@ -78,6 +78,47 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).not_to include("location_equipment_#{inactive.id}")
     end
 
+    it "lists Con Abono and Sin Abono clients separately and shows all equipment by default" do
+      unsubscribed_client = create(:client, :without_subscription, name: "Sin Abono Client")
+      unsubscribed = create(:location_equipment, location: create(:location, client: unsubscribed_client))
+
+      get location_equipments_url
+
+      expect(response).to be_successful
+      location_equipments.each do |location_equipment|
+        expect(response.body).to include("location_equipment_#{location_equipment.id}")
+      end
+      expect(response.body).to include("location_equipment_#{unsubscribed.id}")
+      expect(response.body).to include("Con Abono")
+      expect(response.body).to include("Sin Abono")
+      expect(response.body).to include("Sin Abono Client")
+      expect(response.body).not_to include('name="has_subscription[]"')
+    end
+
+    it "filters by selected Sin Abono client" do
+      unsubscribed_client = create(:client, :without_subscription)
+      unsubscribed = create(:location_equipment, location: create(:location, client: unsubscribed_client))
+
+      get location_equipments_url, params: {client_ids: [unsubscribed_client.id]}
+
+      expect(response).to be_successful
+      expect(response.body).to include("location_equipment_#{unsubscribed.id}")
+      location_equipments.each do |location_equipment|
+        expect(response.body).not_to include("location_equipment_#{location_equipment.id}")
+      end
+    end
+
+    it "shows equipment for a client user even when their client has no subscription" do
+      unsubscribed_client = create(:client, :without_subscription)
+      unsubscribed = create(:location_equipment, location: create(:location, client: unsubscribed_client))
+      sign_in create(:user, role: :client, client: unsubscribed_client)
+
+      get location_equipments_url
+
+      expect(response).to be_successful
+      expect(response.body).to include("location_equipment_#{unsubscribed.id}")
+    end
+
     context "with more than one page of records" do
       let!(:location_equipments) { create_list(:location_equipment, 13) }
 
