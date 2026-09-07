@@ -6,10 +6,18 @@
                  {selected: order, prompt: "Ordenar por"},
                  {onchange: "this.form.requestSubmit()", class: "form-select form-select-sm mb-2"} %>
 
-    <%= render "filter_item", title: "Cliente",
+    <%= render "filter_item", title: "Clientes Con Abono",
                               f: f,
                               attribute: :client_ids,
-                              collection: policy_scope(Client).order(:name),
+                              collection: policy_scope(Client).with_subscription.order(:name),
+                              value: :id,
+                              label: :name,
+                              selected_filters: filter_params[:client_ids] %>
+
+    <%= render "filter_item", title: "Clientes Sin Abono",
+                              f: f,
+                              attribute: :client_ids,
+                              collection: policy_scope(Client).without_subscription.order(:name),
                               value: :id,
                               label: :name,
                               selected_filters: filter_params[:client_ids] %>

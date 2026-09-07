@@ -16,6 +16,8 @@ RSpec.describe "clients/edit", type: :view do
       assert_select "input[name=?]", "client[name]"
 
       assert_select "input[name=?]", "client[avatar]"
+
+      assert_select "select[name=?]", "client[has_subscription]"
     end
   end
 end

@@ -1,6 +1,10 @@
 <%= simple_form_for client do |f| %>
   <%= f.input :avatar, label: "Logo" %>
   <%= f.input :name, label: "Nombre" %>
+  <%= f.input :has_subscription, label: "Abono", collection: [
+    ["Con Abono", true],
+    ["Sin Abono", false]
+  ], include_blank: false %>
   <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
 <% end %>
 

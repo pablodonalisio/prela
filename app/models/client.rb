@@ -9,4 +9,6 @@ class Client < ApplicationRecord
   validates :name, presence: true
 
   scope :visible, -> { kept }
+  scope :with_subscription, -> { where(has_subscription: true) }
+  scope :without_subscription, -> { where(has_subscription: false) }
 end
