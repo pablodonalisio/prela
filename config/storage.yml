@@ -31,3 +31,11 @@ amazon:
 #   service: Mirror
 #   primary: local
 #   mirrors: [ amazon, google, microsoft ]
+
+development_aws:
+  service: S3
+  access_key_id: <%= Rails.application.credentials.dig(:development_aws, :access_key_id) %>
+  secret_access_key: <%= Rails.application.credentials.dig(:development_aws, :secret_access_key) %>
+  region: <%= Rails.application.credentials.dig(:development_aws, :region) %>
+  bucket: <%= Rails.application.credentials.dig(:development_aws, :bucket) %>
+  request_checksum_calculation: <%= Rails.application.credentials.dig(:development_aws, :request_checksum_calculation) %>

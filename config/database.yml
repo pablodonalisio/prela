@@ -23,7 +23,8 @@ default: &default
 
 development:
   <<: *default
-  database: prela_development
+  # database: prela_development
+  url: <%= Rails.application.credentials.dig(:development_db, :url) %>
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
