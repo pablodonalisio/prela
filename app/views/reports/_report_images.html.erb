@@ -1,4 +1,4 @@
-<h2>Imágenes</h2>
+<h2 class="mb-3 mt-4 text-lg font-semibold text-heading">Imágenes</h2>
 
 <% existing_images = report.images.attached? ? report.images.map do |img|
      {
@@ -15,7 +15,7 @@
      data-dropzone-resize-height-value="250"
      data-dropzone-max-files-value="10"
      class="mb-4">
-  <div data-dropzone-target="dropzone" class="dropzone border rounded p-3">
+  <div data-dropzone-target="dropzone" class="dropzone rounded-lg border border-dashed border-default p-3">
     <div class="dz-message text-center">Arrastra imágenes aquí o haz click para seleccionar. Se redimensionarán automáticamente.</div>
   </div>
   <div data-dropzone-target="hiddenInputs"></div>
@@ -23,8 +23,8 @@
 </div>
 
 <noscript>
-  <p class="text-warning">El navegador no soporta JavaScript. Use el formulario de carga tradicional:</p>
-  <div class="my-3 row">
+  <p class="text-yellow-500">El navegador no soporta JavaScript. Use el formulario de carga tradicional:</p>
+  <div class="my-3">
     <% 10.times do |n| %>
       <%= render "image_upload", report: report, title: "Imagen #{n + 1}", f: f, n: n %>
     <% end %>

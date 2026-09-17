@@ -1,22 +1,22 @@
 <%# locals: (f:, task: nil) %>
-<div class="field-row mb-3 d-flex gap-2 align-items-center flex-wrap" data-nested-form-target="item">
+<div class="field-row mb-3 flex flex-wrap items-center gap-2" data-nested-form-target="item">
   <%= f.hidden_field :id %>
   <%= f.hidden_field :position %>
   <%= f.hidden_field :_destroy, value: false %>
 
-  <div class="form-check mb-0">
-    <%= f.check_box :completed, class: "form-check-input" %>
-    <%= f.label :completed, t("activerecord.attributes.report_task.completed"), class: "form-check-label visually-hidden" %>
+  <div class="flex items-center">
+    <%= f.check_box :completed, class: "h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-brand" %>
+    <%= f.label :completed, t("activerecord.attributes.report_task.completed"), class: "sr-only" %>
   </div>
 
-  <div class="flex-grow-1" style="min-width: 12rem;">
+  <div class="min-w-48 flex-1">
     <%= f.text_field :name,
-                     class: "form-control",
+                     class: "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading",
                      placeholder: t("reports.template_report.task_placeholder") %>
   </div>
 
   <button type="button"
-          class="btn btn-sm btn-outline-danger"
+          class="inline-flex items-center rounded-lg px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40"
           data-action="nested-form#remove">
     X
   </button>

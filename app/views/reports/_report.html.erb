@@ -6,9 +6,9 @@
          data-template-report-print-contact-footer-value="<%= CompanyInfo.footer_lines.join("\n") %>">
       <div class="template-report-actions">
         <button type="button"
-                class="btn btn-sm btn-outline-light"
+                class="inline-flex items-center gap-2 rounded-lg border border-default px-3 py-1.5 text-sm text-body hover:bg-neutral-tertiary"
                 data-action="template-report-print#print">
-          <i class="fa fa-print me-1"></i><%= t("reports.template_report.print_pdf") %>
+          <%= icon(:print) %><%= t("reports.template_report.print_pdf") %>
         </button>
       </div>
       <%= render "template_report", report: report %>

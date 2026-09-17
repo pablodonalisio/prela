@@ -1,21 +1,17 @@
-<div class="row mt-3">
-  <div class="mb-3 col-md-4">
+<div class="grid gap-6 p-4 md:grid-cols-3 md:p-6">
+  <div class="md:col-span-1">
     <%= image_tag image_for(@battery, :avatar, ""),
                   alt: "Imagen de Bateria",
-                  class:"img-fluid rounded w-100" %>
+                  class: "w-full rounded-xl border border-default object-cover" %>
   </div>
-  <div class="col-md-8">
-    <p>
-      <strong class="text-bg-primary p-1 rounded me-2">
-        Voltaje
-      </strong>
-      <%= @battery.voltage %>
+  <div class="space-y-4 md:col-span-2">
+    <p class="flex flex-wrap items-center gap-2">
+      <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">Voltaje</span>
+      <span class="text-heading"><%= @battery.voltage %></span>
     </p>
-    <p>
-      <strong class="text-bg-primary p-1 rounded me-2">
-        Amper
-      </strong>
-      <%= @battery.amps %>
+    <p class="flex flex-wrap items-center gap-2">
+      <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">Amper</span>
+      <span class="text-heading"><%= @battery.amps %></span>
     </p>
   </div>
 </div>

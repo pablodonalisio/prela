@@ -1,9 +1,9 @@
 <tbody id="failures">
   <% if failures.empty? %>
     <tr id="empty_failures">
-      <td colspan="4" class="text-center">No hay fallas</td>
+      <td colspan="2" class="px-4 py-6 text-center text-sm text-body-subtle">No hay fallas</td>
     </tr>
   <% else %>
-    <%= render partial: "failures/failure_table_row", collection: failures, as: :failure, locals: { location_equipment: location_equipment } %>
+    <%= render partial: "failures/failure_table_row", collection: failures, as: :failure, locals: {location_equipment: location_equipment} %>
   <% end %>
 </tbody>

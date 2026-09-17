@@ -75,8 +75,8 @@ RSpec.describe "Homes", type: :request do
 
         kind_name = location_equipment.equipment.equipment_kind.name
         expect(response.body).to include(kind_name)
-        expect(response.body).to include("text-warning")
-        expect(response.body).to include("text-white-50")
+        expect(response.body).to include("text-yellow-400")
+        expect(response.body).to include("text-gray-400")
         expect(response.body).to include("(1)")
       end
 

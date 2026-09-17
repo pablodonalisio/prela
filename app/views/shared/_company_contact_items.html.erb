@@ -1,40 +1,41 @@
 <% variant = local_assigns.fetch(:variant, :all) %>
+<% item_classes = "inline-flex items-center gap-2 whitespace-nowrap text-sm text-white/90 transition-colors hover:text-white" %>
 
 <% if variant.in?(%i[all emergency]) %>
   <%= link_to CompanyInfo.emergency_whatsapp_url,
-              class: "company-contact-item company-contact-item--emergency",
+              class: "#{item_classes} font-semibold",
               target: "_blank",
               rel: "noopener noreferrer" do %>
-    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-    <span class="company-contact-text">
-      <span class="company-contact-label"><%= CompanyInfo.emergency_phone_label %>:</span>
-      <span class="company-contact-value"><%= CompanyInfo.emergency_phone %></span>
+    <%= icon(:whatsapp, class: "text-base") %>
+    <span class="flex flex-col leading-tight sm:flex-row sm:gap-1">
+      <span class="text-xs uppercase tracking-wide text-white/70"><%= CompanyInfo.emergency_phone_label %>:</span>
+      <span><%= CompanyInfo.emergency_phone %></span>
     </span>
   <% end %>
 <% end %>
 
 <% if variant.in?(%i[all secondary]) %>
   <%= link_to CompanyInfo.admin_whatsapp_url,
-              class: "company-contact-item",
+              class: item_classes,
               target: "_blank",
               rel: "noopener noreferrer" do %>
-    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+    <%= icon(:whatsapp, class: "text-base") %>
     <span>
-      <span class="company-contact-label"><%= CompanyInfo.admin_phone_label %>:</span>
+      <span class="text-white/70"><%= CompanyInfo.admin_phone_label %>:</span>
       <%= CompanyInfo.admin_phone %>
     </span>
   <% end %>
 
-  <%= link_to "mailto:#{CompanyInfo.email}", class: "company-contact-item" do %>
-    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+  <%= link_to "mailto:#{CompanyInfo.email}", class: item_classes do %>
+    <%= icon(:envelope, class: "text-base") %>
     <span><%= CompanyInfo.email %></span>
   <% end %>
 
   <%= link_to CompanyInfo.maps_url,
-              class: "company-contact-item",
+              class: item_classes,
               target: "_blank",
               rel: "noopener noreferrer" do %>
-    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+    <%= icon(:location, class: "text-base") %>
     <span><%= CompanyInfo.address %></span>
   <% end %>
 <% end %>

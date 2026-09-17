@@ -1,7 +1,7 @@
 <%= form.simple_fields_for :electrical_panel_report_stat do |electrical_panel_stats_form| %>
   <div data-controller="report-input" class="mb-4">
 
-    <h3 class="mt-4">Inspección general visual</h3>
+    <h3 class="mb-2 mt-4 text-base font-semibold text-heading">Inspección general visual</h3>
 
     <%= electrical_panel_stats_form.input :dimensions, label: "Dimensiones" %>
     <%= electrical_panel_stats_form.input :mounting_surface, label: "Superficie donde se encuentra",
@@ -17,13 +17,13 @@
     <%= electrical_panel_stats_form.input :cabinet_cleaning, label: "Limpieza del gabinete",
                                                              collection: ElectricalPanelReportStat::CABINET_CLEANING_OPTIONS %>
 
-    <h3 class="mt-4">Alimentación</h3>
+    <h3 class="mb-2 mt-4 text-base font-semibold text-heading">Alimentación</h3>
 
     <%= electrical_panel_stats_form.input :power_quantity_and_section, label: "Cantidad y sección" %>
     <%= electrical_panel_stats_form.input :power_cable_type, label: "Tipo de cable",
                                                              collection: ElectricalPanelReportStat::POWER_CABLE_TYPE_OPTIONS %>
-    <p>Colorimetría</p>
-    <div class="d-flex">
+    <p class="mb-2 text-sm font-medium text-heading">Colorimetría</p>
+    <div class="flex gap-3">
       <% if is_triphase %>
         <%= electrical_panel_stats_form.input :neutral_color, label: "Neutro" %>
         <%= electrical_panel_stats_form.input :l1_color, label: "L1" %>
@@ -38,7 +38,7 @@
     <%= electrical_panel_stats_form.input :power_rotation_sequency, label: "Secuencia de rotación",
                                                                     collection: ElectricalPanelReportStat::POWER_ROTATION_SEQUENCY_OPTIONS %>
 
-    <h4 class="mt-4">Protecciones y contenido</h4>
+    <h4 class="mb-2 mt-4 text-base font-semibold text-heading">Protecciones y contenido</h4>
 
     <%= render "toggle_disable_groups", group_name: "Interruptor de corte general",
                                         attribute: :general_cutoff_switch,
@@ -97,7 +97,7 @@
       <%= electrical_panel_stats_form.input :specialized_switchgear_type, label: "Tipo" %>
     <% end %>
 
-    <h3 class="mt-4">Conductores</h3>
+    <h3 class="mb-2 mt-4 text-base font-semibold text-heading">Conductores</h3>
 
     <%= render "toggle_disable_groups", group_name: "Sin terminales",
                                         attribute: :conductors_without_terminals,
@@ -138,13 +138,13 @@
     <%= electrical_panel_stats_form.input :conductors_cable_order, label: "Orden de los cables",
                                                                 collection: ElectricalPanelReportStat::CONDUCTORS_CABLE_ORDER_OPTIONS %>
 
-    <h3 class="mt-4">Mediciones sobre tableros</h3>
+    <h3 class="mb-2 mt-4 text-base font-semibold text-heading">Mediciones sobre tableros</h3>
 
     <%= electrical_panel_stats_form.input :average_temperature, label: "Temperatura promedio" %>
     <%= electrical_panel_stats_form.input :hot_spots_presence, label: "Presencia de puntos calientes", collection: [["Si", true], ["No", false]] %>
 
-    <p>Consumos</p>
-    <div class="d-flex">
+    <p class="mb-2 text-sm font-medium text-heading">Consumos</p>
+    <div class="flex gap-3">
       <% if is_triphase %>
         <%= electrical_panel_stats_form.input :l1_amperage, label: "L1" %>
         <%= electrical_panel_stats_form.input :l2_amperage, label: "L2" %>
@@ -156,22 +156,22 @@
       <% end %>
     </div>
 
-    <p>Tensión</p>
+    <p class="mb-2 text-sm font-medium text-heading">Tensión</p>
     <div>
       <% if is_triphase %>
-        <div class="d-flex justify-content-between col-sm-4">
+        <div class="flex justify-between gap-3">
           <%= electrical_panel_stats_form.input :l1_neutral_voltage, label: "L1-neutro", wrapper_html: { style: "max-width: 100px;" } %>
           <%= electrical_panel_stats_form.input :l2_neutral_voltage, label: "L2-neutro", wrapper_html: { style: "max-width: 100px;" } %>
           <%= electrical_panel_stats_form.input :l3_neutral_voltage, label: "L3-neutro", wrapper_html: { style: "max-width: 100px;" } %>
         </div>
-        <div class="d-flex justify-content-between col-sm-4">
+        <div class="flex justify-between gap-3">
           <%= electrical_panel_stats_form.input :l1_l2_voltage, label: "L1-L2", wrapper_html: { style: "max-width: 100px;" } %>
           <%= electrical_panel_stats_form.input :l2_l3_voltage, label: "L2-L3", wrapper_html: { style: "max-width: 100px;" } %>
           <%= electrical_panel_stats_form.input :l3_l1_voltage, label: "L3-L1", wrapper_html: { style: "max-width: 100px;" } %>
         </div>
         <%= electrical_panel_stats_form.input :neutral_pe_voltage, label: "Neutro-Tierra", wrapper_html: { style: "max-width: 100px;" } %>
       <% else %>
-        <div class="d-flex">
+        <div class="flex gap-3">
           <%= electrical_panel_stats_form.input :l1_neutral_voltage, label: "Fase-neutro" %>
           <%= electrical_panel_stats_form.input :neutral_pe_voltage, label: "Neutro-Tierra" %>
           <%= electrical_panel_stats_form.input :l1_pe_voltage, label: "Fase-Tierra" %>
@@ -179,7 +179,7 @@
       <% end %>
     </div>
 
-    <h3 class="mt-4">PAT</h3>
+    <h3 class="mb-2 mt-4 text-base font-semibold text-heading">PAT</h3>
     <%= electrical_panel_stats_form.input :pat_bars_presence, label: "Presencia de barras de PAT", collection: [["Si", true], ["No", false]] %>
     <%= electrical_panel_stats_form.input :ground_cable_status, label: "Estado del cable de tierra", collection: ElectricalPanelReportStat::GROUND_CABLE_STATUS_OPTIONS %>
     <%= electrical_panel_stats_form.input :pat_cable_continuity_with_circuits, label: "Continuidad del cable con circuitos", collection: [["Si", true], ["No", false]] %>

@@ -12,19 +12,19 @@
              label: "Campos específicos",
              equipment_kind: equipment_kind %>
 
-  <div class="mb-3">
-    <label class="form-label">Servicios</label>
+  <div class="mb-5">
+    <label class="mb-2 block text-sm font-medium text-heading">Servicios</label>
     <%= f.collection_check_boxes :service_kind_ids,
                                  ServiceKind.visible.order(:name),
                                  :id,
                                  :name,
                                  include_hidden: true do |b| %>
-      <div class="form-check">
-        <%= b.check_box class: "form-check-input" %>
-        <%= b.label class: "form-check-label" %>
+      <div class="mb-2 flex items-center">
+        <%= b.check_box class: "h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-brand" %>
+        <%= b.label class: "ms-2 text-sm text-heading" %>
       </div>
     <% end %>
   </div>
 
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <%= f.button :submit, "Aceptar" %>
 <% end %>

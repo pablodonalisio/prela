@@ -1,7 +1,12 @@
-<li><%= link_to "Editar", edit_path,
-                          class: "dropdown-item text-center",
-                          data: { turbo_frame: "remote_modal" } %></li>
-<li><%= button_to "Eliminar", delete_path,
-                              method: :delete,
-                              class: "bg-danger dropdown-item text-center",
-                              form: { data: {turbo_confirm: confirm} } %></li>
+<%# Rendered inside shared/dropdown, which supplies the <ul>. %>
+<li>
+  <%= link_to "Editar", edit_path,
+              class: "block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white",
+              data: {turbo_frame: "remote_modal"} %>
+</li>
+<li>
+  <%= button_to "Eliminar", delete_path,
+                method: :delete,
+                class: "block w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/40",
+                form: {data: {turbo_confirm: confirm}} %>
+</li>

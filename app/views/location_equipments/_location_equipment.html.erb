@@ -1,28 +1,27 @@
 <%= turbo_frame_tag location_equipment do %>
-  <div class="card bg-secondary mt-3">
-    <%# ── Header: image + title + actions ───────────────── %>
-    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3 p-3">
-      <div class="flex-shrink-0" style="width: 120px; height: 120px;">
+  <div class="mx-4 mb-8 mt-4 space-y-4 md:mx-6">
+    <div class="flex flex-col gap-4 rounded-xl border border-default bg-neutral-primary p-5 md:flex-row md:items-center">
+      <div class="h-[120px] w-[120px] shrink-0">
         <%= image_tag image_for(location_equipment, :display_avatar, ""),
                       alt: "Imagen de Item",
-                      class: "rounded w-100 h-100 object-fit-cover" %>
+                      class: "h-full w-full rounded-xl object-cover" %>
       </div>
-      <div class="flex-grow-1 min-w-0">
+      <div class="min-w-0 flex-1">
         <% if current_user.admin? %>
-          <h5 class="mb-0">
+          <h2 class="text-xl font-bold text-heading">
             <%= link_to location_equipment.equipment.name,
                         equipment_path(location_equipment.equipment),
-                        class: "text-white text-decoration-none",
+                        class: "hover:text-fg-brand hover:underline",
                         data: {turbo_frame: "_top"} %>
-          </h5>
+          </h2>
         <% else %>
-          <h5 class="mb-0"><%= location_equipment.equipment.name %></h5>
+          <h2 class="text-xl font-bold text-heading"><%= location_equipment.equipment.name %></h2>
         <% end %>
-        <p class="text-white-50 small mb-1">
+        <p class="mt-1 text-sm text-body-subtle">
           <%= location_equipment.location.client.name %> · <%= location_equipment.location.name %>
         </p>
-        <div class="d-flex flex-wrap gap-1 align-items-center">
-          <span class="badge bg-<%= location_equipment.condition_color %> rounded-pill">
+        <div class="mt-2 flex flex-wrap items-center gap-1.5">
+          <span class="rounded-full px-2.5 py-0.5 text-xs font-medium <%= condition_badge_classes(location_equipment.condition_color) %>">
             Condición: <%= location_equipment.condition %>
           </span>
           <% location_equipment.tags.kept.order(:name).each do |tag| %>
@@ -31,90 +30,59 @@
         </div>
       </div>
       <% if current_user.admin? %>
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
-                                            delete_path: location_equipment_path(location_equipment),
-                                            confirm: "Seguro queres borrar este equipo?" %>
+                                                     delete_path: location_equipment_path(location_equipment),
+                                                     confirm: "Seguro queres borrar este equipo?" %>
           <% end %>
         </div>
       <% end %>
     </div>
 
-    <%# ── Identity columns ────────────────────────────────── %>
-    <div class="row g-0 border-top border-white border-opacity-10 px-3 pb-3">
-      <div class="col-12 col-md-6 pt-3 pe-md-3">
+    <div class="grid gap-4 rounded-xl border border-default bg-neutral-primary p-5 md:grid-cols-2">
+      <div>
         <%= render "details", location_equipment: location_equipment %>
       </div>
-      <div class="col-12 col-md-6 pt-3 ps-md-3 border-md-start border-white border-opacity-10">
+      <div class="md:border-l md:border-default md:pl-5">
         <%= render "field_values", location_equipment: location_equipment %>
       </div>
     </div>
 
-    <%# ── Tabs ────────────────────────────────────────────── %>
     <% tab_prefix = dom_id(location_equipment, :tab) %>
-    <div class="border-top border-white border-opacity-10 px-3 pb-3">
-      <ul class="nav nav-tabs content-tabs mb-3" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="<%= tab_prefix %>-informes-tab"
-                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-informes"
-                  type="button" role="tab" aria-controls="<%= tab_prefix %>-informes" aria-selected="true">
-            Informes
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="<%= tab_prefix %>-servicios-tab"
-                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-servicios"
-                  type="button" role="tab" aria-controls="<%= tab_prefix %>-servicios" aria-selected="false">
-            Servicios
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="<%= tab_prefix %>-fallas-tab"
-                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-fallas"
-                  type="button" role="tab" aria-controls="<%= tab_prefix %>-fallas" aria-selected="false">
-            Fallas
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="<%= tab_prefix %>-actividades-tab"
-                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-actividades"
-                  type="button" role="tab" aria-controls="<%= tab_prefix %>-actividades" aria-selected="false">
-            Actividades
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="<%= tab_prefix %>-documentos-tab"
-                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-documentos"
-                  type="button" role="tab" aria-controls="<%= tab_prefix %>-documentos" aria-selected="false">
-            Documentos
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="<%= tab_prefix %>-comentarios-tab"
-                  data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-comentarios"
-                  type="button" role="tab" aria-controls="<%= tab_prefix %>-comentarios" aria-selected="false">
-            Comentarios
-          </button>
-        </li>
-        <% if current_user.admin? %>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="<%= tab_prefix %>-insumos-tab"
-                    data-bs-toggle="tab" data-bs-target="#<%= tab_prefix %>-insumos"
-                    type="button" role="tab" aria-controls="<%= tab_prefix %>-insumos" aria-selected="false">
-              Insumos
-            </button>
-          </li>
-        <% end %>
-      </ul>
+    <div class="rounded-xl border border-default bg-neutral-primary p-5">
+      <div class="border-b border-default">
+        <ul class="-mb-px flex flex-wrap gap-1 text-sm font-medium" id="<%= tab_prefix %>-tabs" data-tabs-toggle="#<%= tab_prefix %>-content" role="tablist">
+          <% [
+            ["informes", "Informes", true],
+            ["servicios", "Servicios", false],
+            ["fallas", "Fallas", false],
+            ["actividades", "Actividades", false],
+            ["documentos", "Documentos", false],
+            ["comentarios", "Comentarios", false]
+          ].each do |key, label, selected| %>
+            <li role="presentation">
+              <button class="inline-block border-b-2 px-4 py-3" id="<%= tab_prefix %>-<%= key %>-tab"
+                      data-tabs-target="#<%= tab_prefix %>-<%= key %>" type="button" role="tab"
+                      aria-controls="<%= tab_prefix %>-<%= key %>" aria-selected="<%= selected %>"><%= label %></button>
+            </li>
+          <% end %>
+          <% if current_user.admin? %>
+            <li role="presentation">
+              <button class="inline-block border-b-2 px-4 py-3" id="<%= tab_prefix %>-insumos-tab"
+                      data-tabs-target="#<%= tab_prefix %>-insumos" type="button" role="tab"
+                      aria-controls="<%= tab_prefix %>-insumos" aria-selected="false">Insumos</button>
+            </li>
+          <% end %>
+        </ul>
+      </div>
 
-      <div class="tab-content">
-        <div class="tab-pane fade show active" id="<%= tab_prefix %>-informes" role="tabpanel"
-             aria-labelledby="<%= tab_prefix %>-informes-tab" tabindex="0">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-            <h3 class="h6 text-white text-uppercase mb-0">Informes</h3>
+      <div id="<%= tab_prefix %>-content" class="pt-4">
+        <div id="<%= tab_prefix %>-informes" role="tabpanel" aria-labelledby="<%= tab_prefix %>-informes-tab">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Informes</h3>
             <% if current_user.admin? || current_user.editor? %>
-              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+              <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_report_path(location_equipment) %>
             <% end %>
@@ -124,18 +92,16 @@
                      location_equipment: location_equipment %>
         </div>
 
-        <div class="tab-pane fade" id="<%= tab_prefix %>-servicios" role="tabpanel"
-             aria-labelledby="<%= tab_prefix %>-servicios-tab" tabindex="0">
+        <div class="hidden" id="<%= tab_prefix %>-servicios" role="tabpanel" aria-labelledby="<%= tab_prefix %>-servicios-tab">
           <%= render "location_equipment_services/list", location_equipment: location_equipment %>
           <%= render "service_occurrences", location_equipment: location_equipment %>
         </div>
 
-        <div class="tab-pane fade" id="<%= tab_prefix %>-fallas" role="tabpanel"
-             aria-labelledby="<%= tab_prefix %>-fallas-tab" tabindex="0">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-            <h3 class="h6 text-white text-uppercase mb-0">Fallas</h3>
+        <div class="hidden" id="<%= tab_prefix %>-fallas" role="tabpanel" aria-labelledby="<%= tab_prefix %>-fallas-tab">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Fallas</h3>
             <% if current_user.admin? %>
-              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+              <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_failure_path(location_equipment) %>
             <% end %>
@@ -146,12 +112,11 @@
                      location_equipment: location_equipment %>
         </div>
 
-        <div class="tab-pane fade" id="<%= tab_prefix %>-actividades" role="tabpanel"
-             aria-labelledby="<%= tab_prefix %>-actividades-tab" tabindex="0">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-            <h3 class="h6 text-white text-uppercase mb-0">Actividades</h3>
+        <div class="hidden" id="<%= tab_prefix %>-actividades" role="tabpanel" aria-labelledby="<%= tab_prefix %>-actividades-tab">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Actividades</h3>
             <% if current_user.admin? || current_user.editor? %>
-              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+              <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_activity_path(location_equipment) %>
             <% end %>
@@ -161,13 +126,12 @@
                      location_equipment: location_equipment %>
         </div>
 
-        <div class="tab-pane fade" id="<%= tab_prefix %>-documentos" role="tabpanel"
-             aria-labelledby="<%= tab_prefix %>-documentos-tab" tabindex="0">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-            <h3 class="h6 text-white text-uppercase mb-0">Documentos</h3>
+        <div class="hidden" id="<%= tab_prefix %>-documentos" role="tabpanel" aria-labelledby="<%= tab_prefix %>-documentos-tab">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Documentos</h3>
             <% if current_user.admin? %>
               <%= render "shared/button_link",
-                         icon: "fa-solid fa-plus",
+                         icon: :add,
                          text: "",
                          path: new_location_equipment_document_path(
                            location_equipment,
@@ -183,12 +147,11 @@
                      documentable: location_equipment %>
         </div>
 
-        <div class="tab-pane fade" id="<%= tab_prefix %>-comentarios" role="tabpanel"
-             aria-labelledby="<%= tab_prefix %>-comentarios-tab" tabindex="0">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-            <h3 class="h6 text-white text-uppercase mb-0">Comentarios</h3>
+        <div class="hidden" id="<%= tab_prefix %>-comentarios" role="tabpanel" aria-labelledby="<%= tab_prefix %>-comentarios-tab">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Comentarios</h3>
             <% if current_user.admin? %>
-              <%= render "shared/button_link", icon: "fa-solid fa-plus",
+              <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_comment_path(location_equipment) %>
             <% end %>
@@ -199,11 +162,10 @@
         </div>
 
         <% if current_user.admin? %>
-          <div class="tab-pane fade" id="<%= tab_prefix %>-insumos" role="tabpanel"
-               aria-labelledby="<%= tab_prefix %>-insumos-tab" tabindex="0">
-            <h3 class="h6 text-white text-uppercase mb-3">Insumos</h3>
+          <div class="hidden" id="<%= tab_prefix %>-insumos" role="tabpanel" aria-labelledby="<%= tab_prefix %>-insumos-tab">
+            <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-heading">Insumos</h3>
             <div class="w-auto">
-              <h5 class="text-center">Bateria</h5>
+              <h5 class="mb-2 text-center text-base font-semibold text-heading">Bateria</h5>
               <%= turbo_frame_tag "equipment_battery" do %>
                 <%= render "equipment_supplies/equipment_battery", equipment: location_equipment %>
               <% end %>

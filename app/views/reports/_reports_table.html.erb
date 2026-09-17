@@ -1,7 +1,7 @@
 <tbody id="reports">
   <% if reports.empty? %>
     <tr id="empty_reports">
-      <td colspan="2" class="text-center">No hay informes</td>
+      <td colspan="2" class="px-4 py-6 text-center text-sm text-body-subtle">No hay informes</td>
     </tr>
   <% else %>
     <%= render partial: "reports/report_table_row", collection: reports, as: :report, locals: { location_equipment: location_equipment } %>

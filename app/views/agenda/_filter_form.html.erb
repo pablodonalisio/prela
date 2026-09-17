@@ -1,52 +1,37 @@
-<button class="btn btn-primary d-md-none mt-3"
-        type="button"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#agendaFilters"
-        aria-controls="agendaFilters">
-  <i class="fa-solid fa-filter"></i>
-</button>
+<% select_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading focus:border-brand focus:ring-brand" %>
+<% secondary_btn = "inline-flex items-center justify-center rounded-lg border border-default bg-neutral-primary px-4 py-2.5 text-sm font-medium text-body transition-colors hover:bg-neutral-tertiary hover:text-heading focus:ring-4 focus:ring-brand-soft" %>
 
-<div class="offcanvas-md offcanvas-start px-3" tabindex="-1" id="agendaFilters" data-bs-scroll="true" aria-labelledby="agendaFiltersLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="agendaFiltersLabel">Filtros</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#agendaFilters" aria-label="Close"></button>
+<%= form_with(url: agenda_index_path, method: :get) do |form| %>
+  <div class="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
+    <div class="min-w-40 flex-1">
+      <%= form.label :from, "Desde", class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= form.date_field :from, value: from, class: select_classes %>
+    </div>
+    <div class="min-w-40 flex-1">
+      <%= form.label :to, "Hasta", class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= form.date_field :to, value: to, class: select_classes %>
+    </div>
+    <div class="min-w-40 flex-1">
+      <%= form.label :client_id, "Cliente", class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= form.collection_select :client_id,
+                                 policy_scope(Client).all,
+                                 :id,
+                                 :name,
+                                 {include_blank: "Todos", selected: params[:client_id]},
+                                 class: select_classes %>
+    </div>
+    <div class="min-w-40 flex-1">
+      <%= form.label :service_kind_id, "Tipo de servicio", class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= form.collection_select :service_kind_id,
+                                 ServiceKind.visible.order(:name),
+                                 :id,
+                                 :name,
+                                 {include_blank: "Todos", selected: params[:service_kind_id]},
+                                 class: select_classes %>
+    </div>
+    <div class="flex gap-2">
+      <%= form.submit "Filtrar", class: ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>
+      <%= link_to "Limpiar filtros", agenda_index_path, class: secondary_btn %>
+    </div>
   </div>
-  <div class="offcanvas-body">
-    <%= form_with(url: agenda_index_path, method: :get) do |form| %>
-      <div class="row g-3 align-items-end my-3">
-        <div class="col-auto">
-          <%= form.label :from, "Desde", class: "form-label" %>
-          <%= form.date_field :from, value: from, class: "form-control" %>
-        </div>
-        <div class="col-auto">
-          <%= form.label :to, "Hasta", class: "form-label" %>
-          <%= form.date_field :to, value: to, class: "form-control" %>
-        </div>
-        <div class="col-auto">
-          <%= form.label :client_id, "Cliente", class: "form-label" %>
-          <%= form.collection_select :client_id,
-                                     policy_scope(Client).all,
-                                     :id,
-                                     :name,
-                                     {include_blank: "Todos", selected: params[:client_id]},
-                                     class: "form-control" %>
-        </div>
-        <div class="col-auto">
-          <%= form.label :service_kind_id, "Tipo de servicio", class: "form-label" %>
-          <%= form.collection_select :service_kind_id,
-                                     ServiceKind.visible.order(:name),
-                                     :id,
-                                     :name,
-                                     {include_blank: "Todos", selected: params[:service_kind_id]},
-                                     class: "form-control" %>
-        </div>
-        <div class="col-auto">
-          <%= form.submit "Filtrar", class: "btn btn-primary", data: {bs_dismiss: "offcanvas"} %>
-        </div>
-        <div class="col-auto">
-          <%= link_to "Limpiar filtros", agenda_index_path, class: "btn btn-secondary" %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-</div>
+<% end %>

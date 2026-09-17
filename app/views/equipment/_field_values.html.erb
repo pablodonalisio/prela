@@ -1,37 +1,39 @@
-<p>
-  <strong class="text-bg-primary p-1 rounded me-2">
+<p class="flex flex-wrap items-center gap-2">
+  <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">
     Tipo de activo
-  </strong>
-  <%= equipment.equipment_kind&.name || "—" %>
+  </span>
+  <span class="text-heading"><%= equipment.equipment_kind&.name || "—" %></span>
 </p>
-<p>
-  <strong class="text-bg-primary p-1 rounded me-2">
+<p class="flex flex-wrap items-center gap-2">
+  <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">
     Nombre
-  </strong>
-  <%= equipment.name %>
+  </span>
+  <span class="text-heading"><%= equipment.name %></span>
 </p>
-<p>
-  <strong class="text-bg-primary p-1 rounded me-2">
+<p class="flex flex-wrap items-center gap-2">
+  <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">
     <%= Equipment.human_attribute_name(:brand) %>
-  </strong>
-  <%= equipment.brand.presence || "—" %>
+  </span>
+  <span class="text-heading"><%= equipment.brand.presence || "—" %></span>
 </p>
-<p>
-  <strong class="text-bg-primary p-1 rounded me-2">
+<p class="flex flex-wrap items-center gap-2">
+  <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">
     <%= Equipment.human_attribute_name(:model) %>
-  </strong>
-  <%= equipment.model.presence || "—" %>
+  </span>
+  <span class="text-heading"><%= equipment.model.presence || "—" %></span>
 </p>
 <% equipment.equipment_kind&.generic_fields&.each do |key, definition| %>
   <% value = equipment.field_values[key] %>
-  <p>
-    <strong class="text-bg-primary p-1 rounded me-2">
+  <p class="flex flex-wrap items-center gap-2">
+    <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">
       <%= definition["name"] %>
-    </strong>
-    <% if definition["type"] == "boolean" %>
-      <%= value ? "Si" : "No" %>
-    <% else %>
-      <%= value.presence || "—" %>
-    <% end %>
+    </span>
+    <span class="text-heading">
+      <% if definition["type"] == "boolean" %>
+        <%= value ? "Si" : "No" %>
+      <% else %>
+        <%= value.presence || "—" %>
+      <% end %>
+    </span>
   </p>
 <% end %>

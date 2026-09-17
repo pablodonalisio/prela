@@ -1,10 +1,11 @@
 <%= turbo_frame_tag "", class: "location_equipment_filters" do %>
   <%= form_with(url: url_for, method: :get, data: { turbo_stream: true }) do |f| %>
-    <%= f.label :order, "Ordenar por", class: "form-label" %>
+    <%= f.label :order, "Ordenar por", class: "mb-2 block text-sm font-medium text-heading" %>
     <%= f.select :order,
                  [["Código", "code"], ["Sala", "zone"]],
                  {selected: order, prompt: "Ordenar por"},
-                 {onchange: "this.form.requestSubmit()", class: "form-select form-select-sm mb-2"} %>
+                 {onchange: "this.form.requestSubmit()",
+                  class: "mb-4 block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading focus:border-brand focus:ring-brand"} %>
 
     <%= render "filter_item", title: "Clientes Con Abono",
                               f: f,

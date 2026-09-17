@@ -1,16 +1,24 @@
-<%= content_tag :tr, id: dom_id(report), class:"align-items-stretch" do %>
-  <td class="align-middle"><%= report.date.strftime("%d/%m/%Y") %></td>
-  <td class="align-middle">
-    <div class="d-flex justify-content-evenly align-items-center">
-      <%= link_to location_equipment_report_path(location_equipment, report), data: { turbo_frame: "remote_modal" } do %>
-        <i class="fas fa-eye"></i>
+<%= content_tag :tr, id: dom_id(report), class: "border-t border-default" do %>
+  <td class="px-4 py-3"><%= report.date.strftime("%d/%m/%Y") %></td>
+  <td class="px-4 py-3">
+    <div class="flex items-center justify-evenly">
+      <%= link_to location_equipment_report_path(location_equipment, report),
+                  class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
+                  data: { turbo_frame: "remote_modal" } do %>
+        <%= icon(:view) %>
       <% end %>
       <% if current_user.admin? || current_user.editor? %>
-        <%= link_to edit_location_equipment_report_path(location_equipment, report), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
-          <i class="fas fa-edit"></i>
+        <%= link_to edit_location_equipment_report_path(location_equipment, report),
+                    class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
+                    data: { turbo_frame: "remote_modal" } do %>
+          <%= icon(:edit) %>
         <% end %>
-        <%= button_to location_equipment_report_path(location_equipment, report), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
-          <i class="fas fa-trash text-danger"></i>
+        <%= button_to location_equipment_report_path(location_equipment, report),
+                      class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/40",
+                      form_class: "inline",
+                      method: :delete,
+                      form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
+          <%= icon(:trash) %>
         <% end %>
       <% end %>
     </div>

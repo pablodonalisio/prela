@@ -1,3 +1,108 @@
 @import "tailwindcss";
+
+/* Flowbite v4 ships its design system as semantic tokens (--color-body,
+   --color-brand, --color-neutral-*, --color-dark-backdrop...) plus a `.dark`
+   block that redefines them. Its own components reference these names, so the
+   theme has to be imported for the documented markup to render correctly. */
+@import "../../../node_modules/flowbite/src/themes/default.css";
+
 @plugin "../../../node_modules/flowbite/plugin";
+
+/* Class-based dark mode instead of prefers-color-scheme, so the theme toggle
+   can override the OS setting. Matches the `.dark` selector used above. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source "../../../node_modules/flowbite";
+@source "../../views";
+@source "../../helpers";
+@source "../../javascript";
+@source "../../../config/initializers";
+
+/* Flowbite's JS adds these classes at runtime (modal/drawer backdrops, tab and
+   accordion active states), so they appear in no source file and would be
+   dropped from the build. Losing them leaves an invisible modal backdrop. */
+@source inline("hidden");
+@source inline("flex");
+@source inline("overflow-hidden");
+@source inline("bg-dark-backdrop/70");
+@source inline("fixed");
+@source inline("inset-0");
+@source inline("z-30");
+@source inline("z-40");
+@source inline("text-fg-brand");
+@source inline("hover:text-fg-brand");
+@source inline("border-brand");
+@source inline("border-transparent");
+@source inline("text-body");
+@source inline("hover:text-heading");
+@source inline("border-soft");
+@source inline("hover:border-default");
+@source inline("bg-neutral-secondary-medium");
+@source inline("text-heading");
+@source inline("bg-neutral-primary");
+@source inline("visible");
+@source inline("opacity-100");
+@source inline("transform-none");
+@source inline("-translate-x-full");
+@source inline("transition-transform");
+@source inline("left-0");
+@source inline("top-0");
+
+@theme {
+  /* Prela's dark UI is blue-tinted, not neutral. Re-pointing Tailwind's gray
+     ramp at that tint makes every Flowbite semantic token inherit it, which
+     keeps the app's identity without forking Flowbite's token structure.
+     gray-800/gray-900 are the legacy Bootstrap $secondary and $body-bg-dark. */
+  --color-gray-50: #f6f7f9;
+  --color-gray-100: #eceef2;
+  --color-gray-200: #d5d9e2;
+  --color-gray-300: #b0b8c7;
+  --color-gray-400: #8592a6;
+  --color-gray-500: #667488;
+  --color-gray-600: #4c5c76;
+  --color-gray-700: #34415a;
+  --color-gray-800: #283243;
+  --color-gray-900: #1c2431;
+  --color-gray-950: #141a24;
+
+  /* Scale built around the legacy Bootstrap $primary (#6760fa). Named
+     `primary` because Flowbite's documented markup references primary-*. */
+  --color-primary-50: #eeedfe;
+  --color-primary-100: #dedcfe;
+  --color-primary-200: #c2bffd;
+  --color-primary-300: #a5a1fc;
+  --color-primary-400: #8681fb;
+  --color-primary-500: #6760fa;
+  --color-primary-600: #4a41f5;
+  --color-primary-700: #372ee0;
+  --color-primary-800: #2d26b8;
+  --color-primary-900: #282391;
+  --color-primary-950: #181554;
+
+  /* Flowbite's brand tokens default to blue; point them at Prela's violet. */
+  --color-brand-softer: var(--color-primary-50);
+  --color-brand-soft: var(--color-primary-100);
+  --color-brand-medium: var(--color-primary-200);
+  --color-brand-subtle: var(--color-primary-200);
+  --color-brand: var(--color-primary-600);
+  --color-brand-light: var(--color-primary-500);
+  --color-brand-strong: var(--color-primary-800);
+  --color-fg-brand-subtle: var(--color-primary-200);
+  --color-fg-brand: var(--color-primary-600);
+  --color-fg-brand-strong: var(--color-primary-900);
+}
+
+/* The imported theme's `.dark` block resets the brand tokens back to blue, so
+   they have to be re-pointed for dark mode as well. */
+.dark {
+  --color-brand-softer: var(--color-primary-950);
+  --color-brand-soft: var(--color-primary-900);
+  --color-brand-medium: var(--color-primary-900);
+  --color-brand-subtle: var(--color-primary-900);
+  --color-brand: var(--color-primary-500);
+  --color-brand-light: var(--color-primary-500);
+  --color-brand-strong: var(--color-primary-700);
+  --color-fg-brand-subtle: var(--color-primary-200);
+  --color-fg-brand: var(--color-primary-400);
+  --color-fg-brand-strong: var(--color-primary-300);
+}

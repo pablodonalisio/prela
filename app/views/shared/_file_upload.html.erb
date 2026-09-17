@@ -1,19 +1,36 @@
-<%= content_tag :div, data: { controller: "upload" } do %>
+<%# locals: (file:, form:, resize:, file_field:, new_label:, accepted_formats:, multiple:) %>
+<%= content_tag :div, data: {controller: "upload"} do %>
   <% if file %>
     <div data-upload-target="existingFile">
       <% if file.representable? %>
-        <%= image_tag file.representation(resize_to_limit: resize), style: "object-fit: contain;" %>
+        <%= image_tag file.representation(resize_to_limit: resize),
+                      class: "mb-3 max-h-64 w-auto rounded-lg border border-default object-contain" %>
       <% end %>
-      <div class="col-12">
-        <%= content_tag :div, "Cambiar", class:"btn btn-primary mt-2", data: { action: "click->upload#changeFile"} %>
-      </div>
+      <button type="button"
+              class="<%= ApplicationHelper::FLOWBITE_BUTTON_CLASSES %> mt-2"
+              data-action="click->upload#changeFile">
+        Cambiar
+      </button>
       <%= form.hidden_field file_field, multiple: multiple, value: file.signed_id %>
     </div>
   <% end %>
-  <%= form.input file_field, label: new_label, wrapper_html: {class: "#{file ? "d-none" : ""}", data: { upload_target: "newFile"}} do %>
-    <%= form.file_field file_field, multiple: multiple, disabled: file.present?, data: { upload_target: "input"}, accept: accepted_formats %>
-    <div class="col-12">
-      <%= content_tag :div, "Cancelar", class: "btn btn-primary mt-2 #{file.present? ? "" : "d-none"}", data: { action: "click->upload#reloadExistingFile"} %>
-    </div>
+
+  <%= form.input file_field,
+                 label: new_label,
+                 wrapper_html: {
+                   class: ("hidden" if file),
+                   data: {upload_target: "newFile"}
+                 } do %>
+    <%= form.file_field file_field,
+                        multiple: multiple,
+                        disabled: file.present?,
+                        data: {upload_target: "input"},
+                        accept: accepted_formats,
+                        class: "block w-full cursor-pointer rounded-lg border border-default bg-neutral-secondary-soft text-sm text-body file:me-4 file:border-0 file:bg-neutral-tertiary file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-heading hover:file:bg-neutral-secondary-medium" %>
+    <button type="button"
+            class="<%= ApplicationHelper::FLOWBITE_BUTTON_CLASSES %> mt-2 <%= "hidden" unless file.present? %>"
+            data-action="click->upload#reloadExistingFile">
+      Cancelar
+    </button>
   <% end %>
 <% end %>

@@ -1,5 +1,6 @@
+<%# locals: (field_definitions:, field_values:, param_prefix:, id_prefix:) %>
 <% if field_definitions&.any? %>
-  <div class="row g-3">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <% field_definitions.each do |field_key, definition| %>
       <% field_name = definition["name"] %>
       <% field_type = definition["type"] %>
@@ -8,51 +9,57 @@
       <% current_value = field_values[field_key] %>
       <% input_id = "#{id_prefix}_#{field_key}" %>
       <% input_name = "#{param_prefix}[#{field_key}]" %>
-      <div class="col-sm-6 mb-2">
+      <% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
+
+      <div>
         <% if field_type == "boolean" %>
-          <div class="form-check mt-4 pt-1">
-            <input class="form-check-input"
+          <div class="flex h-full items-center gap-2 pt-6">
+            <input class="h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-2 focus:ring-brand"
                    type="checkbox"
                    id="<%= input_id %>"
                    name="<%= input_name %>"
                    value="1"
                    <%= "checked" if current_value %>>
-            <label class="form-check-label" for="<%= input_id %>">
+            <label class="text-sm font-medium text-heading" for="<%= input_id %>">
               <%= field_name %>
             </label>
           </div>
         <% else %>
-          <label class="form-label small fw-medium" for="<%= input_id %>">
-            <%= field_name %><% if units.present? && optimal_value.blank? %> <span class="text-muted fw-normal">(<%= units %>)</span><% end %>
+          <label class="mb-2 block text-sm font-medium text-heading" for="<%= input_id %>">
+            <%= field_name %><% if units.present? && optimal_value.blank? %> <span class="font-normal text-body-subtle">(<%= units %>)</span><% end %>
           </label>
+
           <% if units.present? %>
-            <div class="input-group input-group-sm">
+            <div class="flex">
               <% case field_type %>
               <% when "integer" %>
-                <input class="form-control" type="number" step="1" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+                <input class="<%= input_classes %> rounded-e-none" type="number" step="1" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
               <% when "float" %>
-                <input class="form-control" type="number" step="any" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+                <input class="<%= input_classes %> rounded-e-none" type="number" step="any" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
               <% when "date" %>
-                <input class="form-control" type="date" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+                <input class="<%= input_classes %> rounded-e-none" type="date" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
               <% else %>
-                <input class="form-control" type="text" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+                <input class="<%= input_classes %> rounded-e-none" type="text" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
               <% end %>
-              <span class="input-group-text"><%= units %></span>
+              <span class="inline-flex items-center rounded-e-lg border border-s-0 border-default bg-neutral-tertiary px-3 text-sm text-body-subtle"><%= units %></span>
             </div>
           <% else %>
             <% case field_type %>
             <% when "integer" %>
-              <input class="form-control form-control-sm" type="number" step="1" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+              <input class="<%= input_classes %>" type="number" step="1" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
             <% when "float" %>
-              <input class="form-control form-control-sm" type="number" step="any" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+              <input class="<%= input_classes %>" type="number" step="any" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
             <% when "date" %>
-              <input class="form-control form-control-sm" type="date" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+              <input class="<%= input_classes %>" type="date" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
             <% else %>
-              <input class="form-control form-control-sm" type="text" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
+              <input class="<%= input_classes %>" type="text" id="<%= input_id %>" name="<%= input_name %>" value="<%= current_value %>">
             <% end %>
           <% end %>
+
           <% if optimal_value.present? %>
-            <div class="form-text"><%= t("activerecord.attributes.report_template.optimal_value") %>: <%= optimal_value %><% if units.present? %> <%= units %><% end %></div>
+            <p class="mt-2 text-sm text-body-subtle">
+              <%= t("activerecord.attributes.report_template.optimal_value") %>: <%= optimal_value %><% if units.present? %> <%= units %><% end %>
+            </p>
           <% end %>
         <% end %>
       </div>

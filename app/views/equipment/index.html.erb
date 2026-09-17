@@ -1,11 +1,10 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <%= render "location_equipments/navbar", active: "equipment" %>
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "shared/section_nav", active: "equipment" %>
 
-  <% if current_user.admin? %>
-    <div class="d-flex align-items-center flex-wrap m-4 gap-2">
-      <%= render "shared/button_link", text: "Agregar",
-                                       path: new_equipment_path %>
-    </div>
+  <%= render "shared/content_header", title: "Equipos" do %>
+    <% if current_user.admin? %>
+      <%= render "shared/button_link", text: "Agregar", path: new_equipment_path %>
+    <% end %>
   <% end %>
 
   <%= render "shared/items", collection: @equipment, pagy: @pagy %>

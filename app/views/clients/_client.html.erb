@@ -1,20 +1,22 @@
 <%= turbo_frame_tag client do %>
-  <div class="align-items-center list-group-item list-group-item-action">
-    <%= link_to client_path(client), data: { turbo_frame: :_top},
-                                    class: "flex-grow-1 text-center text-light link-underline-dark" do %>
-      <div class="d-flex w-100 align-items-center" style="height: 100px;">
-        <% if client.avatar.attached? %>
-          <%= image_tag client.avatar.variant(resize_to_limit: [100, nil]) %>
-        <% else %>
-          <%= client.name %>
-        <% end %>
-
-        <%= render "shared/dropdown" do %>
-          <%= render "shared/button_box", edit_path: edit_client_path(client),
-                                          delete_path: client_path(client),
-                                          confirm: "Seguro queres borrar el Cliente?" %>
-        <% end %>
-      </div>
+  <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-default bg-neutral-primary shadow-sm transition-shadow hover:shadow-md">
+    <%= link_to client_path(client), data: {turbo_frame: :_top}, class: "flex min-h-28 flex-1 items-center justify-center p-4" do %>
+      <% if client.avatar.attached? %>
+        <%= image_tag client.avatar.variant(resize_to_limit: [160, 80]),
+                      alt: client.name,
+                      class: "max-h-20 w-auto object-contain" %>
+      <% else %>
+        <span class="text-center font-semibold text-heading"><%= client.name %></span>
+      <% end %>
     <% end %>
+
+    <div class="absolute right-2 top-2">
+      <%= render "shared/dropdown" do %>
+        <%= render "shared/button_box",
+                   edit_path: edit_client_path(client),
+                   delete_path: client_path(client),
+                   confirm: "Seguro queres borrar el Cliente?" %>
+      <% end %>
+    </div>
   </div>
 <% end %>

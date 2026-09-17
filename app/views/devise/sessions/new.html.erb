@@ -1,30 +1,30 @@
-<div class="container mt-sm-5">
-  <div class="row justify-content-center">
-    <div class="col-sm-6 col-md-4 col-lg-3">
-      <h2>Iniciar Sesion</h2>
+<div class="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-10">
+  <div class="w-full max-w-sm rounded-xl border border-default bg-neutral-primary p-6 shadow-sm">
+    <h2 class="mb-6 text-xl font-bold text-heading">Iniciar Sesion</h2>
 
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { data: { turbo: false } }) do |f| %>
-        <div class="field mb-3">
-          <%= f.label :email, class: "form-label" %><br />
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
-        </div>
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: {data: {turbo: false}}) do |f| %>
+      <div class="mb-5">
+        <%= f.label :email, class: "mb-2 block text-sm font-medium text-heading" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email",
+                          class: "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
+      </div>
 
-        <div class="field mb-3">
-          <%= f.label :password, class: "form-label" %><br />
-          <%= f.password_field :password, autocomplete: "current-password", class: "form-control" %>
-        </div>
+      <div class="mb-5">
+        <%= f.label :password, class: "mb-2 block text-sm font-medium text-heading" %>
+        <%= f.password_field :password, autocomplete: "current-password",
+                             class: "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
+      </div>
 
-        <% if devise_mapping.rememberable? %>
-          <div class="field mb-3 form-check">
-            <%= f.check_box :remember_me, class: "form-check-input" %>
-            <%= f.label :remember_me, 'Recordarme', class: "form-check-label" %>
-          </div>
-        <% end %>
-
-        <div class="actions">
-          <%= f.submit "Iniciar Sesion", class: "btn btn-outline-primary" %>
+      <% if devise_mapping.rememberable? %>
+        <div class="mb-5 flex items-center gap-2">
+          <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-2 focus:ring-brand" %>
+          <%= f.label :remember_me, "Recordarme", class: "text-sm font-medium text-heading" %>
         </div>
       <% end %>
-    </div>
+
+      <div>
+        <%= f.submit "Iniciar Sesion", class: ApplicationHelper::FLOWBITE_BUTTON_CLASSES + " w-full" %>
+      </div>
+    <% end %>
   </div>
 </div>

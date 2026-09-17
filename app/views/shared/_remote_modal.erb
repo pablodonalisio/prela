@@ -1,10 +1,22 @@
-<%= turbo_frame_tag "remote_modal" do %>
-    <div class="modal-header">
-        <h4 class="modal-title" id="newClientRemoteModalLabel"><%= title %></h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
+<%# The remote_modal frame id and the remote_modal_body element id are part of
+    the contract with the form_update turbo streams and the request specs, so
+    they must not be renamed. %>
+<%= turbo_frame_tag "remote_modal", class: "flex min-h-0 flex-col" do %>
+  <div class="flex shrink-0 items-start justify-between gap-4 border-b border-default px-5 py-4">
+    <h4 class="text-lg font-semibold text-heading" id="remote_modal_title"><%= title %></h4>
 
-    <div class="modal-body remote_modal_body overflow-visible" id="remote_modal_body">
-        <%= yield %>
-    </div>
+    <button type="button"
+            class="-m-1.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-body transition-colors hover:bg-neutral-tertiary hover:text-heading focus:ring-2 focus:ring-brand"
+            data-action="modal#dismiss"
+            aria-label="Cerrar">
+      <svg class="h-3.5 w-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4" id="remote_modal_body">
+    <%= yield %>
+  </div>
 <% end %>

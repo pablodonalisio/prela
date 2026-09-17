@@ -19,16 +19,15 @@ export default class extends Controller {
     this.element.style.display = "";
   }
 
-  // ── private ──────────────────────────────────────────────
-
   _buildUI() {
     this.wrapper = document.createElement("div");
-    this.wrapper.className = "combobox-wrapper position-relative";
+    this.wrapper.className = "combobox-wrapper relative";
     this.element.insertAdjacentElement("afterend", this.wrapper);
 
     this.input = document.createElement("input");
     this.input.type = "text";
-    this.input.className = "form-control";
+    this.input.className =
+      "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 pr-9 text-sm text-heading focus:border-brand focus:ring-brand";
     this.input.placeholder = this.element.options[0]?.text || "Buscar…";
     this.input.autocomplete = "off";
     this.wrapper.appendChild(this.input);
@@ -36,16 +35,14 @@ export default class extends Controller {
     this.clearBtn = document.createElement("button");
     this.clearBtn.type = "button";
     this.clearBtn.className =
-      "btn btn-link btn-sm position-absolute top-50 end-0 translate-middle-y text-secondary pe-2 d-none";
+      "absolute right-2 top-1/2 hidden -translate-y-1/2 text-lg leading-none text-body-subtle hover:text-heading";
     this.clearBtn.innerHTML = "&times;";
     this.clearBtn.setAttribute("aria-label", "Limpiar");
     this.wrapper.appendChild(this.clearBtn);
 
     this.dropdown = document.createElement("ul");
     this.dropdown.className =
-      "combobox-dropdown list-unstyled position-absolute w-100 bg-secondary border-0 rounded shadow-sm mt-1 d-none";
-    this.dropdown.style.cssText =
-      "max-height:220px;overflow-y:auto;z-index:1055;top:100%;left:0;";
+      "combobox-dropdown absolute left-0 top-full z-50 mt-1 hidden max-h-56 w-full list-none overflow-y-auto rounded-lg border border-default bg-neutral-primary p-0 shadow-lg";
     this.wrapper.appendChild(this.dropdown);
 
     this.input.addEventListener("input", () => this._onInput());
@@ -69,16 +66,15 @@ export default class extends Controller {
     this.dropdown.innerHTML = "";
     if (filtered.length === 0) {
       const li = document.createElement("li");
-      li.className = "px-3 py-2 text-white-50 small";
+      li.className = "px-3 py-2 text-sm text-body-subtle";
       li.textContent = "Sin resultados";
       this.dropdown.appendChild(li);
     } else {
       filtered.forEach((opt) => {
         const li = document.createElement("li");
         li.className =
-          "px-3 py-2 combobox-option text-white" +
-          (opt.value === this.element.value ? " active bg-primary" : "");
-        li.style.cursor = "pointer";
+          "combobox-option cursor-pointer px-3 py-2 text-sm text-heading hover:bg-neutral-tertiary" +
+          (opt.value === this.element.value ? " bg-brand text-white hover:bg-brand-strong" : "");
         li.textContent = opt.label;
         li.dataset.value = opt.value;
         li.addEventListener("mousedown", (e) => {
@@ -88,13 +84,13 @@ export default class extends Controller {
         this.dropdown.appendChild(li);
       });
     }
-    this.dropdown.classList.remove("d-none");
+    this.dropdown.classList.remove("hidden");
   }
 
   _select(opt) {
     this.input.value = opt.label;
     this.element.value = opt.value;
-    this.clearBtn.classList.remove("d-none");
+    this.clearBtn.classList.remove("hidden");
     this._hideDropdown();
     this.element.dispatchEvent(new Event("change", { bubbles: true }));
   }
@@ -102,20 +98,20 @@ export default class extends Controller {
   _clear() {
     this.input.value = "";
     this.element.value = "";
-    this.clearBtn.classList.add("d-none");
+    this.clearBtn.classList.add("hidden");
     this._hideDropdown();
     this.element.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
   _hideDropdown() {
-    this.dropdown.classList.add("d-none");
+    this.dropdown.classList.add("hidden");
   }
 
   _setDisplayFromSelect() {
     const selected = this.options.find((o) => o.value === this.element.value);
     if (selected) {
       this.input.value = selected.label;
-      this.clearBtn.classList.remove("d-none");
+      this.clearBtn.classList.remove("hidden");
     }
   }
 
@@ -142,10 +138,10 @@ export default class extends Controller {
   }
 
   _highlight(items, idx) {
-    items.forEach((i) => i.classList.remove("combobox-highlighted", "bg-light"));
+    items.forEach((i) => i.classList.remove("combobox-highlighted", "bg-brand", "text-white"));
     const target = items[Math.max(0, Math.min(idx, items.length - 1))];
     if (target) {
-        target.classList.add("combobox-highlighted", "bg-primary");
+      target.classList.add("combobox-highlighted", "bg-brand", "text-white");
       target.scrollIntoView({ block: "nearest" });
     }
   }

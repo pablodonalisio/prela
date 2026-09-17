@@ -19,7 +19,7 @@ export default class extends Controller {
     const destroyInput = row.querySelector("input[name*='[_destroy]']");
     if (destroyInput) {
       destroyInput.value = "1";
-      row.classList.add("d-none");
+      row.classList.add("hidden");
       return;
     }
 

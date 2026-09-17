@@ -1,14 +1,14 @@
 <%# locals: (fields:) %>
 <% if fields.present? %>
   <% field_columns = fields.to_a.each_slice(4).to_a %>
-  <div class="row row-cols-1 row-cols-md-2 g-2 mb-2 small">
+  <div class="mb-2 grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
     <% field_columns.each do |column| %>
-      <div class="col">
-        <ul class="list-unstyled mb-0">
+      <div>
+        <ul class="mb-0 list-none">
           <% column.each do |_field_key, field_data| %>
             <li class="py-1">
-              <strong><%= field_data["name"] %></strong>
-              <span class="text-muted">(<%= t("activerecord.attributes.equipment_kind.field_types.#{field_data['type']}") %>)</span>
+              <strong class="text-heading"><%= field_data["name"] %></strong>
+              <span class="text-body-subtle">(<%= t("activerecord.attributes.equipment_kind.field_types.#{field_data['type']}") %>)</span>
             </li>
           <% end %>
         </ul>
@@ -16,5 +16,5 @@
     <% end %>
   </div>
 <% else %>
-  <p class="text-muted small mb-0">Ninguno definido.</p>
+  <p class="mb-0 text-sm text-body-subtle">Ninguno definido.</p>
 <% end %>

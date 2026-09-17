@@ -1,60 +1,68 @@
-<nav class="navbar navbar-company bg-primary sticky-top px-2 px-md-3">
-  <%= link_to image_tag("prela_logotipo-1.png", height: "100%"),
-              root_path,
-              class: "navbar-brand bg-light rounded h-100 mb-0" %>
+<nav class="sticky top-0 z-40 h-16 bg-primary-600 shadow-sm">
+  <div class="mx-auto flex h-full items-center gap-4 px-3 md:px-4">
+    <%= link_to root_path, class: "flex h-10 shrink-0 items-center rounded-md bg-white px-2" do %>
+      <%= image_tag "prela_logotipo-1.png", class: "h-7 w-auto", alt: "Prela" %>
+    <% end %>
 
-  <div class="company-contact d-none d-md-flex">
-    <%= render "shared/company_contact_items" %>
-  </div>
-
-  <div class="company-contact d-md-none">
-    <%= render "shared/company_contact_items", variant: :emergency %>
-  </div>
-
-  <% if user_signed_in? %>
-    <div class="dropdown ms-auto">
-      <a class="text-bg-primary link-underline link-underline-opacity-0 fs-6" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="navbar-toggler-icon"></span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li>
-          <p class="dropdown-header"><%= current_user.email %></p>
-        </li>
-
-        <li class="d-md-none">
-          <hr class="dropdown-divider">
-        </li>
-        <li class="d-md-none">
-          <h6 class="dropdown-header">Contacto</h6>
-        </li>
-        <li class="d-md-none px-3 pb-2">
-          <div class="company-contact company-contact--menu">
-            <%= render "shared/company_contact_items", variant: :secondary %>
-          </div>
-        </li>
-        <li class="d-md-none">
-          <hr class="dropdown-divider">
-        </li>
-
-        <% if current_user.admin? %>
-          <li>
-            <%= link_to(
-              "Gestionar Usuarios",
-              users_path,
-              class: "dropdown-item"
-            ) %>
-          </li>
-        <% end %>
-
-        <li>
-          <%= button_to(
-            "Cerrar Sesion",
-            destroy_user_session_path,
-            method: :delete,
-            class: "dropdown-item"
-          ) %>
-        </li>
-      </ul>
+    <div class="hidden min-w-0 flex-1 items-center gap-5 overflow-hidden md:flex">
+      <%= render "shared/company_contact_items" %>
     </div>
-  <% end %>
+
+    <div class="flex min-w-0 flex-1 items-center md:hidden">
+      <%= render "shared/company_contact_items", variant: :emergency %>
+    </div>
+
+    <div class="ml-auto flex shrink-0 items-center gap-1"
+         data-controller="theme">
+      <button type="button"
+              class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-white/90 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-white/40"
+              data-action="theme#toggle"
+              aria-label="Cambiar tema">
+<%# Dark is the default, so the sun (switch to light) starts visible. %>
+        <%= icon(:theme_dark, class: "hidden", data: {theme_target: "darkIcon"}) %>
+        <%= icon(:theme_light, data: {theme_target: "lightIcon"}) %>
+      </button>
+
+      <% if user_signed_in? %>
+        <button type="button"
+                class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-white/90 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-white/40"
+                data-dropdown-toggle="navbar-user-menu"
+                data-dropdown-placement="bottom-end"
+                aria-label="Abrir menú de usuario">
+          <%= icon(:menu) %>
+        </button>
+
+        <div id="navbar-user-menu"
+             class="z-50 hidden w-72 max-w-[calc(100vw-1.5rem)] divide-y divide-gray-100 rounded-lg bg-white shadow-lg dark:divide-gray-700 dark:bg-gray-800">
+          <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+            <div class="truncate font-medium"><%= current_user.email %></div>
+          </div>
+
+          <div class="px-4 py-3 md:hidden">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Contacto</p>
+            <div class="flex flex-col gap-2 [&_a]:text-gray-700 [&_a]:dark:text-gray-300">
+              <%= render "shared/company_contact_items", variant: :secondary %>
+            </div>
+          </div>
+
+          <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+            <% if current_user.admin? %>
+              <li>
+                <%= link_to "Gestionar Usuarios",
+                            users_path,
+                            class: "block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" %>
+              </li>
+            <% end %>
+
+            <li>
+              <%= button_to "Cerrar Sesion",
+                            destroy_user_session_path,
+                            method: :delete,
+                            class: "block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" %>
+            </li>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </nav>

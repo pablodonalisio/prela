@@ -1,5 +1,44 @@
+<%# Pagy ships bootstrap and bulma styles but no Tailwind one, so the nav is
+    built from pagy.series. pagy_anchor returns a lambda that renders the <a>
+    tag; the current page and gaps are rendered as spans instead of links. %>
 <% if pagy.pages > 1 %>
-  <div class="d-flex justify-content-center my-3">
-    <%== pagy_bootstrap_nav(pagy) %>
-  </div>
+  <%
+    anchor = pagy_anchor(pagy)
+    base = "flex h-9 items-center justify-center border border-default px-3 leading-tight transition-colors"
+    link_classes = "#{base} bg-neutral-primary text-body hover:bg-neutral-tertiary hover:text-heading"
+    current_classes = "#{base} border-brand bg-brand text-white"
+    muted_classes = "#{base} bg-neutral-primary text-body-subtle"
+  %>
+
+  <nav class="my-4 flex justify-center" aria-label="Paginación">
+    <ul class="inline-flex -space-x-px text-sm">
+      <li>
+        <% if pagy.prev %>
+          <%== anchor.call(pagy.prev, "Anterior", classes: "#{link_classes} rounded-s-lg", aria_label: "Página anterior") %>
+        <% else %>
+          <span class="<%= muted_classes %> rounded-s-lg opacity-50">Anterior</span>
+        <% end %>
+      </li>
+
+      <% pagy.series.each do |item| %>
+        <li>
+          <% if item.is_a?(Integer) %>
+            <%== anchor.call(item, classes: link_classes) %>
+          <% elsif item.is_a?(String) %>
+            <span class="<%= current_classes %>" aria-current="page"><%= pagy.label_for(item) %></span>
+          <% else %>
+            <span class="<%= muted_classes %>">&hellip;</span>
+          <% end %>
+        </li>
+      <% end %>
+
+      <li>
+        <% if pagy.next %>
+          <%== anchor.call(pagy.next, "Siguiente", classes: "#{link_classes} rounded-e-lg", aria_label: "Página siguiente") %>
+        <% else %>
+          <span class="<%= muted_classes %> rounded-e-lg opacity-50">Siguiente</span>
+        <% end %>
+      </li>
+    </ul>
+  </nav>
 <% end %>

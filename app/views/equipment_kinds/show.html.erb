@@ -1,11 +1,13 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <%= render "location_equipments/navbar", active: "equipment_kinds" %>
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "shared/section_nav", active: "equipment_kinds" %>
 
   <%= render "shared/content_header", title: @equipment_kind.name do %>
-    <%= link_to "Volver", equipment_kinds_path, class: "btn btn-outline-light btn-sm", data: { turbo_frame: "_top" } %>
+    <%= link_to "Volver", equipment_kinds_path,
+                class: "inline-flex items-center rounded-lg border border-default bg-neutral-primary px-4 py-2 text-sm font-medium text-body hover:bg-neutral-tertiary hover:text-heading",
+                data: {turbo_frame: "_top"} %>
   <% end %>
 
-  <div class="d-flex flex-column gap-2 mx-4 mt-4">
+  <div class="mx-4 mt-4 flex flex-col gap-2 md:mx-6">
     <%= render @equipment_kind %>
   </div>
 <% end %>

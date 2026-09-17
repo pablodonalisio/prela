@@ -1,8 +1,20 @@
-<div class="dropdown">
-  <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="navbar-toggler-icon"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <%= yield %>
-  </ul>
+<%# Flowbite dropdowns are wired by id, and this partial is rendered once per
+    card on a listing page, so each instance needs its own id. Pass id: to
+    override when a stable value is needed. %>
+<% id = local_assigns.fetch(:id) { "dropdown-#{SecureRandom.hex(4)}" } %>
+
+<div class="relative">
+  <button type="button"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-body transition-colors hover:bg-neutral-tertiary hover:text-heading focus:ring-2 focus:ring-brand"
+          data-dropdown-toggle="<%= id %>"
+          data-dropdown-placement="bottom-end"
+          aria-label="Acciones">
+    <%= icon(:menu) %>
+  </button>
+
+  <div id="<%= id %>" class="z-50 hidden w-44 rounded-lg bg-white shadow-lg dark:bg-gray-800">
+    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+      <%= yield %>
+    </ul>
+  </div>
 </div>

@@ -13,7 +13,13 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   get "home/index"
-  get "home2", to: "home#home2"
+
+  # Reference gallery for the Tailwind + Flowbite design system, used while
+  # migrating views off Bootstrap. Remove once the migration is complete.
+  unless Rails.env.production?
+    get "home2", to: "home2#index"
+  end
+
   resources :agenda, only: [:index]
   resources :clients do
     resources :locations, except: [:index, :show]

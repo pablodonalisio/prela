@@ -2,7 +2,7 @@
 
 <% if @client.locations.kept.none? %>
   <%= turbo_stream.append "locations" do %>
-    <div id="empty_locations" class="w-100 text-white-50 small">
+    <div id="empty_locations" class="w-full text-sm text-body-subtle">
       Todavía no hay sedes cargadas.
     </div>
   <% end %>

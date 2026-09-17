@@ -1,23 +1,21 @@
 <%= render "shared/content_header", title: "#{@equipment.name.upcase}" do %>
   <%= render "shared/dropdown" do %>
     <%= render "shared/button_box", edit_path: edit_equipment_path(@equipment),
-                                    delete_path: equipment_path(@equipment),
-                                    confirm: "Seguro queres borrar el Equipo?" %>
+                                            delete_path: equipment_path(@equipment),
+                                            confirm: "Seguro queres borrar el Equipo?" %>
   <% end %>
 <% end %>
 
-<div class="row mt-3">
+<div class="space-y-3 p-4 md:px-6">
   <%= render "field_values", equipment: equipment %>
 </div>
 
-<div class="row mt-3">
-  <h4>Insumos por defecto</h4>
-  <div class="row">
-    <div class="w-auto">
-      <h5 class="text-center">Bateria</h5>
-      <%= turbo_frame_tag "equipment_battery" do %>
-        <%= render "equipment_supplies/equipment_battery", equipment: equipment %>
-      <% end %>
-    </div>
+<div class="p-4 md:px-6">
+  <h4 class="mb-3 text-lg font-semibold text-heading">Insumos por defecto</h4>
+  <div>
+    <h5 class="mb-2 text-center text-sm font-medium text-heading">Bateria</h5>
+    <%= turbo_frame_tag "equipment_battery" do %>
+      <%= render "equipment_supplies/equipment_battery", equipment: equipment %>
+    <% end %>
   </div>
 </div>

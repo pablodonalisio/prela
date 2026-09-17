@@ -35,7 +35,7 @@ export default class extends Controller {
   syncIntervalFields(recurring) {
     if (!this.hasIntervalFieldsTarget) return;
 
-    this.intervalFieldsTarget.classList.toggle("d-none", !recurring);
+    this.intervalFieldsTarget.classList.toggle("hidden", !recurring);
   }
 
   syncIntervalDefaults(recurring) {

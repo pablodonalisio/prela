@@ -2,15 +2,16 @@
   <%= render "control_panel/service_date_filter_form" %>
 
   <% if control_panel_services.blank? %>
-    <p class="text-center text-body-secondary my-4">No hay servicios para mostrar</p>
+    <p class="my-4 text-center text-sm text-body-subtle">No hay servicios para mostrar</p>
   <% else %>
-    <div class="accordion my-4" id="locationEquipmentsControl">
-      <% control_panel_services.sort_by { |equipment_kind, _| equipment_kind.name }.each do |equipment_kind, occurrences| %>
+    <div id="locationEquipmentsControl" class="my-4" data-accordion="collapse">
+      <% control_panel_services.sort_by { |equipment_kind, _| equipment_kind.name }.each_with_index do |(equipment_kind, occurrences), index| %>
         <%= render "control_panel/overdue_service_dates",
                    title: equipment_kind.name,
                    overdue_services: occurrences,
                    collapse: "equipment-kind-#{equipment_kind.id}",
-                   parent: "locationEquipmentsControl" %>
+                   parent: "locationEquipmentsControl",
+                   first: index.zero? %>
       <% end %>
     </div>
   <% end %>

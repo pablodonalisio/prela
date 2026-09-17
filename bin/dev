@@ -1,2 +1,63 @@
 #!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+
+# Runs every process declared in Procfile.dev. This is deliberately not foreman:
+# foreman shells out through fork(), which is unavailable on Windows.
+
+require "rbconfig"
+require "shellwords"
+
+APP_ROOT = File.expand_path("..", __dir__)
+PROCFILE = File.join(APP_ROOT, "Procfile.dev")
+
+processes = File.readlines(PROCFILE, chomp: true).filter_map do |line|
+  next if line.strip.empty? || line.start_with?("#")
+
+  name, command = line.split(":", 2)
+  next if command.nil? || command.strip.empty?
+
+  [name.strip, command.strip]
+end
+
+abort "No processes declared in Procfile.dev" if processes.empty?
+
+# Scripts under bin/ carry a shebang that Windows cannot execute, so they are
+# handed to the current Ruby explicitly rather than to the shell.
+def spawn_command(command)
+  argv = Shellwords.split(command)
+
+  if argv.first.start_with?("bin/")
+    Process.spawn(RbConfig.ruby, *argv)
+  else
+    Process.spawn(command)
+  end
+end
+
+pids = []
+
+terminate = lambda do
+  pids.each do |pid|
+    Process.kill("TERM", pid)
+  rescue Errno::ESRCH, Errno::EPERM, Errno::EINVAL, NotImplementedError
+    # Already gone, or the platform refuses the signal; nothing left to do.
+  end
+end
+
+%w[INT TERM].each do |signal|
+  Signal.trap(signal) do
+    terminate.call
+    exit 1
+  end
+rescue ArgumentError
+  # Windows does not expose every signal; INT is enough to catch Ctrl+C there.
+end
+
+Dir.chdir(APP_ROOT) do
+  processes.each do |name, command|
+    puts "==> #{name}: #{command}"
+    pids << spawn_command(command)
+  end
+
+  Process.waitall
+ensure
+  terminate.call
+end

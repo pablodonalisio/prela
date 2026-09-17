@@ -1,174 +1,94 @@
-<% parent = local_assigns.fetch(:parent, "locationEquipmentsControl") %>
 <% overdue_services = Array(overdue_services) %>
 <% overdue_count = overdue_services.count { |occurrence| occurrence.pending? && occurrence.overdue? } %>
 <% due_soon_count = overdue_services.count { |occurrence| occurrence.pending? && occurrence.due_soon? } %>
 <% suspended_count = overdue_services.count(&:suspended?) %>
-<div class="accordion-item">
-  <h2 class="accordion-header">
-    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#<%= collapse %>" aria-expanded="false" aria-controls="<%= collapse %>">
+<% first = local_assigns.fetch(:first, false) %>
+<% heading_id = "#{collapse}-heading" %>
+<% vencidos = overdue_services.select { |o| o.pending? && o.overdue? }.sort_by(&:due_on) %>
+<% vence_pronto = overdue_services.select { |o| o.pending? && o.due_soon? }.sort_by(&:due_on) %>
+<% suspendidos = overdue_services.select(&:suspended?).sort_by(&:due_on) %>
+<% status_accordion_id = "#{collapse}-statuses" %>
+
+<h3 id="<%= heading_id %>">
+  <button type="button"
+          class="flex w-full items-center justify-between gap-3 border border-default p-4 text-left text-sm font-medium text-heading hover:bg-neutral-tertiary <%= first ? "rounded-t-lg" : "border-t-0" %>"
+          data-accordion-target="#<%= collapse %>"
+          aria-expanded="false"
+          aria-controls="<%= collapse %>">
+    <span class="flex flex-wrap items-center gap-2">
       <%= title %>
       <% if overdue_count.positive? %>
-        <i class="fa fa-circle fa-2xs ms-2 text-danger" aria-hidden="true"></i>
-        <span class="ms-1">(<%= overdue_count %>)</span>
+        <%= icon(:dot, class: "text-[0.45rem] text-red-500") %>
+        <span>(<%= overdue_count %>)</span>
       <% end %>
       <% if due_soon_count.positive? %>
-        <i class="fa fa-circle fa-2xs ms-2 text-warning" aria-hidden="true"></i>
-        <span class="ms-1">(<%= due_soon_count %>)</span>
+        <%= icon(:dot, class: "text-[0.45rem] text-yellow-400") %>
+        <span>(<%= due_soon_count %>)</span>
       <% end %>
       <% if suspended_count.positive? %>
-        <i class="fa fa-circle fa-2xs ms-2 text-white-50" aria-hidden="true"></i>
-        <span class="ms-1">(<%= suspended_count %>)</span>
+        <%= icon(:dot, class: "text-[0.45rem] text-gray-400") %>
+        <span>(<%= suspended_count %>)</span>
       <% end %>
       <% if overdue_count.zero? && due_soon_count.zero? && suspended_count.zero? %>
-        <i class="fa fa-circle fa-2xs mx-2 text-success" aria-hidden="true"></i>
+        <%= icon(:dot, class: "text-[0.45rem] text-green-500") %>
       <% end %>
-    </button>
-  </h2>
-  <div id="<%= collapse %>" class="accordion-collapse collapse" data-bs-parent="#<%= parent %>">
-    <div class="accordion-body overflow-auto" style="max-height:300px;">
-      <% if overdue_services.blank? %>
-        <p class="text-center">No hay servicios para mostrar</p>
-      <% else %>
-        <% vencidos = overdue_services.select { |o| o.pending? && o.overdue? }.sort_by(&:due_on) %>
-        <% vence_pronto = overdue_services.select { |o| o.pending? && o.due_soon? }.sort_by(&:due_on) %>
-        <% suspendidos = overdue_services.select(&:suspended?).sort_by(&:due_on) %>
+    </span>
+    <svg class="h-3 w-3 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+    </svg>
+  </button>
+</h3>
 
-        <% status_accordion_id = "#{collapse}-statuses" %>
-
-        <div class="accordion" id="<%= status_accordion_id %>">
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#<%= collapse %>-vencidos"
-                      aria-expanded="false"
-                      aria-controls="<%= collapse %>-vencidos">
-                Vencidos
-                <% if overdue_count.positive? %>
-                  <i class="fa fa-circle fa-2xs mx-2 text-danger" aria-hidden="true"></i>
-                  (<%= overdue_count %>)
-                <% else %>
-                  <i class="fa fa-circle fa-2xs mx-2 text-success" aria-hidden="true"></i>
+<div id="<%= collapse %>" class="hidden" aria-labelledby="<%= heading_id %>">
+  <div class="max-h-[300px] overflow-auto border border-t-0 border-default">
+    <% if overdue_services.blank? %>
+      <p class="p-4 text-center text-sm text-body">No hay servicios para mostrar</p>
+    <% else %>
+      <div id="<%= status_accordion_id %>" data-accordion="collapse">
+        <% [
+          {items: vencidos, key: "vencidos", title: "Vencidos", count: overdue_count, dot: "text-red-500", empty: "Sin vencidos", badge: "Vencido",
+           badge_class: "rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300"},
+          {items: vence_pronto, key: "vence-pronto", title: "Vence pronto", count: due_soon_count, dot: "text-yellow-400", empty: "Sin vencimientos próximos", badge: "Vence pronto",
+           badge_class: "rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"},
+          {items: suspendidos, key: "suspendidos", title: "Suspendidos", count: suspended_count, dot: "text-gray-400", empty: "Sin suspendidos", badge: "Suspendido",
+           badge_class: "rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"}
+        ].each_with_index do |section, index| %>
+          <% body_id = "#{collapse}-#{section[:key]}" %>
+          <% section_heading_id = "#{body_id}-heading" %>
+          <h4 id="<%= section_heading_id %>">
+            <button type="button"
+                    class="flex w-full items-center justify-between gap-3 border-b border-default p-3 text-left text-sm font-medium text-heading hover:bg-neutral-tertiary <%= "border-t" unless index.zero? %>"
+                    data-accordion-target="#<%= body_id %>"
+                    aria-expanded="false"
+                    aria-controls="<%= body_id %>">
+              <span class="flex items-center gap-2">
+                <%= section[:title] %>
+                <%= icon(:dot, class: "text-[0.45rem] #{section[:dot]}") %>
+                <% if section[:count].positive? %>
+                  (<%= section[:count] %>)
                 <% end %>
-              </button>
-            </h2>
-            <div id="<%= collapse %>-vencidos"
-                 class="accordion-collapse collapse"
-                 data-bs-parent="#<%= status_accordion_id %>">
-              <div class="accordion-body p-0">
-                <% if vencidos.blank? %>
-                  <p class="text-center m-2 text-body-secondary">Sin vencidos</p>
-                <% else %>
-                  <ul class="list-group list-group-flush">
-                    <% vencidos.each do |service_occurrence| %>
-                      <li class="list-group-item">
-                        <p class="d-flex justify-content-between align-items-center">
-                          <%= link_to "#{service_occurrence.location_equipment.model.capitalize} - #{service_occurrence.location_equipment.location.name}",
-                                      location_equipment_path(service_occurrence.location_equipment),
-                                      data: {turbo_frame: :_top} %>
-                          <span class="badge bg-danger rounded-pill">Vencido</span>
-                        </p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Cliente: <%= service_occurrence.location_equipment.client.name %></p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Tipo: <%= service_occurrence.service_kind.name %></p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Fecha: <%= service_occurrence.due_on.strftime("%d/%m/%Y") %></p>
-                      </li>
-                    <% end %>
-                  </ul>
+              </span>
+              <svg class="h-3 w-3 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
+              </svg>
+            </button>
+          </h4>
+          <div id="<%= body_id %>" class="hidden" aria-labelledby="<%= section_heading_id %>">
+            <% if section[:items].blank? %>
+              <p class="p-3 text-center text-sm text-body-subtle"><%= section[:empty] %></p>
+            <% else %>
+              <ul>
+                <% section[:items].each do |service_occurrence| %>
+                  <%= render "control_panel/service_occurrence_row",
+                             service_occurrence: service_occurrence,
+                             badge: section[:badge],
+                             badge_class: section[:badge_class] %>
                 <% end %>
-              </div>
-            </div>
+              </ul>
+            <% end %>
           </div>
-
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#<%= collapse %>-vence-pronto"
-                      aria-expanded="false"
-                      aria-controls="<%= collapse %>-vence-pronto">
-                Vence pronto
-                <% if due_soon_count.positive? %>
-                  <i class="fa fa-circle fa-2xs mx-2 text-warning" aria-hidden="true"></i>
-                  (<%= due_soon_count %>)
-                <% else %>
-                  <i class="fa fa-circle fa-2xs mx-2 text-success" aria-hidden="true"></i>
-                <% end %>
-              </button>
-            </h2>
-            <div id="<%= collapse %>-vence-pronto"
-                 class="accordion-collapse collapse"
-                 data-bs-parent="#<%= status_accordion_id %>">
-              <div class="accordion-body p-0">
-                <% if vence_pronto.blank? %>
-                  <p class="text-center m-2 text-body-secondary">Sin vencimientos próximos</p>
-                <% else %>
-                  <ul class="list-group list-group-flush">
-                    <% vence_pronto.each do |service_occurrence| %>
-                      <li class="list-group-item">
-                        <p class="d-flex justify-content-between align-items-center">
-                          <%= link_to "#{service_occurrence.location_equipment.model.capitalize} - #{service_occurrence.location_equipment.location.name}",
-                                      location_equipment_path(service_occurrence.location_equipment),
-                                      data: {turbo_frame: :_top} %>
-                          <span class="badge bg-warning rounded-pill">Vence pronto</span>
-                        </p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Cliente: <%= service_occurrence.location_equipment.client.name %></p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Tipo: <%= service_occurrence.service_kind.name %></p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Fecha: <%= service_occurrence.due_on.strftime("%d/%m/%Y") %></p>
-                      </li>
-                    <% end %>
-                  </ul>
-                <% end %>
-              </div>
-            </div>
-          </div>
-
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#<%= collapse %>-suspendidos"
-                      aria-expanded="false"
-                      aria-controls="<%= collapse %>-suspendidos">
-                Suspendidos
-                <% if suspended_count.positive? %>
-                  <i class="fa fa-circle fa-2xs mx-2 text-white-50" aria-hidden="true"></i>
-                  (<%= suspended_count %>)
-                <% else %>
-                  <i class="fa fa-circle fa-2xs mx-2 text-success" aria-hidden="true"></i>
-                <% end %>
-              </button>
-            </h2>
-            <div id="<%= collapse %>-suspendidos"
-                 class="accordion-collapse collapse"
-                 data-bs-parent="#<%= status_accordion_id %>">
-              <div class="accordion-body p-0">
-                <% if suspendidos.blank? %>
-                  <p class="text-center m-2 text-body-secondary">Sin suspendidos</p>
-                <% else %>
-                  <ul class="list-group list-group-flush">
-                    <% suspendidos.each do |service_occurrence| %>
-                      <li class="list-group-item">
-                        <p class="d-flex justify-content-between align-items-center">
-                          <%= link_to "#{service_occurrence.location_equipment.model.capitalize} - #{service_occurrence.location_equipment.location.name}",
-                                      location_equipment_path(service_occurrence.location_equipment),
-                                      data: {turbo_frame: :_top} %>
-                          <span class="badge bg-secondary rounded-pill">Suspendido</span>
-                        </p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Cliente: <%= service_occurrence.location_equipment.client.name %></p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Tipo: <%= service_occurrence.service_kind.name %></p>
-                        <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Fecha: <%= service_occurrence.due_on.strftime("%d/%m/%Y") %></p>
-                        <% if service_occurrence.notes.present? %>
-                          <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Notas: <%= service_occurrence.notes %></p>
-                        <% end %>
-                      </li>
-                    <% end %>
-                  </ul>
-                <% end %>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% end %>
-    </div>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div>

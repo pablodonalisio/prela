@@ -1,27 +1,23 @@
-<%= simple_form_for equipment, html: { data: {controller: "dynamic-form"}} do |f| %>
+<%= simple_form_for equipment, html: {data: {controller: "dynamic-form"}} do |f| %>
   <%= f.input :avatar, label: "Foto" %>
   <%= f.input :equipment_kind_id, label: "Tipo de activo",
                                   collection: EquipmentKind.visible.order(:name).pluck(:name, :id),
                                   include_blank: "Seleccione un tipo",
-                                  wrapper_html: { class: "mb-0" },
-                                  input_html: { data: { dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>
-  <p class="small text-white mt-n2 mb-3">
+                                  wrapper_html: {class: "!mb-0"},
+                                  input_html: {data: {dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>
+  <p class="-mt-1 mb-5 text-sm text-body-subtle">
     ¿No encontrás el tipo de activo?
-    <%= link_to "Crear uno nuevo", new_equipment_kind_path, class: "text-primary" %>.
+    <%= link_to "Crear uno nuevo", new_equipment_kind_path, class: "text-fg-brand hover:underline" %>.
   </p>
   <%= f.input :name %>
-  <div class="row">
-    <div class="col-sm-6">
-      <%= f.input :brand %>
-    </div>
-    <div class="col-sm-6">
-      <%= f.input :model %>
-    </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4">
+    <%= f.input :brand %>
+    <%= f.input :model %>
   </div>
   <%= turbo_frame_tag "eq_field_inputs",
-        data: { equipment_id: equipment.id },
+        data: {equipment_id: equipment.id},
         src: equipment.equipment_kind_id.present? ?
           field_inputs_equipment_index_path(equipment_kind_id: equipment.equipment_kind_id, equipment_id: equipment.id) : nil do %>
   <% end %>
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <%= f.button :submit, "Aceptar" %>
 <% end %>

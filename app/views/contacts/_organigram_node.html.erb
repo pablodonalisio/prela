@@ -2,12 +2,12 @@
     style="--organigram-distance: <%= contact.distance_above %>;">
   <% location_names = contact.locations.select(&:kept?).map(&:name) %>
   <div class="organigram-card" title="<%= [contact.name, contact.job_position, contact.work_area, *location_names].compact.join(" · ") %>">
-    <div class="organigram-card-line organigram-card-name" title="<%= contact.name %>"><%= contact.name %></div>
-    <div class="organigram-card-line small" title="<%= contact.job_position %>"><%= contact.job_position %></div>
-    <div class="organigram-card-line small text-white-50" title="<%= contact.work_area %>"><%= contact.work_area %></div>
+    <div class="organigram-card-line organigram-card-name text-heading" title="<%= contact.name %>"><%= contact.name %></div>
+    <div class="organigram-card-line text-sm text-body" title="<%= contact.job_position %>"><%= contact.job_position %></div>
+    <div class="organigram-card-line text-sm text-body-subtle" title="<%= contact.work_area %>"><%= contact.work_area %></div>
     <% if location_names.any? %>
-      <div class="organigram-card-line small mt-1" title="<%= location_names.join(", ") %>">
-        <i class="fa-solid fa-location-dot text-primary me-1"></i><%= location_names.join(", ") %>
+      <div class="organigram-card-line mt-1 text-sm text-body" title="<%= location_names.join(", ") %>">
+        <%= icon(:location, class: "me-1 text-fg-brand") %><%= location_names.join(", ") %>
       </div>
     <% end %>
   </div>

@@ -1,58 +1,51 @@
 <%= turbo_frame_tag "service_occurrences" do %>
-  <p class="text-white small text-uppercase fw-semibold mb-1 mt-2">Servicios</p>
+  <p class="mb-1 mt-2 text-xs font-semibold uppercase tracking-wide text-heading">Servicios</p>
   <% occurrences = location_equipment.service_occurrences
        .includes(location_equipment_service: :service_kind)
        .order(Arel.sql("COALESCE(service_occurrences.completed_on, service_occurrences.planned_on, service_occurrences.due_on) DESC")) %>
   <% if occurrences.any? %>
-    <div style="max-height: 400px; overflow-y: auto;" class="my-2">
-      <table class="table mb-0 align-middle">
-        <thead style="position: sticky; z-index: 100; top: 0">
+    <div class="my-2 max-h-[400px] overflow-y-auto rounded-xl border border-default">
+      <table class="w-full text-left text-sm">
+        <thead class="sticky top-0 z-10 bg-neutral-secondary-medium text-xs uppercase tracking-wide text-body-subtle">
           <tr>
-            <th>Fecha</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-            <th>Notas</th>
-            <th></th>
-            <th></th>
+            <th class="px-4 py-3 font-semibold">Fecha</th>
+            <th class="px-4 py-3 font-semibold">Tipo</th>
+            <th class="px-4 py-3 font-semibold">Estado</th>
+            <th class="px-4 py-3 font-semibold">Notas</th>
+            <th class="px-4 py-3 font-semibold"></th>
+            <th class="px-4 py-3 font-semibold"></th>
           </tr>
         </thead>
         <tbody>
           <% occurrences.each do |occurrence| %>
-            <tr id="<%= dom_id(occurrence, :row) %>">
-              <td>
+            <tr id="<%= dom_id(occurrence, :row) %>" class="border-t border-default">
+              <td class="px-4 py-3 text-heading">
                 <span class="<%= occurrence.open? ? service_date_color(occurrence.due_on) : nil %>">
                   <%= occurrence.service_date.strftime("%d/%m/%Y") %>
                 </span>
               </td>
-              <td><%= occurrence.service_kind.name %></td>
-              <td>
-                <% if occurrence.completed? %>
-                  <span class="badge bg-success rounded-pill"><%= occurrence.status_label %></span>
-                <% elsif occurrence.scheduled? %>
-                  <span class="badge bg-info text-dark rounded-pill"><%= occurrence.status_label %></span>
-                <% elsif occurrence.suspended? %>
-                  <span class="badge bg-secondary rounded-pill"><%= occurrence.status_label %></span>
-                <% elsif occurrence.cancelled? %>
-                  <span class="badge bg-secondary rounded-pill"><%= occurrence.status_label %></span>
-                <% else %>
-                  <span class="badge bg-warning rounded-pill"><%= occurrence.status_label %></span>
-                <% end %>
+              <td class="px-4 py-3 text-body"><%= occurrence.service_kind.name %></td>
+              <td class="px-4 py-3">
+                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium <%= occurrence_status_badge_classes(occurrence) %>">
+                  <%= occurrence.status_label %>
+                </span>
               </td>
-              <td class="text-body-secondary small"><%= occurrence.notes.presence || "—" %></td>
-              <td class="text-nowrap">
+              <td class="px-4 py-3 text-sm text-body-subtle"><%= occurrence.notes.presence || "—" %></td>
+              <td class="whitespace-nowrap px-4 py-3">
                 <% if occurrence.document.attached? %>
                   <%= link_to rails_blob_path(occurrence.document, disposition: "inline"),
+                              class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
                               target: "_blank",
                               rel: "noopener",
                               title: "Ver documento",
                               data: {turbo: false} do %>
-                    <i class="fa fa-file" aria-hidden="true"></i>
+                    <%= icon(:file) %>
                   <% end %>
                 <% else %>
-                  <span class="text-white-50">—</span>
+                  <span class="text-body-subtle">—</span>
                 <% end %>
               </td>
-              <td class="text-nowrap">
+              <td class="whitespace-nowrap px-4 py-3">
                 <%= render "service_occurrences/actions", service_occurrence: occurrence, class: "me-2" %>
               </td>
             </tr>
@@ -61,6 +54,6 @@
       </table>
     </div>
   <% else %>
-    <p class="text-white-50 small mb-0">Sin servicios</p>
+    <p class="mb-0 text-sm text-body-subtle">Sin servicios</p>
   <% end %>
 <% end %>

@@ -1,15 +1,24 @@
-<%= content_tag :tr, id: dom_id(link), class: "align-items-stretch" do %>
-  <td class="align-middle"><%= link_to link.title, link.url, target: "_blank" %></td>
-  <td class="align-middle">
-    <div class="d-flex justify-content-center align-items-center h-100">
-      <% if current_user.admin? %>
-        <%= link_to edit_link_path(link), class: "btn btn-sm text-primary", data: { turbo_frame: "remote_modal" } do %>
-          <i class="fas fa-edit"></i>
+<%= content_tag :tr, id: dom_id(link), class: "border-t border-default" do %>
+  <td class="px-4 py-3 align-middle">
+    <%= link_to link.title, link.url, target: "_blank", rel: "noopener", class: "font-medium text-fg-brand hover:underline" %>
+  </td>
+  <td class="px-4 py-3 align-middle">
+    <% if current_user.admin? %>
+      <div class="flex items-center justify-center gap-1">
+        <%= link_to edit_link_path(link),
+                    class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
+                    data: {turbo_frame: "remote_modal"},
+                    aria: {label: "Editar"} do %>
+          <%= icon(:edit) %>
         <% end %>
-        <%= button_to link_path(link), class: "btn btn-sm", method: :delete, form: { data: { turbo_confirm: "¿Estás seguro?" } } do %>
-          <i class="fas fa-trash text-danger"></i>
+        <%= button_to link_path(link),
+                      method: :delete,
+                      class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/40",
+                      form: {data: {turbo_confirm: "¿Estás seguro?"}},
+                      aria: {label: "Eliminar"} do %>
+          <%= icon(:trash) %>
         <% end %>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
   </td>
 <% end %>

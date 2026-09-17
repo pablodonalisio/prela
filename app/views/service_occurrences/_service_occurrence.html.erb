@@ -1,5 +1,5 @@
-<p class="card-text m-0">
-  <small class="text-body-secondary">
+<p class="m-0 text-sm text-body">
+  <small class="text-xs text-body-subtle">
     <label><%= service_occurrence.service_kind.name %>: </label>
     <%= turbo_frame_tag service_occurrence do %>
       <span class="<%= service_date_color(service_occurrence.due_on) %>">
@@ -7,15 +7,15 @@
       </span>
 
       <% if service_occurrence.suspended? %>
-        <span class="badge bg-secondary ms-1"><%= service_occurrence.status_label %></span>
+        <span class="ms-1 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"><%= service_occurrence.status_label %></span>
       <% elsif service_occurrence.scheduled? %>
-        <span class="badge bg-info text-dark ms-1"><%= service_occurrence.status_label %></span>
+        <span class="ms-1 inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300"><%= service_occurrence.status_label %></span>
         <span class="ms-1">(<%= service_occurrence.planned_on.strftime("%d/%m/%Y") %>)</span>
       <% end %>
 
       <% if service_occurrence.notes.present? && (service_occurrence.suspended? || service_occurrence.scheduled?) %>
         <span class="ms-1" title="<%= service_occurrence.notes %>">
-          <i class="fas fa-sticky-note"></i>
+          <%= icon(:note) %>
         </span>
       <% end %>
 
