@@ -3,5 +3,7 @@
 import "@hotwired/turbo-rails";
 import "controllers";
 
-import "popper";
+import "@popperjs/core";
 import "bootstrap";
+import "flowbite";
+

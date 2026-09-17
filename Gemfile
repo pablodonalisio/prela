@@ -45,7 +45,7 @@ gem "bootsnap", require: false
 gem "image_processing", "~> 1.2"
 
 gem "bootstrap", "~> 5.3.1"
-gem "dartsass-sprockets"
+gem "dartsass-rails"
 
 gem "devise", "~> 4.9"
 gem "font-awesome-sass", "~> 6.4.2"
@@ -95,3 +95,6 @@ gem "pundit", "~> 2.3"
 gem "discard", "~> 1.4"
 gem "pagy", "~> 9.3"
 gem "paper_trail"
+
+gem "tailwindcss-ruby", "~> 4.3"
+gem "tailwindcss-rails", "~> 4.6"

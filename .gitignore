@@ -29,9 +29,16 @@
 !/tmp/storage/
 !/tmp/storage/.keep
 
+Gemfile.lock
+package-lock.json
+
+node_modules/
+
 /public/assets
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
 /config/credentials/development.key
+/app/assets/builds/*
+!/app/assets/builds/.keep
