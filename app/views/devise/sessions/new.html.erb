@@ -1,6 +1,6 @@
 <div class="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-10">
   <div class="w-full max-w-sm rounded-xl border border-default bg-neutral-primary p-6 shadow-sm">
-    <h2 class="mb-6 text-xl font-bold text-heading">Iniciar Sesion</h2>
+    <h2 class="mb-6 text-xl font-bold text-heading">Iniciar Sesión</h2>
 
     <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: {data: {turbo: false}}) do |f| %>
       <div class="mb-5">
@@ -23,7 +23,7 @@
       <% end %>
 
       <div>
-        <%= f.submit "Iniciar Sesion", class: ApplicationHelper::FLOWBITE_BUTTON_CLASSES + " w-full" %>
+        <%= f.submit "Iniciar Sesión", class: ApplicationHelper::FLOWBITE_BUTTON_CLASSES + " w-full" %>
       </div>
     <% end %>
   </div>

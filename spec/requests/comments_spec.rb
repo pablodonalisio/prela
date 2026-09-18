@@ -26,7 +26,7 @@ RSpec.describe "Comments", type: :request do
       it "denies access" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+        expect(flash[:alert]).to match(/No estás autorizado para realizar esta acción./)
       end
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe "Comments", type: :request do
       it "denies access" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+        expect(flash[:alert]).to match(/No estás autorizado para realizar esta acción./)
       end
     end
   end
@@ -167,7 +167,7 @@ RSpec.describe "Comments", type: :request do
       it "denies access" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+        expect(flash[:alert]).to match(/No estás autorizado para realizar esta acción./)
       end
     end
   end

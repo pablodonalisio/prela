@@ -34,7 +34,7 @@
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
                                                      delete_path: location_equipment_path(location_equipment),
-                                                     confirm: "Seguro queres borrar este equipo?" %>
+                                                     confirm: "¿Seguro querés borrar este equipo?" %>
           <% end %>
         </div>
       <% end %>
@@ -165,7 +165,7 @@
           <div class="hidden" id="<%= tab_prefix %>-insumos" role="tabpanel" aria-labelledby="<%= tab_prefix %>-insumos-tab">
             <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-heading">Insumos</h3>
             <div class="w-auto">
-              <h5 class="mb-2 text-center text-base font-semibold text-heading">Bateria</h5>
+              <h5 class="mb-2 text-center text-base font-semibold text-heading">Batería</h5>
               <%= turbo_frame_tag "equipment_battery" do %>
                 <%= render "equipment_supplies/equipment_battery", equipment: location_equipment %>
               <% end %>

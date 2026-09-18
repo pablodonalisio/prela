@@ -62,38 +62,38 @@
                                         attribute: :circuits_without_differentials,
                                         form_group_id: "circuits_without_differentials_form_group",
                                         toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :circuits_without_differentials, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :circuits_without_differentials, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Circuitos sin térmicas",
                                         attribute: :circuits_without_thermal_keys,
                                         form_group_id: "circuits_without_thermal_keys_form_group",
                                         toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :circuits_without_thermal_keys, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :circuits_without_thermal_keys, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Protecciones alimentadas en guirnaldas",
                                         attribute: :protections_powered_on_garlands,
                                         form_group_id: "protections_powered_on_garlands_form_group",
                                         toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :protections_powered_on_garlands, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :protections_powered_on_garlands, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Protecciones como borneras",
                                         attribute: :protections_such_as_terminal_blocks,
                                         form_group_id: "protections_such_as_terminal_blocks_form_group",
                                         toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :protections_such_as_terminal_blocks, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :protections_such_as_terminal_blocks, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Aparamenta fuera de lugar",
                                         attribute: :misplaced_switchgears,
                                         form_group_id: "misplaced_switchgears_form_group",
                                         toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :misplaced_switchgears, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :misplaced_switchgears, label: "Cuántos" %>
       <%= electrical_panel_stats_form.input :switchgear_type, label: "Tipo" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Presencia de aparamenta especializada",
                                         attribute: :specialized_switchgears,
                                         form_group_id: "specialized_switchgears_form_group",
                                         toggle_disable_label: "No posee" do %>
-      <%= electrical_panel_stats_form.input :specialized_switchgears, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :specialized_switchgears, label: "Cuántos" %>
       <%= electrical_panel_stats_form.input :specialized_switchgear_type, label: "Tipo" %>
     <% end %>
 
@@ -103,37 +103,37 @@
                                         attribute: :conductors_without_terminals,
                                         form_group_id: "conductors_without_terminals_form_group",
                                         toggle_disable_label: "Ninguno" do %>
-      <%= electrical_panel_stats_form.input :conductors_without_terminals, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :conductors_without_terminals, label: "Cuántos" %>
     <% end %>
-    <%= render "toggle_disable_groups", group_name: "Subdimensionados para su proteccion",
+    <%= render "toggle_disable_groups", group_name: "Subdimensionados para su protección",
                                         attribute: :undersized_conductors,
                                         form_group_id: "undersized_conductors_form_group",
                                         toggle_disable_label: "Ninguno" do %>
-      <%= electrical_panel_stats_form.input :undersized_conductors, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :undersized_conductors, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Con envejecimiento marcado",
                                         attribute: :conductors_with_marked_aging,
                                         form_group_id: "conductors_with_marked_aging_form_group",
                                         toggle_disable_label: "Ninguno" do %>
-      <%= electrical_panel_stats_form.input :conductors_with_marked_aging, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :conductors_with_marked_aging, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Con colorimetría clara",
                                         attribute: :conductors_with_clear_colorimetry,
                                         form_group_id: "conductors_with_clear_colorimetry_form_group",
                                         toggle_disable_label: "Ninguno" do %>
-      <%= electrical_panel_stats_form.input :conductors_with_clear_colorimetry, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :conductors_with_clear_colorimetry, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Con empalmes",
                                         attribute: :conductors_with_splices,
                                         form_group_id: "conductors_with_splices_form_group",
                                         toggle_disable_label: "Ninguno" do %>
-      <%= electrical_panel_stats_form.input :conductors_with_splices, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :conductors_with_splices, label: "Cuántos" %>
     <% end %>
     <%= render "toggle_disable_groups", group_name: "Sobrecalentados",
                                         attribute: :overheated_conductors,
                                         form_group_id: "overheated_conductors_form_group",
                                         toggle_disable_label: "Ninguno" do %>
-      <%= electrical_panel_stats_form.input :overheated_conductors, label: "Cuantos" %>
+      <%= electrical_panel_stats_form.input :overheated_conductors, label: "Cuántos" %>
     <% end %>
     <%= electrical_panel_stats_form.input :conductors_cable_order, label: "Orden de los cables",
                                                                 collection: ElectricalPanelReportStat::CONDUCTORS_CABLE_ORDER_OPTIONS %>
@@ -141,7 +141,7 @@
     <h3 class="mb-2 mt-4 text-base font-semibold text-heading">Mediciones sobre tableros</h3>
 
     <%= electrical_panel_stats_form.input :average_temperature, label: "Temperatura promedio" %>
-    <%= electrical_panel_stats_form.input :hot_spots_presence, label: "Presencia de puntos calientes", collection: [["Si", true], ["No", false]] %>
+    <%= electrical_panel_stats_form.input :hot_spots_presence, label: "Presencia de puntos calientes", collection: [["Sí", true], ["No", false]] %>
 
     <p class="mb-2 text-sm font-medium text-heading">Consumos</p>
     <div class="flex gap-3">
@@ -180,11 +180,11 @@
     </div>
 
     <h3 class="mb-2 mt-4 text-base font-semibold text-heading">PAT</h3>
-    <%= electrical_panel_stats_form.input :pat_bars_presence, label: "Presencia de barras de PAT", collection: [["Si", true], ["No", false]] %>
+    <%= electrical_panel_stats_form.input :pat_bars_presence, label: "Presencia de barras de PAT", collection: [["Sí", true], ["No", false]] %>
     <%= electrical_panel_stats_form.input :ground_cable_status, label: "Estado del cable de tierra", collection: ElectricalPanelReportStat::GROUND_CABLE_STATUS_OPTIONS %>
-    <%= electrical_panel_stats_form.input :pat_cable_continuity_with_circuits, label: "Continuidad del cable con circuitos", collection: [["Si", true], ["No", false]] %>
+    <%= electrical_panel_stats_form.input :pat_cable_continuity_with_circuits, label: "Continuidad del cable con circuitos", collection: [["Sí", true], ["No", false]] %>
     <%= electrical_panel_stats_form.input :pat_cable_section, label: "Sección del cable PAT" %>
-    <%= electrical_panel_stats_form.input :cabinet_equipotentialization, label: "Equipotenciación del gabinete", collection: [["Si", true], ["No", false]] %>
-    <%= electrical_panel_stats_form.input :pat_splices_presence, label: "Presencia de empalmes", collection: [["Si", true], ["No", false]] %>
+    <%= electrical_panel_stats_form.input :cabinet_equipotentialization, label: "Equipotenciación del gabinete", collection: [["Sí", true], ["No", false]] %>
+    <%= electrical_panel_stats_form.input :pat_splices_presence, label: "Presencia de empalmes", collection: [["Sí", true], ["No", false]] %>
   </div>
 <% end %>
