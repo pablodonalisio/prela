@@ -1,5 +1,5 @@
 <%= turbo_frame_tag client do %>
-  <div class="relative flex h-full flex-col overflow-hidden rounded-xl border border-default bg-neutral-primary shadow-sm transition-shadow hover:shadow-md">
+  <div class="relative flex h-full flex-col rounded-xl border border-default bg-neutral-primary shadow-sm transition-shadow hover:shadow-md">
     <%= link_to client_path(client), data: {turbo_frame: :_top}, class: "flex min-h-28 flex-1 items-center justify-center p-4" do %>
       <% if client.avatar.attached? %>
         <%= image_tag client.avatar.variant(resize_to_limit: [160, 80]),

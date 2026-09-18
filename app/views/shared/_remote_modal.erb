@@ -1,8 +1,8 @@
 <%# The remote_modal frame id and the remote_modal_body element id are part of
     the contract with the form_update turbo streams and the request specs, so
     they must not be renamed. %>
-<%= turbo_frame_tag "remote_modal", class: "flex min-h-0 flex-col" do %>
-  <div class="flex shrink-0 items-start justify-between gap-4 border-b border-default px-5 py-4">
+<%= turbo_frame_tag "remote_modal", class: "flex min-h-0 flex-col bg-neutral-primary-soft" do %>
+  <div class="flex shrink-0 items-start justify-between gap-4 border-b border-default bg-neutral-primary-soft px-5 py-4">
     <h4 class="text-lg font-semibold text-heading" id="remote_modal_title"><%= title %></h4>
 
     <button type="button"
@@ -16,7 +16,7 @@
     </button>
   </div>
 
-  <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4" id="remote_modal_body">
+  <div class="min-h-0 flex-1 overflow-y-auto bg-neutral-primary-soft px-5 py-4" id="remote_modal_body">
     <%= yield %>
   </div>
 <% end %>

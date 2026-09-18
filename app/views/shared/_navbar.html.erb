@@ -1,10 +1,10 @@
-<nav class="sticky top-0 z-40 h-16 bg-primary-600 shadow-sm">
+<nav class="sticky top-0 z-40 h-16 bg-primary-600 shadow-sm md:h-24">
   <div class="mx-auto flex h-full items-center gap-4 px-3 md:px-4">
     <%= link_to root_path, class: "flex h-10 shrink-0 items-center rounded-md bg-white px-2" do %>
       <%= image_tag "prela_logotipo-1.png", class: "h-7 w-auto", alt: "Prela" %>
     <% end %>
 
-    <div class="hidden min-w-0 flex-1 items-center gap-5 overflow-hidden md:flex">
+    <div class="hidden min-w-0 flex-1 items-center md:flex">
       <%= render "shared/company_contact_items" %>
     </div>
 
@@ -18,9 +18,10 @@
               class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-white/90 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-white/40"
               data-action="theme#toggle"
               aria-label="Cambiar tema">
-<%# Dark is the default, so the sun (switch to light) starts visible. %>
-        <%= icon(:theme_dark, class: "hidden", data: {theme_target: "darkIcon"}) %>
-        <%= icon(:theme_light, data: {theme_target: "lightIcon"}) %>
+        <%# Dark is the default, so the moon starts visible. Wrappers own `hidden`
+            because Font Awesome sets display on the <i> and would ignore it. %>
+        <span data-theme-target="darkIcon"><%= icon(:theme_dark) %></span>
+        <span class="hidden" data-theme-target="lightIcon"><%= icon(:theme_light) %></span>
       </button>
 
       <% if user_signed_in? %>
@@ -33,24 +34,24 @@
         </button>
 
         <div id="navbar-user-menu"
-             class="z-50 hidden w-72 max-w-[calc(100vw-1.5rem)] divide-y divide-gray-100 rounded-lg bg-white shadow-lg dark:divide-gray-700 dark:bg-gray-800">
-          <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+             class="z-50 hidden w-72 max-w-[calc(100vw-1.5rem)] divide-y divide-default rounded-base border border-default bg-neutral-primary-soft shadow-sm">
+          <div class="px-4 py-3 text-sm text-heading">
             <div class="truncate font-medium"><%= current_user.email %></div>
           </div>
 
           <div class="px-4 py-3 md:hidden">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Contacto</p>
-            <div class="flex flex-col gap-2 [&_a]:text-gray-700 [&_a]:dark:text-gray-300">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-body-subtle">Contacto</p>
+            <div class="flex flex-col gap-2 [&_a]:text-body [&_a:hover]:text-heading">
               <%= render "shared/company_contact_items", variant: :secondary %>
             </div>
           </div>
 
-          <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+          <ul class="py-2 text-sm text-heading">
             <% if current_user.admin? %>
               <li>
                 <%= link_to "Gestionar Usuarios",
                             users_path,
-                            class: "block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" %>
+                            class: "block px-4 py-2 hover:bg-neutral-tertiary-medium hover:text-heading" %>
               </li>
             <% end %>
 
@@ -58,7 +59,8 @@
               <%= button_to "Cerrar Sesión",
                             destroy_user_session_path,
                             method: :delete,
-                            class: "block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" %>
+                            class: "block w-full px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading",
+                            form: {class: "w-full"} %>
             </li>
           </ul>
         </div>

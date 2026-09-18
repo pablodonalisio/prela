@@ -12,8 +12,9 @@
     <%= icon(:menu) %>
   </button>
 
-  <div id="<%= id %>" class="z-50 hidden w-44 rounded-lg bg-white shadow-lg dark:bg-gray-800">
-    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+  <div id="<%= id %>"
+       class="z-50 hidden w-44 divide-y divide-default rounded-base border border-default bg-neutral-primary-soft shadow-sm">
+    <ul class="py-2 text-sm text-heading">
       <%= yield %>
     </ul>
   </div>

@@ -2,25 +2,31 @@
 <% if selected_service_kind_id.nil? && params[:kind].present? %>
   <% selected_service_kind_id = ServiceKind.visible.find_by(legacy_key: params[:kind])&.id %>
 <% end %>
-<% select_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading focus:border-brand focus:ring-brand" %>
 <% secondary_btn = "inline-flex items-center justify-center rounded-lg border border-default bg-neutral-primary px-4 py-2.5 text-sm font-medium text-body transition-colors hover:bg-neutral-tertiary hover:text-heading focus:ring-4 focus:ring-brand-soft" %>
+<% clients = policy_scope(Client).all.map { |client| [client.name, client.id] } %>
+<% service_kinds = ServiceKind.visible.order(:name).map { |kind| [kind.name, kind.id] } %>
 
 <%= form_with(url: root_path, method: :get, data: {turbo_frame: "overdue_service_date_list", turbo_action: "advance"}) do |form| %>
   <div class="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
     <div class="min-w-40 flex-1">
       <%= form.label :client_id, "Cliente", class: "mb-2 block text-sm font-medium text-heading" %>
-      <%= form.collection_select :client_id, policy_scope(Client).all, :id, :name,
-                                 {include_blank: "Todos", selected: params[:client_id]},
-                                 class: select_classes %>
+      <%= render "shared/select_dropdown",
+                 form: form,
+                 field: :client_id,
+                 id: "service-date-filter-client",
+                 options: clients,
+                 selected: params[:client_id],
+                 include_blank: "Todos" %>
     </div>
     <div class="min-w-40 flex-1">
       <%= form.label :service_kind_id, "Tipo de servicio", class: "mb-2 block text-sm font-medium text-heading" %>
-      <%= form.collection_select :service_kind_id,
-                                 ServiceKind.visible.order(:name),
-                                 :id,
-                                 :name,
-                                 {include_blank: "Todos", selected: selected_service_kind_id},
-                                 class: select_classes %>
+      <%= render "shared/select_dropdown",
+                 form: form,
+                 field: :service_kind_id,
+                 id: "service-date-filter-service-kind",
+                 options: service_kinds,
+                 selected: selected_service_kind_id,
+                 include_blank: "Todos" %>
     </div>
     <div class="flex gap-2">
       <%= form.submit "Filtrar", class: ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>

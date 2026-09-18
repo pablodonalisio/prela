@@ -10,6 +10,7 @@ module ApplicationHelper
     building: "fa-solid fa-building",
     calendar_plus: "fas fa-calendar-plus",
     check: "fas fa-check",
+    chevron_down: "fa-solid fa-chevron-down",
     clients: "fa-solid fa-building",
     dot: "fa fa-circle",
     edit: "fas fa-edit",

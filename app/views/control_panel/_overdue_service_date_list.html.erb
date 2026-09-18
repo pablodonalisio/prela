@@ -4,7 +4,11 @@
   <% if control_panel_services.blank? %>
     <p class="my-4 text-center text-sm text-body-subtle">No hay servicios para mostrar</p>
   <% else %>
-    <div id="locationEquipmentsControl" class="my-4" data-accordion="collapse">
+    <div id="locationEquipmentsControl"
+         class="service-date-tree my-4"
+         data-accordion="collapse"
+         data-active-classes="bg-neutral-secondary-medium"
+         data-inactive-classes="bg-transparent">
       <% control_panel_services.sort_by { |equipment_kind, _| equipment_kind.name }.each_with_index do |(equipment_kind, occurrences), index| %>
         <%= render "control_panel/overdue_service_dates",
                    title: equipment_kind.name,

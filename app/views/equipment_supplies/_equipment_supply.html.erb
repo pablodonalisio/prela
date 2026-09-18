@@ -1,7 +1,7 @@
-<%= turbo_frame_tag equipment_supply, class: "overflow-hidden rounded-xl border border-default bg-neutral-primary" do %>
+<%= turbo_frame_tag equipment_supply, class: "rounded-xl border border-default bg-neutral-primary" do %>
   <%= image_tag image_for(equipment_supply, :avatar, ""),
                 alt: "Imagen de Batería",
-                class: "h-52 w-full bg-neutral-secondary-medium object-cover" %>
+                class: "h-52 w-full rounded-t-xl bg-neutral-secondary-medium object-cover" %>
   <div class="flex min-w-0 flex-col gap-3 p-4">
     <div class="flex items-start justify-between gap-2">
       <h5 class="truncate font-semibold text-heading"><%= equipment_supply.model.upcase %></h5>

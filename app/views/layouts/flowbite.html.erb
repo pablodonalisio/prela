@@ -28,16 +28,16 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-neutral-secondary text-body antialiased">
+  <body class="min-h-screen bg-neutral-primary text-body antialiased">
     <%= render "shared/navbar" %>
 
-    <%= turbo_frame_tag "flash", class: "pointer-events-none fixed inset-x-0 top-16 z-50 mx-auto flex w-full max-w-xl flex-col gap-2 px-3" do %>
+    <%= turbo_frame_tag "flash", class: "pointer-events-none fixed inset-x-0 top-16 z-50 mx-auto flex w-full max-w-xl flex-col gap-2 px-3 md:top-24" do %>
       <%= render "layouts/flash" %>
     <% end %>
 
     <% if user_signed_in? %>
       <div class="flex">
-        <aside class="sticky top-16 hidden h-[calc(100vh-4rem)] w-60 shrink-0 overflow-y-auto border-r border-default bg-neutral-primary md:block xl:w-72">
+        <aside class="sticky top-24 hidden h-[calc(100vh-6rem)] w-60 shrink-0 overflow-y-auto border-r border-default bg-neutral-primary md:block xl:w-72">
           <%= render "shared/sidebar", variant: :desktop %>
         </aside>
 
@@ -93,11 +93,11 @@
            data-controller="modal"
            data-action="turbo:frame-load->modal#open turbo:submit-end->modal#close">
         <div class="relative max-h-full w-full md:max-w-4xl">
-          <div class="relative flex max-h-[100vh] min-h-0 flex-col overflow-hidden bg-neutral-primary shadow-xl md:max-h-[90vh] md:rounded-xl"
+          <div class="relative flex max-h-[100vh] min-h-0 flex-col overflow-hidden bg-neutral-primary-soft shadow-xl md:max-h-[90vh] md:rounded-xl"
                id="modal_content">
             <%# turbo-frame is display:inline by default; it has to become a
                 flex column so the modal body can scroll under a fixed header. %>
-            <%= turbo_frame_tag "remote_modal", class: "flex min-h-0 flex-col" %>
+            <%= turbo_frame_tag "remote_modal", class: "flex min-h-0 flex-col bg-neutral-primary-soft" %>
           </div>
         </div>
       </div>

@@ -180,7 +180,7 @@ es:
       client_discarded: "Tu cliente ya no está disponible. Contactá al administrador."
     sessions:
       user:
-        signed_in: "Sesión iniciada correctamente. Bienvenido."
+        signed_in: ""
         signed_out: "Sesión cerrada."
   date:
     abbr_day_names:

@@ -47,23 +47,39 @@
 @source inline("transition-transform");
 @source inline("left-0");
 @source inline("top-0");
+@source inline("rotate-180");
+@source inline("bg-transparent");
+
+/* Service-date status dots: some of these classes are only returned from
+   helpers or interpolated into class strings, so they would otherwise be
+   dropped from the build and the icons would inherit text-heading. */
+@source inline("text-red-500");
+@source inline("text-yellow-400");
+@source inline("text-yellow-500");
+@source inline("text-green-500");
+@source inline("text-[0.45rem]");
+
+/* Flowbite v4 dropdown surface tokens. Some only appear in one partial. */
+@source inline("bg-neutral-primary-soft");
+@source inline("hover:bg-neutral-tertiary-medium");
+@source inline("hover:bg-danger-soft");
+@source inline("bg-danger-soft");
 
 @theme {
-  /* Prela's dark UI is blue-tinted, not neutral. Re-pointing Tailwind's gray
-     ramp at that tint makes every Flowbite semantic token inherit it, which
-     keeps the app's identity without forking Flowbite's token structure.
-     gray-800/gray-900 are the legacy Bootstrap $secondary and $body-bg-dark. */
-  --color-gray-50: #f6f7f9;
-  --color-gray-100: #eceef2;
-  --color-gray-200: #d5d9e2;
-  --color-gray-300: #b0b8c7;
-  --color-gray-400: #8592a6;
-  --color-gray-500: #667488;
-  --color-gray-600: #4c5c76;
-  --color-gray-700: #34415a;
-  --color-gray-800: #283243;
-  --color-gray-900: #1c2431;
-  --color-gray-950: #141a24;
+  /* Tailwind's classic gray so Flowbite's semantic tokens (`bg-neutral-*`,
+     borders, body text) match the imported theme. In dark mode
+     `--color-neutral-primary` is gray-950 (#030712). */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
 
   /* Scale built around the legacy Bootstrap $primary (#6760fa). Named
      `primary` because Flowbite's documented markup references primary-*. */
@@ -105,4 +121,30 @@
   --color-fg-brand-subtle: var(--color-primary-200);
   --color-fg-brand: var(--color-primary-400);
   --color-fg-brand-strong: var(--color-primary-300);
+}
+
+/* Applied only while the theme toggle is running so hover/open animations
+   stay snappy the rest of the time. */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 400ms ease, color 400ms ease, border-color 400ms ease,
+    fill 400ms ease, stroke 400ms ease, box-shadow 400ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transitioning,
+  html.theme-transitioning *,
+  html.theme-transitioning *::before,
+  html.theme-transitioning *::after {
+    transition: none !important;
+  }
+}
+
+/* Control-panel accordion: the expanded tree keeps heading-colored
+   titles; unselected sibling trees go gray. With nothing expanded,
+   every title stays heading-colored. */
+.service-date-tree:has(> h3 > [aria-expanded="true"]) > h3 > [aria-expanded="false"] {
+  color: var(--color-body);
 }

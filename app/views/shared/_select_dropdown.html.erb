@@ -1,0 +1,65 @@
+<%# Flowbite dropdown used as a select. Native <option> lists cannot take
+    Flowbite tokens, so the visible menu is the same surface as shared/dropdown
+    and a hidden input stays the real form field. Pass form:, field:, options:
+    ([[label, value], ...]), and optionally selected:, include_blank:, id:. %>
+<% id = local_assigns.fetch(:id) { "select-dropdown-#{SecureRandom.hex(4)}" } %>
+<% selected_value = local_assigns[:selected].presence.to_s %>
+<% blank_label = local_assigns[:include_blank] %>
+<% options = local_assigns.fetch(:options) %>
+<% selected_pair = options.find { |_label, value| value.to_s == selected_value } %>
+<% selected_label = selected_pair&.first || blank_label %>
+<% option_class = "block w-full truncate px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading" %>
+<% selected_class = "bg-neutral-tertiary-medium" %>
+
+<div class="relative" data-controller="select-dropdown">
+  <%= form.hidden_field field,
+                        value: selected_value,
+                        id: "#{form.field_id(field)}_value",
+                        data: {select_dropdown_target: "input"} %>
+
+  <button type="button"
+          id="<%= form.field_id(field) %>"
+          class="inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
+          data-select-dropdown-target="button"
+          data-action="click->select-dropdown#syncWidth"
+          data-dropdown-toggle="<%= id %>"
+          data-dropdown-placement="bottom-start"
+          aria-haspopup="listbox">
+    <span class="truncate" data-select-dropdown-target="label"><%= selected_label %></span>
+    <%= icon(:chevron_down, class: "ms-2 text-xs text-body-subtle") %>
+  </button>
+
+  <div id="<%= id %>"
+       data-select-dropdown-target="menu"
+       class="z-50 hidden max-h-56 overflow-y-auto rounded-base border border-default bg-neutral-primary-soft shadow-sm">
+    <ul class="py-2 text-sm text-heading" role="listbox">
+      <% if blank_label %>
+        <li>
+          <%= tag.button blank_label,
+                         type: "button",
+                         class: [option_class, (selected_class if selected_pair.nil?)],
+                         data: {
+                           action: "select-dropdown#choose",
+                           select_dropdown_target: "option",
+                           select_dropdown_value_param: "",
+                           select_dropdown_label_param: blank_label
+                         } %>
+        </li>
+      <% end %>
+
+      <% options.each do |label, value| %>
+        <li>
+          <%= tag.button label,
+                         type: "button",
+                         class: [option_class, (selected_class if value.to_s == selected_value)],
+                         data: {
+                           action: "select-dropdown#choose",
+                           select_dropdown_target: "option",
+                           select_dropdown_value_param: value.to_s,
+                           select_dropdown_label_param: label
+                         } %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>

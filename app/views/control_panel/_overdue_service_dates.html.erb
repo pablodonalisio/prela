@@ -33,7 +33,7 @@
         <%= icon(:dot, class: "text-[0.45rem] text-green-500") %>
       <% end %>
     </span>
-    <svg class="h-3 w-3 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+    <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
     </svg>
   </button>
@@ -44,7 +44,10 @@
     <% if overdue_services.blank? %>
       <p class="p-4 text-center text-sm text-body">No hay servicios para mostrar</p>
     <% else %>
-      <div id="<%= status_accordion_id %>" data-accordion="collapse">
+      <div id="<%= status_accordion_id %>"
+           data-accordion="collapse"
+           data-active-classes="bg-neutral-secondary-medium"
+           data-inactive-classes="bg-transparent">
         <% [
           {items: vencidos, key: "vencidos", title: "Vencidos", count: overdue_count, dot: "text-red-500", empty: "Sin vencidos", badge: "Vencido",
            badge_class: "rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300"},
@@ -68,7 +71,7 @@
                   (<%= section[:count] %>)
                 <% end %>
               </span>
-              <svg class="h-3 w-3 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+              <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
               </svg>
             </button>
