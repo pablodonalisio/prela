@@ -1,0 +1,45 @@
+<%# locals: (form:, field: :date, label: "Fecha", value: nil, disabled: false, min: nil, max: nil) %>
+<% timestamp = (value || form.object.public_send(field) || Time.current).in_time_zone %>
+<% date_id = "#{form.field_id(field)}_date" %>
+<% time_id = "#{form.field_id(field)}_time" %>
+<% invalid = form.object.errors[field].any? %>
+<% input_classes = "block w-full rounded-lg border bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand disabled:cursor-not-allowed disabled:opacity-60 #{invalid ? "border-red-500" : "border-default"}" %>
+
+<div class="mb-5"
+     data-controller="datetime-field"
+     data-datetime-field-offset-value="<%= Time.zone.now.formatted_offset %>">
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div>
+      <%= form.label field, label, for: date_id, class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= tag.input type: "date",
+                    id: date_id,
+                    value: timestamp.to_date.iso8601,
+                    disabled: disabled,
+                    min: min&.iso8601,
+                    max: max&.iso8601,
+                    class: input_classes,
+                    data: {datetime_field_target: "date"} %>
+    </div>
+    <div>
+      <%= form.label field, "Hora", for: time_id, class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= tag.input type: "time",
+                    id: time_id,
+                    value: timestamp.strftime("%H:%M"),
+                    disabled: disabled,
+                    class: input_classes,
+                    data: {
+                      datetime_field_target: "time",
+                      action: "input->datetime-field#sync change->datetime-field#sync"
+                    } %>
+    </div>
+  </div>
+
+  <%= form.hidden_field field,
+                         value: timestamp.iso8601,
+                         disabled: disabled,
+                         data: {datetime_field_target: "output"} %>
+
+  <% if invalid %>
+    <p class="mt-2 text-sm text-fg-danger"><%= form.object.errors.full_messages_for(field).to_sentence %></p>
+  <% end %>
+</div>

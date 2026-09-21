@@ -11,3 +11,4 @@ pin "dropzone" # @6.0.0
 pin "just-extend" # @5.1.1
 pin "@rails/activestorage", to: "@rails--activestorage.js" # @8.1.200
 pin "flowbite", to: "https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.turbo.min.js"
+pin "flowbite-datepicker", to: "https://cdn.jsdelivr.net/npm/flowbite-datepicker@2.0.0/dist/Datepicker.esm.js"

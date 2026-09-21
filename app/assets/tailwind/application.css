@@ -13,6 +13,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @source "../../../node_modules/flowbite";
+@source "../../../node_modules/flowbite-datepicker";
 @source "../../views";
 @source "../../helpers";
 @source "../../javascript";
@@ -141,6 +142,21 @@ html.theme-transitioning *::after {
   html.theme-transitioning *::after {
     transition: none !important;
   }
+}
+
+/* The datepicker dropdown is portaled on body, so it has to sit above the
+   modal (z-50). flowbite-datepicker also leaves `block` on the picker when
+   it hides; `hidden` has to win that conflict. */
+.datepicker.dropdown {
+  z-index: 80;
+}
+
+.datepicker.hidden {
+  display: none !important;
+}
+
+.dark input[type="time"] {
+  color-scheme: dark;
 }
 
 /* Control-panel accordion: the expanded tree keeps heading-colored

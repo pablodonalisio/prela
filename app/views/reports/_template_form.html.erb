@@ -1,11 +1,10 @@
 <h2 class="mb-3 mt-4 text-lg font-semibold text-heading">Fecha</h2>
-<%= f.input :date,
-            as: :datetime,
-            label: "Fecha",
-            value: report.date || Time.now.in_time_zone,
-            start_year: 2016,
-            end_year: Date.today.year,
-            disabled: !current_user.admin? %>
+<%= render "shared/datetime_picker",
+           form: f,
+           value: report.date || Time.current,
+           disabled: !current_user.admin?,
+           min: Date.new(2016, 1, 1),
+           max: Date.new(Date.current.year, 12, 31) %>
 
 <% report_template = report.report_template || @all_templates&.first %>
 <% if report_template %>
