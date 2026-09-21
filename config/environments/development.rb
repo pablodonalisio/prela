@@ -28,8 +28,12 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :development_aws
+  # Disk when DEV_DATA_SOURCE=local (default); S3 when DEV_DATA_SOURCE=remote.
+  remote_dev_data = ENV["DEV_DATA_SOURCE"] == "remote"
+  config.active_storage.service = remote_dev_data ? :development_aws : :local
+  config.after_initialize do
+    puts "[development] data source: #{remote_dev_data ? "remote" : "local"}"
+  end
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
