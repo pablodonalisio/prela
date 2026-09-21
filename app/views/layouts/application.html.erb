@@ -3,6 +3,9 @@
   <head>
     <title>Prela</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <% if Rails.env.development? %>
+      <meta name="turbo-prefetch" content="false">
+    <% end %>
     <%= favicon_link_tag "prela_icon.png" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
