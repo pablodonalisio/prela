@@ -1,7 +1,9 @@
 <%# Flowbite dropdown used as a select. Native <option> lists cannot take
     Flowbite tokens, so the visible menu is the same surface as shared/dropdown
     and a hidden input stays the real form field. Pass form:, field:, options:
-    ([[label, value], ...]), and optionally selected:, include_blank:, id:. %>
+    ([[label, value], ...]), and optionally selected:, include_blank:, id:.
+    Keep classes in sync with app/javascript/select_menu_styles.js — native
+    <select> elements elsewhere are upgraded to this same surface. %>
 <% id = local_assigns.fetch(:id) { "select-dropdown-#{SecureRandom.hex(4)}" } %>
 <% selected_value = local_assigns[:selected].presence.to_s %>
 <% blank_label = local_assigns[:include_blank] %>

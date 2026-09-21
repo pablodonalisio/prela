@@ -50,6 +50,7 @@ export default class extends Controller {
 
     if (this.hasIntervalUnitInputTarget && defaults.interval_unit != null) {
       this.intervalUnitInputTarget.value = defaults.interval_unit;
+      this.intervalUnitInputTarget.dispatchEvent(new Event("change", {bubbles: true}));
     }
   }
 

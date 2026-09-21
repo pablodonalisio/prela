@@ -64,6 +64,7 @@
 @source inline("hover:bg-neutral-tertiary-medium");
 @source inline("hover:bg-danger-soft");
 @source inline("bg-danger-soft");
+@source inline("!z-[70]");
 
 @theme {
   /* Tailwind's classic gray so Flowbite's semantic tokens (`bg-neutral-*`,

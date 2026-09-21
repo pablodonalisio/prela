@@ -1,4 +1,10 @@
 import { Controller } from "@hotwired/stimulus";
+import {
+  SELECT_LIST_CLASSES,
+  SELECT_MENU_CLASSES,
+  SELECT_OPTION_CLASSES,
+  SELECT_OPTION_SELECTED_CLASS
+} from "select_menu_styles";
 
 // Turns a <select> into a searchable combobox.
 // The original <select> is kept hidden and stays the real form field,
@@ -42,7 +48,7 @@ export default class extends Controller {
 
     this.dropdown = document.createElement("ul");
     this.dropdown.className =
-      "combobox-dropdown absolute left-0 top-full z-50 mt-1 hidden max-h-56 w-full list-none overflow-y-auto rounded-lg border border-default bg-neutral-primary p-0 shadow-lg";
+      `combobox-dropdown absolute left-0 top-full mt-1 w-full list-none p-0 ${SELECT_MENU_CLASSES} ${SELECT_LIST_CLASSES}`;
     this.wrapper.appendChild(this.dropdown);
 
     this.input.addEventListener("input", () => this._onInput());
@@ -66,15 +72,15 @@ export default class extends Controller {
     this.dropdown.innerHTML = "";
     if (filtered.length === 0) {
       const li = document.createElement("li");
-      li.className = "px-3 py-2 text-sm text-body-subtle";
+      li.className = "px-4 py-2 text-sm text-body-subtle";
       li.textContent = "Sin resultados";
       this.dropdown.appendChild(li);
     } else {
       filtered.forEach((opt) => {
         const li = document.createElement("li");
         li.className =
-          "combobox-option cursor-pointer px-3 py-2 text-sm text-heading hover:bg-neutral-tertiary" +
-          (opt.value === this.element.value ? " bg-brand text-white hover:bg-brand-strong" : "");
+          `combobox-option cursor-pointer ${SELECT_OPTION_CLASSES}` +
+          (opt.value === this.element.value ? ` ${SELECT_OPTION_SELECTED_CLASS}` : "");
         li.textContent = opt.label;
         li.dataset.value = opt.value;
         li.addEventListener("mousedown", (e) => {
@@ -138,10 +144,10 @@ export default class extends Controller {
   }
 
   _highlight(items, idx) {
-    items.forEach((i) => i.classList.remove("combobox-highlighted", "bg-brand", "text-white"));
+    items.forEach((i) => i.classList.remove("combobox-highlighted", SELECT_OPTION_SELECTED_CLASS));
     const target = items[Math.max(0, Math.min(idx, items.length - 1))];
     if (target) {
-      target.classList.add("combobox-highlighted", "bg-brand", "text-white");
+      target.classList.add("combobox-highlighted", SELECT_OPTION_SELECTED_CLASS);
       target.scrollIntoView({ block: "nearest" });
     }
   }

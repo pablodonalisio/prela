@@ -19,6 +19,7 @@ export default class extends Controller {
     const { value, label } = event.params;
     this.inputTarget.value = value ?? "";
     this.labelTarget.textContent = label;
+    this.inputTarget.dispatchEvent(new Event("change", {bubbles: true}));
     this._highlight(event.currentTarget);
     this._hideMenu();
   }
