@@ -4,12 +4,16 @@
 # or operating system, you probably want to add a global ignore instead:
 #   git config --global core.excludesfile '~/.gitignore_global'
 
+# Ignore bundler gemfile lock.
+/.gemfile.lock
+
 # Ignore bundler config.
 /.bundle
 
 # Ignore all environment files (except templates).
 /.env*
 !/.env*.erb
+!/.env.example
 
 # Ignore all logfiles and tempfiles.
 /log/*
