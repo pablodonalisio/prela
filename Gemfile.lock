@@ -211,13 +211,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pdf-core (0.10.0)
-<<<<<<< HEAD
     pg (1.6.2-x64-mingw-ucrt)
-=======
-    pg (1.6.2)
-    pg (1.6.2-x64-mingw-ucrt)
-    popper_js (2.11.8)
->>>>>>> c2a5f8e8e33b25325e10cde628ae7876c3f8801a
     pp (0.6.2)
       prettyprint
     prawn (2.5.0)
