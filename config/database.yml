@@ -23,8 +23,12 @@ default: &default
 
 development:
   <<: *default
-  # database: prela_development
+  <% if ENV["DEV_DATA_SOURCE"] == "remote" %>
   url: <%= Rails.application.credentials.dig(:development_db, :url) %>
+  <% else %>
+  database: <%= ENV['DATABASE_NAME'] %>
+  host: localhost
+  <% end %>
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
