@@ -1,7 +1,7 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  # Font Awesome is loaded by the Flowbite layout, so #icon renders the same
+  # Font Awesome is loaded by the application layout, so #icon renders the same
   # everywhere. Views name icons semantically and never touch Font Awesome
   # classes directly.
   ICON_CLASSES = {

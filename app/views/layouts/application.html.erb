@@ -1,53 +1,104 @@
 <!DOCTYPE html>
-<html data-bs-theme="dark">
+<html lang="es" class="dark">
   <head>
     <title>Prela</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <% if Rails.env.development? %>
-      <meta name="turbo-prefetch" content="false">
-    <% end %>
     <%= favicon_link_tag "prela_icon.png" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%# Applies the stored theme before first paint so light-mode users do not
+        see a flash of the dark theme. Dark stays the default. %>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("prela:theme") === "light") {
+            document.documentElement.classList.remove("dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "client_show", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "template_report", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "fontawesome", "data-turbo-track": "reload" %>
     <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
     <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= render partial: 'shared/navbar' %>
-    <%= turbo_frame_tag "flash", class: "fixed-top bg-light" do %>
-      <%= render "layouts/flash"%>
+  <body class="min-h-screen bg-neutral-primary text-body antialiased" data-controller="native-select datepicker">
+    <%= render "shared/navbar" %>
+
+    <%= turbo_frame_tag "flash", class: "pointer-events-none fixed inset-x-0 top-16 z-50 mx-auto flex w-full max-w-xl flex-col gap-2 px-3 md:top-24" do %>
+      <%= render "layouts/flash" %>
     <% end %>
-    <% if user_signed_in?%>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-12 bg-secondary border-top order-2 order-md-1 position-fixed bottom-0 start-0 end-0 d-sm-block d-md-none px-0 border-top"
-               style="z-index: 1030;">
-            <%= render partial: 'shared/sidebar' %>
+
+    <% if user_signed_in? %>
+      <div class="flex">
+        <aside class="sticky top-24 hidden h-[calc(100vh-6rem)] w-60 shrink-0 overflow-y-auto border-r border-default bg-neutral-primary md:block xl:w-72">
+          <%= render "shared/sidebar", variant: :desktop %>
+        </aside>
+
+        <main class="min-w-0 flex-1 pb-20 md:pb-0">
+          <%= yield %>
+        </main>
+      </div>
+
+      <div class="fixed inset-x-0 bottom-0 z-40 border-t border-default bg-neutral-primary md:hidden">
+        <%= render "shared/sidebar", variant: :mobile %>
+      </div>
+
+      <% if @filter_params %>
+        <button type="button"
+                class="fixed bottom-20 right-5 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-brand text-white shadow-lg transition-colors hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft md:hidden"
+                data-drawer-target="filters-drawer"
+                data-drawer-toggle="filters-drawer"
+                data-drawer-placement="left"
+                aria-controls="filters-drawer"
+                aria-label="Abrir filtros">
+          <%= icon(:filter) %>
+        </button>
+
+        <div id="filters-drawer"
+             class="fixed left-0 top-0 z-50 h-screen w-80 max-w-[85vw] -translate-x-full overflow-y-auto bg-neutral-primary p-4 transition-transform md:hidden"
+             tabindex="-1"
+             aria-labelledby="filters-drawer-label">
+          <div class="mb-4 flex items-center justify-between">
+            <h5 id="filters-drawer-label" class="text-base font-semibold text-heading">Filtros</h5>
+
+            <button type="button"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-body transition-colors hover:bg-neutral-tertiary hover:text-heading"
+                    data-drawer-hide="filters-drawer"
+                    aria-controls="filters-drawer"
+                    aria-label="Cerrar filtros">
+              <svg class="h-3.5 w-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+            </button>
           </div>
-          <div class="col-12 col-md-3 col-xl-2 bg-secondary border-top order-2 order-md-1 d-none d-md-block position-sticky overflow-auto"
-               style="top: 95px; height: calc(100vh - 95px)">
-            <%= render partial: 'shared/sidebar' %>
+
+          <%= render "filter_form", filter_params: @filter_params, order: @order %>
+        </div>
+      <% end %>
+
+      <%# Shared modal shell: pages load their content into the frame inside it. %>
+      <div id="remote_modal_shell"
+           class="fixed inset-0 z-50 hidden h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:p-4"
+           tabindex="-1"
+           aria-hidden="true"
+           aria-labelledby="remote_modal_title"
+           data-controller="modal"
+           data-action="turbo:frame-load->modal#open turbo:submit-end->modal#close">
+        <div class="relative max-h-full w-full md:max-w-4xl">
+          <div class="relative flex max-h-[100vh] min-h-0 flex-col overflow-hidden bg-neutral-primary-soft shadow-xl md:max-h-[90vh] md:rounded-xl"
+               id="modal_content">
+            <%# turbo-frame is display:inline by default; it has to become a
+                flex column so the modal body can scroll under a fixed header. %>
+            <%= turbo_frame_tag "remote_modal", class: "flex min-h-0 flex-col bg-neutral-primary-soft" %>
           </div>
-          <main class="col-12 col-md-9 col-xl-10 order-1 order-md-2 mb-5 mb-md-0">
-            <%= yield %>
-            <div class="modal fade"
-                id="shareRecipeModal"
-                tabindex="-1"
-                aria-labelledby="newClientRemoteModalLabel"
-                aria-hidden="true"
-                data-controller="remote-modal"
-                data-action="turbo:frame-load->remote-modal#open turbo:submit-end->remote-modal#close">
-              <div class="modal-dialog modal-dialog-centered modal-fullscreen" role="document">
-                <div class="modal-content overflow-auto" id="modal_content">
-                  <%= turbo_frame_tag "remote_modal" %>
-                </div>
-              </div>
-            </div>
-          </main>
         </div>
       </div>
     <% else %>
