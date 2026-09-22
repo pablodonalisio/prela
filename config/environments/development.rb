@@ -32,7 +32,9 @@ Rails.application.configure do
   remote_dev_data = ENV["DEV_DATA_SOURCE"] == "remote"
   config.active_storage.service = remote_dev_data ? :development_aws : :local
   config.after_initialize do
-    puts "[development] data source: #{remote_dev_data ? "remote" : "local"}"
+    puts "****************************************************"
+    puts "[DEVELOPMENT] DATA SOURCE: ***#{remote_dev_data ? "REMOTE" : "LOCAL"}***"
+    puts "****************************************************"
   end
 
   # Don't care if the mailer can't send.

@@ -26,7 +26,7 @@ development:
   <% if ENV["DEV_DATA_SOURCE"] == "remote" %>
   url: <%= Rails.application.credentials.dig(:development_db, :url) %>
   <% else %>
-  database: prela_development
+  database: <%= ENV['DATABASE_NAME'] %>
   host: localhost
   <% end %>
 
