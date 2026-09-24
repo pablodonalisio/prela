@@ -21,7 +21,7 @@
 
   <button type="button"
           id="<%= form.field_id(field) %>"
-          class="inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
+          class="inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
           data-select-dropdown-target="button"
           data-action="click->select-dropdown#syncWidth"
           data-dropdown-toggle="<%= id %>"
@@ -33,7 +33,7 @@
 
   <div id="<%= id %>"
        data-select-dropdown-target="menu"
-       class="z-50 hidden max-h-56 overflow-y-auto rounded-base border border-default bg-neutral-primary-soft shadow-sm">
+       class="z-50 hidden max-h-56 overflow-y-auto rounded-base border border-default bg-neutral-secondary-medium shadow-sm">
     <ul class="py-2 text-sm text-heading" role="listbox">
       <% if blank_label %>
         <li>

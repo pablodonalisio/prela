@@ -33,7 +33,7 @@ export default class extends Controller {
     this.input = document.createElement("input");
     this.input.type = "text";
     this.input.className =
-      "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 pr-9 text-sm text-heading focus:border-brand focus:ring-brand";
+      "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 pr-9 text-sm text-heading focus:border-brand focus:ring-brand";
     this.input.placeholder = this.element.options[0]?.text || "Buscar…";
     this.input.autocomplete = "off";
     this.wrapper.appendChild(this.input);

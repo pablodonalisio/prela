@@ -37,7 +37,17 @@ export default class extends Controller {
     const frame = this.element.querySelector("#remote_modal");
     if (!frame || frame.innerHTML.trim() === "") return;
 
+    // Frame load re-inits Flowbite dropdowns and drops the open menu without
+    // adding `hidden`, so close every instance once the dialog is up.
+    this._hideDropdowns();
     this.modal?.show();
+  }
+
+  _hideDropdowns() {
+    const dropdowns = window.FlowbiteInstances?.getInstances?.("Dropdown");
+    if (!dropdowns) return;
+
+    Object.values(dropdowns).forEach((dropdown) => dropdown?.hide?.());
   }
 
   dismiss() {

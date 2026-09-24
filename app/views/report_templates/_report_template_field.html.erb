@@ -1,5 +1,5 @@
 <% optimal_fields_section = %w[measurements room_specifications].include?(section) %>
-<% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading" %>
+<% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading" %>
 <%= turbo_frame_tag "field_#{field_key}", data: {sortable_fields_target: "item"} do %>
   <div class="field-row mb-3 flex flex-wrap items-start gap-2">
     <button type="button"

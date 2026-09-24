@@ -1,14 +1,7 @@
-<%= turbo_frame_tag "main_content" do %>
-  <%= render "shared/content_header", title: @battery.model.upcase do %>
-    <%= render "shared/dropdown" do %>
-      <%= render "shared/button_box",
-                 edit_path: edit_battery_path(@battery),
-                 delete_path: battery_path(@battery),
-                 confirm: "¿Seguro querés borrar la Batería?" %>
-    <% end %>
-  <% end %>
+<%= render "shared/remote_modal", title: @battery.model.upcase do %>
+  <%= render @battery %>
 
-  <%= turbo_frame_tag @battery do %>
-    <%= render @battery %>
-  <% end %>
+  <%= link_to "Editar", edit_battery_path(@battery),
+              class: "mt-4 inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft",
+              data: {turbo_frame: "remote_modal"} %>
 <% end %>

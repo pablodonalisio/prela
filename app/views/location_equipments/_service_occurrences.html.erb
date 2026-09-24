@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "service_occurrences" do %>
-  <p class="mb-1 mt-2 text-xs font-semibold uppercase tracking-wide text-heading">Servicios</p>
+  <h1 class="mb-1 mt-4 font-semibold uppercase tracking-wide text-heading">Servicios</h1>
   <% occurrences = location_equipment.service_occurrences
        .includes(location_equipment_service: :service_kind)
        .order(Arel.sql("COALESCE(service_occurrences.completed_on, service_occurrences.planned_on, service_occurrences.due_on) DESC")) %>

@@ -91,7 +91,7 @@
   gap: 0.15rem;
   box-sizing: border-box;
   height: var(--organigram-card-h);
-  background-color: color-mix(in srgb, var(--color-gray-950) 55%, transparent);
+  background-color: var(--color-gray-300);
   border: 1px solid color-mix(in srgb, white 8%, transparent);
   border-radius: 0.65rem;
   padding: 0.65rem 0.85rem;
@@ -100,6 +100,10 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
+}
+
+html.dark .client-show .organigram-card {
+  background-color: var(--color-neutral-secondary-medium);
 }
 
 .client-show .organigram-card-line {

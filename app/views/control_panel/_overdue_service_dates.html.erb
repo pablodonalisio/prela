@@ -30,7 +30,7 @@
         <span>(<%= suspended_count %>)</span>
       <% end %>
       <% if overdue_count.zero? && due_soon_count.zero? && suspended_count.zero? %>
-        <%= icon(:dot, class: "text-[0.45rem] text-green-500") %>
+        <%= icon(:dot, class: "text-[0.45rem] text-gray-400") %>
       <% end %>
     </span>
     <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -40,33 +40,34 @@
 </h3>
 
 <div id="<%= collapse %>" class="hidden" aria-labelledby="<%= heading_id %>">
-  <div class="max-h-[300px] overflow-auto border border-t-0 border-default">
+  <div class="border-x border-b border-default p-3">
     <% if overdue_services.blank? %>
       <p class="p-4 text-center text-sm text-body">No hay servicios para mostrar</p>
     <% else %>
       <div id="<%= status_accordion_id %>"
+           class="service-date-tree"
            data-accordion="collapse"
            data-active-classes="bg-neutral-secondary-medium"
            data-inactive-classes="bg-transparent">
         <% [
           {items: vencidos, key: "vencidos", title: "Vencidos", count: overdue_count, dot: "text-red-500", empty: "Sin vencidos", badge: "Vencido",
-           badge_class: "rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300"},
+           badge_class: "rounded-full bg-red-700 px-2.5 py-0.5 text-xs font-medium text-white dark:bg-red-900"},
           {items: vence_pronto, key: "vence-pronto", title: "Vence pronto", count: due_soon_count, dot: "text-yellow-400", empty: "Sin vencimientos próximos", badge: "Vence pronto",
-           badge_class: "rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"},
+           badge_class: "rounded-full bg-yellow-700 px-2.5 py-0.5 text-xs font-medium text-white dark:bg-yellow-900"},
           {items: suspendidos, key: "suspendidos", title: "Suspendidos", count: suspended_count, dot: "text-gray-400", empty: "Sin suspendidos", badge: "Suspendido",
-           badge_class: "rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"}
+           badge_class: "rounded-full bg-gray-600 px-2.5 py-0.5 text-xs font-medium text-white dark:bg-gray-700"}
         ].each_with_index do |section, index| %>
           <% body_id = "#{collapse}-#{section[:key]}" %>
           <% section_heading_id = "#{body_id}-heading" %>
           <h4 id="<%= section_heading_id %>">
             <button type="button"
-                    class="flex w-full items-center justify-between gap-3 border-b border-default p-3 text-left text-sm font-medium text-heading hover:bg-neutral-tertiary <%= "border-t" unless index.zero? %>"
+                    class="flex w-full items-center justify-between gap-3 border border-default p-4 text-left text-sm font-medium text-heading hover:bg-neutral-tertiary <%= index.zero? ? "rounded-t-lg" : "border-t-0" %>"
                     data-accordion-target="#<%= body_id %>"
                     aria-expanded="false"
                     aria-controls="<%= body_id %>">
               <span class="flex items-center gap-2">
                 <%= section[:title] %>
-                <%= icon(:dot, class: "text-[0.45rem] #{section[:dot]}") %>
+                <%= icon(:dot, class: "text-[0.45rem] #{section[:count].positive? ? section[:dot] : "text-gray-400"}") %>
                 <% if section[:count].positive? %>
                   (<%= section[:count] %>)
                 <% end %>
@@ -76,11 +77,11 @@
               </svg>
             </button>
           </h4>
-          <div id="<%= body_id %>" class="hidden" aria-labelledby="<%= section_heading_id %>">
+          <div id="<%= body_id %>" class="hidden border-x border-b border-default" aria-labelledby="<%= section_heading_id %>">
             <% if section[:items].blank? %>
               <p class="p-3 text-center text-sm text-body-subtle"><%= section[:empty] %></p>
             <% else %>
-              <ul>
+              <ul class="max-h-[300px] overflow-auto">
                 <% section[:items].each do |service_occurrence| %>
                   <%= render "control_panel/service_occurrence_row",
                              service_occurrence: service_occurrence,

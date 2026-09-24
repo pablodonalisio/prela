@@ -5,13 +5,13 @@
   <%= f.hidden_field :_destroy, value: false %>
 
   <div class="flex items-center">
-    <%= f.check_box :completed, class: "h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-brand" %>
+    <%= f.check_box :completed, class: "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-brand" %>
     <%= f.label :completed, t("activerecord.attributes.report_task.completed"), class: "sr-only" %>
   </div>
 
   <div class="min-w-48 flex-1">
     <%= f.text_field :name,
-                     class: "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading",
+                     class: "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading",
                      placeholder: t("reports.template_report.task_placeholder") %>
   </div>
 

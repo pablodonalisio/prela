@@ -6,18 +6,18 @@
       <div class="mb-5">
         <%= f.label :email, class: "mb-2 block text-sm font-medium text-heading" %>
         <%= f.email_field :email, autofocus: true, autocomplete: "email",
-                          class: "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
+                          class: "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
       </div>
 
       <div class="mb-5">
         <%= f.label :password, class: "mb-2 block text-sm font-medium text-heading" %>
         <%= f.password_field :password, autocomplete: "current-password",
-                             class: "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
+                             class: "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
       </div>
 
       <% if devise_mapping.rememberable? %>
         <div class="mb-5 flex items-center gap-2">
-          <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-2 focus:ring-brand" %>
+          <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-2 focus:ring-brand" %>
           <%= f.label :remember_me, "Recordarme", class: "text-sm font-medium text-heading" %>
         </div>
       <% end %>

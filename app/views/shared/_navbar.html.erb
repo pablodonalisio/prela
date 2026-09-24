@@ -1,7 +1,7 @@
 <nav class="sticky top-0 z-40 h-16 bg-brand shadow-sm md:h-24">
   <div class="mx-auto flex h-full items-center gap-4 px-3 md:px-4">
-    <%= link_to root_path, class: "flex h-10 shrink-0 items-center rounded-md bg-white px-2" do %>
-      <%= image_tag "prela_logotipo-1.png", class: "w-auto", alt: "Prela" %>
+    <%= link_to root_path, class: "flex h-11 shrink-0 items-center rounded-md bg-white px-2 md:h-[4.375rem]" do %>
+      <%= image_tag "prela_logotipo-1.png", class: "h-full w-auto", alt: "Prela" %>
     <% end %>
 
     <div class="hidden min-w-0 flex-1 items-center md:flex">
@@ -34,7 +34,7 @@
         </button>
 
         <div id="navbar-user-menu"
-             class="z-50 hidden w-72 max-w-[calc(100vw-1.5rem)] divide-y divide-default rounded-base border border-default bg-neutral-primary-soft shadow-sm">
+             class="z-50 hidden w-72 max-w-[calc(100vw-1.5rem)] divide-y divide-default rounded-base border border-default bg-neutral-secondary-medium shadow-sm">
           <div class="px-4 py-3 text-sm text-heading">
             <div class="truncate font-medium"><%= current_user.email %></div>
           </div>

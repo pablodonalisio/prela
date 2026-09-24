@@ -3,7 +3,7 @@
 <% date_id = "#{form.field_id(field)}_date" %>
 <% time_id = "#{form.field_id(field)}_time" %>
 <% invalid = form.object.errors[field].any? %>
-<% input_classes = "block w-full rounded-lg border bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand disabled:cursor-not-allowed disabled:opacity-60 #{invalid ? "border-red-500" : "border-default"}" %>
+<% input_classes = "block w-full rounded-lg border bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand disabled:cursor-not-allowed disabled:opacity-60 #{invalid ? "border-red-500" : "border-default"}" %>
 
 <div class="mb-5"
      data-controller="datetime-field"
@@ -22,14 +22,19 @@
     </div>
     <div>
       <%= form.label field, "Hora", for: time_id, class: "mb-2 block text-sm font-medium text-heading" %>
-      <%= tag.input type: "time",
+      <%= tag.input type: "text",
                     id: time_id,
                     value: timestamp.strftime("%H:%M"),
                     disabled: disabled,
+                    inputmode: "numeric",
+                    maxlength: 5,
+                    placeholder: "HH:MM",
+                    pattern: "([01][0-9]|2[0-3]):[0-5][0-9]",
+                    autocomplete: "off",
                     class: input_classes,
                     data: {
                       datetime_field_target: "time",
-                      action: "input->datetime-field#sync change->datetime-field#sync"
+                      action: "input->datetime-field#sync change->datetime-field#sync blur->datetime-field#normalizeTime"
                     } %>
     </div>
   </div>

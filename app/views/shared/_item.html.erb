@@ -28,9 +28,11 @@
       <% end %>
 
       <div class="mt-auto flex flex-wrap items-center gap-2">
+        <%# Batteries open in the shared remote modal. Equipment cards still
+            navigate to their own page. %>
         <%= link_to "Ver", url_for(item),
-                    class: "inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft",
-                    data: {turbo_frame: :_top} %>
+                    class: "inline-flex items-center rounded-lg bg-brand h-10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft",
+                    data: {turbo_frame: (item.is_a?(Battery) ? "remote_modal" : :_top)} %>
 
         <% if lookup_context.template_exists?("item_actions", item.class.to_s.underscore.pluralize, true) %>
           <%= render partial: "#{item.class.to_s.underscore.pluralize}/item_actions", locals: {item: item} %>

@@ -1,6 +1,6 @@
 <%# locals: (field_definitions:, field_values:, param_prefix:, id_prefix:) %>
 <% if field_definitions&.any? %>
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
     <% field_definitions.each do |field_key, definition| %>
       <% field_name = definition["name"] %>
       <% field_type = definition["type"] %>
@@ -9,12 +9,12 @@
       <% current_value = field_values[field_key] %>
       <% input_id = "#{id_prefix}_#{field_key}" %>
       <% input_name = "#{param_prefix}[#{field_key}]" %>
-      <% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
+      <% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand" %>
 
       <div>
         <% if field_type == "boolean" %>
           <div class="flex h-full items-center gap-2 pt-6">
-            <input class="h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-2 focus:ring-brand"
+            <input class="h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-2 focus:ring-brand"
                    type="checkbox"
                    id="<%= input_id %>"
                    name="<%= input_name %>"

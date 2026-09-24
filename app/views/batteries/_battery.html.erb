@@ -1,15 +1,14 @@
-<div class="grid gap-6 p-4 md:grid-cols-3 md:p-6">
-  <div class="md:col-span-1">
-    <%= image_tag image_for(@battery, :avatar, ""),
-                  alt: "Imagen de Batería",
-                  class: "w-full rounded-xl border border-default object-cover" %>
-  </div>
-  <div class="space-y-4 md:col-span-2">
-    <p class="flex flex-wrap items-center gap-2">
+<div class="space-y-4">
+  <%= image_tag image_for(@battery, :avatar, ""),
+                alt: "Imagen de Batería",
+                class: "max-h-64 w-full rounded-xl border border-default bg-neutral-secondary-medium object-contain" %>
+
+  <div class="flex items-center justify-center gap-6">
+    <p class="flex items-center gap-2">
       <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">Voltaje</span>
       <span class="text-heading"><%= @battery.voltage %></span>
     </p>
-    <p class="flex flex-wrap items-center gap-2">
+    <p class="flex items-center gap-2">
       <span class="rounded-md bg-brand-soft px-2 py-0.5 text-sm font-medium text-fg-brand">Amper</span>
       <span class="text-heading"><%= @battery.amps %></span>
     </p>

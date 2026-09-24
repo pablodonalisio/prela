@@ -4,9 +4,9 @@
 # do not need to change.
 
 SimpleForm.setup do |config|
-  input = "block w-full rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand"
+  input = "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand"
   select = input
-  checkbox = "h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-2 focus:ring-brand"
+  checkbox = "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-2 focus:ring-brand"
   label = "mb-2 block text-sm font-medium text-heading"
   hint = "mt-2 text-sm text-body-subtle"
   error = "mt-2 text-sm text-fg-danger"
@@ -81,7 +81,7 @@ SimpleForm.setup do |config|
     b.optional :minlength
     b.optional :readonly
     b.use :label, class: label
-    b.use :input, class: "block w-full cursor-pointer rounded-lg border border-default bg-neutral-secondary-soft text-sm text-body file:me-4 file:border-0 file:bg-neutral-tertiary file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-heading", error_class: error_input
+    b.use :input, class: "block w-full cursor-pointer rounded-lg border border-default bg-neutral-secondary-medium text-sm text-body file:me-4 file:border-0 file:bg-neutral-tertiary file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-heading", error_class: error_input
     b.use :full_error, wrap_with: {class: error}
     b.use :hint, wrap_with: {class: hint}
   end
@@ -176,7 +176,7 @@ SimpleForm.setup do |config|
     b.optional :readonly
     b.use :label, class: "text-sm font-medium text-heading sm:mb-0 sm:text-right"
     b.wrapper :grid_wrapper, class: "sm:col-span-2" do |ba|
-      ba.use :input, class: "block w-full cursor-pointer rounded-lg border border-default bg-neutral-secondary-soft text-sm text-body", error_class: error_input
+      ba.use :input, class: "block w-full cursor-pointer rounded-lg border border-default bg-neutral-secondary-medium text-sm text-body", error_class: error_input
       ba.use :full_error, wrap_with: {class: error}
       ba.use :hint, wrap_with: {class: hint}
     end

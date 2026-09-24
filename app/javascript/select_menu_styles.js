@@ -2,10 +2,10 @@
 // Native <option> lists are painted by the OS and cannot use Flowbite tokens.
 
 export const SELECT_BUTTON_CLASSES =
-  "inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-soft p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand";
+  "inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand";
 
 export const SELECT_MENU_CLASSES =
-  "z-50 hidden max-h-56 overflow-y-auto rounded-base border border-default bg-neutral-primary-soft shadow-sm";
+  "z-50 hidden max-h-56 overflow-y-auto rounded-base border border-default bg-neutral-secondary-medium shadow-sm";
 
 export const SELECT_LIST_CLASSES = "py-2 text-sm text-heading";
 

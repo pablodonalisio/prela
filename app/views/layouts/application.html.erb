@@ -92,8 +92,8 @@
            aria-labelledby="remote_modal_title"
            data-controller="modal"
            data-action="turbo:frame-load->modal#open turbo:submit-end->modal#close">
-        <div class="relative max-h-full w-full md:max-w-4xl">
-          <div class="relative flex max-h-[100vh] min-h-0 flex-col overflow-hidden bg-neutral-primary-soft shadow-xl md:max-h-[90vh] md:rounded-xl"
+        <div class="relative max-h-full w-full md:max-w-4xl md:has-[.modal-size-large]:max-w-7xl">
+          <div class="relative flex max-h-[100vh] min-h-0 flex-col overflow-hidden bg-neutral-primary-soft shadow-xl md:max-h-[90vh] md:has-[.modal-size-large]:max-h-[96vh] md:rounded-xl"
                id="modal_content">
             <%# turbo-frame is display:inline by default; it has to become a
                 flex column so the modal body can scroll under a fixed header. %>

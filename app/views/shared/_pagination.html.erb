@@ -10,7 +10,9 @@
     muted_classes = "#{base} bg-neutral-primary text-body-subtle"
   %>
 
-  <nav class="my-4 flex justify-center" aria-label="Paginación">
+  <nav class="my-4 flex justify-center"
+       aria-label="Paginación"
+       data-action="click->scroll-to-list#scroll">
     <ul class="inline-flex -space-x-px text-sm">
       <li>
         <% if pagy.prev %>

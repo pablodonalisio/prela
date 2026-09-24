@@ -3,7 +3,7 @@
   <%= f.collection_check_boxes attribute, collection, value, label do |b| %>
     <div class="mb-2 flex items-center">
       <%= b.check_box checked: selected_filters&.include?(b.value.to_s),
-                      class: "h-4 w-4 rounded border-default bg-neutral-secondary-soft text-brand focus:ring-brand",
+                      class: "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-brand",
                       onchange: "this.form.requestSubmit()"  %>
       <%= b.label(class: "ms-2 text-sm text-heading") %>
     </div>

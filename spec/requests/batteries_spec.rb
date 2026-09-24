@@ -25,9 +25,11 @@ RSpec.describe "Batteries", type: :request do
   end
 
   describe "GET /show" do
-    it "returns a successful response" do
+    it "returns the battery inside the remote modal" do
       get battery_path(battery)
       expect(response).to have_http_status(:success)
+      expect(response.body).to include('id="remote_modal"')
+      expect(response.body).to include(battery.model.upcase)
     end
   end
 
@@ -107,6 +109,16 @@ RSpec.describe "Batteries", type: :request do
       }.to change(Battery, :count).by(-1)
 
       expect(response).to redirect_to(supplies_url)
+    end
+
+    it "destroys the requested Battery and removes it from the list" do
+      battery
+      expect {
+        delete battery_path(battery), as: :turbo_stream
+      }.to change(Battery, :count).by(-1)
+
+      expect(response.media_type).to eq Mime[:turbo_stream]
+      expect(response.body).to include("turbo-stream action=\"remove\" target=\"battery_#{battery.id}\"")
     end
   end
 end
