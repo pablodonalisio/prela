@@ -1,12 +1,12 @@
 <%# locals: (section:, report_template:) %>
-<div class="form-group mb-4">
-  <label><%= t("activerecord.attributes.report_template.sections.#{section}") %></label>
+<div class="mb-5">
+  <label class="mb-2 block text-sm font-medium text-heading"><%= t("activerecord.attributes.report_template.sections.#{section}") %></label>
   <% if report_template.errors[section.to_sym].any? %>
-    <div class="invalid-feedback d-block mb-2">
+    <div class="mb-2 text-sm text-red-500">
       <%= report_template.errors[section.to_sym].first %>
     </div>
   <% end %>
-  <div class="border rounded p-3 <%= "border-danger" if report_template.errors[section.to_sym].any? %>">
+  <div class="rounded-lg border p-3 <%= report_template.errors[section.to_sym].any? ? "border-red-500" : "border-default" %>">
     <% container_id = "fields-container-#{section.dasherize}" %>
     <% no_fields_id = "no-fields-message-#{section.dasherize}" %>
     <div data-controller="sortable-fields">
@@ -26,7 +26,7 @@
           <% end %>
         <% else %>
           <%= turbo_frame_tag no_fields_id do %>
-            <p class="text-muted mb-0">No hay campos definidos.</p>
+            <p class="mb-0 text-sm text-body-subtle">No hay campos definidos.</p>
           <% end %>
         <% end %>
       <% end %>
@@ -36,7 +36,7 @@
   <div class="my-2">
     <%= link_to "Añadir campo",
                 add_field_report_templates_path(section: section),
-                class: "btn btn-sm btn-outline-primary",
-                data: { turbo_stream: true } %>
+                class: "inline-flex items-center rounded-lg border border-default px-3 py-1.5 text-sm text-body hover:bg-neutral-tertiary",
+                data: {turbo_stream: true} %>
   </div>
 </div>

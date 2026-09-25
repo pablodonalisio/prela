@@ -5,8 +5,8 @@
                       input_html: {
                         type: "color",
                         value: tag.color.presence || Tag::DEFAULT_COLOR,
-                        class: "form-control form-control-color"
+                        class: "h-10 w-20 cursor-pointer rounded-lg border border-default bg-neutral-secondary-medium p-1"
                       } %>
 
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <%= f.button :submit, "Aceptar" %>
 <% end %>

@@ -10,18 +10,18 @@
                   html5: true,
                   input_html: {value: Date.current} %>
 
-      <div class="my-3 border col-sm-6 p-2">
-        <h4>Documento</h4>
+      <div class="mb-5 rounded-lg border border-default p-4">
+        <h4 class="mb-3 text-sm font-medium text-heading">Documento</h4>
         <%= render "shared/file_upload", file: nil,
-                                         form: f,
-                                         resize: [nil, 250],
-                                         file_field: :document,
-                                         new_label: "Nuevo documento",
-                                         accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
-                                         multiple: false %>
+                                                  form: f,
+                                                  resize: [nil, 250],
+                                                  file_field: :document,
+                                                  new_label: "Nuevo documento",
+                                                  accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
+                                                  multiple: false %>
       </div>
 
-      <%= f.button :submit, "Registrar servicio", class: "btn btn-success" %>
+      <%= f.button :submit, "Registrar servicio" %>
     <% end %>
   <% end %>
 <% end %>

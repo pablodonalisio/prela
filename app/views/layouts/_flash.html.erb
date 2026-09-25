@@ -1,6 +1,17 @@
 <% flash.each do |key, value| %>
-  <div class="<%= flash_class(key) %> alert-dismissible fade show m-0" role="alert">
-    <%= value %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <div class="pointer-events-auto flex items-start gap-3 rounded-lg border p-4 text-sm shadow-lg <%= flowbite_flash_classes(key) %>"
+       role="alert"
+       data-controller="dismiss">
+    <div class="min-w-0 flex-1"><%= value %></div>
+
+    <button type="button"
+            class="-m-1.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg p-1.5 hover:bg-black/10 focus:ring-2 focus:ring-current dark:hover:bg-white/10"
+            data-action="dismiss#close"
+            aria-label="Cerrar">
+      <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+      </svg>
+    </button>
   </div>
 <% end %>

@@ -1,25 +1,26 @@
 <% location_equipment = service_occurrence.location_equipment %>
-<tr id="<%= dom_id(service_occurrence, :agenda) %>">
-  <td><%= service_occurrence.agenda_date.strftime("%d/%m/%Y") %></td>
-  <td><%= location_equipment.client.name %></td>
-  <td><%= location_equipment.location.name %></td>
-  <td>
+<tr id="<%= dom_id(service_occurrence, :agenda) %>" class="border-t border-default">
+  <td class="px-4 py-3 align-middle text-heading"><%= service_occurrence.agenda_date.strftime("%d/%m/%Y") %></td>
+  <td class="px-4 py-3 align-middle text-body"><%= location_equipment.client.name %></td>
+  <td class="px-4 py-3 align-middle text-body"><%= location_equipment.location.name %></td>
+  <td class="px-4 py-3 align-middle">
     <%= link_to location_equipment.model.capitalize,
                 location_equipment_path(location_equipment),
+                class: "font-medium text-fg-brand hover:underline",
                 data: {turbo_frame: :_top} %>
   </td>
-  <td><%= service_occurrence.service_kind.name %></td>
-  <td class="text-body-secondary small"><%= service_occurrence.notes.presence || "—" %></td>
-  <td>
+  <td class="px-4 py-3 align-middle text-body"><%= service_occurrence.service_kind.name %></td>
+  <td class="px-4 py-3 align-middle text-sm text-body-subtle"><%= service_occurrence.notes.presence || "—" %></td>
+  <td class="px-4 py-3 align-middle">
     <% if service_occurrence.scheduled? %>
-      <span class="badge bg-info text-dark rounded-pill">Programado</span>
+      <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">Programado</span>
     <% elsif service_occurrence.suspended? %>
-      <span class="badge bg-secondary rounded-pill">Suspendido</span>
+      <span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">Suspendido</span>
     <% else %>
-      <span class="badge bg-warning rounded-pill">Falta Programar</span>
+      <span class="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Falta Programar</span>
     <% end %>
   </td>
-  <td class="text-nowrap">
+  <td class="whitespace-nowrap px-4 py-3 align-middle">
     <%= render "service_occurrences/actions", service_occurrence: service_occurrence, class: "me-2" %>
   </td>
 </tr>

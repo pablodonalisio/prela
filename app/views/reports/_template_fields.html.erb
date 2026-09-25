@@ -2,7 +2,7 @@
 <% return unless report_template %>
 
 <% report_template.active_sections.each do |section| %>
-  <h2 class="mt-3"><%= t("activerecord.attributes.report_template.sections.#{section}") %></h2>
+  <h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= t("activerecord.attributes.report_template.sections.#{section}") %></h2>
   <%= render "shared/dynamic_field_inputs",
              field_definitions: report_template.fields_for(section),
              field_values: report.field_values_for(section),

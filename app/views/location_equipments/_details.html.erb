@@ -1,16 +1,16 @@
-<p class="text-white small text-uppercase fw-semibold mb-1 mt-2">Ubicación</p>
-<dl class="row row-cols-2 g-0 mb-0 small">
-  <dt class="col text-body-secondary fw-normal">Sala</dt>
-  <dd class="col mb-1"><%= location_equipment.zone.presence || "—" %></dd>
+<p class="mb-1 mt-2 text-xs font-semibold uppercase tracking-wide text-heading">Ubicación</p>
+<dl class="mb-0 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
+  <dt class="font-normal text-body-subtle">Sala</dt>
+  <dd class="mb-0 text-heading"><%= location_equipment.zone.presence || "—" %></dd>
 
-  <dt class="col text-body-secondary fw-normal">Piso</dt>
-  <dd class="col mb-1"><%= humanize_floor(location_equipment.floor) %></dd>
+  <dt class="font-normal text-body-subtle">Piso</dt>
+  <dd class="mb-0 text-heading"><%= humanize_floor(location_equipment.floor) %></dd>
 
-  <dt class="col text-body-secondary fw-normal">Código</dt>
-  <dd class="col mb-1"><%= location_equipment.code.presence || "—" %></dd>
+  <dt class="font-normal text-body-subtle">Código</dt>
+  <dd class="mb-0 text-heading"><%= location_equipment.code.presence || "—" %></dd>
 
-  <dt class="col text-body-secondary fw-normal">Estado</dt>
-  <dd class="col mb-1">
+  <dt class="font-normal text-body-subtle">Estado</dt>
+  <dd class="mb-0 text-heading">
     <%= location_equipment.status ? t("activerecord.attributes.location_equipment.statuses.#{location_equipment.status}") : "—" %>
   </dd>
 </dl>

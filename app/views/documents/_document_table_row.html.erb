@@ -1,26 +1,36 @@
-<%= content_tag :tr, id: dom_id(document), class: "align-items-stretch" do %>
-  <td class="align-middle">
-    <p class="m-0">
+<%= content_tag :tr, id: dom_id(document), class: "border-t border-default" do %>
+  <td class="px-4 py-3 align-middle">
+    <p class="m-0 text-heading">
       <%= document.description.capitalize %>
       <% if current_user.admin? && !document.public? %>
-        <span class="badge rounded-pill text-bg-secondary ms-1">Privado</span>
+        <span class="ms-1 inline-flex items-center rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">Privado</span>
       <% end %>
     </p>
-    <p class="m-0 fw-lighter" style="font-size: 0.8rem;">Fecha: <%= document.created_at.strftime("%d/%m/%Y") %></p>
+    <p class="m-0 text-xs text-body-subtle">Fecha: <%= document.created_at.strftime("%d/%m/%Y") %></p>
   </td>
-  <td class="align-middle">
-    <div class="d-flex justify-content-evenly align-items-center">
+  <td class="px-4 py-3 align-middle">
+    <div class="flex items-center gap-1">
       <% if document.file.attached? %>
-        <%= link_to polymorphic_path([documentable, document]), data: { turbo_frame: "remote_modal" } do %>
-          <i class="fa fa-file" aria-hidden="true"></i>
+        <%= link_to polymorphic_path([documentable, document]),
+                    class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
+                    data: {turbo_frame: "remote_modal"},
+                    aria: {label: "Ver"} do %>
+          <%= icon(:file) %>
         <% end %>
       <% end %>
       <% if current_user.admin? %>
-        <%= link_to edit_polymorphic_path([documentable, document]), class: "ms-2" , data: { turbo_frame: "remote_modal" } do %>
-          <i class="fas fa-edit"></i>
+        <%= link_to edit_polymorphic_path([documentable, document]),
+                    class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
+                    data: {turbo_frame: "remote_modal"},
+                    aria: {label: "Editar"} do %>
+          <%= icon(:edit) %>
         <% end %>
-        <%= button_to polymorphic_path([documentable, document]), class: "btn btn-sm", form_class: "d-inline", method: :delete, form: { data: {turbo_confirm: "¿Estas seguro?"} } do %>
-          <i class="fas fa-trash text-danger"></i>
+        <%= button_to polymorphic_path([documentable, document]),
+                      method: :delete,
+                      class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/40",
+                      form: {data: {turbo_confirm: "¿Estás seguro?"}},
+                      aria: {label: "Eliminar"} do %>
+          <%= icon(:trash) %>
         <% end %>
       <% end %>
     </div>

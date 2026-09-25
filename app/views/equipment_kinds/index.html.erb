@@ -1,14 +1,13 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <%= render "location_equipments/navbar", active: "equipment_kinds" %>
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "shared/section_nav", active: "equipment_kinds" %>
 
   <%= render "shared/content_header", title: "Tipos de Activos" do %>
     <% if current_user.admin? %>
-      <%= render "shared/button_link", text: "Agregar",
-                                      path: new_equipment_kind_path %>
+      <%= render "shared/button_link", text: "Agregar", path: new_equipment_kind_path %>
     <% end %>
   <% end %>
 
-  <%= turbo_frame_tag "equipment_kinds", class: "d-flex flex-column gap-2 mx-4 mt-4" do %>
+  <%= turbo_frame_tag "equipment_kinds", class: "mx-4 mt-4 flex flex-col gap-2 md:mx-6" do %>
     <% if @equipment_kinds.any? %>
       <%= render @equipment_kinds %>
     <% else %>

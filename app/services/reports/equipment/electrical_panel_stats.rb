@@ -21,7 +21,7 @@ class Reports::Equipment::ElectricalPanelStats < Reports::Content
 
   def visual_inspection_table(table_width)
     @pdf.table([
-      [{content: "INSPECCION GENERAL VISUAL", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
+      [{content: "INSPECCIÓN GENERAL VISUAL", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
       [{content: "Dimensiones"}, {content: stats.dimensions, colspan: 2}],
       [{content: "Superficie donde se encuentra"}, {content: stats.mounting_surface, colspan: 2}],
       [{content: "Estado físico"}, {content: stats.physical_state, colspan: 2}],
@@ -46,7 +46,7 @@ class Reports::Equipment::ElectricalPanelStats < Reports::Content
       [{content: "Tipo de cable", colspan: 2}, {content: stats.power_cable_type, colspan: 4}],
       colorimetry_header,
       colorimetry_data,
-      [{content: "Secuencia de rotacion", colspan: 2}, {content: stats.power_rotation_sequency, colspan: 4}]
+      [{content: "Secuencia de rotación", colspan: 2}, {content: stats.power_rotation_sequency, colspan: 4}]
     ], width: table_width) do
       cells.border_color = PRIMARY_COLOR
       cells.width = table_width / 6
@@ -62,14 +62,14 @@ class Reports::Equipment::ElectricalPanelStats < Reports::Content
       *general_cutoff_switch_row,
       [{content: "Tipo de tablero", colspan: 2}, {content: stats.panel_type, colspan: 3}],
       [{content: "Descargador atmosférico", colspan: 2}, {content: stats.operational_atmospheric_discharger, colspan: 3}],
-      [{content: "Distribuidor o barras", colspan: 2}, {content: stats.distributor_or_bars_present? ? "Si" : "No"}, {content: "N libres", font_style: :bold}, {content: stats.distributor_or_bars_present? ? stats.distributor_or_bars.to_s : ""}],
-      [{content: "Circuitos sin diferenciales", colspan: 2}, {content: stats.circuits_without_differentials_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.circuits_without_differentials_present? ? stats.circuits_without_differentials.to_s : ""}],
-      [{content: "Circuitos sin térmicas", colspan: 2}, {content: stats.circuits_without_thermal_keys_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.circuits_without_thermal_keys_present? ? stats.circuits_without_thermal_keys.to_s : ""}],
-      [{content: "Protecciones alimentadas en girnaldas", colspan: 2}, {content: stats.protections_powered_on_garlands_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.protections_powered_on_garlands_present? ? stats.protections_powered_on_garlands.to_s : ""}],
-      [{content: "Protecciones como borneras", colspan: 2}, {content: stats.protections_such_as_terminal_blocks_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.protections_such_as_terminal_blocks_present? ? stats.protections_such_as_terminal_blocks.to_s : ""}],
-      [{content: "Aparamentas fuera de lugar", rowspan: 2, colspan: 2}, {content: stats.misplaced_switchgears_present? ? "Si" : "No", rowspan: 2}, {content: "Cuantos", font_style: :bold}, {content: stats.misplaced_switchgears_present? ? stats.misplaced_switchgears.to_s : ""}],
+      [{content: "Distribuidor o barras", colspan: 2}, {content: stats.distributor_or_bars_present? ? "Sí" : "No"}, {content: "N libres", font_style: :bold}, {content: stats.distributor_or_bars_present? ? stats.distributor_or_bars.to_s : ""}],
+      [{content: "Circuitos sin diferenciales", colspan: 2}, {content: stats.circuits_without_differentials_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.circuits_without_differentials_present? ? stats.circuits_without_differentials.to_s : ""}],
+      [{content: "Circuitos sin térmicas", colspan: 2}, {content: stats.circuits_without_thermal_keys_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.circuits_without_thermal_keys_present? ? stats.circuits_without_thermal_keys.to_s : ""}],
+      [{content: "Protecciones alimentadas en girnaldas", colspan: 2}, {content: stats.protections_powered_on_garlands_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.protections_powered_on_garlands_present? ? stats.protections_powered_on_garlands.to_s : ""}],
+      [{content: "Protecciones como borneras", colspan: 2}, {content: stats.protections_such_as_terminal_blocks_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.protections_such_as_terminal_blocks_present? ? stats.protections_such_as_terminal_blocks.to_s : ""}],
+      [{content: "Aparamentas fuera de lugar", rowspan: 2, colspan: 2}, {content: stats.misplaced_switchgears_present? ? "Sí" : "No", rowspan: 2}, {content: "Cuántos", font_style: :bold}, {content: stats.misplaced_switchgears_present? ? stats.misplaced_switchgears.to_s : ""}],
       [{content: "Tipo", font_style: :bold}, {content: stats.misplaced_switchgears_present? ? stats.switchgear_type : ""}],
-      [{content: "Aparamentas especializadas", rowspan: 2, colspan: 2}, {content: stats.specialized_switchgears_present? ? "Si" : "No", rowspan: 2}, {content: "Cuantos", font_style: :bold}, {content: stats.specialized_switchgears_present? ? stats.specialized_switchgears.to_s : ""}],
+      [{content: "Aparamentas especializadas", rowspan: 2, colspan: 2}, {content: stats.specialized_switchgears_present? ? "Sí" : "No", rowspan: 2}, {content: "Cuántos", font_style: :bold}, {content: stats.specialized_switchgears_present? ? stats.specialized_switchgears.to_s : ""}],
       [{content: "Tipo", font_style: :bold}, {content: stats.specialized_switchgears_present? ? stats.specialized_switchgear_type : ""}]
     ], width: table_width) do
       cells.border_color = PRIMARY_COLOR
@@ -83,12 +83,12 @@ class Reports::Equipment::ElectricalPanelStats < Reports::Content
   def conductors_table(table_width)
     @pdf.table([
       [{content: "CONDUCTORES", colspan: 5, background_color: PRIMARY_COLOR, align: :center}],
-      [{content: "Sin terminales?", colspan: 2}, {content: stats.conductors_without_terminals_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.conductors_without_terminals_present? ? stats.conductors_without_terminals.to_s : ""}],
-      [{content: "Subdimensionados para su protección?", colspan: 2}, {content: stats.undersized_conductors_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.undersized_conductors_present? ? stats.undersized_conductors.to_s : ""}],
-      [{content: "Con envejecimiento marcado?", colspan: 2}, {content: stats.conductors_with_marked_aging_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.conductors_with_marked_aging_present? ? stats.conductors_with_marked_aging.to_s : ""}],
-      [{content: "Con colorimetría clara?", colspan: 2}, {content: stats.conductors_with_clear_colorimetry_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.conductors_with_clear_colorimetry_present? ? stats.conductors_with_clear_colorimetry.to_s : ""}],
-      [{content: "Con empalmes?", colspan: 2}, {content: stats.conductors_with_splices_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.conductors_with_splices_present? ? stats.conductors_with_splices.to_s : ""}],
-      [{content: "Sobrecalentados?", colspan: 2}, {content: stats.overheated_conductors_present? ? "Si" : "No"}, {content: "Cuantos", font_style: :bold}, {content: stats.overheated_conductors_present? ? stats.overheated_conductors.to_s : ""}],
+      [{content: "Sin terminales?", colspan: 2}, {content: stats.conductors_without_terminals_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.conductors_without_terminals_present? ? stats.conductors_without_terminals.to_s : ""}],
+      [{content: "Subdimensionados para su protección?", colspan: 2}, {content: stats.undersized_conductors_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.undersized_conductors_present? ? stats.undersized_conductors.to_s : ""}],
+      [{content: "Con envejecimiento marcado?", colspan: 2}, {content: stats.conductors_with_marked_aging_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.conductors_with_marked_aging_present? ? stats.conductors_with_marked_aging.to_s : ""}],
+      [{content: "Con colorimetría clara?", colspan: 2}, {content: stats.conductors_with_clear_colorimetry_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.conductors_with_clear_colorimetry_present? ? stats.conductors_with_clear_colorimetry.to_s : ""}],
+      [{content: "Con empalmes?", colspan: 2}, {content: stats.conductors_with_splices_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.conductors_with_splices_present? ? stats.conductors_with_splices.to_s : ""}],
+      [{content: "Sobrecalentados?", colspan: 2}, {content: stats.overheated_conductors_present? ? "Sí" : "No"}, {content: "Cuántos", font_style: :bold}, {content: stats.overheated_conductors_present? ? stats.overheated_conductors.to_s : ""}],
       [{content: "Orden de los cables", colspan: 2}, {content: stats.conductors_cable_order, colspan: 3}]
     ], width: table_width) do
       cells.border_color = PRIMARY_COLOR
@@ -103,7 +103,7 @@ class Reports::Equipment::ElectricalPanelStats < Reports::Content
     @pdf.table([
       [{content: "MEDICIONES SOBRE TABLEROS", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
       [{content: "Temperatura promedio"}, {content: stats.average_temperature.to_s, colspan: 2}],
-      [{content: "Presencia de puntos calientes"}, {content: stats.hot_spots_presence? ? "Si" : "No", colspan: 2}],
+      [{content: "Presencia de puntos calientes"}, {content: stats.hot_spots_presence? ? "Sí" : "No", colspan: 2}],
       *amperage_rows,
       *voltage_rows
     ], width: table_width) do
@@ -118,12 +118,12 @@ class Reports::Equipment::ElectricalPanelStats < Reports::Content
   def pat_table(table_width)
     @pdf.table([
       [{content: "PAT", colspan: 3, background_color: PRIMARY_COLOR, align: :center}],
-      [{content: "Presencia de barras PAT"}, {content: stats.pat_bars_presence? ? "No" : "Si", colspan: 2}],
+      [{content: "Presencia de barras PAT"}, {content: stats.pat_bars_presence? ? "No" : "Sí", colspan: 2}],
       [{content: "Estado del cable tierra"}, {content: stats.ground_cable_status, colspan: 2}],
-      [{content: "Continuidad del cable con circuitos"}, {content: stats.pat_cable_continuity_with_circuits? ? "No" : "Si", colspan: 2}],
+      [{content: "Continuidad del cable con circuitos"}, {content: stats.pat_cable_continuity_with_circuits? ? "No" : "Sí", colspan: 2}],
       [{content: "Sección del cable PAT"}, {content: stats.pat_cable_section, colspan: 2}],
-      [{content: "Equipotenciación del gabinete"}, {content: stats.cabinet_equipotentialization? ? "No" : "Si", colspan: 2}],
-      [{content: "Presencia de empalmes"}, {content: stats.pat_splices_presence? ? "No" : "Si", colspan: 2}]
+      [{content: "Equipotenciación del gabinete"}, {content: stats.cabinet_equipotentialization? ? "No" : "Sí", colspan: 2}],
+      [{content: "Presencia de empalmes"}, {content: stats.pat_splices_presence? ? "No" : "Sí", colspan: 2}]
     ], width: table_width) do
       cells.border_color = PRIMARY_COLOR
       cells.width = table_width / 3

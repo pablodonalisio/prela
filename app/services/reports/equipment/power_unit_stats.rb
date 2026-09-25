@@ -34,7 +34,7 @@ class Reports::Equipment::PowerUnitStats < Reports::Content
       [{content: "Estado y tensión de correas"}, {content: power_unit_report_stat.belt_condition}, {content: "Bien"}],
       [{content: "Estado de filtro de aire"}, {content: power_unit_report_stat.air_filter_condition}, {content: "Bien"}],
       [{content: "Estado de tacos antivibratorios"}, {content: power_unit_report_stat.anti_vibration_pad_condition}, {content: "Bien"}],
-      [{content: "Pérdida de fluídos"}, {content: power_unit_report_stat.liquids_leaks}, {content: "No"}],
+      [{content: "Pérdida de fluídos"}, {content: yes_no_label(power_unit_report_stat.liquids_leaks)}, {content: "No"}],
       [{content: "Estado de conexiones y fijación de baterías"}, {content: power_unit_report_stat.connections_condition_and_battery_fixation}, {content: "OK"}],
       [{content: "Estado de cables y conexiones eléctricas"}, {content: power_unit_report_stat.cable_and_electrical_connections}, {content: "OK"}]
     ], width: table_width) do

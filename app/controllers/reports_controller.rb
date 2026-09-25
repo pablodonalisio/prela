@@ -26,8 +26,8 @@ class ReportsController < ApplicationController
       return report_pdf_error if legacy_mode? && !attach_pdf
 
       respond_to do |format|
-        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se creo correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El reporte se creo correctamente." }
+        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se creó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El reporte se creó correctamente." }
       end
     else
       load_template_form_data if template_mode?
@@ -50,8 +50,8 @@ class ReportsController < ApplicationController
       return report_pdf_error if !@report.template_based? && !attach_pdf
 
       respond_to do |format|
-        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se edito correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El reporte se edito correctamente." }
+        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se editó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El reporte se editó correctamente." }
       end
     else
       load_template_form_data if @report.template_based?

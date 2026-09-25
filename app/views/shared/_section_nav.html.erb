@@ -1,0 +1,20 @@
+<%# Sub-nav for the Activos section (list, equipment, kinds, services, tags).
+    locals: (active:) %>
+<nav class="border-b border-default px-4 pt-4 md:px-6" aria-label="Sección de activos">
+  <h1 class="mb-3 text-2xl font-bold text-heading">Activos</h1>
+
+  <ul class="-mb-px flex flex-wrap gap-1 text-sm font-medium">
+    <% [
+      ["Lista", location_equipments_path, "location_equipments"],
+      ["Equipos", equipment_index_path, "equipment"],
+      ["Tipos de Activos", equipment_kinds_path, "equipment_kinds"],
+      ["Servicios", service_kinds_path, "service_kinds"],
+      ["Etiquetas", tags_path, "tags"]
+    ].each do |label, path, key| %>
+      <li>
+        <%= link_to label, path,
+                    class: "inline-block border-b-2 px-4 py-3 #{active == key ? "border-brand text-fg-brand" : "border-transparent text-body hover:border-default hover:text-heading"}" %>
+      </li>
+    <% end %>
+  </ul>
+</nav>

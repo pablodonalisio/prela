@@ -10,7 +10,7 @@ export default class extends Controller {
       inputs.forEach((input) => {
         if (input.value === "" || Math.round(input.value) === -1) {
           checkbox.checked = true;
-          input.hidden = true;
+          this.#setHidden(input, true);
         }
       });
     });
@@ -22,12 +22,26 @@ export default class extends Controller {
     const inputs = Array.from(formGroup.querySelectorAll("input, select"));
     inputs.forEach((input) => {
       if (checkbox.checked) {
-        input.hidden = true;
-        input.value = -1;
+        this.#setHidden(input, true);
+        input.value = input.tagName === "SELECT" ? "" : -1;
       } else {
-        input.hidden = false;
+        this.#setHidden(input, false);
         input.value = "";
       }
+      if (input.tagName === "SELECT") {
+        input.dispatchEvent(new Event("change", {bubbles: true}));
+      }
     });
+  }
+
+  // Native <select>s are replaced by a custom dropdown inserted next to them.
+  // Hiding the field wrapper covers the label and that dropdown; the <select>
+  // itself stays visually hidden by the upgrade.
+  #setHidden(input, hidden) {
+    if (input.tagName === "SELECT") {
+      input.parentElement.hidden = hidden;
+      return;
+    }
+    input.hidden = hidden;
   }
 }

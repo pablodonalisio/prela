@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* Flowbite v4 ships its design system as semantic tokens (--color-body,
+   --color-brand, --color-neutral-*, --color-dark-backdrop...) plus a `.dark`
+   block that redefines them. Its own components reference these names, so the
+   theme has to be imported for the documented markup to render correctly. */
+@import "../../../node_modules/flowbite/src/themes/default.css";
+
+@plugin "../../../node_modules/flowbite/plugin";
+
+/* Class-based dark mode instead of prefers-color-scheme, so the theme toggle
+   can override the OS setting. Matches the `.dark` selector used above. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source "../../../node_modules/flowbite";
+@source "../../../node_modules/flowbite-datepicker";
+@source "../../views";
+@source "../../helpers";
+@source "../../javascript";
+@source "../../../config/initializers";
+
+/* Flowbite's JS adds these classes at runtime (modal/drawer backdrops, tab and
+   accordion active states), so they appear in no source file and would be
+   dropped from the build. Losing them leaves an invisible modal backdrop. */
+@source inline("hidden");
+@source inline("min-h-9");
+@source inline("flex");
+@source inline("overflow-hidden");
+@source inline("bg-dark-backdrop/70");
+@source inline("fixed");
+@source inline("inset-0");
+@source inline("z-30");
+@source inline("z-40");
+@source inline("text-fg-brand");
+@source inline("hover:text-fg-brand");
+@source inline("border-brand");
+@source inline("border-transparent");
+@source inline("text-body");
+@source inline("hover:text-heading");
+@source inline("border-soft");
+@source inline("hover:border-default");
+@source inline("bg-neutral-secondary-medium");
+@source inline("text-heading");
+@source inline("bg-neutral-primary");
+@source inline("visible");
+@source inline("opacity-100");
+@source inline("transform-none");
+@source inline("-translate-x-full");
+@source inline("transition-transform");
+@source inline("left-0");
+
+/* Turbo keeps the layout frame's class when it swaps modal content, so the
+   size marker lives on the header. Stretch that frame to the shell. */
+#remote_modal_shell:has(.modal-size-full) > div,
+#remote_modal_shell:has(.modal-size-full) #modal_content,
+#remote_modal_shell:has(.modal-size-full) #remote_modal {
+  height: 100%;
+  max-height: none;
+  max-width: none;
+  width: 100%;
+}
+@source inline("top-0");
+@source inline("rotate-180");
+@source inline("bg-transparent");
+
+/* Service-date status dots: some of these classes are only returned from
+   helpers or interpolated into class strings, so they would otherwise be
+   dropped from the build and the icons would inherit text-heading. */
+@source inline("text-red-500");
+@source inline("text-yellow-400");
+@source inline("text-yellow-500");
+@source inline("text-green-500");
+@source inline("text-[0.45rem]");
+
+/* Flowbite v4 dropdown surface tokens. Some only appear in one partial. */
+@source inline("bg-neutral-primary-soft");
+@source inline("hover:bg-neutral-tertiary-medium");
+@source inline("hover:bg-danger-soft");
+@source inline("bg-danger-soft");
+@source inline("!z-[70]");
+
+@theme {
+  /* Tailwind's classic gray so Flowbite's semantic tokens (`bg-neutral-*`,
+     borders, body text) match the imported theme. In dark mode
+     `--color-neutral-primary` is gray-950 (#030712). */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
+
+  /* Scale built around the legacy Bootstrap $primary (#6760fa). Named
+     `primary` because Flowbite's documented markup references primary-*. */
+  --color-primary-50: #eeedfe;
+  --color-primary-100: #dedcfe;
+  --color-primary-200: #c2bffd;
+  --color-primary-300: #a5a1fc;
+  --color-primary-400: #8681fb;
+  --color-primary-500: #6760fa;
+  --color-primary-600: #4a41f5;
+  --color-primary-700: #372ee0;
+  --color-primary-800: #2d26b8;
+  --color-primary-900: #282391;
+  --color-primary-950: #181554;
+
+  /* Flowbite's brand tokens default to blue; point them at Prela's violet. */
+  --color-brand-softer: var(--color-primary-50);
+  --color-brand-soft: var(--color-primary-100);
+  --color-brand-medium: var(--color-primary-200);
+  --color-brand-subtle: var(--color-primary-200);
+  --color-brand: var(--color-primary-600);
+  --color-brand-light: var(--color-primary-500);
+  --color-brand-strong: var(--color-primary-800);
+  --color-fg-brand-subtle: var(--color-primary-200);
+  --color-fg-brand: var(--color-primary-600);
+  --color-fg-brand-strong: var(--color-primary-900);
+}
+
+/* The imported theme's `.dark` block resets the brand tokens back to blue, so
+   they have to be re-pointed for dark mode as well. */
+.dark {
+  --color-brand-softer: var(--color-primary-950);
+  --color-brand-soft: var(--color-primary-900);
+  --color-brand-medium: var(--color-primary-900);
+  --color-brand-subtle: var(--color-primary-900);
+  --color-brand: var(--color-primary-500);
+  --color-brand-light: var(--color-primary-500);
+  --color-brand-strong: var(--color-primary-700);
+  --color-fg-brand-subtle: var(--color-primary-200);
+  --color-fg-brand: var(--color-primary-400);
+  --color-fg-brand-strong: var(--color-primary-300);
+}
+
+/* Applied only while the theme toggle is running so hover/open animations
+   stay snappy the rest of the time. */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 400ms ease, color 400ms ease, border-color 400ms ease,
+    fill 400ms ease, stroke 400ms ease, box-shadow 400ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transitioning,
+  html.theme-transitioning *,
+  html.theme-transitioning *::before,
+  html.theme-transitioning *::after {
+    transition: none !important;
+  }
+}
+
+/* The datepicker dropdown is portaled on body, so it has to sit above the
+   modal (z-50). flowbite-datepicker also leaves `block` on the picker when
+   it hides; `hidden` has to win that conflict. */
+.datepicker.dropdown {
+  z-index: 80;
+}
+
+.datepicker.hidden {
+  display: none !important;
+}
+
+.dark input[type="time"] {
+  color-scheme: dark;
+}
+
+/* Control-panel accordion: the expanded tree keeps heading-colored
+   titles; unselected sibling trees go gray. With nothing expanded,
+   every title stays heading-colored. */
+.service-date-tree:has(> h3 > [aria-expanded="true"]) > h3 > [aria-expanded="false"] {
+  color: var(--color-body);
+}

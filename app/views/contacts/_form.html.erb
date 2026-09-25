@@ -1,16 +1,18 @@
+<% checkbox_classes = "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-brand" %>
+
 <%= simple_form_for [client, contact],
-                    html: { data: { controller: "contact-distance" } } do |f| %>
+                    html: {data: {controller: "contact-distance"}} do |f| %>
   <%= f.input :name, label: "Nombre" %>
   <%= f.input :job_position, label: "Puesto" %>
   <%= f.input :work_area, label: "Área de trabajo" %>
   <% kept_locations = client.locations.kept.order(:name) %>
   <% if kept_locations.any? %>
-    <div class="mb-3">
-      <label class="form-label">Sedes</label>
+    <div class="mb-4">
+      <p class="mb-2 text-sm font-medium text-heading">Sedes</p>
       <%= f.collection_check_boxes :location_ids, kept_locations, :id, :name do |b| %>
-        <div class="form-check">
-          <%= b.check_box class: "form-check-input" %>
-          <%= b.label class: "form-check-label" %>
+        <div class="mb-2 flex items-center">
+          <%= b.check_box class: checkbox_classes %>
+          <%= b.label class: "ms-2 text-sm text-heading" %>
         </div>
       <% end %>
     </div>
@@ -30,10 +32,10 @@
               hint: "0 solo si no tiene superior (tope del organigrama). Con superior, mínimo 1. Mayor = más separación.",
               input_html: {
                 min: 0,
-                data: { contact_distance_target: "distanceAbove" }
+                data: {contact_distance_target: "distanceAbove"}
               } %>
   <%= f.input :email, label: "Email" %>
   <%= f.input :phone, label: "Teléfono" %>
   <%= f.input :description, label: "Comentario", as: :text %>
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <%= f.button :submit, "Aceptar" %>
 <% end %>

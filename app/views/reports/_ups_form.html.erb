@@ -3,14 +3,14 @@
   <%= ups_stats_form.input :associated_charge, label: "Carga asociada" %>
   <%= ups_stats_form.input :battery_charge, label: "Carga de la batería" %>
   <% if is_triphase %>
-    <p>Voltaje de entrada</p>
-    <div class="d-flex">
+    <p class="mb-2 text-sm font-medium text-heading">Voltaje de entrada</p>
+    <div class="flex gap-3">
       <%= ups_stats_form.input :voltage_input_l1, label: "L1" %>
       <%= ups_stats_form.input :voltage_input_l2, label: "L2" %>
       <%= ups_stats_form.input :voltage_input_l3, label: "L3" %>
     </div>
-    <p>Voltaje de salida</p>
-    <div class="d-flex">
+    <p class="mb-2 text-sm font-medium text-heading">Voltaje de salida</p>
+    <div class="flex gap-3">
       <%= ups_stats_form.input :voltage_output_l1, label: "L1" %>
       <%= ups_stats_form.input :voltage_output_l2, label: "L2" %>
       <%= ups_stats_form.input :voltage_output_l3, label: "L3" %>
@@ -20,6 +20,6 @@
     <%= ups_stats_form.input :voltage_output, label: "Voltaje de salida" %>
   <% end %>
   <%= ups_stats_form.input :pat_state, collection: UpsReportStat::PAT_STATE_OPTIONS, label: "Estado de PAT" %>
-  <%= ups_stats_form.input :alarms_presence, label: "Existencia de alarmas", collection: UpsReportStat::ALARMS_PRESENCE_OPTIONS %>
+  <%= ups_stats_form.input :alarms_presence, label: "Existencia de alarmas", collection: [["Sí", "Si"], ["No", "No"]] %>
   <%= ups_stats_form.input :ventilation_state, label: "Estado de ventilación", collection: UpsReportStat::VENTILATION_STATE_OPTIONS %>
 <% end %>

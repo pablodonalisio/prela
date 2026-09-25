@@ -2,4 +2,4 @@
   <%= render "layouts/flash" %>
 <% end %>
 
-<%= turbo_stream.replace "signatures", partial: "signatures_table", locals: { signatures: @signatures } %>
+<%= turbo_stream.replace "signatures", partial: "signatures_table", locals: {signatures: @signatures} %>

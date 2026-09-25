@@ -6,16 +6,20 @@ export default class extends Controller {
   connect() {}
 
   changeFile() {
-    this.existingFileTarget.classList.add("d-none");
+    this.#setHidden(this.existingFileTarget, true);
     this.existingFileTarget.getElementsByTagName("input")[0].disabled = true;
-    this.newFileTarget.classList.remove("d-none");
+    this.#setHidden(this.newFileTarget, false);
     this.inputTarget.disabled = false;
   }
 
   reloadExistingFile() {
-    this.existingFileTarget.classList.remove("d-none");
+    this.#setHidden(this.existingFileTarget, false);
     this.existingFileTarget.getElementsByTagName("input")[0].disabled = false;
-    this.newFileTarget.classList.add("d-none");
+    this.#setHidden(this.newFileTarget, true);
     this.inputTarget.disabled = true;
+  }
+
+  #setHidden(element, hidden) {
+    element.classList.toggle("hidden", hidden);
   }
 }

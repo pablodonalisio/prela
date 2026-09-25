@@ -1,68 +1,78 @@
 <% location_equipment = service_occurrence.location_equipment %>
 <% extra_class = local_assigns.fetch(:class, "ms-2") %>
+<% action_class = "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading #{extra_class}" %>
 
 <% if current_user.admin? || current_user.editor? %>
   <% if service_occurrence.open? %>
     <%= link_to complete_location_equipment_service_occurrence_path(location_equipment, service_occurrence),
-                class: extra_class,
+                class: action_class,
                 data: {turbo_frame: "remote_modal"},
-                title: "Registrar servicio" do %>
-      <i class="fas fa-check"></i>
+                title: "Registrar servicio",
+                aria: {label: "Registrar servicio"} do %>
+      <%= icon(:check) %>
     <% end %>
 
     <% if service_occurrence.pending? %>
       <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "due_on"),
-                  class: extra_class,
+                  class: action_class,
                   data: {turbo_frame: "remote_modal"},
-                  title: "Editar vencimiento" do %>
-        <i class="fas fa-edit"></i>
+                  title: "Editar vencimiento",
+                  aria: {label: "Editar vencimiento"} do %>
+        <%= icon(:edit) %>
       <% end %>
       <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "suspend"),
-                  class: extra_class,
+                  class: action_class,
                   data: {turbo_frame: "remote_modal"},
-                  title: "Suspender" do %>
-        <i class="fas fa-pause"></i>
+                  title: "Suspender",
+                  aria: {label: "Suspender"} do %>
+        <%= icon(:pause) %>
       <% end %>
       <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
-                  class: extra_class,
+                  class: action_class,
                   data: {turbo_frame: "remote_modal"},
-                  title: "Programar" do %>
-        <i class="fas fa-calendar-plus"></i>
+                  title: "Programar",
+                  aria: {label: "Programar"} do %>
+        <%= icon(:calendar_plus) %>
       <% end %>
     <% elsif service_occurrence.suspended? %>
       <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "schedule"),
-                  class: extra_class,
+                  class: action_class,
                   data: {turbo_frame: "remote_modal"},
-                  title: "Programar" do %>
-        <i class="fas fa-calendar-plus"></i>
+                  title: "Programar",
+                  aria: {label: "Programar"} do %>
+        <%= icon(:calendar_plus) %>
       <% end %>
       <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
-                  class: extra_class,
+                  class: action_class,
                   data: {turbo_frame: "remote_modal"},
-                  title: "Volver a pendiente" do %>
-        <i class="fas fa-undo"></i>
+                  title: "Volver a pendiente",
+                  aria: {label: "Volver a pendiente"} do %>
+        <%= icon(:undo) %>
       <% end %>
     <% elsif service_occurrence.scheduled? %>
       <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "revert"),
-                  class: extra_class,
+                  class: action_class,
                   data: {turbo_frame: "remote_modal"},
-                  title: "Volver a pendiente" do %>
-        <i class="fas fa-undo"></i>
+                  title: "Volver a pendiente",
+                  aria: {label: "Volver a pendiente"} do %>
+        <%= icon(:undo) %>
       <% end %>
     <% end %>
   <% elsif service_occurrence.completed? %>
     <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "completed"),
-                class: extra_class,
+                class: action_class,
                 data: {turbo_frame: "remote_modal"},
-                title: "Editar servicio" do %>
-      <i class="fas fa-edit"></i>
+                title: "Editar servicio",
+                aria: {label: "Editar servicio"} do %>
+      <%= icon(:edit) %>
     <% end %>
   <% elsif service_occurrence.cancelled? %>
     <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "notes"),
-                class: extra_class,
+                class: action_class,
                 data: {turbo_frame: "remote_modal"},
-                title: "Editar notas" do %>
-      <i class="fas fa-edit"></i>
+                title: "Editar notas",
+                aria: {label: "Editar notas"} do %>
+      <%= icon(:edit) %>
     <% end %>
   <% end %>
 <% end %>

@@ -1,15 +1,12 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
+<%= turbo_frame_tag "main_content" do %>
   <%= render "shared/content_header", title: "Insumos" %>
 
-  <div class="row mx-2">
-    <div class="border rounded mt-5 p-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2 class="m-0 text-wrap text-truncate">Baterías</h2>
-        <%= render "shared/button_link", text: "Agregar",
-                                        path: new_battery_path %>
-      </div>
-
-      <%= render "shared/items", collection: @batteries %>
+  <div class="m-4 rounded-xl border border-default bg-neutral-primary p-4 md:mx-6">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <h2 class="min-w-0 truncate text-lg font-semibold text-heading">Baterías</h2>
+      <%= render "shared/button_link", text: "Agregar", path: new_battery_path %>
     </div>
+
+    <%= render "shared/items", collection: @batteries %>
   </div>
 <% end %>

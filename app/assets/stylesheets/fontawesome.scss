@@ -1,0 +1,6 @@
+// Standalone icon stylesheet, loaded by both the Bootstrap and the Tailwind
+// layout while the migration is in progress. The icon() helper is the only
+// thing that should reference these classes, so swapping Font Awesome for
+// inline SVG later means touching that helper and this file only.
+$fa-font-path: "font-awesome";
+@import "font-awesome";

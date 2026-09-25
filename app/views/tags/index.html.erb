@@ -1,20 +1,19 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <%= render "location_equipments/navbar", active: "tags" %>
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "shared/section_nav", active: "tags" %>
 
   <%= render "shared/content_header", title: "Etiquetas" do %>
     <% if current_user.admin? %>
-      <%= render "shared/button_link", text: "Agregar",
-                                      path: new_tag_path %>
+      <%= render "shared/button_link", text: "Agregar", path: new_tag_path %>
     <% end %>
   <% end %>
 
-  <p class="text-body-secondary small mx-4 mt-2 mb-0">
+  <p class="mx-4 mt-2 text-sm text-body-subtle md:mx-6">
     Las etiquetas sirven para marcar situaciones o categorías en los activos
     (por ejemplo, en revisión o inaccesible).
     Se pueden asignar varias a un mismo activo y usarlas para filtrar en la lista.
   </p>
 
-  <%= turbo_frame_tag "tags", class: "d-flex flex-column gap-2 mx-4 mt-4" do %>
+  <%= turbo_frame_tag "tags", class: "mx-4 mt-4 flex flex-col gap-2 md:mx-6" do %>
     <% if @tags.any? %>
       <%= render @tags %>
     <% else %>

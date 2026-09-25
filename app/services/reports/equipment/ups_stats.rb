@@ -17,7 +17,7 @@ class Reports::Equipment::UpsStats < Reports::Content
       input_voltage_row,
       output_voltage_row,
       [{content: "Estado de PAT"}, {content: ups_report_stat.pat_state}, {content: "Correcto"}],
-      [{content: "Existencia de alarmas"}, {content: ups_report_stat.alarms_presence}, {content: "Ninguna"}],
+      [{content: "Existencia de alarmas"}, {content: yes_no_label(ups_report_stat.alarms_presence)}, {content: "Ninguna"}],
       [{content: "Estado de ventilación"}, {content: ups_report_stat.ventilation_state}, {content: "Normal"}]
     ], width: table_width) do
       cells.border_color = PRIMARY_COLOR

@@ -1,17 +1,17 @@
-<%= turbo_frame_tag equipment_supply, class:"card", style:"width: 12rem; min-height: 20rem" do %>
+<%= turbo_frame_tag equipment_supply, class: "rounded-xl border border-default bg-neutral-primary" do %>
   <%= image_tag image_for(equipment_supply, :avatar, ""),
-                alt: "Imagen de Bateria",
-                class:"img-fluid rounded-top" %>
-  <div class="card-body">
-    <div class="d-flex justify-content-between">
-      <h5 class="card-title text-truncate"><%= equipment_supply.model.upcase %></h5>
+                alt: "Imagen de Batería",
+                class: "h-52 w-full rounded-t-xl bg-neutral-secondary-medium object-cover" %>
+  <div class="flex min-w-0 flex-col gap-3 p-4">
+    <div class="flex items-start justify-between gap-2">
+      <h5 class="truncate font-semibold text-heading"><%= equipment_supply.model.upcase %></h5>
       <%= render "shared/dropdown" do %>
         <%= render "shared/button_box", edit_path: edit_equipment_supply_path(equipment_supply),
-                                        delete_path: equipment_supply_path(equipment_supply),
-                                        confirm: "Seguro queres borrar el Insumo?" %>
+                                                 delete_path: equipment_supply_path(equipment_supply),
+                                                 confirm: "¿Seguro querés borrar el Insumo?" %>
       <% end %>
     </div>
-    <p class="card-text"><%= equipment_supply.voltage %>V <%= equipment_supply.amps %>Ah</p>
-    <p class="card-text">Cantidad: <%= equipment_supply.quantity %></p>
+    <p class="text-sm text-body"><%= equipment_supply.voltage %>V <%= equipment_supply.amps %>Ah</p>
+    <p class="text-sm text-body">Cantidad: <%= equipment_supply.quantity %></p>
   </div>
 <% end %>
