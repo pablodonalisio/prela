@@ -86,14 +86,14 @@
 
       <%# Shared modal shell: pages load their content into the frame inside it. %>
       <div id="remote_modal_shell"
-           class="fixed inset-0 z-50 hidden h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:p-4"
+           class="fixed inset-0 z-50 hidden h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:p-4 has-[.modal-size-full]:overflow-hidden has-[.modal-size-full]:p-0"
            tabindex="-1"
            aria-hidden="true"
            aria-labelledby="remote_modal_title"
            data-controller="modal"
            data-action="turbo:frame-load->modal#open turbo:submit-end->modal#close">
-        <div class="relative max-h-full w-full md:max-w-4xl md:has-[.modal-size-large]:max-w-7xl">
-          <div class="relative flex max-h-[100vh] min-h-0 flex-col overflow-hidden bg-neutral-primary-soft shadow-xl md:max-h-[90vh] md:has-[.modal-size-large]:max-h-[96vh] md:rounded-xl"
+        <div class="relative max-h-full w-full md:max-w-4xl md:has-[.modal-size-large]:max-w-7xl has-[.modal-size-full]:h-full has-[.modal-size-full]:max-h-none has-[.modal-size-full]:max-w-none">
+          <div class="relative flex max-h-[100vh] min-h-0 flex-col overflow-hidden bg-neutral-primary-soft shadow-xl md:max-h-[90vh] md:has-[.modal-size-large]:max-h-[96vh] md:rounded-xl has-[.modal-size-full]:h-full has-[.modal-size-full]:max-h-full has-[.modal-size-full]:rounded-none"
                id="modal_content">
             <%# turbo-frame is display:inline by default; it has to become a
                 flex column so the modal body can scroll under a fixed header. %>

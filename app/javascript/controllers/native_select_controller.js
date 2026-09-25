@@ -165,7 +165,9 @@ class NativeSelectUpgrade {
       const button = document.createElement("button");
       button.type = "button";
       button.className = SELECT_OPTION_CLASSES;
-      button.textContent = option.text;
+      // A blank option (Rails include_blank / prompt) has no text node, so the
+      // row collapses to padding only. A nbsp keeps the same line box as labels.
+      button.textContent = option.text.trim() ? option.text : "\u00a0";
       button.dataset.value = option.value;
       button.disabled = option.disabled;
       if (option.selected) button.classList.add(SELECT_OPTION_SELECTED_CLASS);

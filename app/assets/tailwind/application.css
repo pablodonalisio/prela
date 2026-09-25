@@ -23,6 +23,7 @@
    accordion active states), so they appear in no source file and would be
    dropped from the build. Losing them leaves an invisible modal backdrop. */
 @source inline("hidden");
+@source inline("min-h-9");
 @source inline("flex");
 @source inline("overflow-hidden");
 @source inline("bg-dark-backdrop/70");
@@ -47,6 +48,17 @@
 @source inline("-translate-x-full");
 @source inline("transition-transform");
 @source inline("left-0");
+
+/* Turbo keeps the layout frame's class when it swaps modal content, so the
+   size marker lives on the header. Stretch that frame to the shell. */
+#remote_modal_shell:has(.modal-size-full) > div,
+#remote_modal_shell:has(.modal-size-full) #modal_content,
+#remote_modal_shell:has(.modal-size-full) #remote_modal {
+  height: 100%;
+  max-height: none;
+  max-width: none;
+  width: 100%;
+}
 @source inline("top-0");
 @source inline("rotate-180");
 @source inline("bg-transparent");

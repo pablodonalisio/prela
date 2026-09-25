@@ -10,6 +10,6 @@ export const SELECT_MENU_CLASSES =
 export const SELECT_LIST_CLASSES = "py-2 text-sm text-heading";
 
 export const SELECT_OPTION_CLASSES =
-  "block w-full truncate px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading";
+  "block min-h-9 w-full truncate px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading";
 
 export const SELECT_OPTION_SELECTED_CLASS = "bg-neutral-tertiary-medium";

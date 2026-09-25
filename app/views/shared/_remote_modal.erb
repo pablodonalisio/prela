@@ -1,8 +1,9 @@
 <%# The remote_modal frame id and the remote_modal_body element id are part of
     the contract with the form_update turbo streams and the request specs, so
     they must not be renamed. %>
+<% size_class = { "large" => "modal-size-large", "full" => "modal-size-full" }[local_assigns[:size]] %>
 <%= turbo_frame_tag "remote_modal", class: "flex min-h-0 flex-col bg-neutral-primary-soft" do %>
-  <div class="flex shrink-0 items-start justify-between gap-4 border-b border-brand bg-brand px-5 py-4">
+  <div class="flex shrink-0 items-start justify-between gap-4 border-b border-brand bg-brand px-5 py-4 <%= size_class %>">
     <h4 class="text-lg font-semibold text-white" id="remote_modal_title"><%= title %></h4>
 
     <button type="button"

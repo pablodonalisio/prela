@@ -10,7 +10,7 @@
 <% options = local_assigns.fetch(:options) %>
 <% selected_pair = options.find { |_label, value| value.to_s == selected_value } %>
 <% selected_label = selected_pair&.first || blank_label %>
-<% option_class = "block w-full truncate px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading" %>
+<% option_class = "block min-h-9 w-full truncate px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading" %>
 <% selected_class = "bg-neutral-tertiary-medium" %>
 
 <div class="relative" data-controller="select-dropdown">
