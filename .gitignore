@@ -33,9 +33,6 @@
 !/tmp/storage/
 !/tmp/storage/.keep
 
-Gemfile.lock
-package-lock.json
-
 node_modules/
 
 /public/assets
