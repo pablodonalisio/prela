@@ -138,19 +138,18 @@ GEM
       railties (>= 6.1)
     drb (2.2.3)
     erb (5.0.2)
-    error_highlight (0.7.2)
     erubi (1.13.1)
     factory_bot (6.5.5)
       activesupport (>= 6.1.0)
     factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
-    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x64-mingw-ucrt)
     font-awesome-sass (6.4.2)
       sassc (~> 2.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    google-protobuf (4.32.0-arm64-darwin)
+    google-protobuf (4.32.0-x64-mingw-ucrt)
       bigdecimal
       rake (>= 13)
     i18n (1.14.7)
@@ -200,7 +199,7 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.9-arm64-darwin)
+    nokogiri (1.18.9-x64-mingw-ucrt)
       racc (~> 1.4)
     orm_adapter (0.5.0)
     pagy (9.4.0)
@@ -212,7 +211,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pdf-core (0.10.0)
-    pg (1.6.2-arm64-darwin)
+    pg (1.6.2-x64-mingw-ucrt)
     pp (0.6.2)
       prettyprint
     prawn (2.5.0)
@@ -330,7 +329,7 @@ GEM
       ffi (~> 1.12)
       logger
     rubyzip (3.0.2)
-    sass-embedded (1.92.0-arm64-darwin)
+    sass-embedded (1.92.0-x64-mingw-ucrt)
       google-protobuf (~> 4.31)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -376,7 +375,7 @@ GEM
     tailwindcss-rails (4.6.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
-    tailwindcss-ruby (4.3.3-arm64-darwin)
+    tailwindcss-ruby (4.3.3-x64-mingw-ucrt)
     thor (1.4.0)
     timeout (0.4.3)
     ttfunk (1.8.0)
@@ -386,6 +385,8 @@ GEM
       railties (>= 7.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2026.4)
+      tzinfo (>= 1.0.0)
     unicode-display_width (3.1.5)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
@@ -408,7 +409,7 @@ GEM
     zeitwerk (2.7.3)
 
 PLATFORMS
-  arm64-darwin-23
+  x64-mingw-ucrt
 
 DEPENDENCIES
   aws-sdk-s3
