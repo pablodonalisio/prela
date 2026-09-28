@@ -8,10 +8,6 @@
       <%= render "shared/company_contact_items" %>
     </div>
 
-    <div class="flex min-w-0 flex-1 items-center md:hidden">
-      <%= render "shared/company_contact_items", variant: :emergency %>
-    </div>
-
     <div class="ml-auto flex shrink-0 items-center gap-1"
          data-controller="theme">
       <button type="button"
@@ -37,13 +33,6 @@
              class="z-50 hidden w-72 max-w-[calc(100vw-1.5rem)] divide-y divide-default rounded-base border border-default bg-neutral-secondary-medium shadow-sm">
           <div class="px-4 py-3 text-sm text-heading">
             <div class="truncate font-medium"><%= current_user.email %></div>
-          </div>
-
-          <div class="px-4 py-3 md:hidden">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-body-subtle">Contacto</p>
-            <div class="flex flex-col gap-2 [&_a]:text-body [&_a:hover]:text-heading">
-              <%= render "shared/company_contact_items", variant: :secondary %>
-            </div>
           </div>
 
           <ul class="py-2 text-sm text-heading">

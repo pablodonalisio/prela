@@ -6,7 +6,7 @@
 
   <div class="mb-5 rounded-lg border border-default p-4">
     <h4 class="mb-3 text-sm font-medium text-heading">Archivo</h4>
-    <% file = document.new_record? ? nil : document.file %>
+    <% file = document.file.attached? ? document.file : nil %>
     <%= render "shared/file_upload", file: file,
                                               form: f,
                                               resize: [nil, 250],

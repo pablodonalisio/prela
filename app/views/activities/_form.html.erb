@@ -8,7 +8,7 @@
 
   <div class="mb-5 rounded-lg border border-default p-4">
     <h4 class="mb-3 text-sm font-medium text-heading">Documento</h4>
-    <% document = activity.new_record? ? nil : activity.document %>
+    <% document = activity.document.attached? ? activity.document : nil %>
     <%= render "shared/file_upload", file: document,
                                               form: f,
                                               resize: [nil, 250],
