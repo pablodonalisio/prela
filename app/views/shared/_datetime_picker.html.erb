@@ -21,7 +21,7 @@
                     data: {datetime_field_target: "date"} %>
     </div>
     <div>
-      <%= form.label field, "Hora", for: time_id, class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= form.label field, "Hora (formato 24hs)", for: time_id, class: "mb-2 block text-sm font-medium text-heading" %>
       <%= tag.input type: "text",
                     id: time_id,
                     value: timestamp.strftime("%H:%M"),
