@@ -156,11 +156,6 @@ class ReportsController < ApplicationController
       signature_ids: []
     )
 
-    ReportTemplate::SECTIONS.each do |section|
-      permitted[:field_values] ||= {}
-      permitted[:field_values][section] ||= {}
-    end
-
     permitted[:signature_ids] = merge_signature_ids(permitted[:signature_ids])
     permitted
   end

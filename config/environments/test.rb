@@ -18,6 +18,12 @@ Rails.application.configure do
   # Configure public file server for tests with cache-control for performance.
   config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
 
+  # A local assets:precompile writes digested files under public/assets.
+  # Sprockets prefers that manifest over app/javascript, so a stale bundle
+  # (one that still imports a removed package) stops Turbo, Stimulus, and
+  # Bootstrap from booting. System tests need the current JavaScript.
+  config.assets.resolve_with = [:environment]
+
   # Show full error reports.
   config.consider_all_requests_local = true
   config.cache_store = :null_store
