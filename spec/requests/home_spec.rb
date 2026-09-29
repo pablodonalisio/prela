@@ -65,6 +65,38 @@ RSpec.describe "Homes", type: :request do
         expect(response.body).to include("Tipo: #{battery_change_kind.name}")
       end
 
+      it "colors the vencidos circle red when it has items" do
+        get "/home/index"
+
+        document = Nokogiri::HTML(response.body)
+        button = document.css("button").find { |node| node.text.squish.start_with?("Vencidos") }
+
+        expect(button.at_css("i")["class"]).to include("text-red-500")
+        expect(button["class"]).not_to include("bg-red-600")
+      end
+
+      it "colors status circles green when empty and by status when they have items" do
+        les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
+        les.service_occurrences.destroy_all
+        create(:service_occurrence, :due_soon, location_equipment_service: les)
+        overdue_occurrence.update!(status: :suspended)
+
+        get "/home/index"
+
+        document = Nokogiri::HTML(response.body)
+        circle_class = ->(label) {
+          button = document.css("button").find { |node| node.text.squish.start_with?(label) }
+          button.at_css("i")["class"].to_s
+        }
+
+        expect(circle_class.call("Vencidos")).to include("text-green-500")
+        expect(circle_class.call("Vence pronto")).to include("text-yellow-400")
+        expect(circle_class.call("Suspendidos")).to include("text-gray-400")
+
+        badge = document.css("span").find { |node| node.text.squish == "Vence pronto" }
+        expect(badge["class"]).to include("bg-yellow-400")
+      end
+
       it "shows overdue and suspended counts next to the equipment kind name" do
         les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
         les.service_occurrences.destroy_all

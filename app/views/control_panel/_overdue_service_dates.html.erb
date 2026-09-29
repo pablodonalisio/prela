@@ -30,7 +30,7 @@
         <span>(<%= suspended_count %>)</span>
       <% end %>
       <% if overdue_count.zero? && due_soon_count.zero? && suspended_count.zero? %>
-        <%= icon(:dot, class: "text-[0.45rem] text-gray-400") %>
+        <%= icon(:dot, class: "text-[0.45rem] text-green-500") %>
       <% end %>
     </span>
     <svg data-accordion-icon class="h-3 w-3 shrink-0 rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -53,7 +53,7 @@
           {items: vencidos, key: "vencidos", title: "Vencidos", count: overdue_count, dot: "text-red-500", empty: "Sin vencidos", badge: "Vencido",
            badge_class: "rounded-full bg-red-700 px-2.5 py-0.5 text-xs font-medium text-white dark:bg-red-900"},
           {items: vence_pronto, key: "vence-pronto", title: "Vence pronto", count: due_soon_count, dot: "text-yellow-400", empty: "Sin vencimientos próximos", badge: "Vence pronto",
-           badge_class: "rounded-full bg-yellow-700 px-2.5 py-0.5 text-xs font-medium text-white dark:bg-yellow-900"},
+           badge_class: "rounded-full bg-yellow-400 px-2.5 py-0.5 text-xs font-medium text-yellow-950"},
           {items: suspendidos, key: "suspendidos", title: "Suspendidos", count: suspended_count, dot: "text-gray-400", empty: "Sin suspendidos", badge: "Suspendido",
            badge_class: "rounded-full bg-gray-600 px-2.5 py-0.5 text-xs font-medium text-white dark:bg-gray-700"}
         ].each_with_index do |section, index| %>
@@ -67,7 +67,7 @@
                     aria-controls="<%= body_id %>">
               <span class="flex items-center gap-2">
                 <%= section[:title] %>
-                <%= icon(:dot, class: "text-[0.45rem] #{section[:count].positive? ? section[:dot] : "text-gray-400"}") %>
+                <%= icon(:dot, class: "text-[0.45rem] #{section[:count].positive? ? section[:dot] : "text-green-500"}") %>
                 <% if section[:count].positive? %>
                   (<%= section[:count] %>)
                 <% end %>
