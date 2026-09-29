@@ -30,9 +30,8 @@ RSpec.describe "Location equipments", type: :system do
 
     expect(page).to have_text("Nuevo Equipo de Sede")
 
-    select "Gea", from: "client_id"
-    expect(page).to have_select("location_equipment_location_id", with_options: ["Planta Norte"])
-    select "Planta Norte", from: "location_equipment_location_id"
+    choose_from_select "Cliente", "Gea"
+    choose_from_select "Sede", "Planta Norte"
 
     equipment_field = find_field(placeholder: "Seleccione un equipo")
     equipment_field.set("UPS de prueba")
@@ -68,7 +67,7 @@ RSpec.describe "Location equipments", type: :system do
     visit location_equipments_path
     use_mobile_layout
 
-    click_on "Filtros"
+    click_on "Abrir filtros"
     check "Acme"
 
     expect(page).to have_text("Código: ACME-1")

@@ -17,6 +17,14 @@ module SystemSpecHelpers
     page.driver.browser.execute_cdp("Emulation.clearDeviceMetricsOverride")
     page.current_window.resize_to(1400, 1400)
   end
+
+  # Single-choice selects are replaced by a button + listbox. The native
+  # <select> stays in the DOM with class "hidden".
+  def choose_from_select(label, option)
+    group = find("label", exact_text: label).find(:xpath, "..")
+    group.find("button[aria-haspopup='listbox']").click
+    find("[role='listbox'] button", exact_text: option).click
+  end
 end
 
 RSpec.configure do |config|

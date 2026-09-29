@@ -7,9 +7,9 @@ RSpec.describe "Navbar", type: :system do
 
   it "signs out from the user menu" do
     visit root_path
-    click_on "Menú de usuario"
-    click_on "Cerrar Sesion"
+    click_on "Abrir menú de usuario"
+    click_on "Cerrar Sesión"
 
-    expect(page).to have_text("Iniciar Sesion")
+    expect(page).to have_text("Iniciar Sesión")
   end
 end

@@ -5,12 +5,12 @@
 <% classes = "inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft" %>
 
 <% if text.present? %>
-  <%= link_to path, class: classes, data: {turbo_frame: turbo_frame}, aria: {label: "Button link"} do %>
+  <%= link_to path, class: classes, data: {turbo_frame: turbo_frame} do %>
     <%= icon(icon_name) if icon_name %>
     <%= text %>
   <% end %>
 <% else %>
-  <%= link_to path, class: classes, data: {turbo_frame: turbo_frame} do %>
+  <%= link_to path, class: classes, data: {turbo_frame: turbo_frame}, aria: {label: "Button link"} do %>
     <%= icon(icon_name) if icon_name %>
   <% end %>
 <% end %>

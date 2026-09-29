@@ -7,7 +7,7 @@ RSpec.describe "Sign in", type: :system do
     visit new_user_session_path
     fill_in "Email", with: admin.email
     fill_in "Password", with: "password"
-    click_on "Iniciar Sesion"
+    click_on "Iniciar Sesión"
 
     expect(page).to have_text("Activos")
   end
