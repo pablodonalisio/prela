@@ -21,7 +21,7 @@ class EquipmentKindsController < ApplicationController
     respond_to do |format|
       if @equipment_kind.save
         format.html { redirect_to @equipment_kind, notice: "Equipment kind was successfully created." }
-        format.turbo_stream { flash.now[:notice] = "El tipo de activo se creo correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El tipo de activo se creó correctamente." }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.turbo_stream { render :form_update, status: :unprocessable_entity }
@@ -32,8 +32,8 @@ class EquipmentKindsController < ApplicationController
   def update
     respond_to do |format|
       if @equipment_kind.update(equipment_kind_params)
-        format.html { redirect_to @equipment_kind, notice: "El tipo de activo se actualizo correctamente.", status: :see_other }
-        format.turbo_stream { flash.now[:notice] = "El tipo de activo se actualizo correctamente." }
+        format.html { redirect_to @equipment_kind, notice: "El tipo de activo se actualizó correctamente.", status: :see_other }
+        format.turbo_stream { flash.now[:notice] = "El tipo de activo se actualizó correctamente." }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.turbo_stream { render :form_update, status: :unprocessable_entity }

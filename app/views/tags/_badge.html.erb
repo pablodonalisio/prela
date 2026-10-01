@@ -1,1 +1,3 @@
-<span class="badge rounded-pill" style="<%= tag.badge_style %>"><%= tag.name %></span>
+<%# Colours come from Tag#badge_style as an inline style. %>
+<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+      style="<%= tag.badge_style %>"><%= tag.name %></span>

@@ -21,7 +21,7 @@ RSpec.describe "/location_equipments", type: :request do
 
       it "does not render the index page" do
         get users_url
-        expect(flash[:alert]).to eq("No estas autorizado para realizar esta acción.")
+        expect(flash[:alert]).to eq("No estás autorizado para realizar esta acción.")
         expect(response).to redirect_to(root_path)
         expect(response.body).not_to include(users.first.email)
       end
@@ -54,7 +54,7 @@ RSpec.describe "/location_equipments", type: :request do
         expect {
           request
         }.not_to change(User, :count)
-        expect(flash[:alert]).to eq("No estas autorizado para realizar esta acción.")
+        expect(flash[:alert]).to eq("No estás autorizado para realizar esta acción.")
         expect(response).to redirect_to(root_path)
       end
     end
@@ -91,7 +91,7 @@ RSpec.describe "/location_equipments", type: :request do
       it "does not allow updating a user" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq("No estas autorizado para realizar esta acción.")
+        expect(flash[:alert]).to eq("No estás autorizado para realizar esta acción.")
       end
     end
   end
@@ -113,7 +113,7 @@ RSpec.describe "/location_equipments", type: :request do
       it "does not allow deleting a user" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq("No estas autorizado para realizar esta acción.")
+        expect(flash[:alert]).to eq("No estás autorizado para realizar esta acción.")
       end
     end
   end

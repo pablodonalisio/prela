@@ -28,7 +28,7 @@ RSpec.describe "/documents", type: :request do
       it "denies access" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+        expect(flash[:alert]).to match(/No estás autorizado para realizar esta acción./)
       end
     end
   end
@@ -48,7 +48,7 @@ RSpec.describe "/documents", type: :request do
       it "denies access" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+        expect(flash[:alert]).to match(/No estás autorizado para realizar esta acción./)
       end
     end
   end
@@ -96,7 +96,7 @@ RSpec.describe "/documents", type: :request do
         it "denies access" do
           request
           expect(response).to redirect_to(root_path)
-          expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+          expect(flash[:alert]).to match(/No estás autorizado para realizar esta acción./)
         end
       end
     end
@@ -172,7 +172,7 @@ RSpec.describe "/documents", type: :request do
     it "redirects to the documentable page" do
       request
       expect(response).to redirect_to(polymorphic_path([documentable]))
-      expect(flash[:notice]).to match(/El documento se edito correctamente./)
+      expect(flash[:notice]).to match(/El documento se editó correctamente./)
     end
 
     context "with invalid parameters" do
@@ -215,7 +215,7 @@ RSpec.describe "/documents", type: :request do
       it "denies access" do
         request
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to match(/No estas autorizado para realizar esta acción./)
+        expect(flash[:alert]).to match(/No estás autorizado para realizar esta acción./)
       end
     end
   end

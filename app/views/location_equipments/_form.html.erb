@@ -1,18 +1,21 @@
+<% select_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading focus:border-brand focus:ring-brand" %>
+<% section = "mb-4 overflow-hidden rounded-xl border border-default bg-neutral-primary" %>
+<% section_header = "border-b border-default px-5 py-3 text-xs font-semibold uppercase tracking-wide text-heading" %>
+<% section_body = "px-5 pb-1 pt-4" %>
+
 <%= simple_form_for location_equipment,
       html: { data: { controller: "location-equipment-form" }} do |f| %>
 
-  <%# ── Location ─────────────────────────────────────────── %>
-  <div class="card mb-3 border-0 shadow-sm">
-    <div class="card-header fw-semibold text-white small text-uppercase">
-      <i class="fa fa-map-marker-alt me-2 text-primary"></i>Locación
+  <div class="<%= section %>">
+    <div class="<%= section_header %>">
+      <%= icon(:location, class: "me-2 text-fg-brand") %>Locación
     </div>
-    <div class="card-body pb-1">
-
+    <div class="<%= section_body %>">
       <% selected_client_id = params[:client_id].presence || location_equipment.location&.client_id %>
       <div class="mb-3">
-        <label class="form-label">Cliente</label>
+        <label class="mb-2 block text-sm font-medium text-heading">Cliente</label>
         <select name="client_id"
-                class="form-select"
+                class="<%= select_classes %>"
                 data-location-equipment-form-target="client"
                 data-action="change->location-equipment-form#loadLocations">
           <option value="">Seleccione un cliente</option>
@@ -33,28 +36,23 @@
                                       prompt: "Seleccione una sede",
                                       wrapper_html: { class: "mb-3" } %>
           <% else %>
-            <p class="text-muted small mb-3">Este cliente no tiene sedes registradas.</p>
+            <p class="mb-3 text-sm text-body-subtle">Este cliente no tiene sedes registradas.</p>
           <% end %>
         <% end %>
       <% end %>
 
-      <div class="row g-3">
-        <div class="col-sm-6">
-          <%= f.input :zone, label: "Sala", wrapper_html: { class: "mb-3" } %>
-        </div>
-        <div class="col-sm-6">
-          <%= f.input :floor, label: "Piso", wrapper_html: { class: "mb-3" } %>
-        </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <%= f.input :zone, label: "Sala", wrapper_html: { class: "mb-3" } %>
+        <%= f.input :floor, label: "Piso", wrapper_html: { class: "mb-3" } %>
       </div>
     </div>
   </div>
 
-  <%# ── Equipment ───────────────────────────────────────── %>
-  <div class="card mb-3 border-0 shadow-sm">
-    <div class="card-header fw-semibold text-white small text-uppercase">
-      <i class="fa fa-plug me-2 text-primary"></i>Equipo
+  <div class="<%= section %>">
+    <div class="<%= section_header %>">
+      <%= icon(:plug, class: "me-2 text-fg-brand") %>Equipo
     </div>
-    <div class="card-body pb-1">
+    <div class="<%= section_body %>">
       <%= f.input :equipment_id, label: "Equipo",
                                  collection: Equipment.visible.map { |e| [e.name, e.id] },
                                  prompt: "Seleccione un equipo",
@@ -62,22 +60,18 @@
                                  input_html: { data: { controller: "searchable-select",
                                                        location_equipment_form_target: "equipment",
                                                        action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
-      <p class="small text-white mt-n2 mb-3">
+      <p class="mb-3 text-sm text-body">
         ¿No encontrás el equipo?
-        <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-primary" %>.
+        <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-fg-brand hover:underline" %>.
       </p>
 
       <%= f.input :avatar, label: "Foto",
                            hint: "Opcional. Si no se adjunta, se usa la foto del equipo.",
                            wrapper_html: { class: "mb-3" } %>
 
-      <div class="row g-3">
-        <div class="col-sm-6">
-          <%= f.input :serial_number, wrapper_html: { class: "mb-3" } %>
-        </div>
-        <div class="col-sm-6">
-          <%= f.input :code, wrapper_html: { class: "mb-3" } %>
-        </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <%= f.input :serial_number, wrapper_html: { class: "mb-3" } %>
+        <%= f.input :code, wrapper_html: { class: "mb-3" } %>
       </div>
 
       <%= turbo_frame_tag "le_field_inputs",
@@ -90,50 +84,45 @@
     </div>
   </div>
 
-      <div class="card mb-3 border-0 shadow-sm">
-    <div class="card-header fw-semibold text-white small text-uppercase">
-      <i class="fa fa-file-lines me-2 text-primary"></i>Plantillas de informe
+  <div class="<%= section %>">
+    <div class="<%= section_header %>">
+      <%= icon(:reports, class: "me-2 text-fg-brand") %>Plantillas de informe
     </div>
-    <div class="card-body pb-1">
+    <div class="<%= section_body %>">
       <%= f.input :report_template_ids,
                   label: "Plantillas asociadas",
                   collection: ReportTemplate.order(:name).map { |t| [t.name, t.id] },
-                  input_html: { multiple: true, class: "form-select" },
+                  input_html: { multiple: true },
                   hint: "Opcional. Facilita la selección al crear informes con plantilla.",
                   wrapper_html: { class: "mb-3" } %>
     </div>
   </div>
 
-  <%# ── Others ─────────────────────────────────────────── %>
-  <div class="card mb-3 border-0 shadow-sm">
-    <div class="card-header fw-semibold text-white small text-uppercase">
-      <i class="fa fa-sliders-h me-2 text-primary"></i>Otros
+  <div class="<%= section %>">
+    <div class="<%= section_header %>">
+      <%= icon(:settings, class: "me-2 text-fg-brand") %>Otros
     </div>
-    <div class="card-body pb-1">
-      <div class="row g-3">
-        <div class="col-sm-6">
-          <%= f.input :status, label: "Estado",
-                               collection: LocationEquipment.enum_attributes_for_select("status"),
-                               include_blank: false,
-                               wrapper_html: { class: "mb-3" } %>
-        </div>
-        <div class="col-sm-6">
-          <%= f.input :condition, label: "Condición",
-                                  collection: LocationEquipment::CONDITIONS.keys,
-                                  include_blank: false,
-                                  wrapper_html: { class: "mb-3" } %>
-        </div>
+    <div class="<%= section_body %>">
+      <div class="grid gap-3 sm:grid-cols-2">
+        <%= f.input :status, label: "Estado",
+                             collection: LocationEquipment.enum_attributes_for_select("status"),
+                             include_blank: false,
+                             wrapper_html: { class: "mb-3" } %>
+        <%= f.input :condition, label: "Condición",
+                                collection: LocationEquipment::CONDITIONS.keys,
+                                include_blank: false,
+                                wrapper_html: { class: "mb-3" } %>
       </div>
       <%= f.input :tag_ids,
                   label: "Etiquetas",
                   collection: Tag.visible.order(:name).map { |t| [t.name, t.id] },
-                  input_html: { multiple: true, class: "form-select" },
+                  input_html: { multiple: true },
                   wrapper_html: { class: "mb-3" } %>
       <%= f.input :details, label: "Detalles", input_html: { rows: 3 }, wrapper_html: { class: "mb-3" } %>
     </div>
   </div>
 
-  <div class="d-flex justify-content-end mt-4">
-    <%= f.button :submit, "Aceptar", class: "btn btn-success px-4" %>
+  <div class="mt-4 flex justify-end">
+    <%= f.button :submit, "Aceptar" %>
   </div>
 <% end %>

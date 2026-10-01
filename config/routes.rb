@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   get "home/index"
+
   resources :agenda, only: [:index]
   resources :clients do
     resources :locations, except: [:index, :show]

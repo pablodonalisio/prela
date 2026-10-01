@@ -1,0 +1,6 @@
+<% if policy(item).destroy? %>
+  <%= button_to "Eliminar", battery_path(item),
+                method: :delete,
+                class: "inline-flex h-10 items-center rounded-lg border border-default bg-neutral-primary px-4 text-sm font-medium text-fg-danger hover:bg-danger-soft",
+                form: {class: "inline", data: {turbo_confirm: "¿Seguro querés borrar la Batería?"}} %>
+<% end %>

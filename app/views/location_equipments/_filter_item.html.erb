@@ -1,13 +1,11 @@
-<div class="mb-3">
-  <h6><%= title %></h6>
+<div class="mb-4">
+  <h6 class="mb-2 text-sm font-semibold text-heading"><%= title %></h6>
   <%= f.collection_check_boxes attribute, collection, value, label do |b| %>
-    <div class="form-check">
+    <div class="mb-2 flex items-center">
       <%= b.check_box checked: selected_filters&.include?(b.value.to_s),
-                      class: "form-check-input",
+                      class: "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-brand",
                       onchange: "this.form.requestSubmit()"  %>
-      <small>
-        <%= b.label(class: "form-check-label") %>
-      </small>
+      <%= b.label(class: "ms-2 text-sm text-heading") %>
     </div>
   <% end %>
 </div>

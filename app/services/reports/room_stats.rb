@@ -25,7 +25,7 @@ class Reports::RoomStats < Reports::Content
     when "power_unit" then power_unit_room_rows
     when "electrical_panel" then electrical_panel_room_rows
     else
-      raise StandardError, "No estan definidas las filas para la sala de este tipo de equipo"
+      raise StandardError, "No están definidas las filas para la sala de este tipo de equipo"
     end
   end
 
@@ -51,10 +51,10 @@ class Reports::RoomStats < Reports::Content
   def electrical_panel_room_rows
     [
       [{content: "SALA", colspan: 3, background_color: PRIMARY_COLOR, align: :center, font_style: :bold}],
-      [{content: "Limpia y ordenada"}, {content: room_report_stat.clean_and_tidy, colspan: 2}],
-      [{content: "Ventilada"}, {content: room_report_stat.ventilated, colspan: 2}],
-      [{content: "Libre accesso al tablero"}, {content: room_report_stat.free_access_to_panel, colspan: 2}],
-      [{content: "Con llave de ingreso"}, {content: room_report_stat.with_access_key, colspan: 2}]
+      [{content: "Limpia y ordenada"}, {content: yes_no_label(room_report_stat.clean_and_tidy), colspan: 2}],
+      [{content: "Ventilada"}, {content: yes_no_label(room_report_stat.ventilated), colspan: 2}],
+      [{content: "Libre accesso al tablero"}, {content: yes_no_label(room_report_stat.free_access_to_panel), colspan: 2}],
+      [{content: "Con llave de ingreso"}, {content: yes_no_label(room_report_stat.with_access_key), colspan: 2}]
     ]
   end
 end

@@ -1,25 +1,25 @@
 <%= turbo_frame_tag equipment_kind do %>
-  <div class="bg-secondary rounded p-3">
-    <div class="d-flex align-items-start align-items-md-center gap-3 flex-column flex-md-row">
-      <div class="flex-grow-1 min-w-0">
-        <h5 class="mb-1 text-white"><%= equipment_kind.name %></h5>
+  <div class="rounded-xl border border-default bg-neutral-primary p-4">
+    <div class="flex flex-col items-start gap-3 md:flex-row md:items-center">
+      <div class="min-w-0 flex-1">
+        <h5 class="mb-1 font-semibold text-heading"><%= equipment_kind.name %></h5>
         <% if equipment_kind.description.present? %>
-          <p class="text-white-50 small mb-2"><%= equipment_kind.description %></p>
+          <p class="mb-2 text-sm text-body-subtle"><%= equipment_kind.description %></p>
         <% end %>
 
-        <div class="d-flex flex-wrap gap-2">
-          <span class="badge rounded-pill text-bg-dark">
+        <div class="flex flex-wrap gap-2">
+          <span class="rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">
             <%= equipment_kind.equipments_count %>
             <%= equipment_kind.equipments_count == 1 ? "equipo" : "equipos" %>
           </span>
           <% equipment_kind.service_kinds.visible.order(:name).each do |service_kind| %>
-            <span class="badge rounded-pill text-bg-primary"><%= service_kind.name %></span>
+            <span class="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-medium text-fg-brand"><%= service_kind.name %></span>
           <% end %>
         </div>
       </div>
 
       <% if current_user.admin? %>
-        <div class="flex-shrink-0 align-self-end align-self-md-center">
+        <div class="shrink-0 self-end md:self-center">
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box",
                        edit_path: edit_equipment_kind_path(equipment_kind),

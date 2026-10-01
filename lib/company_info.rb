@@ -6,7 +6,7 @@ module CompanyInfo
   end
 
   def emergency_phone
-    "3515 63-4165"
+    "351-5634165"
   end
 
   def emergency_phone_label
@@ -14,7 +14,7 @@ module CompanyInfo
   end
 
   def admin_phone
-    "3512 95-1497"
+    "351-2951497"
   end
 
   def admin_phone_label

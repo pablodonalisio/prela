@@ -1,18 +1,19 @@
 <%= turbo_frame_tag "location_equipment_services" do %>
-  <div class="d-flex align-items-center justify-content-between mb-1 mt-2">
-    <p class="text-white small text-uppercase fw-semibold mb-0">Servicios programados</p>
+  <div class="mb-1 mt-2 flex items-center justify-between">
+    <p class="mb-0 text-xs font-semibold uppercase tracking-wide text-body-subtle">Servicios programados</p>
     <% if policy(LocationEquipmentService).create? && location_equipment.available_service_kinds_for_assignment.any? %>
       <%= link_to new_location_equipment_location_equipment_service_path(location_equipment),
-                  class: "btn btn-sm btn-primary py-0 px-1",
-                  data: {turbo_frame: "remote_modal"} do %>
-        <i class="fa-solid fa-plus"></i>
+                  class: "rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-strong",
+                  data: {turbo_frame: "remote_modal"},
+                  aria: {label: "Asignar servicio"} do %>
+        <%= icon(:add) %>
       <% end %>
     <% end %>
   </div>
 
   <% services = location_equipment.location_equipment_services.includes(:service_kind).order("service_kinds.name") %>
   <% if services.any? %>
-    <ul class="list-unstyled mb-3">
+    <ul class="mb-3 list-none p-0">
       <% services.each do |les| %>
         <%= render "location_equipment_services/location_equipment_service",
                    location_equipment_service: les,
@@ -20,6 +21,6 @@
       <% end %>
     </ul>
   <% else %>
-    <p class="text-white-50 small mb-3">Sin servicios programados</p>
+    <p class="mb-3 text-sm text-body-subtle">Sin servicios programados</p>
   <% end %>
 <% end %>

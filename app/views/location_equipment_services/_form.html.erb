@@ -33,10 +33,10 @@ end %>
                   }
                 } %>
   <% else %>
-    <p class="mb-2"><strong><%= location_equipment_service.service_kind.name %></strong></p>
+    <p class="mb-5 text-sm font-semibold text-heading"><%= location_equipment_service.service_kind.name %></p>
   <% end %>
 
-  <div data-recurring-interval-target="intervalFields" class="<%= "d-none" unless recurring %>">
+  <div data-recurring-interval-target="intervalFields" class="<%= "hidden" unless recurring %>">
     <%= f.input :interval,
                 label: "Intervalo",
                 as: :integer,
@@ -52,12 +52,14 @@ end %>
     <%= f.input :due_on,
                 label: "Próximo vencimiento",
                 as: :date,
-                end_year: Date.today.year + 90,
-                start_year: Date.today.year - 30,
-                order: [:day, :month, :year],
+                html5: true,
                 required: true,
-                input_html: {value: (location_equipment_service.due_on || Date.current).to_s} %>
+                input_html: {
+                  value: location_equipment_service.due_on || Date.current,
+                  min: Date.new(Date.current.year - 30, 1, 1),
+                  max: Date.new(Date.current.year + 90, 12, 31)
+                } %>
   <% end %>
 
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <%= f.button :submit, "Aceptar" %>
 <% end %>

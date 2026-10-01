@@ -1,43 +1,37 @@
-<button class="btn btn-primary d-md-none mt-3"
-        type="button"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#overdueServiceDateFilters"
-        aria-controls="overdueServiceDateFilters">
-  <i class="fa-solid fa-filter"></i>
-</button>
+<% selected_service_kind_id = params[:service_kind_id].presence %>
+<% if selected_service_kind_id.nil? && params[:kind].present? %>
+  <% selected_service_kind_id = ServiceKind.visible.find_by(legacy_key: params[:kind])&.id %>
+<% end %>
+<% secondary_btn = "inline-flex items-center justify-center rounded-lg border border-default bg-neutral-primary px-4 py-2.5 text-sm font-medium text-body transition-colors hover:bg-neutral-tertiary hover:text-heading focus:ring-4 focus:ring-brand-soft" %>
+<% clients = policy_scope(Client).all.map { |client| [client.name, client.id] } %>
+<% service_kinds = ServiceKind.visible.order(:name).map { |kind| [kind.name, kind.id] } %>
 
-<div class="offcanvas-md offcanvas-start px-3" tabindex="-1" id="overdueServiceDateFilters" data-bs-scroll="true" aria-labelledby="overdueServiceDateFiltersLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="overdueServiceDateFiltersLabel">Filtros</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#overdueServiceDateFilters" aria-label="Close"></button>
+<%= form_with(url: root_path, method: :get, data: {turbo_frame: "overdue_service_date_list", turbo_action: "advance"}) do |form| %>
+  <div class="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
+    <div class="min-w-40 flex-1">
+      <%= form.label :client_id, "Cliente", class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= render "shared/select_dropdown",
+                 form: form,
+                 field: :client_id,
+                 id: "service-date-filter-client",
+                 options: clients,
+                 selected: params[:client_id],
+                 include_blank: "Todos" %>
+    </div>
+    <div class="min-w-40 flex-1">
+      <%= form.label :service_kind_id, "Tipo de servicio", class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= render "shared/select_dropdown",
+                 form: form,
+                 field: :service_kind_id,
+                 id: "service-date-filter-service-kind",
+                 options: service_kinds,
+                 selected: selected_service_kind_id,
+                 include_blank: "Todos" %>
+    </div>
+    <div class="flex gap-2">
+      <%= form.submit "Filtrar", class: ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>
+      <%= link_to "Limpiar filtros", root_path, class: secondary_btn,
+                  data: {turbo_frame: "overdue_service_date_list", turbo_action: "advance"} %>
+    </div>
   </div>
-  <div class="offcanvas-body">
-    <%= form_with(url: root_path, method: :get, data: { turbo_frame: "overdue_service_date_list", turbo_action: "advance" }) do |form| %>
-      <div class="row g-3 align-items-end my-3">
-        <div class="col-auto">
-          <%= form.label :client_id, "Cliente", class: "form-label" %>
-          <%= form.collection_select :client_id, policy_scope(Client).all, :id, :name, { include_blank: "Todos", selected: params[:client_id] }, class: "form-control"  %>
-        </div>
-        <div class="col-auto">
-          <%= form.label :service_kind_id, "Tipo de servicio", class: "form-label" %>
-          <% selected_service_kind_id = params[:service_kind_id].presence %>
-          <% if selected_service_kind_id.nil? && params[:kind].present? %>
-            <% selected_service_kind_id = ServiceKind.visible.find_by(legacy_key: params[:kind])&.id %>
-          <% end %>
-          <%= form.collection_select :service_kind_id,
-                                     ServiceKind.visible.order(:name),
-                                     :id,
-                                     :name,
-                                     {include_blank: "Todos", selected: selected_service_kind_id},
-                                     class: "form-control" %>
-        </div>
-        <div class="col-auto">
-          <%= form.submit "Filtrar", class: "btn btn-primary", data: { bs_dismiss:"offcanvas"} %>
-        </div>
-        <div class="col-auto">
-          <%= link_to "Limpiar filtros", root_path, class: "btn btn-secondary", data: { turbo_frame: "overdue_service_date_list", turbo_action: "advance" } %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-</div>
+<% end %>

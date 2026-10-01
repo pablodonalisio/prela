@@ -30,8 +30,8 @@ class FailuresController < ApplicationController
   def update
     if failure.update(failure_params)
       respond_to do |format|
-        format.html { redirect_to location_equipment_path(location_equipment), notice: "El fallo se edito correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El fallo se edito correctamente." }
+        format.html { redirect_to location_equipment_path(location_equipment), notice: "El fallo se editó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El fallo se editó correctamente." }
       end
     else
       render :edit, status: :unprocessable_entity

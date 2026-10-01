@@ -1,6 +1,7 @@
 <% if (current_user.admin? || current_user.editor?) && !item.equipment.building? %>
-  <%= link_to new_location_equipment_report_path(item), class: "btn btn-primary",
-                                                        data: { turbo_frame: "remote_modal" } do %>
-    <i class="fa-regular fa-file"></i>
+  <%= link_to new_location_equipment_report_path(item),
+              class: "inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-white hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft",
+              data: { turbo_frame: "remote_modal" } do %>
+    <%= icon(:file_outline) %>
   <% end %>
 <% end %>

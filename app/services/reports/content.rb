@@ -19,4 +19,8 @@ class Reports::Content
   def equipment
     @equipment ||= location_equipment.equipment
   end
+
+  def yes_no_label(value)
+    value == "Si" ? "Sí" : value
+  end
 end

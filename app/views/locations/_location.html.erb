@@ -1,13 +1,14 @@
 <%= turbo_frame_tag location do %>
-  <div class="location-chip">
-    <span class="d-inline-flex align-items-center gap-2">
-      <i class="fa-solid fa-location-dot text-primary"></i>
+  <div class="inline-flex items-center gap-3 rounded-full border border-default bg-neutral-secondary-medium px-3 py-2">
+    <span class="inline-flex items-center gap-2 text-sm text-heading">
+      <%= icon(:location, class: "text-fg-brand") %>
       <span><%= location.name %></span>
     </span>
     <%= render "shared/dropdown" do %>
-      <%= render "shared/button_box", edit_path: [:edit, client, location],
-                                      delete_path: [client, location],
-                                      confirm: "¿Seguro querés borrar la sede?" %>
+      <%= render "shared/button_box",
+                 edit_path: [:edit, client, location],
+                 delete_path: [client, location],
+                 confirm: "¿Seguro querés borrar la sede?" %>
     <% end %>
   </div>
 <% end %>

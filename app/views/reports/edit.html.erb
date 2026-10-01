@@ -1,8 +1,5 @@
-
-<h1>Editar reporte</h1>
-
 <%= turbo_frame_tag @report do %>
-  <%= render "shared/remote_modal", title: "Editar Reporte" do %>
+  <%= render "shared/remote_modal", title: "Editar Reporte", size: "full" do %>
     <%= render "form", report: @report, location_equipment: @location_equipment %>
   <% end %>
 <% end %>

@@ -80,4 +80,11 @@ Rails.application.configure do
   #   bin/rails assets:clobber
   # (Precompiled files in public/assets override live compilation.)
   config.assets.compile = true
+
+  # Sprockets' on-disk cache uses atomic rename, which raises Errno::EACCES
+  # on Windows when another process holds the .cache file. Compile without
+  # writing that cache in development.
+  config.assets.configure do |env|
+    env.cache = Sprockets::Cache::NullStore.new
+  end
 end

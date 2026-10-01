@@ -4,20 +4,22 @@
   }
 } do |f| %>
   <% if report.new_record? %>
-    <ul class="nav nav-tabs mb-4">
-      <li class="nav-item">
-        <%= link_to "Clásico (PDF)",
-                    new_location_equipment_report_path(location_equipment, report_mode: "legacy"),
-                    class: "nav-link #{"active" if @report_mode == "legacy"}",
-                    data: { turbo_frame: dom_id(report) } %>
-      </li>
-      <li class="nav-item">
-        <%= link_to "Plantilla",
-                    new_location_equipment_report_path(location_equipment, report_mode: "template"),
-                    class: "nav-link #{"active" if @report_mode == "template"}",
-                    data: { turbo_frame: dom_id(report) } %>
-      </li>
-    </ul>
+    <div class="mb-4 border-b border-default">
+      <ul class="-mb-px flex flex-wrap gap-1 text-sm font-medium">
+        <li>
+          <%= link_to "Clásico (PDF)",
+                      new_location_equipment_report_path(location_equipment, report_mode: "legacy"),
+                      class: "inline-block border-b-2 px-4 py-3 #{@report_mode == "legacy" ? "border-brand text-fg-brand" : "border-transparent text-body hover:border-default hover:text-heading"}",
+                      data: { turbo_frame: dom_id(report) } %>
+        </li>
+        <li>
+          <%= link_to "Plantilla",
+                      new_location_equipment_report_path(location_equipment, report_mode: "template"),
+                      class: "inline-block border-b-2 px-4 py-3 #{@report_mode == "template" ? "border-brand text-fg-brand" : "border-transparent text-body hover:border-default hover:text-heading"}",
+                      data: { turbo_frame: dom_id(report) } %>
+        </li>
+      </ul>
+    </div>
   <% end %>
 
   <% if report.template_based? || (@report_mode == "template" && report.new_record?) %>
@@ -26,5 +28,5 @@
     <%= render "legacy_form", f: f, report: report, location_equipment: location_equipment %>
   <% end %>
 
-  <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+  <%= f.button :submit, "Aceptar" %>
 <% end %>

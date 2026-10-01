@@ -33,8 +33,8 @@ class DocumentsController < ApplicationController
   def update
     if document.update(document_params)
       respond_to do |format|
-        format.html { redirect_to polymorphic_path([documentable]), notice: "El documento se edito correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El documento se edito correctamente." }
+        format.html { redirect_to polymorphic_path([documentable]), notice: "El documento se editó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El documento se editó correctamente." }
       end
     else
       render :edit, status: :unprocessable_entity

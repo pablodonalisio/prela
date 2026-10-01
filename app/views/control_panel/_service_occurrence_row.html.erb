@@ -1,0 +1,16 @@
+<%# locals: (service_occurrence:, badge:, badge_class:) %>
+<li class="border-b border-default px-4 py-3 last:border-b-0">
+  <div class="flex items-center justify-between gap-2">
+    <%= link_to "#{service_occurrence.location_equipment.model.capitalize} - #{service_occurrence.location_equipment.location.name}",
+                location_equipment_path(service_occurrence.location_equipment),
+                class: "font-medium text-fg-brand hover:underline",
+                data: {turbo_frame: :_top} %>
+    <span class="<%= badge_class %>"><%= badge %></span>
+  </div>
+  <p class="mt-1 text-xs text-body-subtle">Cliente: <%= service_occurrence.location_equipment.client.name %></p>
+  <p class="text-xs text-body-subtle">Tipo: <%= service_occurrence.service_kind.name %></p>
+  <p class="text-xs text-body-subtle">Fecha: <%= service_occurrence.due_on.strftime("%d/%m/%Y") %></p>
+  <% if service_occurrence.notes.present? %>
+    <p class="text-xs text-body-subtle">Notas: <%= service_occurrence.notes %></p>
+  <% end %>
+</li>

@@ -52,6 +52,6 @@ class Reports::EquipmentStats < Reports::Content
   end
 
   def equipment_serial_row
-    [{content: "Numero de Serie"}, {content: location_equipment.serial_number, colspan: 2, align: :right}]
+    [{content: "Número de Serie"}, {content: location_equipment.serial_number, colspan: 2, align: :right}]
   end
 end

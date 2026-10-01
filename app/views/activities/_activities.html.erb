@@ -1,9 +1,9 @@
-<div style="max-height: 400px; overflow-y: auto;" class="my-4">
-  <table class="table mb-0">
-    <thead style="position: sticky; z-index: 100; top: 0">
+<div class="my-4 max-h-[400px] overflow-x-auto overflow-y-auto rounded-xl border border-default">
+  <table class="w-full text-left text-sm">
+    <thead class="sticky top-0 z-10 bg-neutral-secondary-medium text-xs uppercase tracking-wide text-body-subtle">
       <tr>
-        <th>Detalles</th>
-        <th></th>
+        <th class="px-4 py-3 font-semibold">Detalles</th>
+        <th class="px-4 py-3 font-semibold"></th>
       </tr>
     </thead>
     <%= render "activities/activities_table", activities: activities, location_equipment: location_equipment %>

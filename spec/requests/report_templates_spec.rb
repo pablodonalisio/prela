@@ -33,7 +33,7 @@ RSpec.describe "/report_templates", type: :request do
 
       it "redirects to the root path" do
         get report_templates_url
-        expect(flash[:alert]).to eq "No estas autorizado para realizar esta acción."
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end
     end
@@ -50,7 +50,7 @@ RSpec.describe "/report_templates", type: :request do
 
       it "redirects to the root path" do
         get new_report_template_url
-        expect(flash[:alert]).to eq "No estas autorizado para realizar esta acción."
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end
     end
@@ -69,7 +69,7 @@ RSpec.describe "/report_templates", type: :request do
       it "redirects to the root path" do
         report_template = create(:report_template, :with_measurements)
         get edit_report_template_url(report_template)
-        expect(flash[:alert]).to eq "No estas autorizado para realizar esta acción."
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end
     end

@@ -1,7 +1,10 @@
 <%# locals: (id:, message:, action_text: nil, action_path: nil) %>
-<div id="<%= id %>" class="bg-secondary bg-opacity-50 rounded p-4 text-center">
-  <p class="text-white-50 mb-<%= action_text.present? ? "3" : "0" %>"><%= message %></p>
+<div id="<%= id %>" class="rounded-xl border border-dashed border-default bg-neutral-primary p-8 text-center">
+  <p class="text-sm text-body-subtle <%= action_text.present? ? "mb-4" : "mb-0" %>"><%= message %></p>
+
   <% if action_text.present? && action_path.present? %>
-    <%= render "shared/button_link", text: action_text, path: action_path %>
+    <div class="flex justify-center">
+      <%= render "shared/button_link", text: action_text, path: action_path %>
+    </div>
   <% end %>
 </div>

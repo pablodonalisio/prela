@@ -9,7 +9,7 @@
                 label: "Motivo (opcional)",
                 as: :text,
                 input_html: {rows: 3} %>
-    <%= f.button :submit, "Suspender", class: "btn btn-warning" %>
+    <%= f.submit "Suspender", class: "rounded-lg bg-yellow-500 px-4 py-2 text-sm font-medium text-white hover:bg-yellow-600" %>
 
   <% when "schedule" %>
     <%= f.hidden_field :status, value: "scheduled" %>
@@ -22,12 +22,12 @@
                 label: "Notas (opcional)",
                 as: :text,
                 input_html: {rows: 3} %>
-    <%= f.button :submit, "Programar", class: "btn btn-success" %>
+    <%= f.button :submit, "Programar" %>
 
   <% when "revert" %>
     <%= f.hidden_field :status, value: "pending" %>
-    <p class="mb-3">El servicio volverá a estado pendiente y se quitará la fecha programada.</p>
-    <%= f.button :submit, "Volver a pendiente", class: "btn btn-secondary" %>
+    <p class="mb-5 text-sm text-body">El servicio volverá a estado pendiente y se quitará la fecha programada.</p>
+    <%= f.submit "Volver a pendiente", class: "rounded-lg border border-default bg-neutral-primary px-4 py-2 text-sm font-medium text-body hover:bg-neutral-tertiary" %>
 
   <% when "completed" %>
     <%= f.input :completed_on,
@@ -40,31 +40,31 @@
                 as: :text,
                 input_html: {rows: 3} %>
 
-    <div class="my-3 border col-sm-6 p-2">
-      <h4>Documento</h4>
+    <div class="mb-5 rounded-lg border border-default p-4">
+      <h4 class="mb-3 text-sm font-medium text-heading">Documento</h4>
       <%= render "shared/file_upload", file: service_occurrence.document.attached? ? service_occurrence.document : nil,
-                                       form: f,
-                                       resize: [nil, 250],
-                                       file_field: :document,
-                                       new_label: "Nuevo documento",
-                                       accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
-                                       multiple: false %>
+                                                form: f,
+                                                resize: [nil, 250],
+                                                file_field: :document,
+                                                new_label: "Nuevo documento",
+                                                accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
+                                                multiple: false %>
     </div>
 
-    <%= f.button :submit, "Guardar", class: "btn btn-success" %>
+    <%= f.button :submit, "Guardar" %>
 
   <% when "notes" %>
     <%= f.input :notes,
                 label: "Notas",
                 as: :text,
                 input_html: {rows: 3} %>
-    <%= f.button :submit, "Guardar", class: "btn btn-success" %>
+    <%= f.button :submit, "Guardar" %>
 
   <% else %>
     <%= f.input :due_on,
                 label: "Próximo vencimiento",
                 as: :date,
                 html5: true %>
-    <%= f.button :submit, "Aceptar", class: "btn btn-success" %>
+    <%= f.button :submit, "Aceptar" %>
   <% end %>
 <% end %>

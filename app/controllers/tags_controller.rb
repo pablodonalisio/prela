@@ -17,8 +17,8 @@ class TagsController < ApplicationController
 
     respond_to do |format|
       if @tag.save
-        format.html { redirect_to tags_path, notice: "La etiqueta se creo correctamente." }
-        format.turbo_stream { flash.now[:notice] = "La etiqueta se creo correctamente." }
+        format.html { redirect_to tags_path, notice: "La etiqueta se creó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "La etiqueta se creó correctamente." }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.turbo_stream { render :form_update, status: :unprocessable_entity }
@@ -29,8 +29,8 @@ class TagsController < ApplicationController
   def update
     respond_to do |format|
       if @tag.update(tag_params)
-        format.html { redirect_to tags_path, notice: "La etiqueta se actualizo correctamente.", status: :see_other }
-        format.turbo_stream { flash.now[:notice] = "La etiqueta se actualizo correctamente." }
+        format.html { redirect_to tags_path, notice: "La etiqueta se actualizó correctamente.", status: :see_other }
+        format.turbo_stream { flash.now[:notice] = "La etiqueta se actualizó correctamente." }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.turbo_stream { render :form_update, status: :unprocessable_entity }

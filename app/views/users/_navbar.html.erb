@@ -1,18 +1,17 @@
-<nav class="navbar navbar-expand-md m-4">
-  <div class="container-fluid">
-    <h1 class="navbar-brand my-0">Usuarios</h1>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#usersNavbarSupportedContent" aria-controls="usersNavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="usersNavbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0 nav-tabs">
-        <li class="nav-item">
-          <%= link_to "Usuarios", users_path, class: "nav-link" + (active == "users" ? " active" : "") %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Firmas", signatures_path, class: "nav-link" + (active == "signatures" ? " active" : "") %>
-        </li>
-      </ul>
-    </div>
-  </div>
+<%# locals: (active:) %>
+<nav class="border-b border-default px-4 pt-4 md:px-6" aria-label="Sección de usuarios">
+  <h1 class="mb-3 text-2xl font-bold text-heading">Usuarios</h1>
+
+  <ul class="-mb-px flex flex-wrap gap-1 text-sm font-medium">
+    <% [
+      ["Usuarios", users_path, "users"],
+      ["Firmas", signatures_path, "signatures"]
+    ].each do |label, path, key| %>
+      <li>
+        <%= link_to label, path,
+                    class: "inline-block border-b-2 px-4 py-3 #{active == key ? "border-brand text-fg-brand" : "border-transparent text-body hover:border-default hover:text-heading"}",
+                    data: {turbo_frame: "_top"} %>
+      </li>
+    <% end %>
+  </ul>
 </nav>

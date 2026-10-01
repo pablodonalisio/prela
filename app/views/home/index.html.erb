@@ -1,12 +1,13 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
-  <div class="row justify-content-around mt-4 gy-5">
-    <div class="col-md-10 text-bg-secondary rounded p-3">
+<%= turbo_frame_tag "main_content" do %>
+  <div class="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+    <section class="rounded-xl border border-default bg-neutral-primary p-4 md:p-5">
       <%= render "control_panel/control_panel", control_panel_services: @control_panel_services %>
-    </div>
+    </section>
+
     <% if current_user.admin? %>
-      <div class="col-md-10 text-bg-secondary rounded p-3">
+      <section class="rounded-xl border border-default bg-neutral-primary p-4 md:p-5">
         <%= render "links/links", links: @links %>
-      </div>
+      </section>
     <% end %>
   </div>
 <% end %>

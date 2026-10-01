@@ -1,4 +1,12 @@
-<%= turbo_frame_tag collection.name.underscore.pluralize, class:"row g-3 my-3 mx-2" do %>
-  <%= render partial: "shared/item", collection: collection, as: :item  %>
-<% end %>
-<%= render "shared/pagination", pagy: pagy if local_assigns[:pagy] %>
+<%# collection.name reaches the model class through ActiveRecord::Relation's
+    delegation, matching the frame id the index turbo streams target.
+    scroll-mt clears the sticky navbar when pagination scrolls the list up. %>
+<div data-controller="scroll-to-list">
+  <%= turbo_frame_tag collection.name.underscore.pluralize,
+                      class: "grid scroll-mt-20 grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:scroll-mt-28 lg:grid-cols-3 xl:grid-cols-4",
+                      data: {scroll_to_list_target: "list"} do %>
+    <%= render partial: "shared/item", collection: collection, as: :item %>
+  <% end %>
+
+  <%= render "shared/pagination", pagy: pagy if local_assigns[:pagy] %>
+</div>

@@ -1,12 +1,12 @@
 <%# locals: (field_set:, label:, equipment_kind:) %>
-<div class="form-group mb-4">
-  <label><%= label %> <% if field_set == "generic_fields" %><span class="text-danger">*</span><% end %></label>
+<div class="mb-5">
+  <label class="mb-2 block text-sm font-medium text-heading"><%= label %> <% if field_set == "generic_fields" %><span class="text-red-500">*</span><% end %></label>
   <% if field_set == "generic_fields" && equipment_kind.errors[:generic_fields].any? %>
-    <div class="invalid-feedback d-block mb-2">
+    <div class="mb-2 text-sm text-red-500">
       <%= equipment_kind.errors[:generic_fields].first %>
     </div>
   <% end %>
-  <div class="border rounded p-3 <%= "border-danger" if field_set == "generic_fields" && equipment_kind.errors[:generic_fields].any? %>">
+  <div class="rounded-lg border p-3 <%= field_set == "generic_fields" && equipment_kind.errors[:generic_fields].any? ? "border-red-500" : "border-default" %>">
     <% container_id = "fields-container-#{field_set.dasherize}" %>
     <% no_fields_id = "no-fields-message-#{field_set.dasherize}" %>
     <%= turbo_frame_tag container_id do %>
@@ -21,7 +21,7 @@
         <% end %>
       <% else %>
         <%= turbo_frame_tag no_fields_id do %>
-          <p class="text-muted mb-0">No hay campos definidos.</p>
+          <p class="mb-0 text-sm text-body-subtle">No hay campos definidos.</p>
         <% end %>
       <% end %>
     <% end %>
@@ -30,7 +30,7 @@
   <div class="my-2">
     <%= link_to "Añadir campo",
                 add_field_equipment_kinds_path(field_set: field_set),
-                class: "btn btn-sm btn-outline-primary",
-                data: { turbo_stream: true } %>
+                class: "inline-flex items-center rounded-lg border border-default px-3 py-1.5 text-sm text-body hover:bg-neutral-tertiary",
+                data: {turbo_stream: true} %>
   </div>
 </div>

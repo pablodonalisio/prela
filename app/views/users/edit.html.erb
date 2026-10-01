@@ -1,11 +1,9 @@
-<h1>Editar Usuario</h1>
-
 <%= turbo_frame_tag @user do %>
   <%= render "shared/remote_modal", title: "Editar Usuario" do %>
     <% if @change_password %>
       <%= render "change_password", user: @user %>
     <% else %>
       <%= render "form", user: @user %>
-    <% end%>
+    <% end %>
   <% end %>
 <% end %>

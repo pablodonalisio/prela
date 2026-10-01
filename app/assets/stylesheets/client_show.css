@@ -1,0 +1,118 @@
+.client-show {
+  --organigram-line: 2px solid color-mix(in srgb, var(--color-primary-500) 45%, transparent);
+  --organigram-card-h: 7.25rem;
+  --organigram-stem: 1.25rem;
+  --organigram-level: calc(var(--organigram-card-h) + var(--organigram-stem));
+}
+
+.client-show .organigram-tree,
+.client-show .organigram-children {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.client-show .organigram-tree {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  justify-content: flex-start;
+  gap: 1.5rem;
+}
+
+.client-show .organigram-node {
+  position: relative;
+  padding: 0 0.65rem;
+  text-align: center;
+}
+
+.client-show .organigram-node--root {
+  padding-top: calc(var(--organigram-distance, 0) * var(--organigram-level));
+}
+
+.client-show .organigram-children > .organigram-node {
+  padding-top: calc(var(--organigram-distance, 1) * var(--organigram-level) - var(--organigram-card-h));
+}
+
+.client-show .organigram-children > .organigram-node::before,
+.client-show .organigram-children > .organigram-node::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-top: var(--organigram-line);
+  width: 50%;
+  height: calc(var(--organigram-distance, 1) * var(--organigram-level) - var(--organigram-card-h));
+}
+
+.client-show .organigram-children > .organigram-node::after {
+  right: auto;
+  left: 50%;
+  border-left: var(--organigram-line);
+}
+
+.client-show .organigram-children > .organigram-node:only-child::before {
+  display: none;
+}
+
+.client-show .organigram-children > .organigram-node:only-child::after {
+  left: 50%;
+  border-top: none;
+  border-left: var(--organigram-line);
+  width: 0;
+  transform: translateX(-1px);
+}
+
+.client-show .organigram-children > .organigram-node:first-child:not(:only-child)::before {
+  border-top: none;
+}
+
+.client-show .organigram-children > .organigram-node:first-child:not(:only-child)::after {
+  border-radius: 0.35rem 0 0 0;
+}
+
+.client-show .organigram-children > .organigram-node:last-child:not(:only-child)::after {
+  border-top: none;
+}
+
+.client-show .organigram-children > .organigram-node:last-child:not(:only-child)::before {
+  border-right: var(--organigram-line);
+  border-radius: 0 0.35rem 0 0;
+}
+
+.client-show .organigram-card {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  box-sizing: border-box;
+  height: var(--organigram-card-h);
+  background-color: var(--color-gray-300);
+  border: 1px solid color-mix(in srgb, white 8%, transparent);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  width: 13.5rem;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+html.dark .client-show .organigram-card {
+  background-color: var(--color-neutral-secondary-medium);
+}
+
+.client-show .organigram-card-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-show .organigram-card-name {
+  font-weight: 600;
+}

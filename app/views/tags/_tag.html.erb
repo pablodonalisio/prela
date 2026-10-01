@@ -1,10 +1,10 @@
 <%= turbo_frame_tag tag do %>
-  <div class="bg-secondary rounded p-3">
-    <div class="d-flex align-items-start align-items-md-center gap-3 flex-column flex-md-row">
-      <div class="flex-grow-1 min-w-0">
-        <div class="d-flex flex-wrap gap-2 align-items-center">
+  <div class="rounded-xl border border-default bg-neutral-primary p-4">
+    <div class="flex flex-col items-start gap-3 md:flex-row md:items-center">
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-center gap-2">
           <%= render "tags/badge", tag: tag %>
-          <span class="badge rounded-pill text-bg-dark">
+          <span class="inline-flex items-center rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">
             <%= tag.location_equipments_count %>
             <%= tag.location_equipments_count == 1 ? "activo" : "activos" %> usándola
           </span>
@@ -12,7 +12,7 @@
       </div>
 
       <% if current_user.admin? %>
-        <div class="flex-shrink-0 align-self-end align-self-md-center">
+        <div class="shrink-0 self-end md:self-center">
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box",
                        edit_path: edit_tag_path(tag),

@@ -21,7 +21,7 @@ RSpec.describe "/tags", type: :request do
 
       it "redirects to the root path" do
         get tags_url
-        expect(flash[:alert]).to eq "No estas autorizado para realizar esta acción."
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end
     end
@@ -38,7 +38,7 @@ RSpec.describe "/tags", type: :request do
 
       it "redirects to the root path" do
         get new_tag_url
-        expect(flash[:alert]).to eq "No estas autorizado para realizar esta acción."
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end
     end
@@ -57,7 +57,7 @@ RSpec.describe "/tags", type: :request do
       it "redirects to the root path" do
         tag = Tag.create! valid_attributes
         get edit_tag_url(tag)
-        expect(flash[:alert]).to eq "No estas autorizado para realizar esta acción."
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end
     end

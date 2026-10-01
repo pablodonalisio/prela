@@ -1,12 +1,11 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
+<%= turbo_frame_tag "main_content" do %>
   <%= render "shared/content_header", title: "Informes" do %>
     <% if current_user.admin? %>
-      <%= render "shared/button_link", text: "Agregar",
-                                      path: new_report_template_path %>
+      <%= render "shared/button_link", text: "Agregar", path: new_report_template_path %>
     <% end %>
   <% end %>
 
-  <%= turbo_frame_tag "report_templates", class: "d-flex flex-column gap-2 mx-4 mt-4" do %>
+  <%= turbo_frame_tag "report_templates", class: "mx-4 mt-4 flex flex-col gap-2 md:mx-6" do %>
     <% if @report_templates.any? %>
       <%= render @report_templates %>
     <% else %>

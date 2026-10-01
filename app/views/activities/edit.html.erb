@@ -1,6 +1,3 @@
-
-<h1>Editar Actividad</h1>
-
 <%= turbo_frame_tag @activity do %>
   <%= render "shared/remote_modal", title: "Editar Actividad" do %>
     <%= render "form", activity: @activity, location_equipment: @location_equipment %>

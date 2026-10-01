@@ -1,2 +1,3 @@
+<%= turbo_stream.remove "empty_clients" %>
 <%= turbo_stream.append "clients", @client %>
 <%= turbo_stream.update Client.new, "" %>

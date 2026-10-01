@@ -22,7 +22,7 @@ class EquipmentController < ApplicationController
 
     respond_to do |format|
       if @equipment.save
-        format.html { redirect_to equipment_index_path, notice: "El equipo ha sido creado con exito!" }
+        format.html { redirect_to equipment_index_path, notice: "El equipo ha sido creado con éxito!" }
         format.turbo_stream {}
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -34,7 +34,7 @@ class EquipmentController < ApplicationController
   def update
     respond_to do |format|
       if @equipment.update(equipment_params)
-        format.html { redirect_to equipment_index_path, notice: "El equipo ha sido actualizado con exito!" }
+        format.html { redirect_to equipment_index_path, notice: "El equipo ha sido actualizado con éxito!" }
         format.turbo_stream {}
       else
         format.html { render :edit, status: :unprocessable_entity }

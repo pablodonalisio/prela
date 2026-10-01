@@ -57,7 +57,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   def date_past?(date)
     return unless date
 
-    (date && date < Date.today) ? "Si" : "No"
+    (date && date < Date.today) ? "Sí" : "No"
   end
 
   def formated_date(date)

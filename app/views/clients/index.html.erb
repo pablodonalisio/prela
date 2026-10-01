@@ -1,11 +1,19 @@
-<%= turbo_frame_tag "main_content", class: "w-100" do %>
+<%= turbo_frame_tag "main_content" do %>
   <%= render "shared/content_header", title: "Clientes" do %>
-    <%= render "shared/button_link", text: "Agregar",
-                                    path: new_client_path %>
+    <%= render "shared/button_link", text: "Agregar", path: new_client_path %>
   <% end %>
 
-
-  <%= turbo_frame_tag "clients", class: "list-group mt-5 mx-auto" do %>
-    <%= render @clients%>
+  <%= turbo_frame_tag "clients", class: "grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:px-6" do %>
+    <% if @clients.any? %>
+      <%= render @clients %>
+    <% else %>
+      <div class="col-span-full">
+        <%= render "shared/empty_collection",
+                   id: "empty_clients",
+                   message: "No hay clientes todavía.",
+                   action_text: "Agregar",
+                   action_path: new_client_path %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>
