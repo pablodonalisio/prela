@@ -43,6 +43,27 @@ RSpec.describe "/clients", type: :request do
       expect(response).to have_http_status(:success)
       expect(response.body).to include(client.name)
     end
+
+    it "links each sede to Activos filtered by that client and location" do
+      location = create(:location, client: client)
+      other_location = create(:location, client: client)
+      matching = create(:location_equipment, location: location)
+      other_sede = create(:location_equipment, location: other_location)
+      other_client = create(:location_equipment)
+
+      get client_path(client)
+
+      href = location_equipments_path(client_ids: [client.id], location_ids: [location.id])
+      expect(response.body).to include(ERB::Util.html_escape(href))
+
+      get href
+
+      expect(response).to be_successful
+      expect(response.body).to include("Activos")
+      expect(response.body).to include("location_equipment_#{matching.id}")
+      expect(response.body).not_to include("location_equipment_#{other_sede.id}")
+      expect(response.body).not_to include("location_equipment_#{other_client.id}")
+    end
   end
 
   describe "GET /new" do
@@ -158,7 +179,6 @@ RSpec.describe "/clients", type: :request do
       }.to change(Client.kept, :count).by(-1)
       expect(client.reload).to be_discarded
     end
-
 
     it "destroys the requested client and responds with turbo_stream" do
       delete client_url(client), as: :turbo_stream
