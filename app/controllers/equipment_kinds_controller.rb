@@ -1,5 +1,5 @@
 class EquipmentKindsController < ApplicationController
-  before_action :set_equipment_kind, only: %i[show edit update destroy]
+  before_action :set_equipment_kind, only: %i[show edit update destroy duplicate]
 
   def index
     @equipment_kinds = policy_scope(EquipmentKind).includes(:service_kinds)
@@ -13,6 +13,12 @@ class EquipmentKindsController < ApplicationController
   end
 
   def edit
+  end
+
+  def duplicate
+    @equipment_kind = EquipmentKind.build_copy(@equipment_kind)
+    @modal_title = "Duplicar Tipo de Equipo"
+    render :new
   end
 
   def create
