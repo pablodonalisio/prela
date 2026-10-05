@@ -98,6 +98,41 @@ RSpec.describe EquipmentKind, type: :model do
     expect(equipment_kind).not_to be_valid
   end
 
+  describe ".build_copy" do
+    it "copies the template into a new unsaved kind with a unique name" do
+      service_kind = create(:service_kind, name: "Mantenimiento")
+      source = create(
+        :equipment_kind,
+        :ups,
+        description: "Plantilla original",
+        specific_fields: {"serie" => {"name" => "Serie", "type" => "string"}},
+        service_kinds: [service_kind]
+      )
+
+      copy = described_class.build_copy(source)
+
+      expect(copy).to be_new_record
+      expect(copy.legacy_kind).to be_nil
+      expect(copy.name).to eq("UPS (copia)")
+      expect(copy.description).to eq("Plantilla original")
+      expect(copy.generic_fields).to eq(source.generic_fields)
+      expect(copy.specific_fields).to eq(source.specific_fields)
+      expect(copy.service_kind_ids).to eq([service_kind.id])
+
+      expect { copy.save! }.to change(described_class, :count).by(1)
+      expect(copy.service_kinds).to contain_exactly(service_kind)
+      expect(source.reload.name).to eq("UPS")
+      expect(source.service_kinds).to contain_exactly(service_kind)
+    end
+
+    it "appends a number when the copy name is already taken" do
+      source = create(:equipment_kind, name: "Tablero")
+      create(:equipment_kind, name: "Tablero (copia)")
+
+      expect(described_class.build_copy(source).name).to eq("Tablero (copia) 2")
+    end
+  end
+
   it "can be assigned many service kinds" do
     equipment_kind = create(:equipment_kind)
     first_service = create(:service_kind)

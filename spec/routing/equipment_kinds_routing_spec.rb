@@ -37,5 +37,9 @@ RSpec.describe EquipmentKindsController, type: :routing do
     it "routes to #add_field" do
       expect(get: "/equipment_kinds/add_field").to route_to("equipment_kinds#add_field")
     end
+
+    it "routes to #duplicate" do
+      expect(get: "/equipment_kinds/1/duplicate").to route_to("equipment_kinds#duplicate", id: "1")
+    end
   end
 end
