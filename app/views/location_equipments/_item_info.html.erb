@@ -14,9 +14,6 @@
   <p class="m-0 truncate text-sm text-body-subtle">
     Código: <%= item.code %>
   </p>
-  <p class="m-0 truncate text-sm text-body-subtle">
-    Tipo de equipo: <%= item.equipment&.equipment_kind&.name.presence || "—" %>
-  </p>
 </div>
 <div class="mb-2 h-[72px]">
   <% item.open_service_occurrences.each do |service_occurrence| %>

@@ -9,7 +9,7 @@ class LocationEquipmentsController < ApplicationController
   def index
     scoped = policy_scope(
       LocationEquipment.filter(filter_params)
-        .includes(:tags, :avatar_blob, equipment: [:avatar_blob, :equipment_kind], location: :client)
+        .includes(:tags, :avatar_blob, equipment: :avatar_blob, location: :client)
         .order(@order)
     )
     authorize scoped

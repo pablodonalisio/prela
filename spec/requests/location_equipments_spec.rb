@@ -51,7 +51,6 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response).to be_successful
       location_equipments.each do |location_equipment|
         expect(response.body).to include(location_equipment.zone)
-        expect(response.body).to include("Tipo de equipo: #{location_equipment.equipment.equipment_kind.name}")
       end
     end
 
@@ -202,13 +201,6 @@ RSpec.describe "/location_equipments", type: :request do
     it "renders a successful response and responds with HTML" do
       get location_equipment_url(location_equipment)
       expect(response).to be_successful
-    end
-
-    it "shows the equipment kind in Atributos" do
-      get location_equipment_url(location_equipment)
-
-      expect(response.body).to include("Tipo de equipo")
-      expect(response.body).to include(location_equipment.equipment.equipment_kind.name)
     end
 
     it "renders content tabs with Informes as the default active tab" do

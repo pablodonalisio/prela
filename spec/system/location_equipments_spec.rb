@@ -12,7 +12,6 @@ RSpec.describe "Location equipments", type: :system do
     visit location_equipments_path
 
     expect(page).to have_text("UPS sala norte")
-    expect(page).to have_text("Tipo de equipo: #{equipment.equipment_kind.name}")
     expect(page).to have_text("Código: EQ-100")
 
     click_on "Ver"
