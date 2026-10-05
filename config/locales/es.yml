@@ -60,6 +60,9 @@ es:
       service_occurrence:
         due_on: "Próximo vencimiento"
         planned_on: "Fecha programada"
+        completed_on: "Fecha de realización"
+        start_time: "Hora de inicio"
+        end_time: "Hora de finalización"
         notes: "Notas"
         statuses:
           pending: "Pendiente"
@@ -118,6 +121,11 @@ es:
         title: "Cargo"
         image: "Imagen"
     errors:
+      models:
+        service_occurrence:
+          attributes:
+            end_time:
+              after_start: "debe ser posterior a la hora de inicio"
       messages:
         record_invalid: "La validación falló: %{errors}"
         restrict_dependent_destroy:

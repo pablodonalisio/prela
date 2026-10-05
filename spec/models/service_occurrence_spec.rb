@@ -36,10 +36,32 @@ RSpec.describe ServiceOccurrence, type: :model do
   end
 
   it "requires planned_on when scheduled" do
-    occurrence = build(:service_occurrence, status: :scheduled, planned_on: nil)
+    occurrence = build(:service_occurrence, status: :scheduled, planned_on: nil, start_time: "09:00", end_time: "11:00")
 
     expect(occurrence).not_to be_valid
     expect(occurrence.errors[:planned_on]).to be_present
+  end
+
+  it "requires start_time and end_time when scheduled" do
+    occurrence = build(:service_occurrence, status: :scheduled, planned_on: Date.current, start_time: nil, end_time: nil)
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:start_time]).to be_present
+    expect(occurrence.errors[:end_time]).to be_present
+  end
+
+  it "requires completed_on when completed" do
+    occurrence = build(:service_occurrence, :completed, completed_on: nil)
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:completed_on]).to be_present
+  end
+
+  it "requires end_time to be after start_time" do
+    occurrence = build(:service_occurrence, :completed, start_time: "11:00", end_time: "09:00")
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:end_time]).to be_present
   end
 
   describe ".overdue" do

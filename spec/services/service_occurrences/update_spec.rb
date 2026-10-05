@@ -16,6 +16,7 @@ RSpec.describe ServiceOccurrences::Update do
     recurring_les.service_occurrences.destroy_all
     create(:service_occurrence, location_equipment_service: recurring_les, due_on: 1.month.from_now.to_date)
   end
+  let(:times) { {start_time: "09:00", end_time: "11:00"} }
 
   describe "due_on update" do
     it "updates due_on while pending" do
@@ -45,19 +46,27 @@ RSpec.describe ServiceOccurrences::Update do
   end
 
   describe "schedule" do
-    it "moves pending to scheduled with planned_on" do
+    it "moves pending to scheduled with planned_on and times" do
       planned_on = 1.week.from_now.to_date
 
-      expect(described_class.call(occurrence, status: :scheduled, planned_on: planned_on)).to be(true)
+      expect(described_class.call(occurrence, {status: :scheduled, planned_on: planned_on}.merge(times))).to be(true)
 
       occurrence.reload
       expect(occurrence).to be_scheduled
       expect(occurrence.planned_on).to eq(planned_on)
+      expect(occurrence.start_time.strftime("%H:%M")).to eq("09:00")
+      expect(occurrence.end_time.strftime("%H:%M")).to eq("11:00")
     end
 
     it "requires planned_on" do
-      expect(described_class.call(occurrence, status: :scheduled)).to be(false)
+      expect(described_class.call(occurrence, {status: :scheduled}.merge(times))).to be(false)
       expect(occurrence.errors[:planned_on]).to be_present
+    end
+
+    it "requires start_time and end_time" do
+      expect(described_class.call(occurrence, status: :scheduled, planned_on: 1.week.from_now.to_date)).to be(false)
+      expect(occurrence.errors[:start_time]).to be_present
+      expect(occurrence.errors[:end_time]).to be_present
     end
 
     it "accepts multiparameter planned_on from date selects" do
@@ -66,10 +75,12 @@ RSpec.describe ServiceOccurrences::Update do
       expect(
         described_class.call(
           occurrence,
-          status: "scheduled",
-          "planned_on(1i)" => planned_on.year.to_s,
-          "planned_on(2i)" => planned_on.month.to_s,
-          "planned_on(3i)" => planned_on.day.to_s
+          {
+            status: "scheduled",
+            "planned_on(1i)" => planned_on.year.to_s,
+            "planned_on(2i)" => planned_on.month.to_s,
+            "planned_on(3i)" => planned_on.day.to_s
+          }.merge(times)
         )
       ).to be(true)
 
@@ -80,26 +91,28 @@ RSpec.describe ServiceOccurrences::Update do
       occurrence.update!(status: :suspended, notes: "blocked")
       planned_on = 1.week.from_now.to_date
 
-      expect(described_class.call(occurrence, status: :scheduled, planned_on: planned_on)).to be(true)
+      expect(described_class.call(occurrence, {status: :scheduled, planned_on: planned_on}.merge(times))).to be(true)
       expect(occurrence.reload).to be_scheduled
     end
   end
 
   describe "revert" do
-    it "returns scheduled to pending and clears planned_on" do
-      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+    it "returns scheduled to pending and clears planned_on and times" do
+      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date, start_time: "09:00", end_time: "11:00")
 
       expect(described_class.call(occurrence, status: :pending)).to be(true)
 
       occurrence.reload
       expect(occurrence).to be_pending
       expect(occurrence.planned_on).to be_nil
+      expect(occurrence.start_time).to be_nil
+      expect(occurrence.end_time).to be_nil
     end
   end
 
   describe "invalid transitions" do
     it "rejects scheduled to suspended" do
-      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date, start_time: "09:00", end_time: "11:00")
 
       expect(described_class.call(occurrence, status: :suspended)).to be(false)
       expect(occurrence.errors[:status]).to be_present
@@ -113,11 +126,13 @@ RSpec.describe ServiceOccurrences::Update do
       completed_on = Date.current
 
       expect {
-        described_class.call(occurrence, status: :completed, completed_on: completed_on)
+        described_class.call(occurrence, {status: :completed, completed_on: completed_on}.merge(times))
       }.to change(ServiceOccurrence.pending, :count).by(0)
 
       expect(occurrence.reload).to be_completed
       expect(occurrence.completed_on).to eq(completed_on)
+      expect(occurrence.start_time.strftime("%H:%M")).to eq("09:00")
+      expect(occurrence.end_time.strftime("%H:%M")).to eq("11:00")
       next_pending = recurring_les.service_occurrences.pending.first
       expect(next_pending.due_on).to eq(recurring_les.advance(completed_on))
     end
@@ -132,7 +147,7 @@ RSpec.describe ServiceOccurrences::Update do
       one_time = create(:service_occurrence, location_equipment_service: one_time_les, due_on: 1.month.from_now.to_date)
 
       expect {
-        described_class.call(one_time, status: :completed, completed_on: Date.current)
+        described_class.call(one_time, {status: :completed, completed_on: Date.current}.merge(times))
       }.to change { one_time_les.service_occurrences.pending.count }.from(1).to(0)
 
       expect(one_time_les.service_occurrences.completed.count).to eq(1)
@@ -141,33 +156,47 @@ RSpec.describe ServiceOccurrences::Update do
     it "attaches a document to the completed occurrence" do
       file = fixture_file_upload(Rails.root.join("spec/fixtures/files/test.pdf"), "application/pdf")
 
-      described_class.call(occurrence, status: :completed, completed_on: Date.current, document: file)
+      described_class.call(occurrence, {status: :completed, completed_on: Date.current, document: file}.merge(times))
 
       expect(occurrence.reload.document).to be_attached
     end
 
     it "completes from a scheduled occurrence" do
-      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date, start_time: "09:00", end_time: "11:00")
 
-      expect(described_class.call(occurrence, status: :completed, completed_on: Date.current)).to be(true)
+      expect(described_class.call(occurrence, {status: :completed, completed_on: Date.current}.merge(times))).to be(true)
       expect(occurrence.reload).to be_completed
       expect(recurring_les.service_occurrences.pending).to exist
+    end
+
+    it "requires start_time and end_time" do
+      expect(described_class.call(occurrence, status: :completed, completed_on: Date.current)).to be(false)
+      expect(occurrence.errors[:start_time]).to be_present
+      expect(occurrence.errors[:end_time]).to be_present
+    end
+
+    it "requires completed_on" do
+      expect(described_class.call(occurrence, {status: :completed, completed_on: ""}.merge(times))).to be(false)
+      expect(occurrence.errors[:completed_on]).to be_present
+      expect(occurrence.reload).to be_pending
     end
   end
 
   describe "editing a completed occurrence" do
     before do
-      described_class.call(occurrence, status: :completed, completed_on: Date.current)
+      described_class.call(occurrence, {status: :completed, completed_on: Date.current}.merge(times))
     end
 
-    it "updates completed_on and notes" do
+    it "updates completed_on, notes and times" do
       new_date = Date.yesterday
 
       expect(
         described_class.call(
           occurrence.reload,
           completed_on: new_date,
-          notes: "Actualizado"
+          notes: "Actualizado",
+          start_time: "08:00",
+          end_time: "10:30"
         )
       ).to be(true)
 
@@ -175,6 +204,8 @@ RSpec.describe ServiceOccurrences::Update do
       expect(occurrence.completed_on).to eq(new_date)
       expect(occurrence.due_on).to eq(new_date)
       expect(occurrence.notes).to eq("Actualizado")
+      expect(occurrence.start_time.strftime("%H:%M")).to eq("08:00")
+      expect(occurrence.end_time.strftime("%H:%M")).to eq("10:30")
       expect(occurrence).to be_completed
     end
   end

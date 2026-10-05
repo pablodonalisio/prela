@@ -1,0 +1,23 @@
+<%= simple_form_for [@location_equipment, @service_occurrence],
+                    url: complete_location_equipment_service_occurrence_path(@location_equipment, @service_occurrence),
+                    method: :post,
+                    html: {multipart: true} do |f| %>
+  <%= render "service_occurrences/date_and_times",
+             form: f,
+             date_field: :completed_on,
+             date_label: "Fecha de realización",
+             date_value: @service_occurrence.completed_on || Date.current %>
+
+  <div class="mb-5 rounded-lg border border-default p-4">
+    <h4 class="mb-3 text-sm font-medium text-heading">Documento</h4>
+    <%= render "shared/file_upload", file: nil,
+                                              form: f,
+                                              resize: [nil, 250],
+                                              file_field: :document,
+                                              new_label: "Nuevo documento",
+                                              accepted_formats: "image/jpeg, image/jpg, image/png, application/pdf",
+                                              multiple: false %>
+  </div>
+
+  <%= f.button :submit, "Registrar servicio" %>
+<% end %>

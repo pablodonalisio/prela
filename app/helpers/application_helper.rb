@@ -106,4 +106,19 @@ module ApplicationHelper
 
     resource.send(img_attribute).variant(resize: size)
   end
+
+  def format_time_of_day(time)
+    return if time.blank?
+    return time.strftime("%H:%M") if time.respond_to?(:strftime)
+
+    time.to_s[/\A\d{1,2}:\d{2}/]
+  end
+
+  def service_time_range(occurrence)
+    start_at = format_time_of_day(occurrence.start_time)
+    end_at = format_time_of_day(occurrence.end_time)
+    return if start_at.blank? || end_at.blank?
+
+    "#{start_at} – #{end_at}"
+  end
 end

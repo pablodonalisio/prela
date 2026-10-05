@@ -1,0 +1,46 @@
+<%# locals: (form:, date_field:, date_label:, date_value: nil) %>
+<% selected_date = form.object.public_send(date_field)
+   if selected_date.blank? && form.object.errors[date_field].none?
+     selected_date = date_value.presence || Date.current
+   end %>
+
+<div class="mb-5 flex items-start gap-3">
+  <div class="min-w-0 flex-1">
+    <%= form.input date_field,
+                  label: date_label,
+                  as: :date,
+                  html5: true,
+                  required: true,
+                  wrapper: :vertical_form,
+                  wrapper_html: {class: "!mb-0"},
+                  input_html: {value: selected_date, required: true} %>
+  </div>
+  <div class="min-w-0 flex-1">
+    <%= form.input :start_time,
+                  label: "Hora de inicio",
+                  as: :string,
+                  required: true,
+                  wrapper_html: {class: "!mb-0"},
+                  input_html: {
+                    type: "time",
+                    step: 60,
+                    required: true,
+                    autocomplete: "off",
+                    value: format_time_of_day(form.object.start_time)
+                  } %>
+  </div>
+  <div class="min-w-0 flex-1">
+    <%= form.input :end_time,
+                  label: "Hora de finalización",
+                  as: :string,
+                  required: true,
+                  wrapper_html: {class: "!mb-0"},
+                  input_html: {
+                    type: "time",
+                    step: 60,
+                    required: true,
+                    autocomplete: "off",
+                    value: format_time_of_day(form.object.end_time)
+                  } %>
+  </div>
+</div>

@@ -26,6 +26,11 @@ export default class extends Controller {
     if (!Datepicker.locales.es) Datepicker.locales.es = SPANISH;
 
     this.bound = new WeakSet();
+    this.onSubmit = (event) => {
+      if (!(event.target instanceof HTMLFormElement)) return;
+      event.target.querySelectorAll("[data-datepicker-ready]").forEach((input) => this.#sync(input));
+    };
+    this.element.addEventListener("submit", this.onSubmit, true);
     this.#upgradeTree(this.element);
     this.observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
@@ -41,6 +46,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.element.removeEventListener("submit", this.onSubmit, true);
     this.observer?.disconnect();
     this.element.querySelectorAll("[data-datepicker-ready]").forEach((input) => {
       this.#destroy(input);
@@ -114,6 +120,7 @@ export default class extends Controller {
       hidden.name = input.name;
       hidden.value = iso;
       hidden.dataset.datepickerValue = "true";
+      hidden.required = input.required;
       input.removeAttribute("name");
       input.after(hidden);
     }
@@ -126,6 +133,8 @@ export default class extends Controller {
     if (this.bound.has(input)) return;
 
     this.bound.add(input);
+    input.addEventListener("input", () => this.#sync(input));
+    input.addEventListener("change", () => this.#sync(input));
     input.addEventListener("changeDate", () => this.#sync(input));
     input.addEventListener("show", () => this.#fit(input));
   }
@@ -169,18 +178,18 @@ export default class extends Controller {
   }
 
   #sync(input) {
-    const date = input.datepicker?.getDate();
     const hidden = input.nextElementSibling?.dataset.datepickerValue === "true"
       ? input.nextElementSibling
       : null;
 
-    if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
-      if (input.value.trim() === "") {
-        input.dataset.isoDate = "";
-        if (hidden) hidden.value = "";
-      }
+    if (input.value.trim() === "") {
+      input.dataset.isoDate = "";
+      if (hidden) hidden.value = "";
       return;
     }
+
+    const date = input.datepicker?.getDate();
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return;
 
     const iso = formatIsoDate(date);
     input.dataset.isoDate = iso;

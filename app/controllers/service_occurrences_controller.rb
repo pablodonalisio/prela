@@ -35,7 +35,10 @@ class ServiceOccurrencesController < ApplicationController
         format.turbo_stream { flash.now[:notice] = "El servicio se registró correctamente." }
       end
     else
-      render :complete, status: :unprocessable_entity
+      respond_to do |format|
+        format.html { render :complete, status: :unprocessable_entity }
+        format.turbo_stream { render :complete_form_update, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -56,16 +59,16 @@ class ServiceOccurrencesController < ApplicationController
   def update_params
     case intent
     when "completed"
-      params.require(:service_occurrence).permit(:completed_on, :notes, :document)
+      params.require(:service_occurrence).permit(:completed_on, :notes, :document, :start_time, :end_time)
     when "notes"
       params.require(:service_occurrence).permit(:notes)
     else
-      params.require(:service_occurrence).permit(:status, :due_on, :planned_on, :notes)
+      params.require(:service_occurrence).permit(:status, :due_on, :planned_on, :notes, :start_time, :end_time)
     end
   end
 
   def complete_params
-    params.fetch(:service_occurrence, {}).permit(:completed_on, :document).merge(status: :completed)
+    params.fetch(:service_occurrence, {}).permit(:completed_on, :document, :start_time, :end_time).merge(status: :completed)
   end
 
   def update_notice

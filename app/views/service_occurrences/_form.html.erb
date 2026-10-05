@@ -13,11 +13,11 @@
 
   <% when "schedule" %>
     <%= f.hidden_field :status, value: "scheduled" %>
-    <%= f.input :planned_on,
-                label: "Fecha programada",
-                as: :date,
-                html5: true,
-                input_html: {value: service_occurrence.planned_on || Date.current} %>
+    <%= render "date_and_times",
+               form: f,
+               date_field: :planned_on,
+               date_label: "Fecha programada",
+               date_value: service_occurrence.planned_on || Date.current %>
     <%= f.input :notes,
                 label: "Notas (opcional)",
                 as: :text,
@@ -30,11 +30,11 @@
     <%= f.submit "Volver a pendiente", class: "rounded-lg border border-default bg-neutral-primary px-4 py-2 text-sm font-medium text-body hover:bg-neutral-tertiary" %>
 
   <% when "completed" %>
-    <%= f.input :completed_on,
-                label: "Fecha de realización",
-                as: :date,
-                html5: true,
-                input_html: {value: service_occurrence.completed_on || Date.current} %>
+    <%= render "date_and_times",
+               form: f,
+               date_field: :completed_on,
+               date_label: "Fecha de realización",
+               date_value: service_occurrence.completed_on || Date.current %>
     <%= f.input :notes,
                 label: "Notas (opcional)",
                 as: :text,

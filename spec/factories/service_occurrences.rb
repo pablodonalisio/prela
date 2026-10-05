@@ -15,6 +15,8 @@ FactoryBot.define do
     trait :completed do
       status { :completed }
       completed_on { Date.current }
+      start_time { "09:00" }
+      end_time { "11:00" }
     end
 
     trait :suspended do
@@ -24,6 +26,8 @@ FactoryBot.define do
     trait :scheduled do
       status { :scheduled }
       planned_on { 1.week.from_now.to_date }
+      start_time { "09:00" }
+      end_time { "11:00" }
     end
   end
 end

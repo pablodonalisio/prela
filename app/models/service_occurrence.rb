@@ -12,10 +12,14 @@ class ServiceOccurrence < ApplicationRecord
 
   enum :status, {pending: 0, completed: 1, suspended: 2, scheduled: 3, cancelled: 4}
 
+  self.skip_time_zone_conversion_for_attributes = [:start_time, :end_time]
+
   validates :due_on, presence: true, if: :open?
   validates :planned_on, presence: true, if: :scheduled?
   validates :completed_on, presence: true, if: :completed?
+  validates :start_time, :end_time, presence: true, if: :timed?
   validates :status, presence: true
+  validate :end_time_after_start_time, if: :timed?
   validate :only_one_open_per_location_equipment_service, if: :open?
 
   scope :open, -> { where(status: OPEN_STATUSES) }
@@ -73,6 +77,10 @@ class ServiceOccurrence < ApplicationRecord
 
   def open?
     pending? || suspended? || scheduled?
+  end
+
+  def timed?
+    scheduled? || completed?
   end
 
   def overdue?
@@ -135,5 +143,12 @@ class ServiceOccurrence < ApplicationRecord
       .where.not(id: id)
 
     errors.add(:status, :taken) if existing.exists?
+  end
+
+  def end_time_after_start_time
+    return if start_time.blank? || end_time.blank?
+    return if end_time > start_time
+
+    errors.add(:end_time, :after_start)
   end
 end

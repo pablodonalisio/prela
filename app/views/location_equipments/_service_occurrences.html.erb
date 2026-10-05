@@ -21,7 +21,10 @@
             <tr id="<%= dom_id(occurrence, :row) %>" class="border-t border-default">
               <td class="px-4 py-3 text-heading">
                 <span class="<%= occurrence.open? ? service_date_color(occurrence.due_on) : nil %>">
-                  <%= occurrence.service_date.strftime("%d/%m/%Y") %>
+                  <span class="block"><%= occurrence.service_date.strftime("%d/%m/%Y") %></span>
+                  <% if (time_range = service_time_range(occurrence)) %>
+                    <span class="block text-xs"><%= time_range %></span>
+                  <% end %>
                 </span>
               </td>
               <td class="px-4 py-3 text-body"><%= occurrence.service_kind.name %></td>

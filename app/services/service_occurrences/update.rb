@@ -93,10 +93,13 @@ class ServiceOccurrences::Update
       assignment[:status] = target_status
       assignment[:planned_on] = (target_status == "scheduled") ? date_value_for(:planned_on) : nil
       assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
+      assign_times(assignment, required: target_status == "scheduled")
+      clear_times(assignment) if target_status == "pending"
     else
       assignment[:due_on] = date_value_for(:due_on) if date_attr_present?(:due_on)
       assignment[:planned_on] = date_value_for(:planned_on) if date_attr_present?(:planned_on)
       assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
+      assign_times(assignment)
     end
 
     occurrence.update!(assignment)
@@ -106,12 +109,11 @@ class ServiceOccurrences::Update
     assignment = {}
     if date_attr_present?(:completed_on)
       completed_on = date_value_for(:completed_on)
-      raise ArgumentError, "completed_on is required" if completed_on.blank?
-
       assignment[:completed_on] = completed_on
-      assignment[:due_on] = completed_on
+      assignment[:due_on] = completed_on if completed_on.present?
     end
     assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
+    assign_times(assignment)
 
     occurrence.update!(assignment)
     occurrence.document.attach(attrs[:document]) if attrs[:document].present?
@@ -121,16 +123,16 @@ class ServiceOccurrences::Update
     raise ArgumentError, "only open occurrences can be completed" unless occurrence.open?
 
     completed_on = date_value_for(:completed_on)
-    raise ArgumentError, "completed_on is required" if completed_on.blank?
-
     document = attrs[:document]
 
     occurrence.transaction do
       occurrence.update!(
         status: :completed,
         completed_on: completed_on,
-        due_on: completed_on,
-        planned_on: nil
+        due_on: completed_on || occurrence.due_on,
+        planned_on: nil,
+        start_time: time_value_for(:start_time),
+        end_time: time_value_for(:end_time)
       )
       occurrence.document.attach(document) if document.present?
 
@@ -142,6 +144,27 @@ class ServiceOccurrences::Update
         )
       end
     end
+  end
+
+  def assign_times(assignment, required: false)
+    if required || attrs.key?(:start_time)
+      assignment[:start_time] = time_value_for(:start_time)
+    end
+    if required || attrs.key?(:end_time)
+      assignment[:end_time] = time_value_for(:end_time)
+    end
+  end
+
+  def clear_times(assignment)
+    assignment[:start_time] = nil
+    assignment[:end_time] = nil
+  end
+
+  def time_value_for(attr)
+    value = attrs[attr]
+    return if value.blank?
+
+    value
   end
 
   def date_attr_present?(attr)
