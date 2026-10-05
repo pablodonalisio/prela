@@ -87,13 +87,14 @@ RSpec.describe ServiceOccurrences::Update do
 
   describe "revert" do
     it "returns scheduled to pending and clears planned_on" do
-      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date, notes: "Visita original")
 
-      expect(described_class.call(occurrence, status: :pending)).to be(true)
+      expect(described_class.call(occurrence, status: :pending, notes: "Reprogramar")).to be(true)
 
       occurrence.reload
       expect(occurrence).to be_pending
       expect(occurrence.planned_on).to be_nil
+      expect(occurrence.notes).to eq("Reprogramar")
     end
   end
 

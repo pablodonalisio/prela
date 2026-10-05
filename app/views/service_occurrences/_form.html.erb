@@ -27,6 +27,10 @@
   <% when "revert" %>
     <%= f.hidden_field :status, value: "pending" %>
     <p class="mb-5 text-sm text-body">El servicio volverá a estado pendiente y se quitará la fecha programada.</p>
+    <%= f.input :notes,
+                label: "Notas (opcional)",
+                as: :text,
+                input_html: {rows: 3} %>
     <%= f.submit "Volver a pendiente", class: "rounded-lg border border-default bg-neutral-primary px-4 py-2 text-sm font-medium text-body hover:bg-neutral-tertiary" %>
 
   <% when "completed" %>
