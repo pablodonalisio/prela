@@ -1,9 +1,11 @@
 <%= turbo_frame_tag location do %>
   <div class="inline-flex items-center gap-3 rounded-full border border-default bg-neutral-secondary-medium px-3 py-2">
-    <span class="inline-flex items-center gap-2 text-sm text-heading">
+    <%= link_to location_equipments_path(client_ids: [client.id], location_ids: [location.id]),
+                class: "inline-flex items-center gap-2 text-sm text-heading hover:underline",
+                data: {turbo_frame: "_top"} do %>
       <%= icon(:location, class: "text-fg-brand") %>
       <span><%= location.name %></span>
-    </span>
+    <% end %>
     <%= render "shared/dropdown" do %>
       <%= render "shared/button_box",
                  edit_path: [:edit, client, location],
