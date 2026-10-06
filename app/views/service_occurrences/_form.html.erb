@@ -53,6 +53,13 @@
 
     <%= f.button :submit, "Guardar" %>
 
+  <% when "priority" %>
+    <%= f.input :priority,
+                label: "Prioridad",
+                collection: ServiceOccurrence.priority_options,
+                include_blank: false %>
+    <%= f.button :submit, "Aceptar" %>
+
   <% when "notes" %>
     <%= f.input :notes,
                 label: "Notas",

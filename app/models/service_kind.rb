@@ -1,5 +1,6 @@
 class ServiceKind < ApplicationRecord
   include Discard::Model
+  include Prioritizable
 
   LEGACY_KINDS = [
     {legacy_key: "service", name: "Service general", default_interval: 1},
@@ -34,10 +35,8 @@ class ServiceKind < ApplicationRecord
   before_validation :set_normalized_name
 
   enum :interval_unit, {years: 0, months: 1, weeks: 2}, validate: {allow_nil: true}
-  enum :priority, {critical: 0, normal: 1, low: 2}, default: :normal
 
   validates :name, presence: true
-  validates :priority, presence: true
   validates :legacy_key, uniqueness: true, allow_nil: true
   validates :default_interval, presence: true, numericality: {only_integer: true, greater_than: 0}, if: :recurring?
   validates :interval_unit, presence: true, if: :recurring?
@@ -53,12 +52,6 @@ class ServiceKind < ApplicationRecord
   def self.interval_unit_options
     interval_units.keys.map do |unit|
       [I18n.t("activerecord.attributes.service_kind.interval_units.#{unit}"), unit]
-    end
-  end
-
-  def self.priority_options
-    priorities.keys.map do |priority|
-      [I18n.t("activerecord.attributes.service_kind.priorities.#{priority}"), priority]
     end
   end
 
@@ -105,10 +98,6 @@ class ServiceKind < ApplicationRecord
 
   def one_time_label
     I18n.t("activerecord.attributes.service_kind.one_time")
-  end
-
-  def priority_label
-    I18n.t("activerecord.attributes.service_kind.priorities.#{priority}")
   end
 
   private

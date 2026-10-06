@@ -14,6 +14,26 @@ RSpec.describe ServiceOccurrence, type: :model do
     expect(build(:service_occurrence)).to be_valid
   end
 
+  it "uses the same priority values as service kinds" do
+    expect(described_class.priorities).to eq(ServiceKind.priorities)
+  end
+
+  it "copies priority from the service kind on create" do
+    service_kind = create(:service_kind, :critical)
+    les = create(:location_equipment_service, service_kind: service_kind)
+    occurrence = create(:service_occurrence, location_equipment_service: les)
+
+    expect(occurrence.priority).to eq("critical")
+  end
+
+  it "uses the service kind priority even when one is passed on create" do
+    service_kind = create(:service_kind, :critical)
+    les = create(:location_equipment_service, service_kind: service_kind)
+    occurrence = create(:service_occurrence, location_equipment_service: les, priority: :low)
+
+    expect(occurrence.priority).to eq("critical")
+  end
+
   it "is not valid without a due_on date" do
     expect(build(:service_occurrence, due_on: nil)).not_to be_valid
   end

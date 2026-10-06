@@ -72,6 +72,7 @@ RSpec.describe "Agenda", type: :request do
       get agenda_index_path
 
       expect(response.body).to include("Registrar servicio")
+      expect(response.body).to include("Editar prioridad")
       expect(response.body).to include("Volver a pendiente")
       expect(response.body).to include(complete_location_equipment_service_occurrence_path(location_equipment, scheduled_in_range))
     end

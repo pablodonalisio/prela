@@ -1,5 +1,6 @@
 class ServiceOccurrence < ApplicationRecord
   include Filterable
+  include Prioritizable
 
   DUE_SOON_WINDOW = 3.months
   OPEN_STATUSES = %w[pending suspended scheduled].freeze
@@ -7,6 +8,8 @@ class ServiceOccurrence < ApplicationRecord
   belongs_to :location_equipment_service
 
   has_one_attached :document
+
+  before_validation :inherit_priority_from_service_kind, on: :create
 
   delegate :location_equipment, :service_kind, to: :location_equipment_service
 
@@ -126,6 +129,13 @@ class ServiceOccurrence < ApplicationRecord
   end
 
   private
+
+  def inherit_priority_from_service_kind
+    return if location_equipment_service.blank?
+    return if service_kind.blank?
+
+    self.priority = service_kind.priority
+  end
 
   def only_one_open_per_location_equipment_service
     return unless open?
