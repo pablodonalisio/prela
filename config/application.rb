@@ -28,8 +28,8 @@ module Prela
     config.i18n.available_locales = :es
 
     # dartsass-rails only builds application.scss by default. The report print
-    # stylesheet is loaded on demand by template_report_print_controller.js, so 
-    # it needs its own build entry to exist in app/assets/builds.
+    # stylesheet is loaded on demand by template_report_print_controller.js, so
+    # it needs its own build entry to exist in app/assets/builds. 
     config.dartsass.builds = {
       "fontawesome.scss" => "fontawesome.css",
       "template_report.scss" => "template_report.css",
