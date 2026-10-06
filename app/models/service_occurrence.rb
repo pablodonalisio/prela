@@ -69,6 +69,7 @@ class ServiceOccurrence < ApplicationRecord
     joins(location_equipment_service: :service_kind)
       .where(service_kinds: {id: service_kind_id})
   }
+  scope :by_priority, ->(priority) { where(priority: priority) }
   scope :by_kind, ->(legacy_key) {
     joins(location_equipment_service: :service_kind)
       .where(service_kinds: {legacy_key: legacy_key})

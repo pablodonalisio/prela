@@ -29,6 +29,13 @@
                                  {include_blank: "Todos", selected: params[:service_kind_id]},
                                  class: select_classes %>
     </div>
+    <div class="min-w-40 flex-1">
+      <%= form.label :priority, "Prioridad", class: "mb-2 block text-sm font-medium text-heading" %>
+      <%= form.select :priority,
+                      ServiceOccurrence.priority_options,
+                      {include_blank: "Todas", selected: params[:priority]},
+                      class: select_classes %>
+    </div>
     <div class="flex gap-2">
       <%= form.submit "Filtrar", class: ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>
       <%= link_to "Limpiar filtros", agenda_index_path, class: secondary_btn %>

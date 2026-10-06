@@ -116,6 +116,22 @@ RSpec.describe "Agenda", type: :request do
       expect(response.body).not_to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
     end
 
+    it "filters by priority" do
+      battery_les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
+      battery_les.service_occurrences.destroy_all
+      battery_scheduled = create(:service_occurrence, :scheduled,
+        location_equipment_service: battery_les,
+        planned_on: Date.current.beginning_of_week + 1.day,
+        due_on: 1.month.from_now.to_date)
+      battery_scheduled.update!(priority: :critical)
+      scheduled_in_range.update!(priority: :low)
+
+      get agenda_index_path, params: {priority: "critical"}
+
+      expect(response.body).to include(battery_scheduled.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).not_to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+    end
+
     it "filters by client_id" do
       other_client = create(:client, name: "Cliente filtrado")
       other_le = create(:location_equipment,

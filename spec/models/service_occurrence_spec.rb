@@ -226,6 +226,16 @@ RSpec.describe ServiceOccurrence, type: :model do
       expect(filtered).not_to include(battery_change_occurrence)
     end
 
+    it "filters by priority" do
+      service_occurrence.update!(priority: :critical)
+      battery_change_occurrence.update!(priority: :low)
+
+      filtered = described_class.by_priority(:critical)
+
+      expect(filtered).to include(service_occurrence)
+      expect(filtered).not_to include(battery_change_occurrence)
+    end
+
     it "filters by client" do
       filtered = described_class.by_client_id(client_with_services.id)
 

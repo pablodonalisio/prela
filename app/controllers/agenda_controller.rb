@@ -30,6 +30,10 @@ class AgendaController < ApplicationController
       filtered[:service_kind_id] = params[:service_kind_id]
     end
 
+    if ServiceOccurrence.priorities.key?(params[:priority])
+      filtered[:priority] = params[:priority]
+    end
+
     filtered
   end
 end
