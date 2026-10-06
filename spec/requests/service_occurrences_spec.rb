@@ -82,15 +82,16 @@ RSpec.describe "ServiceOccurrences", type: :request do
     end
 
     it "reverts a scheduled occurrence to pending" do
-      pending_occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+      pending_occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date, notes: "Visita original")
 
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
-        params: {intent: "revert", service_occurrence: {status: "pending"}},
+        params: {intent: "revert", service_occurrence: {status: "pending", notes: "Reprogramar la semana que viene"}},
         headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
       pending_occurrence.reload
       expect(pending_occurrence).to be_pending
       expect(pending_occurrence.planned_on).to be_nil
+      expect(pending_occurrence.notes).to eq("Reprogramar la semana que viene")
       expect(response).to have_http_status(:success)
     end
 
