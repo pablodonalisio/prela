@@ -1,6 +1,9 @@
-<% specific_fields = location_equipment.equipment&.equipment_kind&.specific_fields || {} %>
+<% equipment_kind = location_equipment.equipment&.equipment_kind %>
+<% specific_fields = equipment_kind&.specific_fields || {} %>
 <p class="mb-1 mt-2 text-xs font-semibold uppercase tracking-wide text-heading">Atributos</p>
 <dl class="mb-0 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
+  <dt class="font-normal text-body-subtle">Tipo de equipo</dt>
+  <dd class="mb-0 text-heading"><%= equipment_kind&.name.presence || "—" %></dd>
   <dt class="font-normal text-body-subtle"><%= LocationEquipment.human_attribute_name(:serial_number) %></dt>
   <dd class="mb-0 text-heading"><%= location_equipment.serial_number.presence || "—" %></dd>
   <dt class="font-normal text-body-subtle"><%= LocationEquipment.human_attribute_name(:code) %></dt>
