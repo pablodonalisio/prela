@@ -8,7 +8,7 @@
       <table class="w-full text-left text-sm">
         <thead class="sticky top-0 z-10 bg-neutral-secondary-medium text-xs uppercase tracking-wide text-body-subtle">
           <tr>
-            <th class="px-4 py-3 font-semibold">Fecha</th>
+            <th class="px-4 py-3 font-semibold">Fecha y horario</th>
             <th class="px-4 py-3 font-semibold">Tipo</th>
             <th class="px-4 py-3 font-semibold">Estado</th>
             <th class="px-4 py-3 font-semibold">Notas</th>
@@ -19,10 +19,8 @@
         <tbody>
           <% occurrences.each do |occurrence| %>
             <tr id="<%= dom_id(occurrence, :row) %>" class="border-t border-default">
-              <td class="px-4 py-3 text-heading">
-                <span class="<%= occurrence.open? ? service_date_color(occurrence.due_on) : nil %>">
-                  <%= occurrence.service_date.strftime("%d/%m/%Y") %>
-                </span>
+              <td class="whitespace-nowrap px-4 py-3 <%= occurrence.open? ? service_date_color(occurrence.due_on) : "text-heading" %>">
+                <%= schedule_date_with_times(occurrence.service_date, occurrence) %>
               </td>
               <td class="px-4 py-3 text-body"><%= occurrence.service_kind.name %></td>
               <td class="px-4 py-3">

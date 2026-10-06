@@ -1,0 +1,35 @@
+<%# locals: (form:, field:, label:) %>
+<% cast = format_time_of_day(form.object.public_send(field)) %>
+<% raw = form.object.read_attribute_before_type_cast(field) %>
+<% value = cast.presence || raw.to_s.strip.presence %>
+<% invalid = form.object.errors[field].any? %>
+<% input_id = form.field_id(field) %>
+<% border = invalid ? "!border-red-500" : "border-default" %>
+
+<div class="mb-5 min-w-0" data-controller="timepicker">
+  <%= form.label field, label: label, for: input_id, required: true, class: "mb-2 block text-sm font-medium text-heading" %>
+
+  <div class="relative">
+    <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
+      <%= icon(:clock, class: "text-body") %>
+    </div>
+
+    <%= form.text_field field,
+                        id: input_id,
+                        value: value,
+                        placeholder: "HH:MM",
+                        autocomplete: "off",
+                        inputmode: "numeric",
+                        maxlength: 5,
+                        class: "block w-full rounded-lg border #{border} bg-neutral-secondary-medium py-2.5 pe-2.5 ps-10 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand",
+                        data: {
+                          timepicker_target: "input",
+                          action: "keydown->timepicker#guardKey click->timepicker#open input->timepicker#mask blur->timepicker#normalize"
+                        },
+                        aria: {haspopup: "listbox", required: true} %>
+  </div>
+
+  <% if invalid %>
+    <p class="mt-2 text-sm text-fg-danger"><%= form.object.errors.full_messages_for(field).to_sentence %></p>
+  <% end %>
+</div>

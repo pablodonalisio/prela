@@ -1,6 +1,8 @@
 <% location_equipment = service_occurrence.location_equipment %>
 <tr id="<%= dom_id(service_occurrence, :agenda) %>" class="border-t border-default">
-  <td class="px-4 py-3 align-middle text-heading"><%= service_occurrence.agenda_date.strftime("%d/%m/%Y") %></td>
+  <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
+    <%= schedule_date_with_times(service_occurrence.agenda_date, service_occurrence) %>
+  </td>
   <td class="px-4 py-3 align-middle text-body"><%= location_equipment.client.name %></td>
   <td class="px-4 py-3 align-middle text-body"><%= location_equipment.location.name %></td>
   <td class="px-4 py-3 align-middle">

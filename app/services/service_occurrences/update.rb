@@ -91,7 +91,15 @@ class ServiceOccurrences::Update
 
     if status_changing?
       assignment[:status] = target_status
-      assignment[:planned_on] = (target_status == "scheduled") ? date_value_for(:planned_on) : nil
+      if target_status == "scheduled"
+        assignment[:planned_on] = date_value_for(:planned_on)
+        assignment[:start_time] = time_value_for(:start_time)
+        assignment[:end_time] = time_value_for(:end_time)
+      else
+        assignment[:planned_on] = nil
+        assignment[:start_time] = nil
+        assignment[:end_time] = nil
+      end
       assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
     else
       assignment[:due_on] = date_value_for(:due_on) if date_attr_present?(:due_on)
@@ -130,7 +138,9 @@ class ServiceOccurrences::Update
         status: :completed,
         completed_on: completed_on,
         due_on: completed_on,
-        planned_on: nil
+        planned_on: nil,
+        start_time: nil,
+        end_time: nil
       )
       occurrence.document.attach(document) if document.present?
 
@@ -146,6 +156,28 @@ class ServiceOccurrences::Update
 
   def date_attr_present?(attr)
     attrs.key?(attr) || attrs.key?("#{attr}(1i)")
+  end
+
+  def time_value_for(attr)
+    value = attrs[attr]
+    if value.respond_to?(:hour) && value.respond_to?(:min) && !value.is_a?(Date)
+      return nil if value.hour > 23 || value.min > 59
+
+      return format("%02d:%02d", value.hour, value.min)
+    end
+
+    text = value.to_s.strip
+    return nil if text.blank?
+
+    match = /\A(\d{1,2}):(\d{2})(?::(\d{2}))?\z/.match(text)
+    if match
+      hours = match[1].to_i
+      minutes = match[2].to_i
+      seconds = (match[3] || 0).to_i
+      return format("%02d:%02d", hours, minutes) if hours <= 23 && minutes <= 59 && seconds.zero?
+    end
+
+    text
   end
 
   def date_value_for(attr)

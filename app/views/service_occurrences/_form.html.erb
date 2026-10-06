@@ -13,11 +13,17 @@
 
   <% when "schedule" %>
     <%= f.hidden_field :status, value: "scheduled" %>
-    <%= f.input :planned_on,
-                label: "Fecha programada",
-                as: :date,
-                html5: true,
-                input_html: {value: service_occurrence.planned_on || Date.current} %>
+    <div class="grid grid-cols-1 items-start gap-3 sm:grid-cols-3">
+      <%= f.input :planned_on,
+                  label: "Fecha programada",
+                  as: :date,
+                  html5: true,
+                  required: true,
+                  wrapper_html: {class: "min-w-0"},
+                  input_html: {value: service_occurrence.planned_on || Date.current} %>
+      <%= render "timepicker", form: f, field: :start_time, label: "Horario de inicio" %>
+      <%= render "timepicker", form: f, field: :end_time, label: "Horario de finalización" %>
+    </div>
     <%= f.input :notes,
                 label: "Notas (opcional)",
                 as: :text,
@@ -26,7 +32,7 @@
 
   <% when "revert" %>
     <%= f.hidden_field :status, value: "pending" %>
-    <p class="mb-5 text-sm text-body">El servicio volverá a estado pendiente y se quitará la fecha programada.</p>
+    <p class="mb-5 text-sm text-body">El servicio volverá a estado pendiente y se quitarán la fecha y los horarios programados.</p>
     <%= f.submit "Volver a pendiente", class: "rounded-lg border border-default bg-neutral-primary px-4 py-2 text-sm font-medium text-body hover:bg-neutral-tertiary" %>
 
   <% when "completed" %>

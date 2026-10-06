@@ -60,6 +60,8 @@ es:
       service_occurrence:
         due_on: "Próximo vencimiento"
         planned_on: "Fecha programada"
+        start_time: "Horario de inicio"
+        end_time: "Horario de finalización"
         notes: "Notas"
         statuses:
           pending: "Pendiente"
@@ -120,6 +122,11 @@ es:
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
+      models:
+        service_occurrence:
+          attributes:
+            end_time:
+              after_start: "debe ser posterior al horario de inicio"
         restrict_dependent_destroy:
           has_one: No se puede eliminar el registro porque existe un %{record} dependiente
           has_many: No se puede eliminar el registro porque existen %{record} dependientes

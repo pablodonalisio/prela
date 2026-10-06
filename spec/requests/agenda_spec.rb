@@ -34,10 +34,11 @@ RSpec.describe "Agenda", type: :request do
 
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Agenda")
-      expect(response.body).to include("Fecha")
+      expect(response.body).to include("Fecha y horario")
       expect(response.body).to include(service_kind.name)
       expect(response.body).to include("Programado")
       expect(response.body).to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include("09:00 – 10:00")
     end
 
     it "shows pending occurrences using due_on and Falta Programar badge" do

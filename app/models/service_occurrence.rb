@@ -13,10 +13,14 @@ class ServiceOccurrence < ApplicationRecord
   enum :status, {pending: 0, completed: 1, suspended: 2, scheduled: 3, cancelled: 4}
 
   validates :due_on, presence: true, if: :open?
-  validates :planned_on, presence: true, if: :scheduled?
+  validates :planned_on, :start_time, :end_time, presence: true, if: :scheduled?
   validates :completed_on, presence: true, if: :completed?
   validates :status, presence: true
+  validate :end_time_after_start_time, if: :scheduled?
+  validate :schedule_times_parseable, if: :scheduled?
   validate :only_one_open_per_location_equipment_service, if: :open?
+
+  before_save :clear_schedule_times_unless_scheduled
 
   scope :open, -> { where(status: OPEN_STATUSES) }
   scope :suspended, -> { where(status: :suspended) }
@@ -126,6 +130,31 @@ class ServiceOccurrence < ApplicationRecord
   end
 
   private
+
+  def clear_schedule_times_unless_scheduled
+    return if scheduled?
+
+    self.start_time = nil
+    self.end_time = nil
+  end
+
+  def schedule_times_parseable
+    %i[start_time end_time].each do |attr|
+      raw = read_attribute_before_type_cast(attr)
+      next unless raw.is_a?(String) && raw.strip.present?
+      next if self[attr].present?
+
+      errors.delete(attr)
+      errors.add(attr, :invalid)
+    end
+  end
+
+  def end_time_after_start_time
+    return if start_time.blank? || end_time.blank?
+    return if end_time > start_time
+
+    errors.add(:end_time, :after_start)
+  end
 
   def only_one_open_per_location_equipment_service
     return unless open?

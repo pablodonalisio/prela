@@ -36,10 +36,43 @@ RSpec.describe ServiceOccurrence, type: :model do
   end
 
   it "requires planned_on when scheduled" do
-    occurrence = build(:service_occurrence, status: :scheduled, planned_on: nil)
+    occurrence = build(:service_occurrence, status: :scheduled, planned_on: nil, start_time: "09:00", end_time: "10:00")
 
     expect(occurrence).not_to be_valid
     expect(occurrence.errors[:planned_on]).to be_present
+  end
+
+  it "requires start and end times when scheduled" do
+    occurrence = build(:service_occurrence, :scheduled, start_time: nil, end_time: nil)
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:start_time]).to be_present
+    expect(occurrence.errors[:end_time]).to be_present
+  end
+
+  it "requires the end time to be after the start time" do
+    occurrence = build(:service_occurrence, :scheduled, start_time: "18:00", end_time: "09:00")
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:end_time]).to be_present
+  end
+
+  it "clears schedule times when the occurrence is no longer scheduled" do
+    occurrence = create(:service_occurrence, :scheduled, start_time: "09:00", end_time: "10:30")
+
+    {
+      suspended: {},
+      pending: {},
+      cancelled: {},
+      completed: {completed_on: Date.current, due_on: Date.current}
+    }.each do |status, extra|
+      occurrence.update!(status: status, start_time: "09:00", end_time: "10:30", **extra)
+
+      expect(occurrence.reload.start_time).to be_nil
+      expect(occurrence.end_time).to be_nil
+
+      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date, start_time: "09:00", end_time: "10:30")
+    end
   end
 
   describe ".overdue" do

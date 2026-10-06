@@ -68,21 +68,39 @@ RSpec.describe "ServiceOccurrences", type: :request do
       expect(response).to have_http_status(:success)
     end
 
-    it "schedules the occurrence" do
+    it "schedules the occurrence with start and end times" do
       planned_on = 1.week.from_now.to_date
 
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
-        params: {intent: "schedule", service_occurrence: {status: "scheduled", planned_on: planned_on}},
+        params: {
+          intent: "schedule",
+          service_occurrence: {status: "scheduled", planned_on: planned_on, start_time: "08:30", end_time: "11:00"}
+        },
         headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
       pending_occurrence.reload
       expect(pending_occurrence).to be_scheduled
       expect(pending_occurrence.planned_on).to eq(planned_on)
+      expect(pending_occurrence.start_time.strftime("%H:%M")).to eq("08:30")
+      expect(pending_occurrence.end_time.strftime("%H:%M")).to eq("11:00")
       expect(response).to have_http_status(:success)
+      expect(response.body).to include("08:30 – 11:00")
+    end
+
+    it "rejects a schedule without times" do
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {intent: "schedule", service_occurrence: {status: "scheduled", planned_on: 1.week.from_now.to_date}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(pending_occurrence.reload).to be_pending
+      expect(response.body).to include("Horario de inicio")
+      expect(response.body).to include("Horario de finalización")
+      expect(response.body).to include("no puede estar en blanco")
     end
 
     it "reverts a scheduled occurrence to pending" do
-      pending_occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+      pending_occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date, start_time: "09:00", end_time: "10:00")
 
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
         params: {intent: "revert", service_occurrence: {status: "pending"}},
@@ -91,6 +109,8 @@ RSpec.describe "ServiceOccurrences", type: :request do
       pending_occurrence.reload
       expect(pending_occurrence).to be_pending
       expect(pending_occurrence.planned_on).to be_nil
+      expect(pending_occurrence.start_time).to be_nil
+      expect(pending_occurrence.end_time).to be_nil
       expect(response).to have_http_status(:success)
     end
 
