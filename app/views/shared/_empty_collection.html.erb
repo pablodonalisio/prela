@@ -1,10 +1,10 @@
-<%# locals: (id:, message:, action_text: nil, action_path: nil) %>
+<%# locals: (id:, message:, action_text: nil, action_path: nil, turbo_frame: nil) %>
 <div id="<%= id %>" class="rounded-xl border border-dashed border-default bg-neutral-primary p-8 text-center">
   <p class="text-sm text-body-subtle <%= action_text.present? ? "mb-4" : "mb-0" %>"><%= message %></p>
 
   <% if action_text.present? && action_path.present? %>
     <div class="flex justify-center">
-      <%= render "shared/button_link", text: action_text, path: action_path %>
+      <%= render "shared/button_link", text: action_text, path: action_path, turbo_frame: turbo_frame %>
     </div>
   <% end %>
 </div>

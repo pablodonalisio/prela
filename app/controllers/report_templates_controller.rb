@@ -15,26 +15,18 @@ class ReportTemplatesController < ApplicationController
   def create
     @report_template = authorize ReportTemplate.new(report_template_params)
 
-    respond_to do |format|
-      if @report_template.save
-        format.html { redirect_to report_templates_path, notice: "La plantilla de informe se creó correctamente." }
-        format.turbo_stream { flash.now[:notice] = "La plantilla de informe se creó correctamente." }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render :form_update, status: :unprocessable_entity }
-      end
+    if @report_template.save
+      redirect_to report_templates_path, notice: "La plantilla de informe se creó correctamente."
+    else
+      render :new, status: :unprocessable_entity, formats: [:html]
     end
   end
 
   def update
-    respond_to do |format|
-      if @report_template.update(report_template_params)
-        format.html { redirect_to report_templates_path, notice: "La plantilla de informe se actualizó correctamente.", status: :see_other }
-        format.turbo_stream { flash.now[:notice] = "La plantilla de informe se actualizó correctamente." }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render :form_update, status: :unprocessable_entity }
-      end
+    if @report_template.update(report_template_params)
+      redirect_to report_templates_path, notice: "La plantilla de informe se actualizó correctamente.", status: :see_other
+    else
+      render :edit, status: :unprocessable_entity, formats: [:html]
     end
   end
 
@@ -77,7 +69,8 @@ class ReportTemplatesController < ApplicationController
       location_specifications: {},
       measurements: {},
       room_specifications: {},
-      report_template_tasks_attributes: %i[id name position _destroy]
+      report_template_tasks_attributes: %i[id name position _destroy],
+      layout: [:id, :type, :title]
     )
 
     ReportTemplate::SECTIONS.each do |section|

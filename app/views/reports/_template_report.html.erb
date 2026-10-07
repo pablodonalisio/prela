@@ -68,45 +68,15 @@
     <%= render "template_report_fields", rows: location_rows %>
   </section>
 
-  <% if measurement_rows.any? %>
+  <% report.report_template.layout_blocks.each do |block| %>
+    <% next unless template_report_block_visible?(report, block, measurement_rows: measurement_rows, room_rows: room_rows) %>
     <% section_number += 1 %>
-    <section class="template-report__section">
-      <h2 class="template-report__section-title">
-        <%= format("%.1f", section_number) %> <%= t("reports.template_report.measurements_section") %>
-      </h2>
-      <%= render "template_report_cards", items: measurement_rows %>
-    </section>
-  <% end %>
-
-  <% if room_rows.any? %>
-    <% section_number += 1 %>
-    <section class="template-report__section">
-      <h2 class="template-report__section-title">
-        <%= format("%.1f", section_number) %>
-        <%= t("activerecord.attributes.report_template.sections.room_specifications") %>
-      </h2>
-      <%= render "template_report_cards", items: room_rows %>
-    </section>
-  <% end %>
-
-  <% if report.report_tasks.any? %>
-    <% section_number += 1 %>
-    <section class="template-report__section">
-      <h2 class="template-report__section-title">
-        <%= format("%.1f", section_number) %> <%= t("reports.template_report.tasks_section") %>
-      </h2>
-      <ul class="template-report__tasks">
-        <% report.report_tasks.each_with_index do |task, index| %>
-          <li class="template-report__task">
-            <span class="template-report__task-index">[<%= format("%02d", index + 1) %>]</span>
-            <span class="template-report__task-name"><%= task.name %></span>
-            <span class="template-report__task-status <%= task.completed? ? "template-report__task-status--done" : "template-report__task-status--pending" %>">
-              <%= task.completed? ? t("reports.template_report.task_completed") : t("reports.template_report.task_pending") %>
-            </span>
-          </li>
-        <% end %>
-      </ul>
-    </section>
+    <%= render "template_report_block",
+               report: report,
+               block: block,
+               section_number: section_number,
+               measurement_rows: measurement_rows,
+               room_rows: room_rows %>
   <% end %>
 
   <% if report.report_comments.any? %>
@@ -151,22 +121,6 @@
         <%= format("%.1f", section_number) %> <%= t("reports.template_report.activities_section") %>
       </h2>
       <%= render "template_report_activities", rows: activity_rows %>
-    </section>
-  <% end %>
-
-  <% if report.images.attached? %>
-    <% section_number += 1 %>
-    <section class="template-report__section">
-      <h2 class="template-report__section-title">
-        <%= format("%.1f", section_number) %> <%= t("reports.template_report.images_section") %>
-      </h2>
-      <div class="template-report__images">
-        <% report.images.each do |image| %>
-          <%= link_to url_for(image), target: "_blank", rel: "noopener", class: "template-report__image-link" do %>
-            <%= image_tag image.variant(resize_to_limit: [900, 900]), alt: image.filename.to_s %>
-          <% end %>
-        <% end %>
-      </div>
     </section>
   <% end %>
 

@@ -174,6 +174,81 @@ RSpec.describe ReportTemplate, type: :model do
     end
   end
 
+  describe "layout" do
+    it "keeps singleton sections and repeatable blocks in the submitted order" do
+      report_template = ReportTemplate.create!(
+        name: "Orden de secciones",
+        layout: [
+          {"id" => "obs-1", "type" => "observations", "title" => "Notas"},
+          {"id" => "tasks", "type" => "tasks"},
+          {"id" => "img-1", "type" => "images", "title" => "Fotos"},
+          {"id" => "measurements", "type" => "measurements"},
+          {"id" => "room_specifications", "type" => "room_specifications"},
+          {"id" => "obs-2", "type" => "observations", "title" => "Otras notas"}
+        ]
+      )
+
+      expect(report_template.layout.map { |block| block["id"] }).to eq(
+        %w[obs-1 tasks img-1 measurements room_specifications obs-2]
+      )
+    end
+
+    it "drops duplicate singletons and restores missing ones" do
+      report_template = ReportTemplate.create!(
+        name: "Secciones unicas",
+        layout: [
+          {"id" => "tasks", "type" => "tasks"},
+          {"id" => "tasks", "type" => "tasks"},
+          {"id" => "img-1", "type" => "images", "title" => "Fotos"},
+          {"id" => "img-1", "type" => "images", "title" => "Fotos"}
+        ]
+      )
+
+      expect(report_template.layout).to eq([
+        {"id" => "tasks", "type" => "tasks"},
+        {"id" => "img-1", "type" => "images", "title" => "Fotos"},
+        {"id" => "measurements", "type" => "measurements"},
+        {"id" => "room_specifications", "type" => "room_specifications"}
+      ])
+    end
+
+    it "keeps the title of repeatable blocks" do
+      report_template = ReportTemplate.create!(
+        name: "Con titulos",
+        layout: [
+          {"id" => "obs-1", "type" => "observations", "title" => "  Notas de campo  "},
+          {"id" => "img-1", "type" => "images", "title" => "Fotos"}
+        ]
+      )
+
+      expect(report_template.layout.find { |block| block["id"] == "obs-1" }["title"]).to eq("Notas de campo")
+      expect(report_template.layout.find { |block| block["id"] == "img-1" }["title"]).to eq("Fotos")
+    end
+
+    it "requires a title on text and image sections" do
+      report_template = ReportTemplate.new(
+        name: "Sin titulo",
+        layout: [
+          {"id" => "obs-1", "type" => "observations", "title" => "  "},
+          {"id" => "img-1", "type" => "images"}
+        ]
+      )
+
+      expect(report_template).not_to be_valid
+      expect(report_template.errors[:layout]).to include("El título de la sección no puede estar vacío.")
+    end
+
+    it "starts new templates with the movable sections and no content blocks" do
+      report_template = ReportTemplate.create!(name: "Sin bloques")
+
+      expect(report_template.block_ids_for("observations")).to eq([])
+      expect(report_template.block_ids_for("images")).to eq([])
+      expect(report_template.layout.map { |block| block["type"] }).to eq(
+        %w[measurements room_specifications tasks]
+      )
+    end
+  end
+
   describe "#location_equipments_count" do
     it "returns the number of associated visible location equipments" do
       report_template = create(:report_template, :with_measurements)
@@ -187,4 +262,3 @@ RSpec.describe ReportTemplate, type: :model do
     end
   end
 end
-

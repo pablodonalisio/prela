@@ -1,0 +1,62 @@
+<%# locals: (block:, index:, report_template:, f:) %>
+<% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading" %>
+<% repeatable = ReportTemplate::REPEATABLE_BLOCK_TYPES.include?(block["type"]) %>
+<div class="flex items-start gap-2" data-sortable-sections-target="item">
+  <button type="button"
+          class="drag-handle <%= repeatable ? "mt-2" : "mt-8" %> inline-flex cursor-grab items-center px-1 text-body-subtle"
+          draggable="true"
+          tabindex="-1"
+          aria-label="<%= t("activerecord.attributes.report_template.reorder_section") %>"
+          data-action="dragstart->sortable-sections#dragStart dragend->sortable-sections#dragEnd">
+    <%= icon(:grip) %>
+  </button>
+  <div class="min-w-0 flex-1">
+    <input type="hidden"
+           name="report_template[layout][<%= index %>][id]"
+           value="<%= block["id"] %>">
+    <input type="hidden"
+           name="report_template[layout][<%= index %>][type]"
+           value="<%= block["type"] %>">
+
+    <% case block["type"] %>
+    <% when "measurements", "room_specifications" %>
+      <%= render "section_fields", section: block["type"], report_template: report_template %>
+    <% when "tasks" %>
+      <%= render "tasks_fields", f: f, report_template: report_template %>
+    <% when "observations", "images" %>
+      <% title = block["title"].to_s %>
+      <% title_invalid = title.blank? && report_template.errors[:layout].any? %>
+      <% title_placeholder = t("activerecord.attributes.report_template.#{block["type"]}_title_placeholder") %>
+      <div class="mb-5 rounded-lg border p-3 <%= title_invalid ? "border-red-500" : "border-default" %>">
+        <div class="mb-3 flex items-center gap-2">
+          <input type="text"
+                 id="report_template_layout_<%= block["id"] %>_title"
+                 class="<%= input_classes %> min-w-0 flex-1 <%= "border-red-500" if title_invalid %>"
+                 name="report_template[layout][<%= index %>][title]"
+                 value="<%= title %>"
+                 placeholder="<%= title_placeholder %>"
+                 aria-label="<%= title_placeholder %>"
+                 required
+                 data-section-title>
+          <button type="button"
+                  class="inline-flex shrink-0 items-center rounded-lg px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40"
+                  aria-label="<%= t("activerecord.attributes.report_template.remove_section") %>"
+                  data-action="sortable-sections#remove"
+                  data-sortable-sections-confirm-param="¿Quitar esta sección?">
+            X
+          </button>
+        </div>
+        <% if title_invalid %>
+          <p class="mb-2 text-sm text-red-500"><%= report_template.errors[:layout].first %></p>
+        <% end %>
+        <% if block["type"] == "observations" %>
+          <textarea class="<%= input_classes %>" rows="4" disabled placeholder="<%= t("activerecord.attributes.report_template.observations_hint") %>"></textarea>
+        <% else %>
+          <div class="rounded-lg border border-dashed border-default p-3 text-center text-sm text-body-subtle">
+            <%= t("activerecord.attributes.report_template.images_hint") %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

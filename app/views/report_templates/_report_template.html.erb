@@ -28,7 +28,8 @@
             <%= render "shared/button_box",
                        edit_path: edit_report_template_path(report_template),
                        delete_path: report_template_path(report_template),
-                       confirm: "¿Seguro que querés borrar esta plantilla de informe?" %>
+                       confirm: "¿Seguro que querés borrar esta plantilla de informe?",
+                       turbo_frame: "_top" %>
           <% end %>
         </div>
       <% end %>

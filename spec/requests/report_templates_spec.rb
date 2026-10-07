@@ -43,6 +43,8 @@ RSpec.describe "/report_templates", type: :request do
     it "renders a successful response" do
       get new_report_template_url
       expect(response).to be_successful
+      expect(response.body).to include("Nueva plantilla de informe")
+      expect(response.body).not_to include('id="remote_modal_title"')
     end
 
     context "when user is not admin" do
@@ -61,6 +63,8 @@ RSpec.describe "/report_templates", type: :request do
       report_template = create(:report_template, :with_measurements)
       get edit_report_template_url(report_template)
       expect(response).to be_successful
+      expect(response.body).to include("Editar plantilla de informe")
+      expect(response.body).not_to include('id="remote_modal_title"')
     end
 
     context "when user is not admin" do
@@ -94,6 +98,31 @@ RSpec.describe "/report_templates", type: :request do
         post report_templates_url, params: {report_template: valid_attributes}
         expect(response).to redirect_to(report_templates_url)
       end
+
+      it "saves the section layout" do
+        post report_templates_url, params: {
+          report_template: valid_attributes.merge(
+            layout: {
+              "0" => {id: "room_specifications", type: "room_specifications"},
+              "1" => {id: "obs-1", type: "observations", title: "Notas de campo"},
+              "2" => {id: "measurements", type: "measurements"},
+              "3" => {id: "tasks", type: "tasks"},
+              "4" => {id: "img-1", type: "images", title: "Fotos del tablero"}
+            }
+          )
+        }
+
+        layout = ReportTemplate.last.layout
+        expect(layout.map { |block| [block["id"], block["type"]] }).to eq([
+          ["room_specifications", "room_specifications"],
+          ["obs-1", "observations"],
+          ["measurements", "measurements"],
+          ["tasks", "tasks"],
+          ["img-1", "images"]
+        ])
+        expect(layout.find { |block| block["id"] == "obs-1" }["title"]).to eq("Notas de campo")
+        expect(layout.find { |block| block["id"] == "img-1" }["title"]).to eq("Fotos del tablero")
+      end
     end
 
     context "with invalid parameters" do
@@ -108,13 +137,15 @@ RSpec.describe "/report_templates", type: :request do
         expect(response).to have_http_status(:unprocessable_content)
       end
 
-      it "re-renders the form via turbo stream when name is missing" do
+      it "re-renders the form when name is missing" do
         post report_templates_url,
           params: {report_template: {name: "", measurements: {}}},
           as: :turbo_stream
 
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to include('turbo-stream action="update" target="remote_modal_body"')
+        expect(response.media_type).to eq("text/html")
+        expect(response.body).to include("Nueva plantilla de informe")
+        expect(response.body).not_to include('target="remote_modal_body"')
       end
 
       it "does not create a duplicate report template" do

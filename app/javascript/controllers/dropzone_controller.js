@@ -15,6 +15,7 @@ export default class extends Controller {
     resizeWidth: Number,
     resizeHeight: Number,
     resizeQuality: Number,
+    inputName: {type: String, default: "report[images][]"},
   };
 
   connect() {
@@ -111,7 +112,7 @@ export default class extends Controller {
 
     const input = document.createElement("input");
     input.type = "hidden";
-    input.name = "report[images][]";
+    input.name = this.inputNameValue;
     input.value = signedId;
     input.dataset.dropzoneFileId = this.fileIdentifier(file);
     this.hiddenInputsTarget.appendChild(input);

@@ -49,6 +49,23 @@ module ReportsHelper
     rows + template_report_dynamic_rows(report, "location_specifications")
   end
 
+  def template_report_block_visible?(report, block, measurement_rows:, room_rows:)
+    case block["type"]
+    when "measurements"
+      measurement_rows.any?
+    when "room_specifications"
+      room_rows.any?
+    when "tasks"
+      report.report_tasks.any?
+    when "observations"
+      report.observation_text_for(block["id"]).present?
+    when "images"
+      report.images_for_block(block["id"]).any?
+    else
+      false
+    end
+  end
+
   def template_report_measurement_rows(report)
     template_report_card_rows(report, "measurements")
   end
@@ -93,7 +110,7 @@ module ReportsHelper
   def maintenance_overdue_label(date)
     return "—" if date.blank?
 
-    date < Date.current ? "Sí" : "No"
+    (date < Date.current) ? "Sí" : "No"
   end
 
   def maintenance_overdue_status(date)

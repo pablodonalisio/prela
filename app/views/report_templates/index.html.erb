@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "main_content" do %>
   <%= render "shared/content_header", title: "Informes" do %>
     <% if current_user.admin? %>
-      <%= render "shared/button_link", text: "Agregar", path: new_report_template_path %>
+      <%= render "shared/button_link", text: "Agregar", path: new_report_template_path, turbo_frame: "_top" %>
     <% end %>
   <% end %>
 
@@ -13,7 +13,8 @@
                  id: "report_templates_empty",
                  message: "No hay plantillas de informe todavía.",
                  action_text: current_user.admin? ? "Agregar" : nil,
-                 action_path: current_user.admin? ? new_report_template_path : nil %>
+                 action_path: current_user.admin? ? new_report_template_path : nil,
+                 turbo_frame: "_top" %>
     <% end %>
   <% end %>
 <% end %>
