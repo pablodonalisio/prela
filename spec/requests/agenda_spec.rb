@@ -40,7 +40,7 @@ RSpec.describe "Agenda", type: :request do
       expect(response.body).to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
     end
 
-    it "shows pending occurrences using due_on and Falta Programar badge" do
+    it "shows pending occurrences using due_on and Pendiente badge" do
       battery_les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
       battery_les.service_occurrences.destroy_all
       pending_in_range = create(:service_occurrence,
@@ -49,7 +49,7 @@ RSpec.describe "Agenda", type: :request do
 
       get agenda_index_path
 
-      expect(response.body).to include("Falta Programar")
+      expect(response.body).to include("Pendiente")
       expect(response.body).to include(pending_in_range.due_on.strftime("%d/%m/%Y"))
     end
 
