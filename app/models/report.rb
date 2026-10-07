@@ -24,6 +24,8 @@ class Report < ApplicationRecord
   before_validation :seed_comments_from_previous_report, on: :create
   before_validation :normalize_task_positions
   before_validation :normalize_comment_positions
+  before_validation :filter_observation_values, if: :template_based?
+  before_validation :attach_pending_block_images, if: :template_based?
   before_create :assign_number, if: :template_based?
 
   validates :date, presence: true
@@ -50,6 +52,35 @@ class Report < ApplicationRecord
 
   def field_values_for(section)
     field_values.fetch(section.to_s, {})
+  end
+
+  def block_images=(mapping)
+    @pending_block_images = mapping
+  end
+
+  def observation_text_for(block_id)
+    (observation_values || {}).to_h.stringify_keys[block_id.to_s].to_s
+  end
+
+  def images_for_block(block_id)
+    return [] unless images.attached?
+
+    block_id = block_id.to_s
+    first_id = image_block_ids.first
+    images.select do |image|
+      assigned = image.blob.metadata["block_id"].presence
+      if assigned.present?
+        assigned == block_id
+      else
+        block_id == first_id
+      end
+    end
+  end
+
+  def image_block_ids
+    return [] unless report_template
+
+    report_template.block_ids_for("images")
   end
 
   def build_tasks_from_template!
@@ -183,6 +214,48 @@ class Report < ApplicationRecord
   def images_count_within_limit
     return unless images.attached?
 
-    errors.add(:images, "no puede tener más de #{MAX_IMAGES} imágenes.") if images.count > MAX_IMAGES
+    grouped = Hash.new(0)
+    fallback_block_id = image_block_ids.first || "default"
+    images.each do |image|
+      block_id = image.blob.metadata["block_id"].presence || fallback_block_id
+      grouped[block_id] += 1
+    end
+    return if grouped.values.all? { |count| count <= MAX_IMAGES }
+
+    message = if template_based?
+      "no puede tener más de #{MAX_IMAGES} imágenes por sección."
+    else
+      "no puede tener más de #{MAX_IMAGES} imágenes."
+    end
+    errors.add(:images, message)
+  end
+
+  def filter_observation_values
+    return if report_template.blank?
+
+    allowed = report_template.block_ids_for("observations")
+    filtered = (observation_values || {}).to_h.stringify_keys.slice(*allowed).transform_values(&:to_s)
+    self.observation_values = filtered
+  end
+
+  def attach_pending_block_images
+    mapping = @pending_block_images
+    return if mapping.blank?
+
+    @pending_block_images = nil
+    allowed = image_block_ids
+
+    mapping.each do |block_id, signed_ids|
+      key = block_id.to_s
+      next unless allowed.include?(key)
+
+      Array(signed_ids).each do |signed_id|
+        blob = ActiveStorage::Blob.find_signed(signed_id)
+        next if blob.blank?
+
+        blob.update!(metadata: blob.metadata.merge("block_id" => key))
+        images.attach(blob)
+      end
+    end
   end
 end

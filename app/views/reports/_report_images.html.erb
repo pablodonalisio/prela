@@ -1,19 +1,27 @@
-<h2 class="mb-3 mt-4 text-lg font-semibold text-heading">Imágenes</h2>
+<% block_id = local_assigns[:block_id] %>
+<% image_attachments = if block_id.present?
+     report.images_for_block(block_id)
+   else
+     report.images.attached? ? report.images.to_a : []
+   end %>
+<% input_name = block_id.present? ? "report[block_images][#{block_id}][]" : "report[images][]" %>
+<h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= local_assigns[:title].presence || t("activerecord.attributes.report_template.images") %></h2>
 
-<% existing_images = report.images.attached? ? report.images.map do |img|
+<% existing_images = image_attachments.map do |img|
      {
        id: img.blob.id,
        filename: img.filename.to_s,
        url: url_for(img.variant(resize_and_pad: [120, 120])),
        byte_size: img.byte_size
      }
-   end : [] %>
+   end %>
 
 <div data-controller="dropzone"
      data-dropzone-direct-upload-url-value="<%= rails_direct_uploads_url %>"
+     data-dropzone-input-name-value="<%= input_name %>"
      data-dropzone-existing-files-value='<%= existing_images.to_json.html_safe %>'
      data-dropzone-resize-height-value="250"
-     data-dropzone-max-files-value="10"
+     data-dropzone-max-files-value="<%= Report::MAX_IMAGES %>"
      class="mb-4">
   <div data-dropzone-target="dropzone" class="dropzone rounded-lg border border-dashed border-default p-3">
     <div class="dz-message text-center">Arrastra imágenes aquí o haz click para seleccionar. Se redimensionarán automáticamente.</div>
@@ -22,11 +30,13 @@
   <div data-dropzone-target="removedInputs"></div>
 </div>
 
-<noscript>
-  <p class="text-yellow-500">El navegador no soporta JavaScript. Use el formulario de carga tradicional:</p>
-  <div class="my-3">
-    <% 10.times do |n| %>
-      <%= render "image_upload", report: report, title: "Imagen #{n + 1}", f: f, n: n %>
-    <% end %>
-  </div>
-</noscript>
+<% if block_id.blank? && local_assigns[:f] %>
+  <noscript>
+    <p class="text-yellow-500">El navegador no soporta JavaScript. Use el formulario de carga tradicional:</p>
+    <div class="my-3">
+      <% Report::MAX_IMAGES.times do |n| %>
+        <%= render "image_upload", report: report, title: "Imagen #{n + 1}", f: f, n: n %>
+      <% end %>
+    </div>
+  </noscript>
+<% end %>

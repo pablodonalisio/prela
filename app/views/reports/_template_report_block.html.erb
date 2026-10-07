@@ -1,0 +1,49 @@
+<%# locals: (report:, block:, section_number:, measurement_rows:, room_rows:) %>
+<section class="template-report__section">
+  <% case block["type"] %>
+  <% when "measurements" %>
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= t("reports.template_report.measurements_section") %>
+    </h2>
+    <%= render "template_report_cards", items: measurement_rows %>
+  <% when "room_specifications" %>
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %>
+      <%= t("activerecord.attributes.report_template.sections.room_specifications") %>
+    </h2>
+    <%= render "template_report_cards", items: room_rows %>
+  <% when "tasks" %>
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= t("reports.template_report.tasks_section") %>
+    </h2>
+    <ul class="template-report__tasks">
+      <% report.report_tasks.each_with_index do |task, index| %>
+        <li class="template-report__task">
+          <span class="template-report__task-index">[<%= format("%02d", index + 1) %>]</span>
+          <span class="template-report__task-name"><%= task.name %></span>
+          <span class="template-report__task-status <%= task.completed? ? "template-report__task-status--done" : "template-report__task-status--pending" %>">
+            <%= task.completed? ? t("reports.template_report.task_completed") : t("reports.template_report.task_pending") %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  <% when "observations" %>
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= report.report_template.block_title(block) %>
+    </h2>
+    <div class="template-report__observations">
+      <%= simple_format(report.observation_text_for(block["id"])) %>
+    </div>
+  <% when "images" %>
+    <h2 class="template-report__section-title">
+      <%= format("%.1f", section_number) %> <%= report.report_template.block_title(block) %>
+    </h2>
+    <div class="template-report__images">
+      <% report.images_for_block(block["id"]).each do |image| %>
+        <%= link_to url_for(image), target: "_blank", rel: "noopener", class: "template-report__image-link" do %>
+          <%= image_tag image.variant(resize_to_limit: [900, 900]), alt: image.filename.to_s %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

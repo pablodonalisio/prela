@@ -235,7 +235,15 @@ RSpec.describe "Reports", type: :request do
 
   context "template-based report" do
     let(:equipment_kind) { "ups" }
-    let(:report_template) { create(:report_template, :with_measurements, :with_tasks) }
+    let(:report_template) do
+      create(:report_template, :with_measurements, :with_tasks, layout: [
+        {"id" => "measurements", "type" => "measurements"},
+        {"id" => "obs-1", "type" => "observations", "title" => "Notas de campo"},
+        {"id" => "room_specifications", "type" => "room_specifications"},
+        {"id" => "tasks", "type" => "tasks"},
+        {"id" => "photos-1", "type" => "images", "title" => "Fotos del tablero"}
+      ])
+    end
     let(:template_params) do
       {
         report: {
@@ -243,8 +251,7 @@ RSpec.describe "Reports", type: :request do
           date: Date.today,
           field_values: {
             measurements: {"1739280000" => "220.5"}
-          },
-          images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
+          }
         }
       }
     end
@@ -312,9 +319,36 @@ RSpec.describe "Reports", type: :request do
         expect(Report.last.pdf).not_to be_attached
       end
 
-      it "uploads images to the report" do
-        request
-        expect(Report.last.images).to be_attached
+      it "saves observations and images on the configured blocks" do
+        blob = ActiveStorage::Blob.create_and_upload!(
+          io: File.open(Rails.root.join("app/assets/images/placeholder-img.jpeg")),
+          filename: "placeholder-img.jpeg",
+          content_type: "image/jpeg"
+        )
+        other = ActiveStorage::Blob.create_and_upload!(
+          io: File.open(Rails.root.join("app/assets/images/placeholder-img.jpeg")),
+          filename: "otra.jpeg",
+          content_type: "image/jpeg"
+        )
+
+        post location_equipment_reports_path(location_equipment), params: {
+          report: template_params[:report].merge(
+            observation_values: {"obs-1" => "Hay humedad", "unknown" => "no"},
+            block_images: {"photos-1" => [blob.signed_id], "missing" => [other.signed_id]}
+          )
+        }
+
+        report = Report.last
+        expect(report.observation_values).to eq("obs-1" => "Hay humedad")
+        expect(report.images.count).to eq(1)
+        expect(report.images.first.blob.metadata["block_id"]).to eq("photos-1")
+
+        get location_equipment_report_path(location_equipment, report)
+        body = response.body
+        expect(body).to include("Hay humedad")
+        expect(body.index("Estado de parámetros físicos y mediciones")).to be < body.index("Notas de campo")
+        expect(body.index("Notas de campo")).to be < body.index("Protocolo de tareas")
+        expect(body.index("Protocolo de tareas")).to be < body.index("Fotos del tablero")
       end
 
       it "auto-assigns the template to the location equipment" do

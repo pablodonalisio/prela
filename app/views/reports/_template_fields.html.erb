@@ -1,7 +1,8 @@
 <% report_template = local_assigns[:report_template] || report.report_template %>
 <% return unless report_template %>
 
-<% report_template.active_sections.each do |section| %>
+<% ReportTemplate::FIXED_SECTIONS.each do |section| %>
+  <% next if report_template.fields_for(section).blank? %>
   <h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= t("activerecord.attributes.report_template.sections.#{section}") %></h2>
   <%= render "shared/dynamic_field_inputs",
              field_definitions: report_template.fields_for(section),
@@ -10,5 +11,8 @@
              id_prefix: "report_#{section}" %>
 <% end %>
 
-<%= render "report_tasks_fields", report: report %>
+<% report_template.layout_blocks.each do |block| %>
+  <%= render "template_layout_block", report: report, report_template: report_template, block: block %>
+<% end %>
+
 <%= render "report_comments_fields", report: report %>

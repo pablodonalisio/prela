@@ -1,14 +1,15 @@
 <%# Rendered inside shared/dropdown, which supplies the <ul>. %>
+<% turbo_frame = local_assigns.fetch(:turbo_frame, "remote_modal") %>
 <li>
   <%= link_to "Editar", edit_path,
               class: "block px-4 py-2 hover:bg-neutral-tertiary-medium hover:text-heading",
-              data: {turbo_frame: "remote_modal"} %>
+              data: {turbo_frame: turbo_frame} %>
 </li>
 <% if local_assigns[:duplicate_path].present? %>
   <li>
     <%= link_to "Duplicar", duplicate_path,
                 class: "block px-4 py-2 hover:bg-neutral-tertiary-medium hover:text-heading",
-                data: {turbo_frame: "remote_modal"} %>
+                data: {turbo_frame: turbo_frame} %>
   </li>
 <% end %>
 <li>

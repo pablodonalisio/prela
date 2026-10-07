@@ -1,0 +1,22 @@
+<%# locals: (report:, report_template:, block:) %>
+<% case block["type"] %>
+<% when "measurements", "room_specifications" %>
+  <% if report_template.fields_for(block["type"]).present? %>
+    <h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= t("activerecord.attributes.report_template.sections.#{block["type"]}") %></h2>
+    <%= render "shared/dynamic_field_inputs",
+               field_definitions: report_template.fields_for(block["type"]),
+               field_values: report.field_values_for(block["type"]),
+               param_prefix: "report[field_values][#{block["type"]}]",
+               id_prefix: "report_#{block["type"]}" %>
+  <% end %>
+<% when "tasks" %>
+  <%= render "report_tasks_fields", report: report %>
+<% when "observations" %>
+  <h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= report_template.block_title(block) %></h2>
+  <textarea name="report[observation_values][<%= block["id"] %>]"
+            id="report_observation_values_<%= block["id"] %>"
+            rows="4"
+            class="mb-4 block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading"><%= report.observation_text_for(block["id"]) %></textarea>
+<% when "images" %>
+  <%= render "report_images", report: report, block_id: block["id"], title: report_template.block_title(block) %>
+<% end %>

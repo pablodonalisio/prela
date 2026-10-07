@@ -55,8 +55,6 @@
   <p class="text-yellow-500">No hay plantillas de informe disponibles. Creá una desde Informes.</p>
 <% end %>
 
-<%= render "report_images", report: report, f: f %>
-
 <% selectable_signatures = Signature.kept.order(:name).to_a %>
 <% if report.persisted? %>
   <% selectable_signatures |= report.signatures.merge(Signature.discarded).order(:name).to_a %>

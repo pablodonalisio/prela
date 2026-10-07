@@ -1,5 +1,8 @@
-<%= turbo_frame_tag @report_template do %>
-  <%= render "shared/remote_modal", title: "Nueva plantilla de informe" do %>
-    <%= render "form", report_template: @report_template %>
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "shared/content_header", title: "Nueva plantilla de informe" do %>
   <% end %>
+
+  <div class="mx-4 mt-4 pb-10 md:mx-6">
+    <%= render "form", report_template: @report_template %>
+  </div>
 <% end %>

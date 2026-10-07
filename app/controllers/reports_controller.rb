@@ -152,12 +152,27 @@ class ReportsController < ApplicationController
       },
       report_tasks_attributes: %i[id name completed position _destroy],
       report_comments_attributes: %i[id description position _destroy],
-      images: [],
-      signature_ids: []
+      signature_ids: [],
+      observation_values: {}
     )
 
     permitted[:signature_ids] = merge_signature_ids(permitted[:signature_ids])
+    permitted[:block_images] = block_images_param
     permitted
+  end
+
+  def block_images_param
+    raw = params.dig(:report, :block_images)
+    return {} if raw.blank?
+
+    entries = raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw.to_h
+    entries.each_with_object({}) do |(block_id, signed_ids), result|
+      key = block_id.to_s
+      next unless key.match?(/\A[a-zA-Z0-9_-]+\z/)
+
+      ids = Array(signed_ids).filter_map { |signed_id| signed_id.to_s.presence }
+      result[key] = ids if ids.any?
+    end
   end
 
   def merge_signature_ids(submitted_ids)
