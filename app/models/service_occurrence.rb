@@ -13,14 +13,14 @@ class ServiceOccurrence < ApplicationRecord
   enum :status, {pending: 0, completed: 1, suspended: 2, scheduled: 3, cancelled: 4}
 
   validates :due_on, presence: true, if: :open?
-  validates :planned_on, :start_time, :end_time, presence: true, if: :scheduled?
+  validates :planned_on_init, :planned_on_finish, presence: true, if: :scheduled?
   validates :completed_on, presence: true, if: :completed?
   validates :status, presence: true
-  validate :end_time_after_start_time, if: :scheduled?
-  validate :schedule_times_parseable, if: :scheduled?
+  validate :planned_on_init_not_before_today, if: :scheduled?
+  validate :planned_on_finish_after_init, if: :scheduled?
   validate :only_one_open_per_location_equipment_service, if: :open?
 
-  before_save :clear_schedule_times_unless_scheduled
+  before_save :clear_schedule_unless_kept
 
   scope :open, -> { where(status: OPEN_STATUSES) }
   scope :suspended, -> { where(status: :suspended) }
@@ -52,7 +52,7 @@ class ServiceOccurrence < ApplicationRecord
   scope :for_agenda, ->(range) {
     where(
       <<~SQL.squish,
-        (service_occurrences.status = :scheduled AND service_occurrences.planned_on BETWEEN :from AND :to)
+        (service_occurrences.status = :scheduled AND (service_occurrences.planned_on_init::date BETWEEN :from AND :to))
         OR (service_occurrences.status IN (:pending, :suspended) AND service_occurrences.due_on BETWEEN :from AND :to)
       SQL
       scheduled: statuses[:scheduled],
@@ -60,7 +60,7 @@ class ServiceOccurrence < ApplicationRecord
       suspended: statuses[:suspended],
       from: range.begin,
       to: range.end
-    ).order(Arel.sql("COALESCE(service_occurrences.planned_on, service_occurrences.due_on)"))
+    ).order(Arel.sql("COALESCE(service_occurrences.planned_on_init, service_occurrences.due_on::timestamp)"))
   }
   scope :by_client_id, ->(client_id) {
     joins(location_equipment_service: {location_equipment: :location})
@@ -92,11 +92,11 @@ class ServiceOccurrence < ApplicationRecord
   end
 
   def agenda_date
-    scheduled? ? planned_on : due_on
+    scheduled? ? planned_on_init : due_on
   end
 
   def service_date
-    return planned_on if scheduled? && planned_on.present?
+    return planned_on_init if scheduled? && planned_on_init.present?
     return completed_on if completed? && completed_on.present?
 
     due_on
@@ -131,29 +131,25 @@ class ServiceOccurrence < ApplicationRecord
 
   private
 
-  def clear_schedule_times_unless_scheduled
-    return if scheduled?
+  def clear_schedule_unless_kept
+    return if scheduled? || completed?
 
-    self.start_time = nil
-    self.end_time = nil
+    self.planned_on_init = nil
+    self.planned_on_finish = nil
   end
 
-  def schedule_times_parseable
-    %i[start_time end_time].each do |attr|
-      raw = read_attribute_before_type_cast(attr)
-      next unless raw.is_a?(String) && raw.strip.present?
-      next if self[attr].present?
+  def planned_on_init_not_before_today
+    return if planned_on_init.blank?
+    return if planned_on_init.to_date >= Date.current
 
-      errors.delete(attr)
-      errors.add(attr, :invalid)
-    end
+    errors.add(:planned_on_init, :before_today)
   end
 
-  def end_time_after_start_time
-    return if start_time.blank? || end_time.blank?
-    return if end_time > start_time
+  def planned_on_finish_after_init
+    return if planned_on_init.blank? || planned_on_finish.blank?
+    return if planned_on_finish > planned_on_init
 
-    errors.add(:end_time, :after_start)
+    errors.add(:planned_on_finish, :after_start)
   end
 
   def only_one_open_per_location_equipment_service

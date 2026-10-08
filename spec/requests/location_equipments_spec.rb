@@ -241,18 +241,19 @@ RSpec.describe "/location_equipments", type: :request do
       battery_les.service_occurrences.destroy_all
       scheduled = create(:service_occurrence, :scheduled,
         location_equipment_service: battery_les,
-        planned_on: Date.tomorrow,
-        start_time: "08:30",
-        end_time: "11:00")
+        planned_on_init: Date.tomorrow.in_time_zone.change(hour: 8, min: 30, sec: 0),
+        planned_on_finish: Date.tomorrow.in_time_zone.change(hour: 11, min: 0, sec: 0))
 
       get location_equipment_url(location_equipment)
 
       expect(response.body).to include("Estado")
-      expect(response.body).to include("Fecha y horario")
+      expect(response.body).to include("Inicio")
+      expect(response.body).to include("Fin")
       expect(response.body).to include("Completado")
       expect(response.body).to include("Pendiente")
-      expect(response.body).to include(scheduled.planned_on.strftime("%d/%m/%Y"))
-      expect(response.body).to include("08:30 – 11:00")
+      expect(response.body).to include(scheduled.planned_on_init.strftime("%d/%m/%Y"))
+      expect(response.body).to include("08:30")
+      expect(response.body).to include("11:00")
       expect(response.body).to include(ServiceKind.find_by!(legacy_key: "service").name)
       expect(response.body).to include(completed.completed_on.strftime("%d/%m/%Y"))
       expect(response.body).to include(pending.due_on.strftime("%d/%m/%Y"))

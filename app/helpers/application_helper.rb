@@ -102,29 +102,14 @@ module ApplicationHelper
     ]
   end
 
-  def format_time_of_day(time)
-    return if time.blank?
-    return format("%02d:%02d", time.hour, time.min) if time.respond_to?(:hour) && time.respond_to?(:min)
+  def schedule_point(value)
+    return tag.span("—", class: "text-body-subtle") if value.blank?
 
-    time.to_s[/\A\d{1,2}:\d{2}/]&.then { |value| format("%02d:%02d", *value.split(":").map(&:to_i)) }
-  end
-
-  def schedule_date_with_times(date, occurrence)
-    return if date.blank?
-
-    times = schedule_time_range(occurrence)
-    safe_join([
-      tag.span(date.strftime("%d/%m/%Y"), class: "block"),
-      (tag.span(times, class: "block", style: "font-size: calc(1em - 2px)") if times)
-    ].compact)
-  end
-
-  def schedule_time_range(occurrence)
-    start_label = format_time_of_day(occurrence.start_time)
-    end_label = format_time_of_day(occurrence.end_time)
-    return if start_label.blank? || end_label.blank?
-
-    "#{start_label} – #{end_label}"
+    parts = [tag.span(value.to_date.strftime("%d/%m/%Y"), class: "block")]
+    if value.respond_to?(:hour) && !value.is_a?(Date)
+      parts << tag.span(value.strftime("%H:%M"), class: "block", style: "font-size: calc(1em - 2px)")
+    end
+    safe_join(parts)
   end
 
   def image_for(resource, img_attribute, size)

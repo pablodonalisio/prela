@@ -59,9 +59,8 @@ es:
         electrical_approval: "Próximo apto eléctrico"
       service_occurrence:
         due_on: "Próximo vencimiento"
-        planned_on: "Fecha programada"
-        start_time: "Horario de inicio"
-        end_time: "Horario de finalización"
+        planned_on_init: "Inicio programado"
+        planned_on_finish: "Fin programado"
         notes: "Notas"
         statuses:
           pending: "Pendiente"
@@ -125,8 +124,10 @@ es:
       models:
         service_occurrence:
           attributes:
-            end_time:
-              after_start: "debe ser posterior al horario de inicio"
+            planned_on_init:
+              before_today: "no puede ser anterior a hoy"
+            planned_on_finish:
+              after_start: "debe ser posterior al inicio programado"
         restrict_dependent_destroy:
           has_one: No se puede eliminar el registro porque existe un %{record} dependiente
           has_many: No se puede eliminar el registro porque existen %{record} dependientes

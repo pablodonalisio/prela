@@ -1,7 +1,10 @@
 <% location_equipment = service_occurrence.location_equipment %>
 <tr id="<%= dom_id(service_occurrence, :agenda) %>" class="border-t border-default">
   <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
-    <%= schedule_date_with_times(service_occurrence.agenda_date, service_occurrence) %>
+    <%= schedule_point(service_occurrence.planned_on_init.presence || service_occurrence.agenda_date) %>
+  </td>
+  <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
+    <%= schedule_point(service_occurrence.planned_on_finish) %>
   </td>
   <td class="px-4 py-3 align-middle text-body"><%= location_equipment.client.name %></td>
   <td class="px-4 py-3 align-middle text-body"><%= location_equipment.location.name %></td>

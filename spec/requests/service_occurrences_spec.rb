@@ -68,45 +68,50 @@ RSpec.describe "ServiceOccurrences", type: :request do
       expect(response).to have_http_status(:success)
     end
 
-    it "schedules the occurrence with start and end times" do
-      planned_on = 1.week.from_now.to_date
+    it "schedules the occurrence with start and finish datetimes" do
+      init = 1.week.from_now.change(hour: 8, min: 30, sec: 0)
+      finish = init.change(hour: 11, min: 0)
 
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
         params: {
           intent: "schedule",
-          service_occurrence: {status: "scheduled", planned_on: planned_on, start_time: "08:30", end_time: "11:00"}
+          service_occurrence: {
+            status: "scheduled",
+            planned_on_init: init.strftime("%Y-%m-%dT%H:%M"),
+            planned_on_finish: finish.strftime("%Y-%m-%dT%H:%M")
+          }
         },
         headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
       pending_occurrence.reload
       expect(pending_occurrence).to be_scheduled
-      expect(pending_occurrence.planned_on).to eq(planned_on)
-      expect(pending_occurrence.start_time.strftime("%H:%M")).to eq("08:30")
-      expect(pending_occurrence.end_time.strftime("%H:%M")).to eq("11:00")
+      expect(pending_occurrence.planned_on_init.strftime("%Y-%m-%dT%H:%M")).to eq(init.strftime("%Y-%m-%dT%H:%M"))
+      expect(pending_occurrence.planned_on_finish.strftime("%Y-%m-%dT%H:%M")).to eq(finish.strftime("%Y-%m-%dT%H:%M"))
       expect(response).to have_http_status(:success)
-      expect(response.body).to include("08:30 – 11:00")
+      expect(response.body).to include("08:30")
+      expect(response.body).to include("11:00")
     end
 
-    it "rejects a schedule without times" do
+    it "rejects a schedule without datetimes" do
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
-        params: {intent: "schedule", service_occurrence: {status: "scheduled", planned_on: 1.week.from_now.to_date}},
+        params: {intent: "schedule", service_occurrence: {status: "scheduled"}},
         headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(pending_occurrence.reload).to be_pending
-      expect(response.body).to include("Horario de inicio")
-      expect(response.body).to include("Horario de finalización")
+      expect(response.body).to include("Inicio programado")
+      expect(response.body).to include("Fin programado")
       expect(response.body).to include("no puede estar en blanco")
     end
 
     it "reverts a scheduled occurrence to pending" do
-pending_occurrence.update!(
-  status: :scheduled,
-  planned_on: 1.week.from_now.to_date,
-  start_time: "09:00",
-  end_time: "10:00",
-  notes: "Visita original"
-)
+      init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
+      pending_occurrence.update!(
+        status: :scheduled,
+        planned_on_init: init,
+        planned_on_finish: init + 1.hour,
+        notes: "Visita original"
+      )
 
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
         params: {intent: "revert", service_occurrence: {status: "pending", notes: "Reprogramar la semana que viene"}},
@@ -114,9 +119,8 @@ pending_occurrence.update!(
 
       pending_occurrence.reload
       expect(pending_occurrence).to be_pending
-      expect(pending_occurrence.planned_on).to be_nil
-      expect(pending_occurrence.start_time).to be_nil
-      expect(pending_occurrence.end_time).to be_nil
+      expect(pending_occurrence.planned_on_init).to be_nil
+      expect(pending_occurrence.planned_on_finish).to be_nil
       expect(pending_occurrence.notes).to eq("Reprogramar la semana que viene")
       expect(response).to have_http_status(:success)
     end

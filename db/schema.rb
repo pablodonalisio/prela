@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_06_154500) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_07_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -437,10 +437,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_06_154500) do
     t.date "completed_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.date "planned_on"
     t.text "notes"
-    t.time "start_time"
-    t.time "end_time"
+    t.datetime "planned_on_init"
+    t.datetime "planned_on_finish"
     t.index ["location_equipment_service_id"], name: "index_service_occurrences_on_location_equipment_service_id"
     t.index ["location_equipment_service_id"], name: "index_service_occurrences_one_open_per_les", unique: true, where: "(status = ANY (ARRAY[0, 2, 3]))"
   end

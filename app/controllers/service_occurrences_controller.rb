@@ -60,7 +60,7 @@ class ServiceOccurrencesController < ApplicationController
     when "notes"
       params.require(:service_occurrence).permit(:notes)
     else
-      params.require(:service_occurrence).permit(:status, :due_on, :planned_on, :start_time, :end_time, :notes)
+      params.require(:service_occurrence).permit(:status, :due_on, :planned_on_init, :planned_on_finish, :notes)
     end
   end
 
