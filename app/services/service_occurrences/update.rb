@@ -5,8 +5,6 @@ class ServiceOccurrences::Update
     "scheduled" => %w[pending completed]
   }.freeze
 
-  DATE_ATTRIBUTES = %w[due_on planned_on completed_on].freeze
-
   def self.call(occurrence, attrs)
     new(occurrence, attrs).call
   end
@@ -99,11 +97,18 @@ class ServiceOccurrences::Update
 
     if status_changing?
       assignment[:status] = target_status
-      assignment[:planned_on] = (target_status == "scheduled") ? date_value_for(:planned_on) : nil
+      if target_status == "scheduled"
+        assignment[:planned_on_init] = datetime_value_for(:planned_on_init)
+        assignment[:planned_on_finish] = datetime_value_for(:planned_on_finish)
+      elsif %w[pending suspended cancelled].include?(target_status)
+        assignment[:planned_on_init] = nil
+        assignment[:planned_on_finish] = nil
+      end
       assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
     else
       assignment[:due_on] = date_value_for(:due_on) if date_attr_present?(:due_on)
-      assignment[:planned_on] = date_value_for(:planned_on) if date_attr_present?(:planned_on)
+      assignment[:planned_on_init] = datetime_value_for(:planned_on_init) if attrs.key?(:planned_on_init)
+      assignment[:planned_on_finish] = datetime_value_for(:planned_on_finish) if attrs.key?(:planned_on_finish)
       assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
     end
 
@@ -137,8 +142,7 @@ class ServiceOccurrences::Update
       occurrence.update!(
         status: :completed,
         completed_on: completed_on,
-        due_on: completed_on,
-        planned_on: nil
+        due_on: completed_on
       )
       occurrence.document.attach(document) if document.present?
 
@@ -154,6 +158,17 @@ class ServiceOccurrences::Update
 
   def date_attr_present?(attr)
     attrs.key?(attr) || attrs.key?("#{attr}(1i)")
+  end
+
+  def datetime_value_for(attr)
+    value = attrs[attr]
+    return nil if value.blank?
+    return Time.zone.parse(value) if value.is_a?(String)
+    return value.in_time_zone if value.respond_to?(:in_time_zone)
+
+    nil
+  rescue ArgumentError, TypeError
+    nil
   end
 
   def date_value_for(attr)

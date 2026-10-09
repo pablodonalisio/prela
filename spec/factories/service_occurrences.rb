@@ -23,7 +23,8 @@ FactoryBot.define do
 
     trait :scheduled do
       status { :scheduled }
-      planned_on { 1.week.from_now.to_date }
+      planned_on_init { 1.week.from_now.change(hour: 9, min: 0, sec: 0) }
+      planned_on_finish { planned_on_init.in_time_zone + 1.hour }
     end
   end
 end

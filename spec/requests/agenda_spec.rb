@@ -25,7 +25,7 @@ RSpec.describe "Agenda", type: :request do
     let!(:scheduled_in_range) do
       create(:service_occurrence, :scheduled,
         location_equipment_service: les,
-        planned_on: Date.current.beginning_of_week + 2.days,
+        planned_on_init: (Date.current.beginning_of_week + 2.days).in_time_zone.change(hour: 9, min: 0, sec: 0),
         due_on: 1.month.from_now.to_date)
     end
 
@@ -34,10 +34,13 @@ RSpec.describe "Agenda", type: :request do
 
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Agenda")
-      expect(response.body).to include("Fecha")
+      expect(response.body).to include("Inicio")
+      expect(response.body).to include("Fin")
       expect(response.body).to include(service_kind.name)
       expect(response.body).to include("Programado")
-      expect(response.body).to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
+      expect(response.body).to include("09:00")
+      expect(response.body).to include("10:00")
     end
 
     it "shows pending occurrences using due_on and Pendiente badge" do
@@ -91,15 +94,15 @@ RSpec.describe "Agenda", type: :request do
       ups_les.service_occurrences.destroy_all
       out_of_range = create(:service_occurrence, :scheduled,
         location_equipment_service: ups_les,
-        planned_on: 3.months.from_now.to_date,
+        planned_on_init: 3.months.from_now.change(hour: 9, min: 0, sec: 0),
         due_on: 3.months.from_now.to_date)
 
       get agenda_index_path
 
-      expect(response.body).to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
       expect(response.body).not_to include("No mostrar")
       expect(response.body).not_to include("UPS Fuera de rango")
-      expect(response.body).not_to include(out_of_range.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).not_to include(out_of_range.planned_on_init.strftime("%d/%m/%Y"))
     end
 
     it "filters by service_kind_id" do
@@ -107,13 +110,13 @@ RSpec.describe "Agenda", type: :request do
       battery_les.service_occurrences.destroy_all
       battery_scheduled = create(:service_occurrence, :scheduled,
         location_equipment_service: battery_les,
-        planned_on: Date.current.beginning_of_week + 1.day,
+        planned_on_init: (Date.current.beginning_of_week + 1.day).in_time_zone.change(hour: 9, min: 0, sec: 0),
         due_on: 1.month.from_now.to_date)
 
       get agenda_index_path, params: {service_kind_id: battery_change_kind.id}
 
-      expect(response.body).to include(battery_scheduled.planned_on.strftime("%d/%m/%Y"))
-      expect(response.body).not_to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include(battery_scheduled.planned_on_init.strftime("%d/%m/%Y"))
+      expect(response.body).not_to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
     end
 
     it "filters by priority" do
@@ -141,14 +144,14 @@ RSpec.describe "Agenda", type: :request do
       other_les.service_occurrences.destroy_all
       other_scheduled = create(:service_occurrence, :scheduled,
         location_equipment_service: other_les,
-        planned_on: Date.current.beginning_of_week + 1.day,
+        planned_on_init: (Date.current.beginning_of_week + 1.day).in_time_zone.change(hour: 9, min: 0, sec: 0),
         due_on: 1.month.from_now.to_date)
 
       get agenda_index_path, params: {client_id: other_client.id}
 
       expect(response.body).to include("Cliente filtrado")
-      expect(response.body).to include(other_scheduled.planned_on.strftime("%d/%m/%Y"))
-      expect(response.body).not_to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include(other_scheduled.planned_on_init.strftime("%d/%m/%Y"))
+      expect(response.body).not_to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
     end
 
     context "when user is a client" do
@@ -167,15 +170,15 @@ RSpec.describe "Agenda", type: :request do
         other_les.service_occurrences.destroy_all
         other_scheduled = create(:service_occurrence, :scheduled,
           location_equipment_service: other_les,
-          planned_on: Date.current.beginning_of_week + 3.days,
+          planned_on_init: (Date.current.beginning_of_week + 3.days).in_time_zone.change(hour: 9, min: 0, sec: 0),
           due_on: 1.month.from_now.to_date)
 
         get agenda_index_path
 
         expect(response.body).to include("Cliente propio")
-        expect(response.body).to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+        expect(response.body).to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
         expect(response.body).not_to include("Otro cliente")
-        expect(response.body).not_to include(other_scheduled.planned_on.strftime("%d/%m/%Y"))
+        expect(response.body).not_to include(other_scheduled.planned_on_init.strftime("%d/%m/%Y"))
         expect(response.body).not_to include("Registrar servicio")
       end
     end
