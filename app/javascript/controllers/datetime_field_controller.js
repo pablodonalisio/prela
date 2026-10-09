@@ -20,14 +20,14 @@ export default class extends Controller {
   sync() {
     const iso = this.#isoDate();
     if (!iso) {
-      this.outputTarget.value = "";
+      this.#write("");
       return;
     }
 
     const time = this.#time();
     if (!time) return;
 
-    this.outputTarget.value = `${iso}T${time}:00${this.offsetValue}`;
+    this.#write(`${iso}T${time}:00${this.offsetValue}`);
   }
 
   normalizeTime() {
@@ -40,9 +40,20 @@ export default class extends Controller {
     return normalize24HourTime(this.timeTarget.value) || (this.timeTarget.value.trim() === "" ? "00:00" : "");
   }
 
+  #write(value) {
+    if (this.outputTarget.value === value) return;
+
+    this.outputTarget.value = value;
+    this.outputTarget.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
   #isoDate() {
-    const picked = this.dateTarget.datepicker?.getDate();
-    if (picked instanceof Date && !Number.isNaN(picked.getTime())) return formatIsoDate(picked);
+    if (this.dateTarget.datepicker) {
+      const picked = this.dateTarget.datepicker.getDate();
+      if (picked instanceof Date && !Number.isNaN(picked.getTime())) return formatIsoDate(picked);
+      return "";
+    }
+
     if (this.dateTarget.dataset.isoDate) return this.dateTarget.dataset.isoDate;
 
     const parsed = parseIsoDate(this.dateTarget.value);

@@ -2,14 +2,16 @@
   <h1 class="mb-1 mt-8 font-semibold uppercase tracking-wide text-heading">Servicios</h1>
   <% occurrences = location_equipment.service_occurrences
        .includes(location_equipment_service: :service_kind)
-       .order(Arel.sql("COALESCE(service_occurrences.completed_on, service_occurrences.planned_on, service_occurrences.due_on) DESC")) %>
+       .order(Arel.sql("COALESCE(service_occurrences.completed_on::timestamp, service_occurrences.planned_on_init, service_occurrences.due_on::timestamp) DESC")) %>
   <% if occurrences.any? %>
     <div class="my-2 max-h-[400px] overflow-y-auto rounded-xl border border-default">
       <table class="w-full text-left text-sm">
         <thead class="sticky top-0 z-10 bg-neutral-secondary-medium text-xs uppercase tracking-wide text-body-subtle">
           <tr>
-            <th class="px-4 py-3 font-semibold">Fecha</th>
+            <th class="px-4 py-3 font-semibold">Inicio</th>
+            <th class="px-4 py-3 font-semibold">Fin</th>
             <th class="px-4 py-3 font-semibold">Tipo</th>
+            <th class="px-4 py-3 font-semibold">Prioridad</th>
             <th class="px-4 py-3 font-semibold">Estado</th>
             <th class="px-4 py-3 font-semibold">Notas</th>
             <th class="px-4 py-3 font-semibold"></th>
@@ -18,13 +20,29 @@
         </thead>
         <tbody>
           <% occurrences.each do |occurrence| %>
+            <% schedule_color = occurrence.open? ? service_date_color(occurrence.due_on) : "text-heading" %>
             <tr id="<%= dom_id(occurrence, :row) %>" class="border-t border-default">
-              <td class="px-4 py-3 text-heading">
-                <span class="<%= occurrence.open? ? service_date_color(occurrence.due_on) : nil %>">
-                  <%= occurrence.service_date.strftime("%d/%m/%Y") %>
-                </span>
+              <td class="whitespace-nowrap px-4 py-3 <%= schedule_color %>">
+                <%= schedule_point(occurrence.planned_on_init.presence || occurrence.service_date) %>
+              </td>
+              <td class="whitespace-nowrap px-4 py-3 <%= schedule_color %>">
+                <%= schedule_point(occurrence.planned_on_finish) %>
               </td>
               <td class="px-4 py-3 text-body"><%= occurrence.service_kind.name %></td>
+              <td class="px-4 py-3 text-body">
+                <span class="inline-flex items-center gap-1">
+                  <%= occurrence.priority_label %>
+                  <% if current_user.admin? || current_user.editor? %>
+                    <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, occurrence, intent: "priority"),
+                                class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
+                                data: {turbo_frame: "remote_modal"},
+                                title: "Editar prioridad",
+                                aria: {label: "Editar prioridad"} do %>
+                      <%= icon(:edit) %>
+                    <% end %>
+                  <% end %>
+                </span>
+              </td>
               <td class="px-4 py-3">
                 <span class="rounded-full px-2.5 py-0.5 text-xs font-medium <%= occurrence_status_badge_classes(occurrence) %>">
                   <%= occurrence.status_label %>

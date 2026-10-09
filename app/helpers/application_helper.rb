@@ -10,6 +10,7 @@ module ApplicationHelper
     building: "fa-solid fa-building",
     calendar_plus: "fas fa-calendar-plus",
     check: "fas fa-check",
+    clock: "fa-solid fa-clock",
     chevron_down: "fa-solid fa-chevron-down",
     clients: "fa-solid fa-building",
     dot: "fa fa-circle",
@@ -99,6 +100,16 @@ module ApplicationHelper
       {text: "Clientes", path: clients_path, icon: :clients, admin: true},
       {text: "Insumos", path: supplies_path, icon: :supplies, admin: true}
     ]
+  end
+
+  def schedule_point(value)
+    return tag.span("—", class: "text-body-subtle") if value.blank?
+
+    parts = [tag.span(value.to_date.strftime("%d/%m/%Y"), class: "block")]
+    if value.respond_to?(:hour) && !value.is_a?(Date)
+      parts << tag.span(value.strftime("%H:%M"), class: "block", style: "font-size: calc(1em - 2px)")
+    end
+    safe_join(parts)
   end
 
   def image_for(resource, img_attribute, size)

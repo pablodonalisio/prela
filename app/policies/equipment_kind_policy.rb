@@ -21,6 +21,10 @@ class EquipmentKindPolicy < ApplicationPolicy
     create?
   end
 
+  def duplicate?
+    create?
+  end
+
   def update?
     user.admin?
   end

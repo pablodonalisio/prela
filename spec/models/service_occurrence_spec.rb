@@ -14,6 +14,26 @@ RSpec.describe ServiceOccurrence, type: :model do
     expect(build(:service_occurrence)).to be_valid
   end
 
+  it "uses the same priority values as service kinds" do
+    expect(described_class.priorities).to eq(ServiceKind.priorities)
+  end
+
+  it "copies priority from the service kind on create" do
+    service_kind = create(:service_kind, :critical)
+    les = create(:location_equipment_service, service_kind: service_kind)
+    occurrence = create(:service_occurrence, location_equipment_service: les)
+
+    expect(occurrence.priority).to eq("critical")
+  end
+
+  it "uses the service kind priority even when one is passed on create" do
+    service_kind = create(:service_kind, :critical)
+    les = create(:location_equipment_service, service_kind: service_kind)
+    occurrence = create(:service_occurrence, location_equipment_service: les, priority: :low)
+
+    expect(occurrence.priority).to eq("critical")
+  end
+
   it "is not valid without a due_on date" do
     expect(build(:service_occurrence, due_on: nil)).not_to be_valid
   end
@@ -35,11 +55,68 @@ RSpec.describe ServiceOccurrence, type: :model do
     expect(open).to be_valid
   end
 
-  it "requires planned_on when scheduled" do
-    occurrence = build(:service_occurrence, status: :scheduled, planned_on: nil)
+  it "requires planned_on_init and planned_on_finish when scheduled" do
+    occurrence = build(:service_occurrence, status: :scheduled, planned_on_init: nil, planned_on_finish: nil)
 
     expect(occurrence).not_to be_valid
-    expect(occurrence.errors[:planned_on]).to be_present
+    expect(occurrence.errors[:planned_on_init]).to be_present
+    expect(occurrence.errors[:planned_on_finish]).to be_present
+  end
+
+  it "requires the finish to be after the start" do
+    init = 1.week.from_now.change(hour: 18, min: 0, sec: 0)
+    occurrence = build(:service_occurrence, :scheduled, planned_on_init: init, planned_on_finish: init.change(hour: 9))
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:planned_on_finish]).to be_present
+  end
+
+  it "rejects a start before today" do
+    init = 1.day.ago.change(hour: 9, min: 0, sec: 0)
+    occurrence = build(:service_occurrence, :scheduled, planned_on_init: init, planned_on_finish: init + 1.hour)
+
+    expect(occurrence).not_to be_valid
+    expect(occurrence.errors[:planned_on_init]).to be_present
+  end
+
+  it "allows a start today" do
+    init = Time.current.beginning_of_day.change(hour: 8)
+    occurrence = build(:service_occurrence, :scheduled, planned_on_init: init, planned_on_finish: init + 1.hour)
+
+    expect(occurrence).to be_valid
+  end
+
+  it "allows the finish to fall on a later day" do
+    init = 1.week.from_now.change(hour: 18, min: 0, sec: 0)
+    occurrence = build(:service_occurrence, :scheduled, planned_on_init: init, planned_on_finish: init.tomorrow.change(hour: 9))
+
+    expect(occurrence).to be_valid
+  end
+
+  it "clears the schedule when pending, suspended, or cancelled" do
+    occurrence = create(:service_occurrence, :scheduled)
+    init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
+    finish = init + 90.minutes
+
+    %i[suspended pending cancelled].each do |status|
+      occurrence.update!(status: status, planned_on_init: init, planned_on_finish: finish)
+
+      expect(occurrence.reload.planned_on_init).to be_nil
+      expect(occurrence.planned_on_finish).to be_nil
+
+      occurrence.update!(status: :scheduled, planned_on_init: init, planned_on_finish: finish)
+    end
+  end
+
+  it "keeps the schedule when completed" do
+    occurrence = create(:service_occurrence, :scheduled)
+    init = occurrence.planned_on_init
+    finish = occurrence.planned_on_finish
+
+    occurrence.update!(status: :completed, completed_on: Date.current, due_on: Date.current)
+
+    expect(occurrence.reload.planned_on_init).to eq(init)
+    expect(occurrence.planned_on_finish).to eq(finish)
   end
 
   describe ".overdue" do
@@ -84,10 +161,11 @@ RSpec.describe ServiceOccurrence, type: :model do
   end
 
   describe "#service_date" do
-    it "uses planned_on when scheduled" do
-      occurrence = build(:service_occurrence, :scheduled, planned_on: Date.current, due_on: 1.month.from_now.to_date)
+    it "uses planned_on_init when scheduled" do
+      init = Time.current.change(hour: 9, min: 0, sec: 0)
+      occurrence = build(:service_occurrence, :scheduled, planned_on_init: init, due_on: 1.month.from_now.to_date)
 
-      expect(occurrence.service_date).to eq(Date.current)
+      expect(occurrence.service_date).to eq(init)
     end
 
     it "uses completed_on when completed" do
@@ -104,10 +182,11 @@ RSpec.describe ServiceOccurrence, type: :model do
   end
 
   describe "#agenda_date" do
-    it "uses planned_on when scheduled" do
-      occurrence = build(:service_occurrence, :scheduled, planned_on: Date.current, due_on: 1.month.from_now.to_date)
+    it "uses planned_on_init when scheduled" do
+      init = Time.current.change(hour: 9, min: 0, sec: 0)
+      occurrence = build(:service_occurrence, :scheduled, planned_on_init: init, due_on: 1.month.from_now.to_date)
 
-      expect(occurrence.agenda_date).to eq(Date.current)
+      expect(occurrence.agenda_date).to eq(init)
     end
 
     it "uses due_on when pending or suspended" do
@@ -201,6 +280,16 @@ RSpec.describe ServiceOccurrence, type: :model do
 
     it "filters by service kind" do
       filtered = described_class.by_service_kind_id(service_kind.id)
+
+      expect(filtered).to include(service_occurrence)
+      expect(filtered).not_to include(battery_change_occurrence)
+    end
+
+    it "filters by priority" do
+      service_occurrence.update!(priority: :critical)
+      battery_change_occurrence.update!(priority: :low)
+
+      filtered = described_class.by_priority(:critical)
 
       expect(filtered).to include(service_occurrence)
       expect(filtered).not_to include(battery_change_occurrence)

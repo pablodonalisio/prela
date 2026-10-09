@@ -17,6 +17,34 @@ RSpec.describe ServiceOccurrences::Update do
     create(:service_occurrence, location_equipment_service: recurring_les, due_on: 1.month.from_now.to_date)
   end
 
+  describe "priority" do
+    it "does not change priority when updating due_on" do
+      expect(described_class.call(occurrence, due_on: occurrence.due_on, priority: :critical)).to be(true)
+
+      expect(occurrence.reload.priority).to eq("normal")
+    end
+
+    it "keeps the occurrence priority when completing and copies the kind onto the next one" do
+      kind = create(:service_kind, priority: :low)
+      les = create(:location_equipment_service, location_equipment: location_equipment, service_kind: kind)
+      current = create(:service_occurrence, location_equipment_service: les, due_on: 1.month.from_now.to_date)
+      current.update!(priority: :critical)
+
+      expect(
+        described_class.call(current, status: :completed, completed_on: Date.current, priority: :normal)
+      ).to be(true)
+
+      expect(current.reload.priority).to eq("critical")
+      expect(les.service_occurrences.pending.first.priority).to eq("low")
+    end
+
+    it "updates priority on its own" do
+      expect(described_class.update_priority(occurrence, :critical)).to be(true)
+
+      expect(occurrence.reload.priority).to eq("critical")
+    end
+  end
+
   describe "due_on update" do
     it "updates due_on while pending" do
       new_due_on = 2.months.from_now.to_date
@@ -45,61 +73,114 @@ RSpec.describe ServiceOccurrences::Update do
   end
 
   describe "schedule" do
-    it "moves pending to scheduled with planned_on" do
-      planned_on = 1.week.from_now.to_date
-
-      expect(described_class.call(occurrence, status: :scheduled, planned_on: planned_on)).to be(true)
-
-      occurrence.reload
-      expect(occurrence).to be_scheduled
-      expect(occurrence.planned_on).to eq(planned_on)
-    end
-
-    it "requires planned_on" do
-      expect(described_class.call(occurrence, status: :scheduled)).to be(false)
-      expect(occurrence.errors[:planned_on]).to be_present
-    end
-
-    it "accepts multiparameter planned_on from date selects" do
-      planned_on = 1.week.from_now.to_date
+    it "moves pending to scheduled with start and finish datetimes" do
+      init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
+      finish = init.change(hour: 10, min: 30)
 
       expect(
         described_class.call(
           occurrence,
-          status: "scheduled",
-          "planned_on(1i)" => planned_on.year.to_s,
-          "planned_on(2i)" => planned_on.month.to_s,
-          "planned_on(3i)" => planned_on.day.to_s
+          status: :scheduled,
+          planned_on_init: init,
+          planned_on_finish: finish
         )
       ).to be(true)
 
-      expect(occurrence.reload.planned_on).to eq(planned_on)
+      occurrence.reload
+      expect(occurrence).to be_scheduled
+      expect(occurrence.planned_on_init).to eq(init)
+      expect(occurrence.planned_on_finish).to eq(finish)
+    end
+
+    it "requires planned_on_init and planned_on_finish" do
+      expect(described_class.call(occurrence, status: :scheduled)).to be(false)
+      expect(occurrence.errors[:planned_on_init]).to be_present
+      expect(occurrence.errors[:planned_on_finish]).to be_present
+    end
+
+    it "accepts a datetime-local value" do
+      init = 1.week.from_now.change(hour: 9, min: 15, sec: 0)
+      finish = init.change(hour: 10, min: 45)
+
+      expect(
+        described_class.call(
+          occurrence,
+          status: :scheduled,
+          planned_on_init: init.strftime("%Y-%m-%dT%H:%M"),
+          planned_on_finish: finish.strftime("%Y-%m-%dT%H:%M")
+        )
+      ).to be(true)
+
+      occurrence.reload
+      expect(occurrence.planned_on_init.strftime("%Y-%m-%dT%H:%M")).to eq(init.strftime("%Y-%m-%dT%H:%M"))
+      expect(occurrence.planned_on_finish.strftime("%Y-%m-%dT%H:%M")).to eq(finish.strftime("%Y-%m-%dT%H:%M"))
+    end
+
+    it "accepts a finish on the next day" do
+      init = 1.week.from_now.change(hour: 22, min: 0, sec: 0)
+      finish = init.tomorrow.change(hour: 1, min: 0)
+
+      expect(
+        described_class.call(
+          occurrence,
+          status: :scheduled,
+          planned_on_init: init,
+          planned_on_finish: finish
+        )
+      ).to be(true)
+
+      expect(occurrence.reload.planned_on_finish).to eq(finish)
+    end
+
+    it "rejects a finish that is not after the start" do
+      init = 1.week.from_now.change(hour: 11, min: 0, sec: 0)
+
+      expect(
+        described_class.call(
+          occurrence,
+          status: :scheduled,
+          planned_on_init: init,
+          planned_on_finish: init.change(hour: 9)
+        )
+      ).to be(false)
+      expect(occurrence.errors[:planned_on_finish]).to be_present
     end
 
     it "allows scheduling from suspended" do
       occurrence.update!(status: :suspended, notes: "blocked")
-      planned_on = 1.week.from_now.to_date
+      init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
 
-      expect(described_class.call(occurrence, status: :scheduled, planned_on: planned_on)).to be(true)
+      expect(
+        described_class.call(
+          occurrence,
+          status: :scheduled,
+          planned_on_init: init,
+          planned_on_finish: init + 1.hour
+        )
+      ).to be(true)
       expect(occurrence.reload).to be_scheduled
     end
   end
 
   describe "revert" do
-    it "returns scheduled to pending and clears planned_on" do
-      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+    it "returns scheduled to pending and clears the schedule, and updates notes" do
+      init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
+      occurrence.update!(status: :scheduled, planned_on_init: init, planned_on_finish: init.change(hour: 10, min: 30), notes: "Visita original")
 
-      expect(described_class.call(occurrence, status: :pending)).to be(true)
+      expect(described_class.call(occurrence, status: :pending, notes: "Reprogramar")).to be(true)
 
       occurrence.reload
       expect(occurrence).to be_pending
-      expect(occurrence.planned_on).to be_nil
+      expect(occurrence.planned_on_init).to be_nil
+      expect(occurrence.planned_on_finish).to be_nil
+      expect(occurrence.notes).to eq("Reprogramar")
     end
   end
 
   describe "invalid transitions" do
     it "rejects scheduled to suspended" do
-      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+      init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
+      occurrence.update!(status: :scheduled, planned_on_init: init, planned_on_finish: init + 1.hour)
 
       expect(described_class.call(occurrence, status: :suspended)).to be(false)
       expect(occurrence.errors[:status]).to be_present
@@ -146,11 +227,16 @@ RSpec.describe ServiceOccurrences::Update do
       expect(occurrence.reload.document).to be_attached
     end
 
-    it "completes from a scheduled occurrence" do
-      occurrence.update!(status: :scheduled, planned_on: 1.week.from_now.to_date)
+    it "completes from a scheduled occurrence and keeps the schedule" do
+      init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
+      finish = init.change(hour: 10, min: 30)
+      occurrence.update!(status: :scheduled, planned_on_init: init, planned_on_finish: finish)
 
       expect(described_class.call(occurrence, status: :completed, completed_on: Date.current)).to be(true)
-      expect(occurrence.reload).to be_completed
+      occurrence.reload
+      expect(occurrence).to be_completed
+      expect(occurrence.planned_on_init).to eq(init)
+      expect(occurrence.planned_on_finish).to eq(finish)
       expect(recurring_les.service_occurrences.pending).to exist
     end
   end

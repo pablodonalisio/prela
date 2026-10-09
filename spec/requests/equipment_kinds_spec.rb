@@ -40,6 +40,7 @@ RSpec.describe "/equipment_kinds", type: :request do
       EquipmentKind.create! valid_attributes
       get equipment_kinds_url
       expect(response).to be_successful
+      expect(response.body).to include("Duplicar")
     end
 
     it "shows the asset type on each card" do
@@ -131,6 +132,46 @@ RSpec.describe "/equipment_kinds", type: :request do
 
       it "redirects to the root path" do
         get new_equipment_kind_url
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe "GET /duplicate" do
+    it "renders a new form prefilled from the source kind" do
+      equipment_kind = EquipmentKind.create!(
+        valid_attributes.merge(
+          name: "UPS de sala",
+          description: "Plantilla original",
+          specific_fields: {"serie" => {name: "Serie", type: "string"}}
+        )
+      )
+      service_kind = create(:service_kind, name: "Mantenimiento")
+      equipment_kind.service_kinds << service_kind
+
+      get duplicate_equipment_kind_url(equipment_kind)
+
+      expect(response).to be_successful
+      document = Nokogiri::HTML(response.body)
+      expect(document.at_css("#remote_modal_title").text).to eq("Duplicar Tipo de Equipo")
+      expect(document.at_css("input[name='equipment_kind[name]']")["value"]).to eq("UPS de sala (copia)")
+      expect(document.at_css("textarea[name='equipment_kind[description]']").text.strip).to eq("Plantilla original")
+      expect(document.css("input.field-name").map { |input| input["value"] }).to include("Marca", "Serie")
+      checkbox = document.at_css("input[name='equipment_kind[service_kind_ids][]'][value='#{service_kind.id}']")
+      expect(checkbox["checked"]).to eq("checked")
+      form = document.at_css("form#new_equipment_kind")
+      expect(form["action"]).to eq(equipment_kinds_path)
+      expect(form["method"]).to eq("post")
+      expect(form.at_css("input[name='_method']")).to be_nil
+    end
+
+    context "when user is not admin" do
+      let(:user) { create(:user) }
+
+      it "redirects to the root path" do
+        equipment_kind = EquipmentKind.create! valid_attributes
+        get duplicate_equipment_kind_url(equipment_kind)
         expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end
