@@ -90,9 +90,59 @@ RSpec.describe "Technician access", type: :policy do
   end
 
   describe UserPolicy do
-    permissions :index?, :show?, :create?, :update?, :destroy? do
+    permissions :index? do
+      it "grants access" do
+        expect(described_class).to permit(technician, User)
+      end
+    end
+
+    permissions :show?, :update? do
+      it "grants access to their own account" do
+        expect(described_class).to permit(technician, technician)
+      end
+
+      it "denies access to another user" do
+        expect(described_class).not_to permit(technician, create(:user))
+      end
+    end
+
+    permissions :create?, :destroy? do
       it "denies access" do
-        expect(described_class).not_to permit(technician, User.new)
+        expect(described_class).not_to permit(technician, technician)
+      end
+    end
+  end
+
+  describe SignaturePolicy do
+    permissions :index?, :create? do
+      it "grants access" do
+        expect(described_class).to permit(technician, Signature.new)
+      end
+    end
+
+    permissions :update?, :destroy? do
+      it "grants access to their own signature" do
+        expect(described_class).to permit(technician, Signature.new(user: technician))
+      end
+
+      it "denies access to another signature" do
+        expect(described_class).not_to permit(technician, Signature.new)
+      end
+    end
+
+    describe "Scope" do
+      it "returns only signatures that belong to the technician" do
+        owned = build_signature(name: "Propia", user: technician)
+        build_signature(name: "Ajena")
+
+        expect(Pundit.policy_scope(technician, Signature)).to contain_exactly(owned)
+      end
+
+      def build_signature(name:, user: nil)
+        signature = Signature.new(name: name, title: "Cargo", user: user)
+        signature.image.attach(io: StringIO.new("img"), filename: "sig.png", content_type: "image/png")
+        signature.save!
+        signature
       end
     end
   end

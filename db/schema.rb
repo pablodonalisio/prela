@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_07_125657) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_09_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -449,7 +449,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_07_125657) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["discarded_at"], name: "index_signatures_on_discarded_at"
+    t.index ["user_id"], name: "index_signatures_on_user_id"
   end
 
   create_table "taggings", force: :cascade do |t|
@@ -552,6 +554,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_07_125657) do
   add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
   add_foreign_key "service_occurrences", "location_equipment_services"
+  add_foreign_key "signatures", "users"
   add_foreign_key "taggings", "tags"
   add_foreign_key "ups_report_stats", "reports"
   add_foreign_key "users", "clients"

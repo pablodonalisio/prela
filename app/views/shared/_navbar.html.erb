@@ -36,7 +36,7 @@
           </div>
 
           <ul class="py-2 text-sm text-heading">
-            <% if current_user.admin? %>
+            <% if current_user.admin? || current_user.technician? %>
               <li>
                 <%= link_to "Gestionar Usuarios",
                             users_path,

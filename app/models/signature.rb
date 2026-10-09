@@ -1,6 +1,8 @@
 class Signature < ApplicationRecord
   include Discard::Model
 
+  belongs_to :user, optional: true
+
   has_one_attached :image
   has_and_belongs_to_many :reports
 
