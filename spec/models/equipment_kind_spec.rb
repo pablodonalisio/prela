@@ -4,9 +4,19 @@ RSpec.describe EquipmentKind, type: :model do
   it "is valid with generic fields" do
     equipment_kind = EquipmentKind.new(
       name: "UPS",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}}
     )
     expect(equipment_kind).to be_valid
+  end
+
+  it "is not valid without an asset type" do
+    equipment_kind = EquipmentKind.new(
+      name: "UPS",
+      generic_fields: {"kva" => {name: "Kva", type: "float"}}
+    )
+    expect(equipment_kind).not_to be_valid
+    expect(equipment_kind.errors[:asset_type]).to be_present
   end
 
   it "is not valid without a name" do
@@ -25,6 +35,7 @@ RSpec.describe EquipmentKind, type: :model do
   it "is valid with empty specific fields" do
     equipment_kind = EquipmentKind.new(
       name: "Laptop",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}},
       specific_fields: {}
     )
@@ -34,10 +45,12 @@ RSpec.describe EquipmentKind, type: :model do
   it "is not valid with a duplicate name" do
     EquipmentKind.create!(
       name: "Laptop",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}}
     )
     equipment_kind = EquipmentKind.new(
       name: "Laptop",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}}
     )
     expect(equipment_kind).not_to be_valid
@@ -46,10 +59,12 @@ RSpec.describe EquipmentKind, type: :model do
   it "is not valid with a duplicate name ignoring case" do
     EquipmentKind.create!(
       name: "Laptop",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}}
     )
     equipment_kind = EquipmentKind.new(
       name: "LAPTOP",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}}
     )
     expect(equipment_kind).not_to be_valid
@@ -59,6 +74,7 @@ RSpec.describe EquipmentKind, type: :model do
   it "is not valid with a duplicate name ignoring accents" do
     EquipmentKind.create!(
       name: "Tablero Eléctrico",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}}
     )
     equipment_kind = EquipmentKind.new(
@@ -88,6 +104,7 @@ RSpec.describe EquipmentKind, type: :model do
     EquipmentKind.create!(
       name: "UPS",
       legacy_kind: "ups",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}}
     )
     equipment_kind = EquipmentKind.new(
@@ -156,6 +173,7 @@ RSpec.describe EquipmentKind, type: :model do
   it "is valid with the same field name in generic and specific fields" do
     equipment_kind = EquipmentKind.new(
       name: "UPS",
+      asset_type: AssetType.ups,
       generic_fields: {"kva" => {name: "Kva", type: "float"}},
       specific_fields: {"form_link" => {name: "Kva", type: "string"}}
     )
@@ -166,6 +184,7 @@ RSpec.describe EquipmentKind, type: :model do
     it "counts associated kept equipments" do
       equipment_kind = EquipmentKind.create!(
         name: "UPS",
+        asset_type: AssetType.ups,
         generic_fields: {"1" => {name: "Marca", type: "string"}}
       )
       create(:equipment, equipment_kind: equipment_kind)
@@ -175,16 +194,28 @@ RSpec.describe EquipmentKind, type: :model do
     end
   end
 
+  describe ".filter" do
+    it "filters by asset type" do
+      generator = create(:asset_type, name: "Generador")
+      matching = create(:equipment_kind, name: "Grupo diesel", asset_type: generator)
+      create(:equipment_kind, name: "UPS online", asset_type: AssetType.ups)
+
+      expect(EquipmentKind.filter(asset_type_ids: [generator.id.to_s])).to contain_exactly(matching)
+    end
+  end
+
   describe "soft delete" do
     it "allows reusing a name after discard" do
       equipment_kind = EquipmentKind.create!(
         name: "Laptop",
+        asset_type: AssetType.ups,
         generic_fields: {"kva" => {name: "Kva", type: "float"}}
       )
       equipment_kind.discard
 
       reused = EquipmentKind.new(
         name: "Laptop",
+        asset_type: AssetType.ups,
         generic_fields: {"kva" => {name: "Kva", type: "float"}}
       )
 
@@ -196,6 +227,7 @@ RSpec.describe EquipmentKind, type: :model do
       equipment_kind = EquipmentKind.create!(
         name: "UPS Kind",
         legacy_kind: "ups",
+        asset_type: AssetType.ups,
         generic_fields: {"kva" => {name: "Kva", type: "float"}}
       )
       equipment_kind.discard
@@ -203,6 +235,7 @@ RSpec.describe EquipmentKind, type: :model do
       reused = EquipmentKind.new(
         name: "Another UPS",
         legacy_kind: "ups",
+        asset_type: AssetType.ups,
         generic_fields: {"kva" => {name: "Kva", type: "float"}}
       )
 
