@@ -27,6 +27,17 @@ class SignaturePolicy < ApplicationPolicy
     end
   end
 
+  class ReportScope < ApplicationPolicy::Scope
+    def resolve
+      relation = scope.kept
+      if user.technician?
+        relation.where(user_id: [nil, user.id])
+      else
+        relation.where(user_id: nil)
+      end
+    end
+  end
+
   private
 
   def own_signature?

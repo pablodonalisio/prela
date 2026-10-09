@@ -118,6 +118,8 @@ es:
         name: "Nombre"
         title: "Cargo"
         image: "Imagen"
+      report:
+        signatures: "Firmas"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
