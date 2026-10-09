@@ -48,6 +48,7 @@ Rails.application.routes.draw do
   resources :equipment_kinds do
     get "add_field", on: :collection
     get "remove_field", on: :collection
+    get "duplicate", on: :member
   end
   resources :service_kinds, except: %i[show]
   resources :report_templates, except: [:show] do

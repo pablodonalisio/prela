@@ -17,6 +17,34 @@ RSpec.describe ServiceOccurrences::Update do
     create(:service_occurrence, location_equipment_service: recurring_les, due_on: 1.month.from_now.to_date)
   end
 
+  describe "priority" do
+    it "does not change priority when updating due_on" do
+      expect(described_class.call(occurrence, due_on: occurrence.due_on, priority: :critical)).to be(true)
+
+      expect(occurrence.reload.priority).to eq("normal")
+    end
+
+    it "keeps the occurrence priority when completing and copies the kind onto the next one" do
+      kind = create(:service_kind, priority: :low)
+      les = create(:location_equipment_service, location_equipment: location_equipment, service_kind: kind)
+      current = create(:service_occurrence, location_equipment_service: les, due_on: 1.month.from_now.to_date)
+      current.update!(priority: :critical)
+
+      expect(
+        described_class.call(current, status: :completed, completed_on: Date.current, priority: :normal)
+      ).to be(true)
+
+      expect(current.reload.priority).to eq("critical")
+      expect(les.service_occurrences.pending.first.priority).to eq("low")
+    end
+
+    it "updates priority on its own" do
+      expect(described_class.update_priority(occurrence, :critical)).to be(true)
+
+      expect(occurrence.reload.priority).to eq("critical")
+    end
+  end
+
   describe "due_on update" do
     it "updates due_on while pending" do
       new_due_on = 2.months.from_now.to_date

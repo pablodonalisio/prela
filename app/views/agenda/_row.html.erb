@@ -15,6 +15,20 @@
                 data: {turbo_frame: :_top} %>
   </td>
   <td class="px-4 py-3 align-middle text-body"><%= service_occurrence.service_kind.name %></td>
+  <td class="px-4 py-3 align-middle text-body">
+    <span class="inline-flex items-center gap-1">
+      <%= service_occurrence.priority_label %>
+      <% if current_user.admin? || current_user.editor? %>
+        <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "priority"),
+                    class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
+                    data: {turbo_frame: "remote_modal"},
+                    title: "Editar prioridad",
+                    aria: {label: "Editar prioridad"} do %>
+          <%= icon(:edit) %>
+        <% end %>
+      <% end %>
+    </span>
+  </td>
   <td class="px-4 py-3 align-middle text-sm text-body-subtle"><%= service_occurrence.notes.presence || "—" %></td>
   <td class="px-4 py-3 align-middle">
     <% if service_occurrence.scheduled? %>
@@ -22,7 +36,7 @@
     <% elsif service_occurrence.suspended? %>
       <span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">Suspendido</span>
     <% else %>
-      <span class="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Falta Programar</span>
+      <span class="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Pendiente</span>
     <% end %>
   </td>
   <td class="whitespace-nowrap px-4 py-3 align-middle">

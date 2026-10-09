@@ -9,6 +9,7 @@
   </div>
   <p class="mt-1 text-xs text-body-subtle">Cliente: <%= service_occurrence.location_equipment.client.name %></p>
   <p class="text-xs text-body-subtle">Tipo: <%= service_occurrence.service_kind.name %></p>
+  <p class="text-xs text-body-subtle">Prioridad: <%= service_occurrence.priority_label %></p>
   <p class="text-xs text-body-subtle">Fecha: <%= service_occurrence.due_on.strftime("%d/%m/%Y") %></p>
   <% if service_occurrence.notes.present? %>
     <p class="text-xs text-body-subtle">Notas: <%= service_occurrence.notes %></p>

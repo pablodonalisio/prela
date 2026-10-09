@@ -23,6 +23,7 @@
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box",
                        edit_path: edit_equipment_kind_path(equipment_kind),
+                       duplicate_path: duplicate_equipment_kind_path(equipment_kind),
                        delete_path: equipment_kind_path(equipment_kind),
                        confirm: "¿Seguro que querés borrar este tipo de equipo?" %>
           <% end %>

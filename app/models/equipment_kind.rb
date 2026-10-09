@@ -31,6 +31,27 @@ class EquipmentKind < ApplicationRecord
     equipments.kept.size
   end
 
+  def self.build_copy(source)
+    copy = source.dup
+    copy.legacy_kind = nil
+    copy.name = available_copy_name(source.name)
+    copy.service_kind_ids = source.service_kind_ids
+    copy
+  end
+
+  def self.available_copy_name(name)
+    base = "#{name} (copia)"
+    candidate = base
+    suffix = 2
+
+    while kept.exists?(normalized_name: normalize_name(candidate))
+      candidate = "#{base} #{suffix}"
+      suffix += 1
+    end
+
+    candidate
+  end
+
   private
 
   def set_normalized_name

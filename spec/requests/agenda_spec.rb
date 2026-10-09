@@ -43,7 +43,7 @@ RSpec.describe "Agenda", type: :request do
       expect(response.body).to include("10:00")
     end
 
-    it "shows pending occurrences using due_on and Falta Programar badge" do
+    it "shows pending occurrences using due_on and Pendiente badge" do
       battery_les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
       battery_les.service_occurrences.destroy_all
       pending_in_range = create(:service_occurrence,
@@ -52,7 +52,7 @@ RSpec.describe "Agenda", type: :request do
 
       get agenda_index_path
 
-      expect(response.body).to include("Falta Programar")
+      expect(response.body).to include("Pendiente")
       expect(response.body).to include(pending_in_range.due_on.strftime("%d/%m/%Y"))
     end
 
@@ -75,6 +75,7 @@ RSpec.describe "Agenda", type: :request do
       get agenda_index_path
 
       expect(response.body).to include("Registrar servicio")
+      expect(response.body).to include("Editar prioridad")
       expect(response.body).to include("Volver a pendiente")
       expect(response.body).to include(complete_location_equipment_service_occurrence_path(location_equipment, scheduled_in_range))
     end
@@ -116,6 +117,22 @@ RSpec.describe "Agenda", type: :request do
 
       expect(response.body).to include(battery_scheduled.planned_on_init.strftime("%d/%m/%Y"))
       expect(response.body).not_to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
+    end
+
+    it "filters by priority" do
+      battery_les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
+      battery_les.service_occurrences.destroy_all
+      battery_scheduled = create(:service_occurrence, :scheduled,
+        location_equipment_service: battery_les,
+        planned_on: Date.current.beginning_of_week + 1.day,
+        due_on: 1.month.from_now.to_date)
+      battery_scheduled.update!(priority: :critical)
+      scheduled_in_range.update!(priority: :low)
+
+      get agenda_index_path, params: {priority: "critical"}
+
+      expect(response.body).to include(battery_scheduled.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).not_to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
     end
 
     it "filters by client_id" do

@@ -9,6 +9,14 @@ class ServiceOccurrences::Update
     new(occurrence, attrs).call
   end
 
+  def self.update_priority(occurrence, priority)
+    occurrence.update!(priority: priority)
+    true
+  rescue ActiveRecord::RecordInvalid, ArgumentError => error
+    occurrence.errors.add(:priority, error.message) if occurrence.errors.empty?
+    false
+  end
+
   def initialize(occurrence, attrs)
     @occurrence = occurrence
     @attrs = normalize_attrs(attrs)

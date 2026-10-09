@@ -48,6 +48,26 @@ RSpec.describe "ServiceOccurrences", type: :request do
   describe "PATCH /update" do
     let(:new_due_on) { 2.months.from_now.to_date }
 
+    it "updates the occurrence priority from the priority form" do
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {intent: "priority", service_occurrence: {priority: "critical"}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(pending_occurrence.reload.priority).to eq("critical")
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("La prioridad se actualizó correctamente.")
+    end
+
+    it "does not change priority from a service action" do
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {intent: "due_on", service_occurrence: {due_on: new_due_on, priority: "critical"}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      pending_occurrence.reload
+      expect(pending_occurrence.due_on).to eq(new_due_on)
+      expect(pending_occurrence.priority).to eq("normal")
+    end
+
     it "updates the pending due_on date" do
       patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
         params: {intent: "due_on", service_occurrence: {due_on: new_due_on}},
