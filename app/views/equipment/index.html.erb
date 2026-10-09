@@ -2,7 +2,7 @@
   <%= render "shared/section_nav", active: "equipment" %>
 
   <%= render "shared/content_header", title: "Equipos" do %>
-    <% if current_user.admin? %>
+    <% if policy(Equipment).create? %>
       <%= render "shared/button_link", text: "Agregar", path: new_equipment_path %>
     <% end %>
   <% end %>

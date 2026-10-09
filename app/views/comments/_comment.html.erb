@@ -5,7 +5,7 @@
       Actualizado: <%= comment.updated_at.strftime("%d/%m/%Y") %>
     </p>
   </div>
-  <% if current_user.admin? %>
+  <% if policy(comment).update? %>
     <div class="flex shrink-0 items-center gap-1">
       <%= link_to edit_location_equipment_comment_path(location_equipment, comment),
                   class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",

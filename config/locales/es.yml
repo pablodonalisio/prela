@@ -48,6 +48,7 @@ es:
         roles:
           admin: "Admin"
           client: "Cliente"
+          technician: "Técnico"
       service_date:
         service: "Próximo service"
         battery_change: "Próximo cambio de batería"

@@ -4,7 +4,9 @@
   <div class="m-4 rounded-xl border border-default bg-neutral-primary p-4 md:mx-6">
     <div class="mb-4 flex items-center justify-between gap-3">
       <h2 class="min-w-0 truncate text-lg font-semibold text-heading">Baterías</h2>
-      <%= render "shared/button_link", text: "Agregar", path: new_battery_path %>
+      <% if policy(Battery).create? %>
+        <%= render "shared/button_link", text: "Agregar", path: new_battery_path %>
+      <% end %>
     </div>
 
     <%= render "shared/items", collection: @batteries %>

@@ -1,6 +1,8 @@
 <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
   <h2 class="text-xl font-bold text-heading">Enlaces de interés</h2>
-  <%= render "shared/button_link", text: "Agregar", path: new_link_path %>
+  <% if policy(Link).create? %>
+    <%= render "shared/button_link", text: "Agregar", path: new_link_path %>
+  <% end %>
 </div>
 
 <div class="overflow-x-auto rounded-xl border border-default">

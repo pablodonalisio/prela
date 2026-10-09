@@ -1,13 +1,18 @@
-<%= simple_form_for user do |f| %>
+<%= simple_form_for user, html: {data: {controller: "user-form"}} do |f| %>
   <%= f.input :email, label: "Email" %>
   <% if user.new_record? %>
     <%= f.input :password, label: "Password" %>
   <% end %>
-  <%= f.input :role, label: "Rol", collection: User.enum_attributes_for_select("role"), include_blank: false %>
-  <%= f.input :editor, label: "Editor", collection: [
-    ["No", false],
-    ["Sí", true]
-  ], include_blank: false %>
-  <%= f.association :client, label_method: :name, value_method: :id %>
+  <%= f.input :role, label: "Rol",
+              collection: User.enum_attributes_for_select("role"),
+              include_blank: false,
+              input_html: {data: {user_form_target: "role", action: "change->user-form#toggleClientFields"}} %>
+  <div data-user-form-target="clientFields" class="<%= "hidden" unless user.client? %>">
+    <%= f.input :editor, label: "Editor", collection: [
+      ["No", false],
+      ["Sí", true]
+    ], include_blank: false %>
+    <%= f.association :client, label: "Cliente", label_method: :name, value_method: :id %>
+  </div>
   <%= f.button :submit, "Aceptar" %>
 <% end %>

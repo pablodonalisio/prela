@@ -1,4 +1,6 @@
 <div class="flex min-h-80 w-48 flex-col items-center justify-center rounded-xl border border-dashed border-default bg-neutral-primary p-8 text-center">
   <p class="mb-4 text-sm text-body-subtle">Vacío</p>
-  <%= render "shared/button_link", text: "Agregar", path: add_supply_path %>
+  <% if policy(EquipmentSupply).create? %>
+    <%= render "shared/button_link", text: "Agregar", path: add_supply_path %>
+  <% end %>
 </div>

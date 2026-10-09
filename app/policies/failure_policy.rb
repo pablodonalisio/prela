@@ -6,15 +6,15 @@ class FailurePolicy < ApplicationPolicy
   # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
 
   def show?
-    user.admin? || user.client?
+    user.admin? || user.technician? || user.client?
   end
 
   def index?
-    user.admin? || user.client?
+    user.admin? || user.technician? || user.client?
   end
 
   def create?
-    user.admin?
+    user.admin? || user.technician?
   end
 
   def new?
@@ -22,7 +22,7 @@ class FailurePolicy < ApplicationPolicy
   end
 
   def update?
-    user.admin?
+    user.admin? || user.technician?
   end
 
   def edit?
@@ -30,6 +30,6 @@ class FailurePolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.admin?
+    user.admin? || user.technician?
   end
 end

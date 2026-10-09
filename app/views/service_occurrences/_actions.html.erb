@@ -2,16 +2,18 @@
 <% extra_class = local_assigns.fetch(:class, "ms-2") %>
 <% action_class = "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading #{extra_class}" %>
 
-<% if current_user.admin? || current_user.editor? %>
-  <% if service_occurrence.open? %>
-    <%= link_to complete_location_equipment_service_occurrence_path(location_equipment, service_occurrence),
-                class: action_class,
-                data: {turbo_frame: "remote_modal"},
-                title: "Registrar servicio",
-                aria: {label: "Registrar servicio"} do %>
-      <%= icon(:check) %>
-    <% end %>
+<% if policy(service_occurrence).complete? && service_occurrence.open? %>
+  <%= link_to complete_location_equipment_service_occurrence_path(location_equipment, service_occurrence),
+              class: action_class,
+              data: {turbo_frame: "remote_modal"},
+              title: "Registrar servicio",
+              aria: {label: "Registrar servicio"} do %>
+    <%= icon(:check) %>
+  <% end %>
+<% end %>
 
+<% if policy(service_occurrence).update? %>
+  <% if service_occurrence.open? %>
     <% if service_occurrence.pending? %>
       <%= link_to edit_location_equipment_service_occurrence_path(location_equipment, service_occurrence, intent: "due_on"),
                   class: action_class,

@@ -2,7 +2,7 @@
 <%= render "shared/datetime_picker",
            form: f,
            value: report.date || Time.current,
-           disabled: !current_user.admin?,
+           disabled: !(current_user.admin? || current_user.technician?),
            min: Date.new(2016, 1, 1),
            max: Date.new(Date.current.year, 12, 31) %>
 

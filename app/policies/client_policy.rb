@@ -5,10 +5,18 @@ class ClientPolicy < ApplicationPolicy
   # code, beware of possible changes to the ancestors:
   # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
 
+  def index?
+    user.admin? || user.technician?
+  end
+
+  def show?
+    index?
+  end
+
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     def resolve
-      if user.admin?
+      if user.admin? || user.technician?
         scope.visible
       elsif user.client?
         scope.visible.where(id: user.client_id)
@@ -16,6 +24,5 @@ class ClientPolicy < ApplicationPolicy
         raise Pundit::NotAuthorizedError
       end
     end
-
   end
 end
