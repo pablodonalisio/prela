@@ -1,0 +1,161 @@
+<%# Flowbite dropdown used as a select. Same surface as shared/select_dropdown:
+    data-dropdown-toggle, Dropdown, and the classes in select_menu_styles.js.
+    Each row can be edited or deleted, and the last item adds a type, so this
+    is not a native <select>. The menu is portaled to document.body by the
+    controller because the modal body scrolls. %>
+<% asset_types = AssetType.visible.order(:name) %>
+<% selected = asset_types.find { |asset_type| asset_type.id.to_s == selected_id.to_s } %>
+<% selected_label = selected&.name || "Seleccioná un tipo" %>
+<% field_error = local_assigns[:field_error] %>
+<% option_class = "block min-h-9 min-w-0 flex-1 truncate px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading" %>
+<% selected_class = "bg-neutral-tertiary-medium" %>
+<% menu_id = "asset-type-menu" %>
+<% adding = local_assigns[:adding] %>
+<% editing_id = local_assigns[:editing_id] %>
+<% editing_type = asset_types.find { |asset_type| asset_type.id.to_s == editing_id.to_s } %>
+<% error = local_assigns[:error] %>
+<% name_value = local_assigns[:name_value] %>
+<% icon_button_class = "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-body transition-colors hover:bg-neutral-tertiary hover:text-heading" %>
+
+<div id="asset_type_picker"
+     class="relative"
+     data-controller="asset-type-select"
+     data-adding="<%= adding ? "true" : "false" %>"
+     data-editing="<%= editing_type ? "true" : "false" %>"
+     data-editing-url="<%= asset_type_path(editing_type) if editing_type %>">
+  <input type="hidden"
+         name="equipment_kind[asset_type_id]"
+         value="<%= selected&.id %>"
+         data-asset-type-select-target="input">
+
+  <button type="button"
+          id="asset_type_picker_button"
+          class="inline-flex w-full items-center justify-between rounded-lg border <%= field_error.present? ? "border-red-500" : "border-default" %> bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
+          data-asset-type-select-target="button"
+          data-action="click->asset-type-select#syncWidth"
+          data-dropdown-toggle="<%= menu_id %>"
+          data-dropdown-placement="bottom-start"
+          aria-haspopup="listbox"
+          aria-required="true">
+    <span class="truncate <%= "text-body-subtle" unless selected %>" data-asset-type-select-target="label"><%= selected_label %></span>
+    <%= icon(:chevron_down, class: "ms-2 text-xs text-body-subtle") %>
+  </button>
+  <% if field_error.present? %>
+    <p class="mt-2 text-sm text-fg-danger"><%= field_error %></p>
+  <% end %>
+
+  <div id="<%= menu_id %>"
+       data-asset-type-select-target="menu"
+       class="z-50 !z-[70] hidden divide-y divide-default rounded-base border border-default bg-neutral-secondary-medium shadow-sm">
+    <ul class="max-h-56 overflow-y-auto py-2 text-sm text-heading" role="listbox">
+      <% asset_types.each do |asset_type| %>
+        <% editing = editing_type&.id == asset_type.id %>
+        <li data-asset-type-option data-value="<%= asset_type.id %>">
+          <div class="flex items-center <%= selected_class if asset_type.id == selected&.id %> <%= "hidden" if editing %>"
+               data-asset-type-row>
+            <button type="button"
+                    class="<%= option_class %>"
+                    data-asset-type-choose
+                    data-value="<%= asset_type.id %>"
+                    data-label="<%= asset_type.name %>">
+              <%= asset_type.name %>
+            </button>
+            <button type="button"
+                    class="<%= icon_button_class %>"
+                    data-asset-type-edit
+                    data-edit-url="<%= asset_type_path(asset_type) %>"
+                    aria-label="Editar <%= asset_type.name %>">
+              <%= icon(:edit) %>
+            </button>
+            <%= link_to asset_type_path(asset_type, selected_id: selected&.id),
+                        class: "inline-flex h-9 w-9 shrink-0 items-center justify-center text-fg-danger hover:bg-danger-soft",
+                        data: {
+                          asset_type_destroy: true,
+                          turbo_method: :delete,
+                          turbo_confirm: "¿Seguro que querés borrar este tipo de activo?"
+                        },
+                        aria: {label: "Eliminar #{asset_type.name}"} do %>
+              <%= icon(:trash) %>
+            <% end %>
+          </div>
+          <div class="px-4 py-2 <%= "hidden" unless editing %>" data-asset-type-edit-panel>
+              <label class="mb-2 block text-sm font-medium text-heading" for="asset_type_edit_name_<%= asset_type.id %>">Nombre</label>
+              <input id="asset_type_edit_name_<%= asset_type.id %>"
+                     form="edit_asset_type"
+                     type="text"
+                     name="asset_type[name]"
+                     value="<%= editing ? name_value : asset_type.name %>"
+                     data-original-name="<%= asset_type.name %>"
+                     <%= "disabled" unless editing %>
+                     class="block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand">
+              <input form="edit_asset_type"
+                     type="hidden"
+                     name="selected_id"
+                     value="<%= selected&.id %>"
+                     data-selected-mirror
+                     <%= "disabled" unless editing %>>
+              <% if editing && error.present? %>
+                <p class="mt-2 text-sm text-fg-danger"><%= error %></p>
+              <% end %>
+              <div class="mt-3 flex gap-2">
+                <button form="edit_asset_type"
+                        type="submit"
+                        class="<%= ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>"
+                        data-keep-modal-open="true"
+                        <%= "disabled" unless editing %>>
+                  Guardar
+                </button>
+                <button type="button"
+                        class="inline-flex items-center justify-center rounded-lg border border-default bg-neutral-primary px-4 py-2.5 text-sm font-medium text-body transition-colors hover:bg-neutral-tertiary hover:text-heading"
+                        data-asset-type-cancel
+                        <%= "disabled" unless editing %>>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="py-2 text-sm text-heading">
+      <button type="button"
+              class="<%= option_class %> w-full text-fg-brand <%= "hidden" if adding %>"
+              data-asset-type-select-target="addToggle"
+              data-asset-type-add>
+        Añadir nuevo tipo...
+      </button>
+
+      <div class="px-4 py-2 <%= "hidden" unless adding %>" data-asset-type-select-target="addPanel">
+        <label class="mb-2 block text-sm font-medium text-heading" for="asset_type_name">Nuevo tipo de activo</label>
+        <input id="asset_type_name"
+               form="new_asset_type"
+               type="text"
+               name="asset_type[name]"
+               value="<%= name_value %>"
+               placeholder="Nombre"
+               class="block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand">
+        <input form="new_asset_type"
+               type="hidden"
+               name="selected_id"
+               value="<%= selected&.id %>"
+               data-selected-mirror>
+        <% if adding && error.present? %>
+          <p class="mt-2 text-sm text-fg-danger"><%= error %></p>
+        <% end %>
+        <div class="mt-3 flex gap-2">
+          <button form="new_asset_type"
+                  type="submit"
+                  class="<%= ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>"
+                  data-keep-modal-open="true">
+            Agregar
+          </button>
+          <button type="button"
+                  class="inline-flex items-center justify-center rounded-lg border border-default bg-neutral-primary px-4 py-2.5 text-sm font-medium text-body transition-colors hover:bg-neutral-tertiary hover:text-heading"
+                  data-asset-type-cancel>
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash" %>
+<% end %>
+
+<% if @alert_message.present? %>
+  <%= turbo_stream.append "browser_alerts" do %>
+    <%= tag.div data: {controller: "browser-alert", browser_alert_message_value: @alert_message} %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace "asset_type_picker" do %>
+  <%= render "equipment_kinds/asset_type_select",
+             selected_id: @selected_id,
+             adding: @adding,
+             editing_id: @editing_id,
+             error: @error,
+             name_value: @name_value %>
+<% end %>
+
+<%= turbo_stream.replace "equipment_kind_filters" do %>
+  <%= render "equipment_kinds/filter_form" %>
+<% end %>
+
+<%= turbo_stream.replace "equipment_kinds" do %>
+  <%= render "equipment_kinds/list" %>
+<% end %>

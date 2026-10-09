@@ -8,6 +8,11 @@
         <% end %>
 
         <div class="flex flex-wrap gap-2">
+          <% if equipment_kind.asset_type.present? %>
+            <span class="rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">
+              <%= equipment_kind.asset_type.name %>
+            </span>
+          <% end %>
           <span class="rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">
             <%= equipment_kind.equipments_count %>
             <%= equipment_kind.equipments_count == 1 ? "equipo" : "equipos" %>

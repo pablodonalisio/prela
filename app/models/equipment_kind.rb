@@ -1,13 +1,17 @@
 class EquipmentKind < ApplicationRecord
   include Discard::Model
+  include Filterable
   include FieldDefinitionsValidatable
 
   has_many :equipments
   has_and_belongs_to_many :service_kinds
+  belongs_to :asset_type, optional: true
 
   before_validation :set_normalized_name
 
   validates :name, presence: true
+  validates :asset_type, presence: true
+  validate :asset_type_must_be_visible
   validates :legacy_kind, inclusion: {in: Equipment::LEGACY_KINDS}, allow_nil: true
   validates :legacy_kind, uniqueness: {conditions: -> { kept }}, allow_nil: true
 
@@ -22,6 +26,7 @@ class EquipmentKind < ApplicationRecord
   FIELD_SETS = %w[generic_fields specific_fields].freeze
 
   scope :visible, -> { kept }
+  scope :by_asset_type_ids, ->(asset_type_ids) { where(asset_type_id: asset_type_ids) }
 
   def field_definitions_for(field_set)
     public_send(field_set) || {}
@@ -56,6 +61,12 @@ class EquipmentKind < ApplicationRecord
 
   def set_normalized_name
     self.normalized_name = self.class.normalize_name(name)
+  end
+
+  def asset_type_must_be_visible
+    return if asset_type.blank? || asset_type.kept?
+
+    errors.add(:asset_type, "no está disponible")
   end
 
   def name_must_be_unique
