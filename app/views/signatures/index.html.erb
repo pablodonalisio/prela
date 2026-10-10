@@ -2,7 +2,9 @@
   <%= render "users/navbar", active: "signatures" %>
 
   <%= render "shared/content_header", title: "Firmas" do %>
-    <%= render "shared/button_link", text: "Agregar", path: new_signature_path %>
+    <% if policy(Signature).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: new_signature_path %>
+    <% end %>
   <% end %>
 
   <div class="overflow-x-auto p-4 md:px-6">

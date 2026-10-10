@@ -2,7 +2,9 @@
   <%= render "users/navbar", active: "users" %>
 
   <%= render "shared/content_header", title: "Usuarios" do %>
-    <%= render "shared/button_link", text: "Agregar", path: new_user_path %>
+    <% if policy(User).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: new_user_path %>
+    <% end %>
   <% end %>
 
   <div class="overflow-x-auto p-4 md:px-6">

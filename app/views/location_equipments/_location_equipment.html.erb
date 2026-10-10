@@ -7,7 +7,7 @@
                       class: "h-full w-full rounded-xl object-cover" %>
       </div>
       <div class="min-w-0 flex-1">
-        <% if current_user.admin? %>
+        <% if current_user.admin? || current_user.technician? %>
           <h2 class="text-xl font-bold text-heading">
             <%= link_to location_equipment.equipment.name,
                         equipment_path(location_equipment.equipment),
@@ -29,7 +29,7 @@
           <% end %>
         </div>
       </div>
-      <% if current_user.admin? %>
+      <% if policy(location_equipment).update? %>
         <div class="shrink-0">
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
@@ -67,7 +67,7 @@
                       aria-controls="<%= tab_prefix %>-<%= key %>" aria-selected="<%= selected %>"><%= label %></button>
             </li>
           <% end %>
-          <% if current_user.admin? %>
+          <% if current_user.admin? || current_user.technician? %>
             <li role="presentation">
               <button class="inline-block border-b-2 px-4 py-3" id="<%= tab_prefix %>-insumos-tab"
                       data-tabs-target="#<%= tab_prefix %>-insumos" type="button" role="tab"
@@ -81,7 +81,7 @@
         <div id="<%= tab_prefix %>-informes" role="tabpanel" aria-labelledby="<%= tab_prefix %>-informes-tab">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Informes</h3>
-            <% if current_user.admin? || current_user.editor? %>
+            <% if policy(Report).create? %>
               <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_report_path(location_equipment) %>
@@ -100,7 +100,7 @@
         <div class="hidden" id="<%= tab_prefix %>-fallas" role="tabpanel" aria-labelledby="<%= tab_prefix %>-fallas-tab">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Fallas</h3>
-            <% if current_user.admin? %>
+            <% if policy(Failure).create? %>
               <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_failure_path(location_equipment) %>
@@ -115,7 +115,7 @@
         <div class="hidden" id="<%= tab_prefix %>-actividades" role="tabpanel" aria-labelledby="<%= tab_prefix %>-actividades-tab">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Actividades</h3>
-            <% if current_user.admin? || current_user.editor? %>
+            <% if policy(Activity).create? %>
               <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_activity_path(location_equipment) %>
@@ -129,7 +129,7 @@
         <div class="hidden" id="<%= tab_prefix %>-documentos" role="tabpanel" aria-labelledby="<%= tab_prefix %>-documentos-tab">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Documentos</h3>
-            <% if current_user.admin? %>
+            <% if policy(Document).create? %>
               <%= render "shared/button_link",
                          icon: :add,
                          text: "",
@@ -150,7 +150,7 @@
         <div class="hidden" id="<%= tab_prefix %>-comentarios" role="tabpanel" aria-labelledby="<%= tab_prefix %>-comentarios-tab">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Comentarios</h3>
-            <% if current_user.admin? %>
+            <% if policy(Comment).create? %>
               <%= render "shared/button_link", icon: :add,
                                                text: "",
                                                path: new_location_equipment_comment_path(location_equipment) %>
@@ -161,7 +161,7 @@
                      location_equipment: location_equipment %>
         </div>
 
-        <% if current_user.admin? %>
+        <% if current_user.admin? || current_user.technician? %>
           <div class="hidden" id="<%= tab_prefix %>-insumos" role="tabpanel" aria-labelledby="<%= tab_prefix %>-insumos-tab">
             <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-heading">Insumos</h3>
             <div class="w-auto">

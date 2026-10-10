@@ -11,6 +11,21 @@ RSpec.describe "Homes", type: :request do
   end
 
   describe "GET /index" do
+    context "when the user is a technician" do
+      before { sign_in create(:technician) }
+
+      it "hides Informes and link actions" do
+        create(:link, title: "Manual del equipo", url: "https://example.com/manual")
+
+        get "/home/index"
+
+        expect(response.body).to include("Manual del equipo")
+        expect(response.body).to include("Clientes")
+        expect(response.body).not_to include("Informes")
+        expect(response.body).not_to include("Acciones")
+      end
+    end
+
     it "returns http success" do
       get "/home/index"
       expect(response).to have_http_status(:success)

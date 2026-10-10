@@ -11,6 +11,7 @@ class SignaturesController < ApplicationController
 
   def create
     @signature = authorize Signature.new(signature_params)
+    @signature.user = current_user if current_user.technician?
 
     if @signature.save
       respond_to do |format|
@@ -39,7 +40,7 @@ class SignaturesController < ApplicationController
   def destroy
     if @signature.discard
       flash.now[:notice] = "La firma ha sido eliminada."
-      @signatures = Signature.kept.order(created_at: :desc)
+      @signatures = signatures_scope
     end
   end
 
@@ -50,7 +51,11 @@ class SignaturesController < ApplicationController
   end
 
   def set_signatures
-    @signatures = authorize Signature.kept.order(created_at: :desc)
+    @signatures = authorize signatures_scope, :index?
+  end
+
+  def signatures_scope
+    policy_scope(Signature.kept.order(created_at: :desc))
   end
 
   def set_signature

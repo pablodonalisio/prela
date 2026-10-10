@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   def index
     authorize :home, :index?
-    @links = Link.all if current_user.admin?
+    @links = Link.all if current_user.admin? || current_user.technician?
     scope = policy_scope(ServiceOccurrence.filter(service_filter_params))
     @control_panel_services = ServiceOccurrence.control_panel_by_equipment_kind(scope)
   end

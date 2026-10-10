@@ -2,7 +2,7 @@
     The filter drawer is rendered once by the layout, not here, so that the two
     variants cannot produce duplicate element ids. %>
 <% variant = local_assigns.fetch(:variant, :desktop) %>
-<% links = sidebar_links.reject { |link| link[:admin] && !current_user.admin? } %>
+<% links = sidebar_links.select { |link| sidebar_link_visible?(link) } %>
 
 <% if variant == :mobile %>
   <nav class="flex items-stretch" aria-label="Navegación principal">

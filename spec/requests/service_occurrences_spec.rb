@@ -174,4 +174,35 @@ RSpec.describe "ServiceOccurrences", type: :request do
       expect(pending_occurrence.reload).to be_pending
     end
   end
+
+  context "when user is a technician" do
+    let(:user) { create(:technician, editor: true) }
+
+    it "completes the occurrence" do
+      post complete_location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {service_occurrence: {completed_on: Date.current}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(response).to have_http_status(:success)
+      expect(pending_occurrence.reload).to be_completed
+    end
+
+    it "does not allow updating the occurrence" do
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {intent: "suspend", service_occurrence: {status: "suspended", notes: "No"}},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(response).to redirect_to(root_path)
+      expect(pending_occurrence.reload).to be_pending
+    end
+
+    it "shows the complete action and hides schedule and suspend" do
+      get location_equipment_path(location_equipment)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Registrar servicio")
+      expect(response.body).not_to include("Programar")
+      expect(response.body).not_to include("Suspender")
+    end
+  end
 end

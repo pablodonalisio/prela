@@ -323,6 +323,92 @@ RSpec.describe "Reports", type: :request do
       end
     end
 
+    describe "signatures" do
+      def create_signature(name:, user: nil)
+        signature = Signature.new(name: name, title: "Cargo", user: user)
+        signature.image.attach(io: StringIO.new("img"), filename: "sig.png", content_type: "image/png")
+        signature.save!
+        signature
+      end
+
+      let(:technician) { create(:technician) }
+      let!(:shared_signature) { create_signature(name: "Firma compartida") }
+      let!(:own_signature) { create_signature(name: "Firma del tecnico", user: technician) }
+      let!(:other_signature) { create_signature(name: "Firma ajena", user: create(:technician)) }
+
+      context "when the user is a technician" do
+        before { sign_in technician }
+
+        it "offers their signature and unowned signatures" do
+          get new_location_equipment_report_path(location_equipment, report_mode: "template")
+
+          expect(response.body).to include("Firma compartida")
+          expect(response.body).to include("Firma del tecnico")
+          expect(response.body).not_to include("Firma ajena")
+        end
+
+        it "assigns their signature and unowned signatures" do
+          post location_equipment_reports_path(location_equipment), params: template_params.deep_merge(
+            report: {signature_ids: [shared_signature.id, own_signature.id]}
+          )
+
+          expect(Report.last.signatures).to contain_exactly(shared_signature, own_signature)
+        end
+
+        it "rejects a signature that belongs to someone else" do
+          params = template_params.deep_dup
+          params[:report].delete(:images)
+          params[:report][:signature_ids] = [shared_signature.id, other_signature.id]
+
+          expect {
+            post location_equipment_reports_path(location_equipment), params: params
+          }.not_to change(Report, :count)
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to include("incluye una firma que no se puede usar")
+        end
+      end
+
+      context "when the user is an admin" do
+        it "offers only unowned signatures" do
+          get new_location_equipment_report_path(location_equipment, report_mode: "template")
+
+          expect(response.body).to include("Firma compartida")
+          expect(response.body).not_to include("Firma del tecnico")
+          expect(response.body).not_to include("Firma ajena")
+        end
+
+        it "rejects signatures that belong to a user" do
+          params = template_params.deep_dup
+          params[:report].delete(:images)
+          params[:report][:signature_ids] = [shared_signature.id, own_signature.id]
+
+          expect {
+            post location_equipment_reports_path(location_equipment), params: params
+          }.not_to change(Report, :count)
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to include("incluye una firma que no se puede usar")
+        end
+
+        it "keeps a signature already on the report" do
+          template_report = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template)
+          template_report.signatures << own_signature
+
+          patch location_equipment_report_path(location_equipment, template_report), params: {
+            report: {
+              date: Date.today,
+              report_template_id: template_report.report_template_id,
+              field_values: {measurements: {"1739280000" => "220.5"}},
+              signature_ids: [own_signature.id, shared_signature.id]
+            }
+          }
+
+          expect(template_report.reload.signatures).to contain_exactly(own_signature, shared_signature)
+        end
+      end
+    end
+
     describe "PATCH /update" do
       let(:template_report) { create(:report, :template_based, location_equipment: location_equipment, report_template: report_template) }
       let(:report_task) { template_report.report_tasks.find_by!(name: "Limpieza general") }

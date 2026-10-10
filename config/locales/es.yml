@@ -48,6 +48,7 @@ es:
         roles:
           admin: "Admin"
           client: "Cliente"
+          technician: "Técnico"
       service_date:
         service: "Próximo service"
         battery_change: "Próximo cambio de batería"
@@ -118,6 +119,8 @@ es:
         name: "Nombre"
         title: "Cargo"
         image: "Imagen"
+      report:
+        signatures: "Firmas"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"

@@ -9,4 +9,8 @@ FactoryBot.define do
     role { "admin" }
     editor { true }
   end
+
+  factory :technician, parent: :user do
+    role { "technician" }
+  end
 end

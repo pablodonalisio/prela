@@ -2,7 +2,7 @@
   <%= render "shared/datetime_picker",
              form: f,
              value: activity.date || Time.current,
-             disabled: !current_user.admin?,
+             disabled: !(current_user.admin? || current_user.technician?),
              max: Date.new(Date.current.year, 12, 31) %>
   <%= f.input :description, label: "Descripción" %>
 
