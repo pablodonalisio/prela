@@ -60,7 +60,8 @@ es:
         electrical_approval: "Próximo apto eléctrico"
       service_occurrence:
         due_on: "Próximo vencimiento"
-        planned_on: "Fecha programada"
+        planned_on_init: "Inicio programado"
+        planned_on_finish: "Fin programado"
         notes: "Notas"
         statuses:
           pending: "Pendiente"
@@ -123,6 +124,13 @@ es:
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
+      models:
+        service_occurrence:
+          attributes:
+            planned_on_init:
+              before_today: "no puede ser anterior a hoy"
+            planned_on_finish:
+              after_start: "debe ser posterior al inicio programado"
         restrict_dependent_destroy:
           has_one: No se puede eliminar el registro porque existe un %{record} dependiente
           has_many: No se puede eliminar el registro porque existen %{record} dependientes

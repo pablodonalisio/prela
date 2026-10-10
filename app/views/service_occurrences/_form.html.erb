@@ -13,11 +13,26 @@
 
   <% when "schedule" %>
     <%= f.hidden_field :status, value: "scheduled" %>
-    <%= f.input :planned_on,
-                label: "Fecha programada",
-                as: :date,
-                html5: true,
-                input_html: {value: service_occurrence.planned_on || Date.current} %>
+    <div data-controller="schedule-range"
+         data-action="change->schedule-range#syncFinishMin">
+      <%= render "shared/datetime_picker",
+                 form: f,
+                 field: :planned_on_init,
+                 label: "Inicio programado",
+                 value: service_occurrence.planned_on_init || Time.current,
+                 min: Date.current,
+                 required: true,
+                 data: {schedule_range_target: "init"} %>
+      <%= render "shared/datetime_picker",
+                 form: f,
+                 field: :planned_on_finish,
+                 label: "Fin programado",
+                 value: service_occurrence.planned_on_finish,
+                 blank: true,
+                 min: (service_occurrence.planned_on_init || Time.current).to_date,
+                 required: true,
+                 data: {schedule_range_target: "finish"} %>
+    </div>
     <%= f.input :notes,
                 label: "Notas (opcional)",
                 as: :text,
@@ -26,7 +41,7 @@
 
   <% when "revert" %>
     <%= f.hidden_field :status, value: "pending" %>
-    <p class="mb-5 text-sm text-body">El servicio volverá a estado pendiente y se quitará la fecha programada.</p>
+    <p class="mb-5 text-sm text-body">El servicio volverá a estado pendiente y se quitarán el inicio y el fin programados.</p>
     <%= f.input :notes,
                 label: "Notas (opcional)",
                 as: :text,
@@ -56,6 +71,13 @@
     </div>
 
     <%= f.button :submit, "Guardar" %>
+
+  <% when "priority" %>
+    <%= f.input :priority,
+                label: "Prioridad",
+                collection: ServiceOccurrence.priority_options,
+                include_blank: false %>
+    <%= f.button :submit, "Aceptar" %>
 
   <% when "notes" %>
     <%= f.input :notes,

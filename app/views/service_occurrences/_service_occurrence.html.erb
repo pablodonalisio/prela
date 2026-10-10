@@ -10,7 +10,7 @@
         <span class="ms-1 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300"><%= service_occurrence.status_label %></span>
       <% elsif service_occurrence.scheduled? %>
         <span class="ms-1 inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300"><%= service_occurrence.status_label %></span>
-        <span class="ms-1">(<%= service_occurrence.planned_on.strftime("%d/%m/%Y") %>)</span>
+        <span class="ms-1">(<%= service_occurrence.planned_on_init.strftime("%d/%m/%Y %H:%M") %>)</span>
       <% end %>
 
       <% if service_occurrence.notes.present? && (service_occurrence.suspended? || service_occurrence.scheduled?) %>

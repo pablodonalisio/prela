@@ -437,8 +437,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_09_120000) do
     t.date "completed_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.date "planned_on"
     t.text "notes"
+    t.datetime "planned_on_init"
+    t.datetime "planned_on_finish"
+    t.integer "priority", default: 1, null: false
     t.index ["location_equipment_service_id"], name: "index_service_occurrences_on_location_equipment_service_id"
     t.index ["location_equipment_service_id"], name: "index_service_occurrences_one_open_per_les", unique: true, where: "(status = ANY (ARRAY[0, 2, 3]))"
   end

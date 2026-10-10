@@ -11,7 +11,7 @@ class ServiceOccurrencesController < ApplicationController
     authorize @service_occurrence
     @intent = intent
 
-    if ServiceOccurrences::Update.call(@service_occurrence, update_params)
+    if apply_update
       respond_to do |format|
         format.html { redirect_to @location_equipment, notice: update_notice }
         format.turbo_stream { flash.now[:notice] = update_notice }
@@ -50,7 +50,15 @@ class ServiceOccurrencesController < ApplicationController
   end
 
   def intent
-    params[:intent].presence_in(%w[due_on suspend schedule revert completed notes]) || "due_on"
+    params[:intent].presence_in(%w[due_on suspend schedule revert completed notes priority]) || "due_on"
+  end
+
+  def apply_update
+    if @intent == "priority"
+      ServiceOccurrences::Update.update_priority(@service_occurrence, priority_params[:priority])
+    else
+      ServiceOccurrences::Update.call(@service_occurrence, update_params)
+    end
   end
 
   def update_params
@@ -60,8 +68,12 @@ class ServiceOccurrencesController < ApplicationController
     when "notes"
       params.require(:service_occurrence).permit(:notes)
     else
-      params.require(:service_occurrence).permit(:status, :due_on, :planned_on, :notes)
+      params.require(:service_occurrence).permit(:status, :due_on, :planned_on_init, :planned_on_finish, :notes)
     end
+  end
+
+  def priority_params
+    params.require(:service_occurrence).permit(:priority)
   end
 
   def complete_params
@@ -72,6 +84,7 @@ class ServiceOccurrencesController < ApplicationController
     case @intent
     when "completed" then "El servicio se actualizó correctamente."
     when "notes" then "Las notas se actualizaron correctamente."
+    when "priority" then "La prioridad se actualizó correctamente."
     else
       case @service_occurrence.status
       when "suspended" then "El servicio quedó suspendido."
