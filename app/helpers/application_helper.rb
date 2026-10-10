@@ -92,13 +92,17 @@ module ApplicationHelper
 
   def sidebar_links
     [
-      {text: "Home", path: root_path, icon: :home, admin: false},
-      {text: "Agenda", path: agenda_index_path, icon: :agenda, admin: false},
-      {text: "Activos", path: location_equipments_path, icon: :equipment, admin: false},
-      {text: "Informes", path: report_templates_path, icon: :reports, admin: true},
-      {text: "Clientes", path: clients_path, icon: :clients, admin: true},
-      {text: "Insumos", path: supplies_path, icon: :supplies, admin: true}
+      {text: "Home", path: root_path, icon: :home, visible_for: %i[admin technician client]},
+      {text: "Agenda", path: agenda_index_path, icon: :agenda, visible_for: %i[admin technician client]},
+      {text: "Activos", path: location_equipments_path, icon: :equipment, visible_for: %i[admin technician client]},
+      {text: "Informes", path: report_templates_path, icon: :reports, visible_for: %i[admin]},
+      {text: "Clientes", path: clients_path, icon: :clients, visible_for: %i[admin technician]},
+      {text: "Insumos", path: supplies_path, icon: :supplies, visible_for: %i[admin technician]}
     ]
+  end
+
+  def sidebar_link_visible?(link)
+    link[:visible_for].include?(current_user.role.to_sym)
   end
 
   def image_for(resource, img_attribute, size)
