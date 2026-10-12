@@ -13,7 +13,7 @@
           <%= icon(:file) %>
         <% end %>
       <% end %>
-      <% if current_user.admin? || current_user.editor? %>
+      <% if policy(activity).update? %>
         <%= link_to edit_location_equipment_activity_path(location_equipment, activity),
                     class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
                     data: {turbo_frame: "remote_modal"},

@@ -87,4 +87,45 @@ RSpec.describe Report, type: :model do
       )
     end
   end
+
+  describe "signature selection" do
+    def create_signature(name:, user: nil)
+      signature = Signature.new(name: name, title: "Cargo", user: user)
+      signature.image.attach(io: StringIO.new("img"), filename: "sig.png", content_type: "image/png")
+      signature.save!
+      signature
+    end
+
+    let(:technician) { create(:technician) }
+    let(:shared_signature) { create_signature(name: "Compartida") }
+    let(:own_signature) { create_signature(name: "Propia", user: technician) }
+    let(:other_signature) { create_signature(name: "Ajena", user: create(:technician)) }
+    let(:report) { build(:report, :template_based) }
+
+    before do
+      report.allowed_signatures = SignaturePolicy::ReportScope.new(technician, Signature).resolve
+    end
+
+    it "accepts the technician's signature and unowned signatures" do
+      report.signature_ids = [shared_signature.id, own_signature.id]
+
+      expect(report).to be_valid
+    end
+
+    it "rejects a signature that belongs to someone else" do
+      report.signature_ids = [other_signature.id]
+
+      expect(report).not_to be_valid
+      expect(report.errors[:signatures]).to include("incluye una firma que no se puede usar")
+    end
+
+    it "keeps a signature already linked to the report" do
+      report.save!
+      report.signatures << other_signature
+      report.allowed_signatures = SignaturePolicy::ReportScope.new(create(:admin), Signature).resolve
+      report.signature_ids = [other_signature.id]
+
+      expect(report).to be_valid
+    end
+  end
 end

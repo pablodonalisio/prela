@@ -1,6 +1,8 @@
 <%= turbo_frame_tag "main_content" do %>
   <%= render "shared/content_header", title: "Clientes" do %>
-    <%= render "shared/button_link", text: "Agregar", path: new_client_path %>
+    <% if policy(Client).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: new_client_path %>
+    <% end %>
   <% end %>
 
   <%= turbo_frame_tag "clients", class: "grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:px-6" do %>
@@ -11,8 +13,8 @@
         <%= render "shared/empty_collection",
                    id: "empty_clients",
                    message: "No hay clientes todavía.",
-                   action_text: "Agregar",
-                   action_path: new_client_path %>
+                   action_text: policy(Client).create? ? "Agregar" : nil,
+                   action_path: policy(Client).create? ? new_client_path : nil %>
       </div>
     <% end %>
   <% end %>

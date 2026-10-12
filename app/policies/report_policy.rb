@@ -6,15 +6,15 @@ class ReportPolicy < ApplicationPolicy
   # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
 
   def show?
-    user.admin? || user.client?
+    user.admin? || user.technician? || user.client?
   end
 
   def index?
-    user.admin? || user.client?
+    user.admin? || user.technician? || user.client?
   end
 
   def create?
-    user.admin? || user.editor?
+    user.admin? || user.technician? || user.editor?
   end
 
   def new?
@@ -22,7 +22,7 @@ class ReportPolicy < ApplicationPolicy
   end
 
   def update?
-    user.admin? || user.editor?
+    user.admin? || user.technician? || user.editor?
   end
 
   def edit?
@@ -30,7 +30,7 @@ class ReportPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.admin? || user.editor?
+    user.admin? || user.technician? || user.editor?
   end
 
   class Scope < ApplicationPolicy::Scope

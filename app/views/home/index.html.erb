@@ -4,7 +4,7 @@
       <%= render "control_panel/control_panel", control_panel_services: @control_panel_services %>
     </section>
 
-    <% if current_user.admin? %>
+    <% if current_user.admin? || current_user.technician? %>
       <section class="rounded-xl border border-default bg-neutral-primary p-4 md:p-5">
         <%= render "links/links", links: @links %>
       </section>

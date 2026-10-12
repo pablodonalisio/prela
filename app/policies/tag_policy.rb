@@ -1,6 +1,10 @@
 class TagPolicy < ApplicationPolicy
   def index?
-    user.admin?
+    user.admin? || user.technician?
+  end
+
+  def show?
+    index?
   end
 
   def create?
@@ -25,7 +29,7 @@ class TagPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.admin?
+      if user.admin? || user.technician?
         scope.visible
       else
         raise Pundit::NotAuthorizedError

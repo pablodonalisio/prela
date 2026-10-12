@@ -34,7 +34,7 @@
                                 selected_filters: filter_params[:location_ids] %>
     <% end %>
 
-    <% if current_user.admin? %>
+    <% if current_user.admin? || current_user.technician? %>
       <%= render "filter_item", title: "Estado",
                                 f: f,
                                 attribute: :status,

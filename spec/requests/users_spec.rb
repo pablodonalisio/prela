@@ -117,4 +117,45 @@ RSpec.describe "/location_equipments", type: :request do
       end
     end
   end
+
+  context "when user is a technician" do
+    let(:user) { create(:technician) }
+    let!(:other_user) { create(:user, email: "other-account@example.com") }
+
+    it "lists only their own account" do
+      get users_url
+
+      expect(response).to be_successful
+      expect(response.body).to include(user.email)
+      expect(response.body).not_to include(other_user.email)
+      expect(response.body).not_to include("Agregar")
+      expect(response.body).not_to include("Eliminar")
+    end
+
+    it "edits only their email and password" do
+      get edit_user_path(user)
+
+      expect(response).to be_successful
+      expect(response.body).to include("Email")
+      expect(response.body).not_to include("user[role]")
+      expect(response.body).not_to include("user[editor]")
+      expect(response.body).not_to include("user[client_id]")
+    end
+
+    it "updates their own email without changing their role" do
+      put user_url(user), params: {user: {email: "technician-updated@example.com", role: "admin"}}
+
+      user.reload
+      expect(user.email).to eq("technician-updated@example.com")
+      expect(user).to be_technician
+      expect(response).to redirect_to(users_url)
+    end
+
+    it "does not update another user" do
+      put user_url(other_user), params: {user: {email: "hacked@example.com"}}
+
+      expect(response).to redirect_to(root_path)
+      expect(other_user.reload.email).to eq("other-account@example.com")
+    end
+  end
 end

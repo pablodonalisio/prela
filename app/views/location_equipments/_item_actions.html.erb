@@ -1,4 +1,4 @@
-<% if (current_user.admin? || current_user.editor?) && !item.equipment.building? %>
+<% if policy(Report).create? && !item.equipment.building? %>
   <%= link_to new_location_equipment_report_path(item),
               class: "inline-flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-white hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft",
               data: { turbo_frame: "remote_modal" } do %>

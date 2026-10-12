@@ -2,7 +2,7 @@
 <%= render "shared/datetime_picker",
            form: f,
            value: report.date || Time.current,
-           disabled: !current_user.admin?,
+           disabled: !(current_user.admin? || current_user.technician?),
            min: Date.new(2016, 1, 1),
            max: Date.new(Date.current.year, 12, 31) %>
 
@@ -57,12 +57,15 @@
 
 <%= render "report_images", report: report, f: f %>
 
-<% selectable_signatures = Signature.kept.order(:name).to_a %>
+<% selectable_signatures = report_signatures.order(:name).to_a %>
 <% if report.persisted? %>
-  <% selectable_signatures |= report.signatures.merge(Signature.discarded).order(:name).to_a %>
+  <% selectable_signatures |= report.signatures.order(:name).to_a %>
 <% end %>
-<% if selectable_signatures.any? %>
+<% if report.errors[:signatures].any? || selectable_signatures.any? %>
   <h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= t("reports.template_report.signatures_section") %></h2>
+  <% if report.errors[:signatures].any? %>
+    <p class="mb-3 text-sm text-fg-danger"><%= report.errors.full_messages_for(:signatures).to_sentence %></p>
+  <% end %>
   <div class="mb-3">
     <%= f.collection_check_boxes :signature_ids, selectable_signatures, :id, :name do |b| %>
       <div class="mb-2 flex items-center">

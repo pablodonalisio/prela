@@ -47,11 +47,13 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:email, :password, :role, :client_id, :editor)
+    permitted = [:email, :password]
+    permitted += [:role, :client_id, :editor] if current_user.admin?
+    params.require(:user).permit(*permitted)
   end
 
   def set_users
-    @users = authorize User.with_kept_client.order(created_at: :desc)
+    @users = authorize policy_scope(User.with_kept_client.order(created_at: :desc)), :index?
   end
 
   def user

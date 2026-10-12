@@ -1,0 +1,5 @@
+class AddUserToSignatures < ActiveRecord::Migration[8.0]
+  def change
+    add_reference :signatures, :user, foreign_key: true
+  end
+end

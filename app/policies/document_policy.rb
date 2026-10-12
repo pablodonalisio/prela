@@ -6,17 +6,17 @@ class DocumentPolicy < ApplicationPolicy
   # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
 
   def show?
-    return true if user.admin?
+    return true if user.admin? || user.technician?
 
     user.client? && record.public?
   end
 
   def index?
-    user.admin? || user.client?
+    user.admin? || user.technician? || user.client?
   end
 
   def create?
-    user.admin?
+    user.admin? || user.technician?
   end
 
   def new?
@@ -24,7 +24,7 @@ class DocumentPolicy < ApplicationPolicy
   end
 
   def update?
-    user.admin?
+    user.admin? || user.technician?
   end
 
   def edit?
@@ -32,12 +32,12 @@ class DocumentPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.admin?
+    user.admin? || user.technician?
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.admin?
+      if user.admin? || user.technician?
         scope.all
       elsif user.client?
         scope.client_visible

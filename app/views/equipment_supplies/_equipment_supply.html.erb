@@ -5,10 +5,12 @@
   <div class="flex min-w-0 flex-col gap-3 p-4">
     <div class="flex items-start justify-between gap-2">
       <h5 class="truncate font-semibold text-heading"><%= equipment_supply.model.upcase %></h5>
-      <%= render "shared/dropdown" do %>
-        <%= render "shared/button_box", edit_path: edit_equipment_supply_path(equipment_supply),
-                                                 delete_path: equipment_supply_path(equipment_supply),
-                                                 confirm: "¿Seguro querés borrar el Insumo?" %>
+      <% if policy(equipment_supply).update? %>
+        <%= render "shared/dropdown" do %>
+          <%= render "shared/button_box", edit_path: edit_equipment_supply_path(equipment_supply),
+                                                   delete_path: equipment_supply_path(equipment_supply),
+                                                   confirm: "¿Seguro querés borrar el Insumo?" %>
+        <% end %>
       <% end %>
     </div>
     <p class="text-sm text-body"><%= equipment_supply.voltage %>V <%= equipment_supply.amps %>Ah</p>

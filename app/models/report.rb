@@ -16,6 +16,8 @@ class Report < ApplicationRecord
   has_many :report_comments, -> { order(:position) }, dependent: :destroy, inverse_of: :report
   has_and_belongs_to_many :signatures
 
+  attr_accessor :allowed_signatures
+
   accepts_nested_attributes_for :ups_report_stat, :power_unit_report_stat, :electrical_panel_report_stat, :room_report_stat
   accepts_nested_attributes_for :report_tasks, allow_destroy: true, reject_if: :reject_blank_report_task
   accepts_nested_attributes_for :report_comments, allow_destroy: true, reject_if: :reject_blank_report_comment
@@ -32,6 +34,7 @@ class Report < ApplicationRecord
   validate :validate_field_values_match_template, if: :template_based?
   validate :images_count_within_limit
   validate :number_unique_for_equipment_and_year, if: -> { number.present? && date.present? }
+  validate :signatures_must_be_selectable, if: :validate_signatures?
 
   def template_based?
     report_template_id.present?
@@ -82,6 +85,13 @@ class Report < ApplicationRecord
 
   def report_comments_attributes=(attributes)
     @report_comments_attributes_assigned = true
+    super
+  end
+
+  def signature_ids=(ids)
+    @submitted_signature_ids = Array(ids).reject(&:blank?).map(&:to_i)
+    remember_linked_signature_ids
+    @validate_signatures = true
     super
   end
 
@@ -184,5 +194,23 @@ class Report < ApplicationRecord
     return unless images.attached?
 
     errors.add(:images, "no puede tener más de #{MAX_IMAGES} imágenes.") if images.count > MAX_IMAGES
+  end
+
+  def validate_signatures?
+    @validate_signatures && !allowed_signatures.nil?
+  end
+
+  def remember_linked_signature_ids
+    return if defined?(@previously_linked_signature_ids)
+
+    @previously_linked_signature_ids = persisted? ? signature_ids : []
+  end
+
+  def signatures_must_be_selectable
+    selectable_ids = allowed_signatures.where(id: @submitted_signature_ids).pluck(:id)
+    rejected_ids = @submitted_signature_ids - selectable_ids - @previously_linked_signature_ids
+    return if rejected_ids.empty?
+
+    errors.add(:signatures, "incluye una firma que no se puede usar")
   end
 end

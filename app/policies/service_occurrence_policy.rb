@@ -1,10 +1,10 @@
 class ServiceOccurrencePolicy < ApplicationPolicy
   def show?
-    user.admin? || user.client?
+    user.admin? || user.technician? || user.client?
   end
 
   def update?
-    user.admin? || user.editor?
+    user.admin? || (user.client? && user.editor?)
   end
 
   def edit?
@@ -12,12 +12,12 @@ class ServiceOccurrencePolicy < ApplicationPolicy
   end
 
   def complete?
-    update?
+    update? || user.technician?
   end
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.admin?
+      if user.admin? || user.technician?
         scope.for_visible_location_equipments
       elsif user.client?
         scope.for_visible_location_equipments

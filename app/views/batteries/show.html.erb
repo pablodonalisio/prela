@@ -1,7 +1,9 @@
 <%= render "shared/remote_modal", title: @battery.model.upcase do %>
   <%= render @battery %>
 
-  <%= link_to "Editar", edit_battery_path(@battery),
-              class: "mt-4 inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft",
-              data: {turbo_frame: "remote_modal"} %>
+  <% if policy(@battery).update? %>
+    <%= link_to "Editar", edit_battery_path(@battery),
+                class: "mt-4 inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft",
+                data: {turbo_frame: "remote_modal"} %>
+  <% end %>
 <% end %>

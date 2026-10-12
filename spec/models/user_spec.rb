@@ -13,6 +13,11 @@ RSpec.describe User, type: :model do
       expect(user.role).to eq("admin")
     end
 
+    it "should have a technician role" do
+      user.update(role: "technician")
+      expect(user.role).to eq("technician")
+    end
+
     it "should be invalid without a role" do
       user.role = nil
       expect(user).not_to be_valid
@@ -21,11 +26,16 @@ RSpec.describe User, type: :model do
 
   describe "full_role" do
     let(:admin) { create(:user, role: "admin") }
+    let(:technician) { create(:user, role: "technician") }
     let(:client) { create(:user, role: "client", editor: false) }
     let(:client_editor) { create(:user, role: "client", editor: true) }
 
     it "should return 'Admin' for admin role" do
       expect(admin.full_role).to eq("Admin")
+    end
+
+    it "should return 'Técnico' for technician role" do
+      expect(technician.full_role).to eq("Técnico")
     end
 
     it "should return 'Cliente (Editor)' for client role with editor" do
@@ -57,6 +67,19 @@ RSpec.describe User, type: :model do
 
       expect(user).to be_active_for_authentication
     end
+
+    it "allows technician users with no client" do
+      user = create(:user, role: :technician, client: nil)
+
+      expect(user).to be_active_for_authentication
+    end
+
+    it "allows technician users even if their client is discarded" do
+      user = create(:user, role: :technician, client: create(:client))
+      user.client.discard
+
+      expect(user).to be_active_for_authentication
+    end
   end
 
   describe ".with_kept_client" do
@@ -71,5 +94,3 @@ RSpec.describe User, type: :model do
     end
   end
 end
-
-

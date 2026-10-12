@@ -10,13 +10,15 @@
       <% end %>
     <% end %>
 
-    <div class="absolute right-2 top-2">
-      <%= render "shared/dropdown" do %>
-        <%= render "shared/button_box",
-                   edit_path: edit_client_path(client),
-                   delete_path: client_path(client),
-                   confirm: "¿Seguro querés borrar el Cliente?" %>
-      <% end %>
-    </div>
+    <% if policy(client).update? %>
+      <div class="absolute right-2 top-2">
+        <%= render "shared/dropdown" do %>
+          <%= render "shared/button_box",
+                     edit_path: edit_client_path(client),
+                     delete_path: client_path(client),
+                     confirm: "¿Seguro querés borrar el Cliente?" %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 <% end %>

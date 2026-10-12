@@ -7,7 +7,7 @@
                   data: { turbo_frame: "remote_modal" } do %>
         <%= icon(:view) %>
       <% end %>
-      <% if current_user.admin? || current_user.editor? %>
+      <% if policy(report).update? %>
         <%= link_to edit_location_equipment_report_path(location_equipment, report),
                     class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
                     data: { turbo_frame: "remote_modal" } do %>

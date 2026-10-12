@@ -1,4 +1,6 @@
 class ReportsController < ApplicationController
+  helper_method :report_signatures
+
   before_action :set_reports, only: %i[index destroy update]
 
   def index
@@ -19,6 +21,7 @@ class ReportsController < ApplicationController
   def create
     @report_mode = template_create? ? "template" : "legacy"
     @report = authorize location_equipment.reports.build
+    prepare_report_signatures
     assign_report_attributes
 
     if @report.save
@@ -43,6 +46,7 @@ class ReportsController < ApplicationController
 
   def update
     @report = authorize report
+    prepare_report_signatures
 
     if @report.update(report_update_params)
       purge_removed_images
@@ -141,7 +145,7 @@ class ReportsController < ApplicationController
   end
 
   def template_report_params
-    permitted = params.require(:report).permit(
+    params.require(:report).permit(
       :date,
       :report_template_id,
       field_values: {
@@ -155,21 +159,16 @@ class ReportsController < ApplicationController
       images: [],
       signature_ids: []
     )
-
-    permitted[:signature_ids] = merge_signature_ids(permitted[:signature_ids])
-    permitted
   end
 
-  def merge_signature_ids(submitted_ids)
-    submitted_ids = Array(submitted_ids).reject(&:blank?).map(&:to_i)
-    kept_ids = Signature.kept.where(id: submitted_ids).pluck(:id)
-    linked_discarded_ids = if @report&.persisted?
-      @report.signatures.merge(Signature.discarded).pluck("signatures.id")
-    else
-      []
-    end
+  def report_signatures
+    policy_scope(Signature, policy_scope_class: SignaturePolicy::ReportScope)
+  end
 
-    (kept_ids + (linked_discarded_ids & submitted_ids)).uniq
+  def prepare_report_signatures
+    return unless template_create? || @report.template_based?
+
+    @report.allowed_signatures = report_signatures
   end
 
   def legacy_report_params

@@ -2,8 +2,8 @@
   <td class="px-4 py-3 align-middle">
     <%= link_to link.title, link.url, target: "_blank", rel: "noopener", class: "font-medium text-fg-brand hover:underline" %>
   </td>
-  <td class="px-4 py-3 align-middle">
-    <% if current_user.admin? %>
+  <% if policy(link).update? %>
+    <td class="px-4 py-3 align-middle">
       <div class="flex items-center justify-center gap-1">
         <%= link_to edit_link_path(link),
                     class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
@@ -19,6 +19,6 @@
           <%= icon(:trash) %>
         <% end %>
       </div>
-    <% end %>
-  </td>
+    </td>
+  <% end %>
 <% end %>

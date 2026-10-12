@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   belongs_to :client, optional: true
 
-  enum :role, {:client=>0, :admin=>1}
+  enum :role, {client: 0, admin: 1, technician: 2}
 
   validates :role, presence: true
   validates :editor, inclusion: {in: [true, false]}
@@ -26,6 +26,7 @@ class User < ApplicationRecord
   def full_role
     case role
     when "admin" then "Admin"
+    when "technician" then "Técnico"
     when "client" then "Cliente#{editor? ? " (Editor)" : ""}"
     else
       raise StandardError, "Undefined role"
@@ -35,11 +36,10 @@ class User < ApplicationRecord
   private
 
   def client_kept_for_authentication?
-    admin? || client_id.nil? || client&.kept?
+    admin? || technician? || client_id.nil? || client&.kept?
   end
 
   def client_discarded_for_authentication?
     client_id.present? && client&.discarded?
   end
 end
-

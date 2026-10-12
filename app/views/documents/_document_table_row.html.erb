@@ -2,7 +2,7 @@
   <td class="px-4 py-3 align-middle">
     <p class="m-0 text-heading">
       <%= document.description.capitalize %>
-      <% if current_user.admin? && !document.public? %>
+      <% if !document.public? %>
         <span class="ms-1 inline-flex items-center rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">Privado</span>
       <% end %>
     </p>
@@ -18,7 +18,7 @@
           <%= icon(:file) %>
         <% end %>
       <% end %>
-      <% if current_user.admin? %>
+      <% if policy(document).update? %>
         <%= link_to edit_polymorphic_path([documentable, document]),
                     class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
                     data: {turbo_frame: "remote_modal"},

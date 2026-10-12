@@ -5,7 +5,7 @@
   </td>
   <td class="px-4 py-3 align-middle">
     <div class="flex items-center gap-1">
-      <% if current_user.admin? %>
+      <% if policy(failure).update? %>
         <%= link_to edit_location_equipment_failure_path(location_equipment, failure),
                     class: "inline-flex h-8 w-8 items-center justify-center rounded-lg text-body hover:bg-neutral-tertiary hover:text-heading",
                     data: {turbo_frame: "remote_modal"},

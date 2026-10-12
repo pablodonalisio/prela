@@ -1,4 +1,12 @@
 class LocationEquipmentServicePolicy < ApplicationPolicy
+  def index?
+    user.admin? || user.technician?
+  end
+
+  def show?
+    index?
+  end
+
   def create?
     user.admin?
   end
@@ -21,7 +29,7 @@ class LocationEquipmentServicePolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      if user.admin?
+      if user.admin? || user.technician?
         scope.all
       else
         raise Pundit::NotAuthorizedError
