@@ -68,12 +68,12 @@ es:
           scheduled: "Programado"
           completed: "Completado"
           cancelled: "Cancelado"
-      asset_type:
+      assets_category:
         name: "Nombre"
       equipment_kind:
         name: "Nombre"
         description: "Descripción"
-        asset_type: "Tipo de Activo"
+        assets_category: "Categoría"
         legacy_kind: "Tipo legacy"
         generic_fields: "Campos genéricos"
         specific_fields: "Campos específicos"

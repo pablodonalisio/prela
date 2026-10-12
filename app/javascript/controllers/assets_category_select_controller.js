@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Flowbite dropdown for Tipo de Activo. The menu is the same surface as
+// Flowbite dropdown for Categoría. The menu is the same surface as
 // shared/select_dropdown. It is moved to document.body so the modal's
 // overflow does not clip it. data-dropdown-toggle stays in the markup;
 // this controller takes over the Dropdown instance after portaling the menu,
@@ -26,17 +26,17 @@ export default class extends Controller {
       requestAnimationFrame(() => {
         this.syncWidth();
         this.dropdown?.show();
-        this.addPanel.querySelector("input[name='asset_type[name]']")?.focus();
+        this.addPanel.querySelector("input[name='assets_category[name]']")?.focus();
       });
     }
 
     if (this.element.dataset.editing === "true") {
-      const form = document.getElementById("edit_asset_type");
+      const form = document.getElementById("edit_assets_category");
       if (form && this.element.dataset.editingUrl) form.action = this.element.dataset.editingUrl;
       requestAnimationFrame(() => {
         this.syncWidth();
         this.dropdown?.show();
-        this.menu.querySelector("[data-asset-type-edit-panel]:not(.hidden) input[name='asset_type[name]']")?.focus();
+        this.menu.querySelector("[data-assets-category-edit-panel]:not(.hidden) input[name='assets_category[name]']")?.focus();
       });
     }
   }
@@ -53,27 +53,27 @@ export default class extends Controller {
 
   _bindFilterSync() {
     this.onFilterSync = (event) => this._copyFilterSelection(event.currentTarget);
-    this.filterForms = ["new_asset_type", "edit_asset_type"]
+    this.filterForms = ["new_assets_category", "edit_assets_category"]
       .map((id) => document.getElementById(id))
       .filter(Boolean);
     this.filterForms.forEach((form) => form.addEventListener("submit", this.onFilterSync));
   }
 
   _copyFilterSelection(form) {
-    form.querySelectorAll("[data-filter-asset-type]").forEach((input) => input.remove());
+    form.querySelectorAll("[data-filter-assets-category]").forEach((input) => input.remove());
     this._selectedFilterIds().forEach((id) => {
       const input = document.createElement("input");
       input.type = "hidden";
-      input.name = "asset_type_ids[]";
+      input.name = "assets_category_ids[]";
       input.value = id;
-      input.dataset.filterAssetType = "";
+      input.dataset.filterAssetsCategory = "";
       form.appendChild(input);
     });
   }
 
   _selectedFilterIds() {
     return Array.from(
-      document.querySelectorAll("#equipment_kind_filters input[name='asset_type_ids[]']:checked")
+      document.querySelectorAll("#equipment_kind_filters input[name='assets_category_ids[]']:checked")
     ).map((input) => input.value);
   }
 
@@ -84,38 +84,38 @@ export default class extends Controller {
 
   _bindMenu() {
     this.menu.addEventListener("click", (event) => {
-      const destroyLink = event.target.closest("[data-asset-type-destroy]");
+      const destroyLink = event.target.closest("[data-assets-category-destroy]");
       if (destroyLink) {
         const url = new URL(destroyLink.href, window.location.origin);
         url.searchParams.set("selected_id", this.inputTarget.value);
-        url.searchParams.delete("asset_type_ids[]");
-        this._selectedFilterIds().forEach((id) => url.searchParams.append("asset_type_ids[]", id));
+        url.searchParams.delete("assets_category_ids[]");
+        this._selectedFilterIds().forEach((id) => url.searchParams.append("assets_category_ids[]", id));
         destroyLink.href = `${url.pathname}${url.search}`;
         return;
       }
 
-      const add = event.target.closest("[data-asset-type-add]");
+      const add = event.target.closest("[data-assets-category-add]");
       if (add) {
         event.preventDefault();
         this._openAddPanel();
         return;
       }
 
-      const edit = event.target.closest("[data-asset-type-edit]");
+      const edit = event.target.closest("[data-assets-category-edit]");
       if (edit) {
         event.preventDefault();
         this._openEdit(edit);
         return;
       }
 
-      const cancel = event.target.closest("[data-asset-type-cancel]");
+      const cancel = event.target.closest("[data-assets-category-cancel]");
       if (cancel) {
         event.preventDefault();
         this._resetPanels();
         return;
       }
 
-      const choose = event.target.closest("[data-asset-type-choose]");
+      const choose = event.target.closest("[data-assets-category-choose]");
       if (choose) {
         event.preventDefault();
         this._choose(choose.dataset.value, choose.dataset.label);
@@ -127,24 +127,24 @@ export default class extends Controller {
     this._closeEditPanels();
     this.addToggle.classList.add("hidden");
     this.addPanel.classList.remove("hidden");
-    this.addPanel.querySelector("input[name='asset_type[name]']")?.focus();
+    this.addPanel.querySelector("input[name='assets_category[name]']")?.focus();
   }
 
   _openEdit(button) {
-    const form = document.getElementById("edit_asset_type");
+    const form = document.getElementById("edit_assets_category");
     if (form) form.action = button.dataset.editUrl;
     this.addToggle.classList.remove("hidden");
     this.addPanel.classList.add("hidden");
     this._closeEditPanels();
 
-    const option = button.closest("[data-asset-type-option]");
-    option.querySelector("[data-asset-type-row]")?.classList.add("hidden");
-    const panel = option.querySelector("[data-asset-type-edit-panel]");
+    const option = button.closest("[data-assets-category-option]");
+    option.querySelector("[data-assets-category-row]")?.classList.add("hidden");
+    const panel = option.querySelector("[data-assets-category-edit-panel]");
     panel.classList.remove("hidden");
     panel.querySelectorAll("input, button").forEach((field) => {
       field.disabled = false;
     });
-    const input = panel.querySelector("input[name='asset_type[name]']");
+    const input = panel.querySelector("input[name='assets_category[name]']");
     input?.focus();
     input?.select();
   }
@@ -164,19 +164,19 @@ export default class extends Controller {
     this.menu.querySelectorAll("[data-original-name]").forEach((input) => {
       input.value = input.dataset.originalName;
     });
-    this.menu.querySelectorAll("[data-asset-type-edit-panel] .text-fg-danger, [data-asset-type-select-target='addPanel'] .text-fg-danger").forEach((error) => {
+    this.menu.querySelectorAll("[data-assets-category-edit-panel] .text-fg-danger, [data-assets-category-select-target='addPanel'] .text-fg-danger").forEach((error) => {
       error.remove();
     });
     this.addPanel.classList.add("hidden");
     this.addToggle.classList.remove("hidden");
-    const addInput = this.addPanel.querySelector("input[name='asset_type[name]']");
+    const addInput = this.addPanel.querySelector("input[name='assets_category[name]']");
     if (addInput) addInput.value = "";
   }
 
   _closeEditPanels() {
-    this.menu.querySelectorAll("[data-asset-type-option]").forEach((option) => {
-      option.querySelector("[data-asset-type-row]")?.classList.remove("hidden");
-      const panel = option.querySelector("[data-asset-type-edit-panel]");
+    this.menu.querySelectorAll("[data-assets-category-option]").forEach((option) => {
+      option.querySelector("[data-assets-category-row]")?.classList.remove("hidden");
+      const panel = option.querySelector("[data-assets-category-edit-panel]");
       if (!panel) return;
       panel.classList.add("hidden");
       panel.querySelectorAll("input, button").forEach((field) => {
@@ -194,8 +194,8 @@ export default class extends Controller {
     });
     this.inputTarget.dispatchEvent(new Event("change", {bubbles: true}));
 
-    this.menu.querySelectorAll("[data-asset-type-option]").forEach((option) => {
-      option.querySelector("[data-asset-type-row]")?.classList.toggle(
+    this.menu.querySelectorAll("[data-assets-category-option]").forEach((option) => {
+      option.querySelector("[data-assets-category-row]")?.classList.toggle(
         "bg-neutral-tertiary-medium",
         option.dataset.value === this.inputTarget.value
       );

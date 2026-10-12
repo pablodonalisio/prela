@@ -1,4 +1,4 @@
-class AssetType < ApplicationRecord
+class AssetsCategory < ApplicationRecord
   include Discard::Model
 
   has_many :equipment_kinds

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_12_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,14 +52,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_120000) do
     t.index ["location_equipment_id"], name: "index_activities_on_location_equipment_id"
   end
 
-  create_table "asset_types", force: :cascade do |t|
+  create_table "assets_categories", force: :cascade do |t|
     t.string "name", null: false
     t.string "normalized_name", null: false
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["discarded_at"], name: "index_asset_types_on_discarded_at"
-    t.index ["normalized_name"], name: "index_asset_types_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["discarded_at"], name: "index_assets_categories_on_discarded_at"
+    t.index ["normalized_name"], name: "index_assets_categories_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
   end
 
   create_table "batteries", force: :cascade do |t|
@@ -216,8 +216,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_120000) do
     t.text "description"
     t.string "normalized_name"
     t.datetime "discarded_at"
-    t.bigint "asset_type_id", null: false
-    t.index ["asset_type_id"], name: "index_equipment_kinds_on_asset_type_id"
+    t.bigint "assets_category_id", null: false
+    t.index ["assets_category_id"], name: "index_equipment_kinds_on_assets_category_id"
     t.index ["discarded_at"], name: "index_equipment_kinds_on_discarded_at"
     t.index ["legacy_kind"], name: "index_equipment_kinds_on_legacy_kind", unique: true, where: "((legacy_kind IS NOT NULL) AND (discarded_at IS NULL))"
     t.index ["name"], name: "index_equipment_kinds_on_name", unique: true, where: "(discarded_at IS NULL)"
@@ -550,7 +550,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_120000) do
   add_foreign_key "contacts_locations", "contacts"
   add_foreign_key "contacts_locations", "locations"
   add_foreign_key "electrical_panel_report_stats", "reports"
-  add_foreign_key "equipment_kinds", "asset_types"
+  add_foreign_key "equipment_kinds", "assets_categories"
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
   add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
   add_foreign_key "failures", "location_equipments"

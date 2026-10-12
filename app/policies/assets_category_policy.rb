@@ -1,4 +1,4 @@
-class AssetTypePolicy < ApplicationPolicy
+class AssetsCategoryPolicy < ApplicationPolicy
   def create?
     user.admin?
   end

@@ -8,8 +8,8 @@
   <% end %>
 <% end %>
 
-<%= turbo_stream.replace "asset_type_picker" do %>
-  <%= render "equipment_kinds/asset_type_select",
+<%= turbo_stream.replace "assets_category_picker" do %>
+  <%= render "equipment_kinds/assets_category_select",
              selected_id: @selected_id,
              adding: @adding,
              editing_id: @editing_id,

@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "equipment_kinds", class: "mx-4 mt-4 mb-4 flex flex-col gap-2 md:mx-6" do %>
   <% if @equipment_kinds.any? %>
     <%= render @equipment_kinds %>
-  <% elsif @asset_type_ids.present? %>
+  <% elsif @assets_category_ids.present? %>
     <%= render "shared/empty_collection",
                id: "equipment_kinds_empty",
                message: "No hay tipos de activos para los filtros seleccionados." %>

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :equipment_kind do
-    association :asset_type
+    association :assets_category
     sequence(:name) { |n| "Tipo de activo #{n}" }
     generic_fields { {"kva" => {name: "Kva", type: "float"}} }
     specific_fields { {} }

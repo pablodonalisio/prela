@@ -6,10 +6,10 @@ RSpec.describe "Equipment kinds", type: :system do
   before { login_as(admin, scope: :user) }
 
   it "filters the list by one or more asset types" do
-    generator = create(:asset_type, name: "Generador")
-    panel = create(:asset_type, name: "Tablero eléctrico")
-    create(:equipment_kind, name: "Grupo diesel", asset_type: generator)
-    create(:equipment_kind, name: "Tablero principal", asset_type: panel)
+    generator = create(:assets_category, name: "Generador")
+    panel = create(:assets_category, name: "Tablero eléctrico")
+    create(:equipment_kind, name: "Grupo diesel", assets_category: generator)
+    create(:equipment_kind, name: "Tablero principal", assets_category: panel)
     create(:equipment_kind, name: "UPS online")
 
     visit equipment_kinds_path
@@ -19,7 +19,7 @@ RSpec.describe "Equipment kinds", type: :system do
     expect(page).to have_text("UPS online")
 
     within("#equipment_kind_filters") do
-      find("button[aria-label='Tipo de Activo']").click
+      find("button[aria-label='Categoría']").click
       check "Generador"
     end
 
@@ -34,6 +34,6 @@ RSpec.describe "Equipment kinds", type: :system do
     expect(page).to have_text("Grupo diesel")
     expect(page).to have_text("Tablero principal")
     expect(page).to have_no_text("UPS online")
-    expect(page).to have_button("Tipo de Activo", text: "Generador, Tablero eléctrico")
+    expect(page).to have_button("Categoría", text: "Generador, Tablero eléctrico")
   end
 end

@@ -8,9 +8,9 @@
         <% end %>
 
         <div class="flex flex-wrap gap-2">
-          <% if equipment_kind.asset_type.present? %>
+          <% if equipment_kind.assets_category.present? %>
             <span class="rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">
-              <%= equipment_kind.asset_type.name %>
+              <%= equipment_kind.assets_category.name %>
             </span>
           <% end %>
           <span class="rounded-full bg-neutral-tertiary px-2.5 py-0.5 text-xs font-medium text-body">
