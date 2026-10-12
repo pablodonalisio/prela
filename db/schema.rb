@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_09_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_10_143000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -430,6 +430,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_09_120000) do
     t.index ["normalized_name"], name: "index_service_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
   end
 
+  create_table "service_occurrence_assignments", force: :cascade do |t|
+    t.bigint "service_occurrence_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["service_occurrence_id", "user_id"], name: "index_service_occurrence_assignments_uniqueness", unique: true
+    t.index ["service_occurrence_id"], name: "index_service_occurrence_assignments_on_service_occurrence_id"
+    t.index ["user_id"], name: "index_service_occurrence_assignments_on_user_id"
+  end
+
   create_table "service_occurrences", force: :cascade do |t|
     t.bigint "location_equipment_service_id", null: false
     t.date "due_on", null: false
@@ -438,9 +448,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_09_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "notes"
+    t.integer "priority", default: 1, null: false
     t.datetime "planned_on_init"
     t.datetime "planned_on_finish"
-    t.integer "priority", default: 1, null: false
     t.index ["location_equipment_service_id"], name: "index_service_occurrences_on_location_equipment_service_id"
     t.index ["location_equipment_service_id"], name: "index_service_occurrences_one_open_per_les", unique: true, where: "(status = ANY (ARRAY[0, 2, 3]))"
   end
@@ -555,6 +565,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_09_120000) do
   add_foreign_key "reports_signatures", "reports"
   add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
+  add_foreign_key "service_occurrence_assignments", "service_occurrences"
+  add_foreign_key "service_occurrence_assignments", "users"
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "signatures", "users"
   add_foreign_key "taggings", "tags"
