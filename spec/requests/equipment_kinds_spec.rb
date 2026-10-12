@@ -16,10 +16,12 @@ RSpec.describe "/equipment_kinds", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # EquipmentKind. As you add validations to EquipmentKind, be sure to
   # adjust the attributes here as well.
+  let(:asset_type) { create(:asset_type) }
+
   let(:valid_attributes) {
     {
       name: "Tipo personalizado",
-      asset_type_id: AssetType.ups.id,
+      asset_type_id: asset_type.id,
       generic_fields: {EquipmentKind.generate_field_key => {name: "Marca", type: "string"}},
       specific_fields: {}
     }
@@ -115,16 +117,16 @@ RSpec.describe "/equipment_kinds", type: :request do
       expect(response).to be_successful
     end
 
-    it "renders the asset type dropdown with UPS and the add action" do
-      AssetType.ups
+    it "renders the asset type dropdown with the existing type and the add action" do
+      create(:asset_type, name: "Generador")
 
       get new_equipment_kind_url
       expect(response.body).to include("Tipo de Activo <abbr title=\"required\">*</abbr>")
       expect(response.body).to include("Seleccioná un tipo")
-      expect(response.body).to include("UPS")
+      expect(response.body).to include("Generador")
       expect(response.body).to include("Añadir nuevo tipo...")
-      expect(response.body).to include("Eliminar UPS")
-      expect(response.body).to include("Editar UPS")
+      expect(response.body).to include("Eliminar Generador")
+      expect(response.body).to include("Editar Generador")
     end
 
     context "when user is not admin" do
@@ -264,7 +266,7 @@ RSpec.describe "/equipment_kinds", type: :request do
         field_key = EquipmentKind.generate_field_key
         equipment_kind = EquipmentKind.create!(
           name: "Tipo personalizado",
-          asset_type_id: AssetType.ups.id,
+          asset_type_id: asset_type.id,
           generic_fields: {field_key => {name: "Marca", type: "string"}},
           specific_fields: {}
         )

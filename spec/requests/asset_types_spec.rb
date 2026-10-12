@@ -29,14 +29,14 @@ RSpec.describe "/asset_types", type: :request do
     end
 
     it "refreshes the filter dropdown and keeps the current selection" do
-      ups = AssetType.ups
+      selected = create(:asset_type, name: "Tablero")
 
       post asset_types_url,
-        params: {asset_type: {name: "Generador"}, asset_type_ids: [ups.id]},
+        params: {asset_type: {name: "Generador"}, asset_type_ids: [selected.id]},
         as: :turbo_stream
 
       expect(response.body).to include('turbo-stream action="replace" target="equipment_kind_filters"')
-      expect(response.body).to match(/value="#{ups.id}"[^>]*checked="checked"/)
+      expect(response.body).to match(/value="#{selected.id}"[^>]*checked="checked"/)
       expect(response.body).to include("Generador")
       generator_id = AssetType.find_by!(name: "Generador").id
       expect(response.body).not_to match(/value="#{generator_id}"[^>]*checked="checked"/)
@@ -44,10 +44,10 @@ RSpec.describe "/asset_types", type: :request do
 
     context "with invalid parameters" do
       it "does not create a duplicate type and shows the error in the menu" do
-        AssetType.ups
+        create(:asset_type, name: "Tablero")
 
         expect {
-          post asset_types_url, params: {asset_type: {name: "UPS"}}, as: :turbo_stream
+          post asset_types_url, params: {asset_type: {name: "Tablero"}}, as: :turbo_stream
         }.not_to change(AssetType, :count)
 
         expect(response).to have_http_status(:unprocessable_content)
@@ -80,22 +80,12 @@ RSpec.describe "/asset_types", type: :request do
       expect(response.body).to include("El tipo de activo se actualizó correctamente.")
     end
 
-    it "renames UPS" do
-      ups = AssetType.ups
-
-      patch asset_type_url(ups), params: {asset_type: {name: "Respaldo"}}, as: :turbo_stream
-
-      expect(ups.reload.name).to eq("Respaldo")
-      expect(response.body).to include("Respaldo")
-      expect(response.body).to include("El tipo de activo se actualizó correctamente.")
-    end
-
     it "shows a duplicate name error in the menu" do
       asset_type = create(:asset_type, name: "Generador")
-      AssetType.ups
+      create(:asset_type, name: "Tablero")
 
       patch asset_type_url(asset_type),
-        params: {asset_type: {name: "UPS"}, selected_id: asset_type.id},
+        params: {asset_type: {name: "Tablero"}, selected_id: asset_type.id},
         as: :turbo_stream
 
       expect(response).to have_http_status(:unprocessable_content)
@@ -123,14 +113,14 @@ RSpec.describe "/asset_types", type: :request do
 
   describe "DELETE /destroy" do
     it "drops a deleted type from the filter dropdown" do
-      ups = AssetType.ups
+      kept = create(:asset_type, name: "Tablero")
       asset_type = create(:asset_type, name: "Generador")
 
       delete asset_type_url(asset_type),
-        params: {asset_type_ids: [ups.id, asset_type.id]},
+        params: {asset_type_ids: [kept.id, asset_type.id]},
         as: :turbo_stream
 
-      expect(response.body).to match(/value="#{ups.id}"[^>]*checked="checked"/)
+      expect(response.body).to match(/value="#{kept.id}"[^>]*checked="checked"/)
       expect(response.body).not_to include(%(value="#{asset_type.id}"))
       expect(response.body).not_to include("Generador")
     end
@@ -144,16 +134,6 @@ RSpec.describe "/asset_types", type: :request do
 
       expect(asset_type.reload).to be_discarded
       expect(response.body).to include("El tipo de activo se eliminó.")
-    end
-
-    it "deletes UPS when no equipment uses it" do
-      ups = AssetType.ups
-
-      delete asset_type_url(ups), as: :turbo_stream
-
-      expect(ups.reload).to be_discarded
-      expect(response.body).to include("El tipo de activo se eliminó.")
-      expect(response.body).not_to include("Eliminar UPS")
     end
 
     it "does not delete a type assigned to an equipment kind" do

@@ -1,24 +1,16 @@
 class AssetType < ApplicationRecord
   include Discard::Model
 
-  SYSTEM_UPS_KEY = "ups"
-
   has_many :equipment_kinds
 
   before_validation :set_normalized_name
 
   validates :name, presence: true
-  validates :system_key, uniqueness: {conditions: -> { kept }}, allow_nil: true
   validate :name_must_be_unique
 
   before_discard :prevent_discard_when_assigned_to_equipment_kind
-  after_discard :reassign_equipment_kinds_to_ups
 
   scope :visible, -> { kept }
-
-  def self.ups
-    kept.find_by(system_key: SYSTEM_UPS_KEY) || create!(name: "UPS", system_key: SYSTEM_UPS_KEY)
-  end
 
   def self.normalize_name(value)
     ActiveSupport::Inflector.transliterate(value.to_s.strip.downcase)
@@ -48,12 +40,5 @@ class AssetType < ApplicationRecord
 
     errors.add(:base, "No se puede eliminar porque hay otros equipos asociados.")
     throw(:abort)
-  end
-
-  def reassign_equipment_kinds_to_ups
-    ups = self.class.visible.find_by(system_key: SYSTEM_UPS_KEY)
-    return if ups.nil?
-
-    EquipmentKind.where(asset_type_id: id).update_all(asset_type_id: ups.id)
   end
 end

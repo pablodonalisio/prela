@@ -4,7 +4,7 @@ RSpec.describe "Asset type dropdown", type: :system do
   let(:admin) { create(:admin) }
 
   before do
-    AssetType.ups
+    create(:asset_type, name: "Tablero")
     login_as(admin, scope: :user)
   end
 
@@ -16,9 +16,9 @@ RSpec.describe "Asset type dropdown", type: :system do
     expect(page).to have_css("#asset_type_picker_button", text: "Seleccioná un tipo")
 
     find("#asset_type_picker_button").click
-    expect(page).to have_css("[role='listbox']", text: "UPS")
-    expect(page).to have_css("[aria-label='Eliminar UPS']")
-    expect(page).to have_css("[aria-label='Editar UPS']")
+    expect(page).to have_css("[role='listbox']", text: "Tablero")
+    expect(page).to have_css("[aria-label='Eliminar Tablero']")
+    expect(page).to have_css("[aria-label='Editar Tablero']")
 
     click_on "Añadir nuevo tipo..."
     fill_in "Nuevo tipo de activo", with: "Generador"
@@ -35,7 +35,11 @@ RSpec.describe "Asset type dropdown", type: :system do
 
     expect(page).to have_text("El tipo de activo se eliminó.")
     expect(page).to have_text("Nuevo Tipo de Equipo")
-    expect(page).to have_css("#asset_type_picker_button", text: "UPS")
+    expect(page).to have_css("#asset_type_picker_button", text: "Seleccioná un tipo")
+
+    find("#asset_type_picker_button").click
+    expect(page).to have_css("[role='listbox']", text: "Tablero")
+    expect(page).to have_no_text("Generador")
   end
 
   it "clears the add and edit forms when the dropdown closes" do
@@ -89,7 +93,7 @@ RSpec.describe "Asset type dropdown", type: :system do
     visit equipment_kinds_path
     click_link "Agregar", match: :first
     find("#asset_type_picker_button").click
-    expect(page).to have_css("[aria-label='Editar UPS']")
+    expect(page).to have_css("[aria-label='Editar Tablero']")
 
     find("[aria-label='Editar Generador']").click
     find("[data-asset-type-edit-panel]:not(.hidden) input[name='asset_type[name]']").set("Grupo")
@@ -127,7 +131,7 @@ RSpec.describe "Asset type dropdown", type: :system do
 
     within("#equipment_kind_filters") do
       find("button[aria-label='Tipo de Activo']").click
-      check "UPS"
+      check "Tablero"
     end
 
     click_link "Agregar", match: :first
@@ -138,7 +142,7 @@ RSpec.describe "Asset type dropdown", type: :system do
 
     expect(page).to have_text("El tipo de activo se creó correctamente.")
     within("#equipment_kind_filters") do
-      expect(page).to have_checked_field("UPS", visible: :all)
+      expect(page).to have_checked_field("Tablero", visible: :all)
       expect(page).to have_unchecked_field("Generador", visible: :all)
     end
 
@@ -160,32 +164,9 @@ RSpec.describe "Asset type dropdown", type: :system do
 
     expect(page).to have_text("El tipo de activo se eliminó.")
     within("#equipment_kind_filters") do
-      expect(page).to have_checked_field("UPS", visible: :all)
+      expect(page).to have_checked_field("Tablero", visible: :all)
       expect(page).to have_no_field("Grupo", visible: :all)
     end
   end
 
-  it "renames and deletes UPS when no equipment uses it" do
-    AssetType.ups
-
-    visit equipment_kinds_path
-    click_link "Agregar", match: :first
-    find("#asset_type_picker_button").click
-
-    find("[aria-label='Editar UPS']").click
-    find("[data-asset-type-edit-panel]:not(.hidden) input[name='asset_type[name]']").set("Respaldo")
-    find("[data-asset-type-edit-panel]:not(.hidden) button[type='submit']").click
-
-    expect(page).to have_text("El tipo de activo se actualizó correctamente.")
-    find("#asset_type_picker_button").click
-    expect(page).to have_css("[role='listbox']", text: "Respaldo")
-
-    accept_confirm do
-      find("[aria-label='Eliminar Respaldo']").click
-    end
-
-    expect(page).to have_text("El tipo de activo se eliminó.")
-    find("#asset_type_picker_button").click
-    expect(page).not_to have_css("[role='listbox']", text: "Respaldo")
-  end
 end

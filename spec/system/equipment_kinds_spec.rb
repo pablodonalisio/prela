@@ -10,7 +10,7 @@ RSpec.describe "Equipment kinds", type: :system do
     panel = create(:asset_type, name: "Tablero eléctrico")
     create(:equipment_kind, name: "Grupo diesel", asset_type: generator)
     create(:equipment_kind, name: "Tablero principal", asset_type: panel)
-    create(:equipment_kind, name: "UPS online", asset_type: AssetType.ups)
+    create(:equipment_kind, name: "UPS online")
 
     visit equipment_kinds_path
 

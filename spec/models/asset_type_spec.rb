@@ -16,55 +16,16 @@ RSpec.describe AssetType, type: :model do
     expect(asset_type.errors[:name]).to be_present
   end
 
-  describe ".ups" do
-    it "creates the UPS type once" do
-      first = AssetType.ups
-      second = AssetType.ups
-
-      expect(first.name).to eq("UPS")
-      expect(first.system_key).to eq("ups")
-      expect(second).to eq(first)
-    end
-
-    it "creates a new kept UPS after the previous one was discarded" do
-      discarded = AssetType.ups
-      discarded.discard
-
-      replacement = AssetType.ups
-
-      expect(replacement).not_to eq(discarded)
-      expect(replacement).to be_kept
-      expect(replacement.name).to eq("UPS")
-    end
-  end
-
   describe "#update" do
-    it "renames UPS" do
-      ups = AssetType.ups
+    it "renames the type" do
+      asset_type = create(:asset_type, name: "Generador")
 
-      expect(ups.update(name: "Respaldo")).to be(true)
-      expect(ups.reload.name).to eq("Respaldo")
+      expect(asset_type.update(name: "Respaldo")).to be(true)
+      expect(asset_type.reload.name).to eq("Respaldo")
     end
   end
 
   describe "#discard" do
-    it "discards UPS when no equipment kind uses it" do
-      ups = AssetType.ups
-
-      expect(ups.discard).to be(true)
-      expect(ups.reload).to be_discarded
-      expect(AssetType.visible.find_by(system_key: "ups")).to be_nil
-    end
-
-    it "does not discard UPS when an equipment kind uses it" do
-      ups = AssetType.ups
-      create(:equipment_kind, name: "a1", asset_type: ups)
-
-      expect(ups.discard).to be(false)
-      expect(ups).not_to be_discarded
-      expect(ups.errors[:base]).to include("No se puede eliminar porque hay otros equipos asociados.")
-    end
-
     it "discards a type that no equipment kind uses" do
       asset_type = create(:asset_type, name: "Generador")
 

@@ -56,9 +56,7 @@ class AssetTypesController < ApplicationController
 
     respond_to do |format|
       if @asset_type.discard
-        if @selected_id.to_s == @asset_type.id.to_s
-          @selected_id = AssetType.visible.find_by(system_key: AssetType::SYSTEM_UPS_KEY)&.id
-        end
+        @selected_id = nil if @selected_id.to_s == @asset_type.id.to_s
         notice = "El tipo de activo se eliminó."
         format.html { redirect_to equipment_kinds_path, notice: notice, status: :see_other }
         format.turbo_stream { flash.now[:notice] = notice }
