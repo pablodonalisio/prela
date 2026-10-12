@@ -154,7 +154,7 @@ class ServiceOccurrences::Update
         :technicians,
         :unavailable,
         count: unavailable.size,
-        names: unavailable.map(&:email).to_sentence
+        names: unavailable.map(&:display_name).to_sentence
       )
       raise ActiveRecord::RecordInvalid, occurrence
     end

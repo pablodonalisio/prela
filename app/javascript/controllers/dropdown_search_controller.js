@@ -65,9 +65,8 @@ export default class extends Controller {
 
   _syncLabel() {
     const selected = this.itemTargets
-      .map((item) => item.querySelector("input[type='checkbox']"))
-      .filter((input) => input?.checked)
-      .map((input) => input.dataset.email);
+      .filter((item) => item.querySelector("input[type='checkbox']")?.checked)
+      .map((item) => item.dataset.label);
     this.labelTarget.textContent = selected.length ? selected.join(", ") : "Técnicos";
     this.labelTarget.classList.toggle("text-body-subtle", selected.length === 0);
   }

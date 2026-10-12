@@ -45,6 +45,8 @@ es:
         voltage: "Voltaje"
         amps: "Amperes"
       user:
+        name: "Nombre"
+        last_name: "Apellido"
         roles:
           admin: "Admin"
           client: "Cliente"

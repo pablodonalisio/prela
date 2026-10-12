@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    permitted = [:email, :password]
+    permitted = [:email, :password, :name, :last_name]
     permitted += [:role, :client_id, :editor] if current_user.admin?
     params.require(:user).permit(*permitted)
   end

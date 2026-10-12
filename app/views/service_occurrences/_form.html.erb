@@ -67,16 +67,15 @@
           </div>
           <ul class="h-48 overflow-y-auto px-3 pb-3 text-sm text-heading" aria-labelledby="<%= dropdown_id %>">
             <% technicians.each do |technician| %>
-              <li data-dropdown-search-target="item" data-label="<%= technician.email %>">
+              <li data-dropdown-search-target="item" data-label="<%= technician.display_name %>">
                 <div class="flex items-center rounded-sm ps-2 hover:bg-neutral-tertiary-medium">
                   <%= check_box_tag "service_occurrence[technician_ids][]",
                                     technician.id,
                                     service_occurrence.technician_ids.include?(technician.id),
                                     id: "technician_#{service_occurrence.id}_#{technician.id}",
-                                    data: {email: technician.email},
                                     class: "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-brand" %>
                   <%= label_tag "technician_#{service_occurrence.id}_#{technician.id}",
-                                technician.email,
+                                technician.display_name,
                                 class: "ms-2 w-full rounded-sm py-2 text-sm font-medium text-heading" %>
                 </div>
               </li>

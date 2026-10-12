@@ -39,6 +39,10 @@ class User < ApplicationRecord
     scope.distinct.pluck(:id)
   end
 
+  def display_name
+    [name, last_name].compact_blank.join(" ").presence || email
+  end
+
   def full_role
     case role
     when "admin" then "Admin"

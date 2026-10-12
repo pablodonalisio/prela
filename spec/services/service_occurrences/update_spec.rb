@@ -226,6 +226,18 @@ RSpec.describe ServiceOccurrences::Update do
       expect(message).not_to include(free.email)
     end
 
+    it "names an unavailable technician by name" do
+      technician.update!(name: "Ana", last_name: "Pérez")
+      other = create(:service_occurrence, :scheduled,
+        location_equipment_service: create(:location_equipment_service, location_equipment: location_equipment),
+        planned_on_init: init.change(hour: 10),
+        planned_on_finish: init.change(hour: 11))
+      create(:service_occurrence_assignment, service_occurrence: other, user: technician)
+
+      expect(schedule(occurrence, technician_ids: [technician.id])).to be(false)
+      expect(occurrence.errors.full_messages_for(:technicians).join).to include("Ana Pérez")
+    end
+
     it "allows a window that only touches the previous job at the boundary" do
       other = create(:service_occurrence, :scheduled,
         location_equipment_service: create(:location_equipment_service, location_equipment: location_equipment),
