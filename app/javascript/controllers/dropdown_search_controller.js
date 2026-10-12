@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Flowbite dropdown with search for the technician field inside the schedule modal.
+// Flowbite dropdown with search. The button shows the checked item labels,
+// or the label target's data-placeholder when nothing is checked.
 export default class extends Controller {
   static targets = ["button", "label", "menu", "search", "item", "empty"];
 
@@ -67,7 +68,7 @@ export default class extends Controller {
     const selected = this.itemTargets
       .filter((item) => item.querySelector("input[type='checkbox']")?.checked)
       .map((item) => item.dataset.label);
-    this.labelTarget.textContent = selected.length ? selected.join(", ") : "Técnicos";
+    this.labelTarget.textContent = selected.length ? selected.join(", ") : this.labelTarget.dataset.placeholder;
     this.labelTarget.classList.toggle("text-body-subtle", selected.length === 0);
   }
 }

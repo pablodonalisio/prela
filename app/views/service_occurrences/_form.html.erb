@@ -33,63 +33,15 @@
                  required: true,
                  data: {schedule_range_target: "finish"} %>
     </div>
-    <% technicians = User.technician.order(:email) %>
-    <% dropdown_id = "technician-dropdown-#{service_occurrence.id}" %>
-    <div class="relative mb-5" data-controller="dropdown-search">
-      <p class="mb-2 text-sm font-medium text-heading">Técnicos</p>
-      <% if technicians.any? %>
-        <button type="button"
-                class="inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
-                data-dropdown-search-target="button"
-                aria-haspopup="listbox">
-          <span class="truncate text-body-subtle" data-dropdown-search-target="label">Técnicos</span>
-          <%= icon(:chevron_down, class: "ms-2 text-xs text-body-subtle") %>
-        </button>
-
-        <div id="<%= dropdown_id %>"
-             class="z-50 hidden rounded-base border border-default bg-neutral-secondary-medium shadow-sm"
-             data-dropdown-search-target="menu">
-          <div class="p-3">
-            <label for="<%= dropdown_id %>-search" class="sr-only">Buscar técnico</label>
-            <div class="relative">
-              <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-                <svg class="h-4 w-4 text-body-subtle" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                </svg>
-              </div>
-              <input type="search"
-                     id="<%= dropdown_id %>-search"
-                     class="block w-full rounded-lg border border-default bg-neutral-primary p-2 ps-10 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand"
-                     placeholder="Buscar técnico"
-                     autocomplete="off"
-                     data-dropdown-search-target="search">
-            </div>
-          </div>
-          <ul class="h-48 overflow-y-auto px-3 pb-3 text-sm text-heading" aria-labelledby="<%= dropdown_id %>">
-            <% technicians.each do |technician| %>
-              <li data-dropdown-search-target="item" data-label="<%= technician.display_name %>">
-                <div class="flex items-center rounded-sm ps-2 hover:bg-neutral-tertiary-medium">
-                  <%= check_box_tag "service_occurrence[technician_ids][]",
-                                    technician.id,
-                                    service_occurrence.technician_ids.include?(technician.id),
-                                    id: "technician_#{service_occurrence.id}_#{technician.id}",
-                                    class: "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-brand" %>
-                  <%= label_tag "technician_#{service_occurrence.id}_#{technician.id}",
-                                technician.display_name,
-                                class: "ms-2 w-full rounded-sm py-2 text-sm font-medium text-heading" %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-          <p class="hidden px-3 pb-3 text-sm text-body-subtle" data-dropdown-search-target="empty">Sin resultados</p>
-        </div>
-      <% else %>
-        <p class="text-sm text-body-subtle">No hay técnicos</p>
-      <% end %>
-      <% if service_occurrence.errors[:technicians].any? %>
-        <p class="mt-2 text-sm text-fg-danger"><%= service_occurrence.errors.full_messages_for(:technicians).to_sentence %></p>
-      <% end %>
-    </div>
+    <%= render "shared/search_dropdown",
+               label: "Técnicos",
+               name: "service_occurrence[technician_ids][]",
+               id: "technician-dropdown-#{service_occurrence.id}",
+               options: User.technician.order(:email).map { |technician| [technician.display_name, technician.id] },
+               selected: service_occurrence.technician_ids,
+               search_placeholder: "Buscar técnico",
+               blank_message: "No hay técnicos",
+               error: service_occurrence.errors.full_messages_for(:technicians).to_sentence.presence %>
     <%= f.input :notes,
                 label: "Notas (opcional)",
                 as: :text,
