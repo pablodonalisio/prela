@@ -1,0 +1,161 @@
+<%# Flowbite dropdown used as a select. Same surface as shared/select_dropdown:
+    data-dropdown-toggle, Dropdown, and the classes in select_menu_styles.js.
+    Each row can be edited or deleted, and the last item adds a category, so this
+    is not a native <select>. The menu is portaled to document.body by the
+    controller because the modal body scrolls. %>
+<% assets_categories = AssetsCategory.visible.order(:name) %>
+<% selected = assets_categories.find { |assets_category| assets_category.id.to_s == selected_id.to_s } %>
+<% selected_label = selected&.name || "Seleccioná una categoría" %>
+<% field_error = local_assigns[:field_error] %>
+<% option_class = "block min-h-9 min-w-0 flex-1 truncate px-4 py-2 text-left hover:bg-neutral-tertiary-medium hover:text-heading" %>
+<% selected_class = "bg-neutral-tertiary-medium" %>
+<% menu_id = "assets-category-menu" %>
+<% adding = local_assigns[:adding] %>
+<% editing_id = local_assigns[:editing_id] %>
+<% editing_type = assets_categories.find { |assets_category| assets_category.id.to_s == editing_id.to_s } %>
+<% error = local_assigns[:error] %>
+<% name_value = local_assigns[:name_value] %>
+<% icon_button_class = "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-body transition-colors hover:bg-neutral-tertiary hover:text-heading" %>
+
+<div id="assets_category_picker"
+     class="relative"
+     data-controller="assets-category-select"
+     data-adding="<%= adding ? "true" : "false" %>"
+     data-editing="<%= editing_type ? "true" : "false" %>"
+     data-editing-url="<%= assets_category_path(editing_type) if editing_type %>">
+  <input type="hidden"
+         name="equipment_kind[assets_category_id]"
+         value="<%= selected&.id %>"
+         data-assets-category-select-target="input">
+
+  <button type="button"
+          id="assets_category_picker_button"
+          class="inline-flex w-full items-center justify-between rounded-lg border <%= field_error.present? ? "border-red-500" : "border-default" %> bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
+          data-assets-category-select-target="button"
+          data-action="click->assets-category-select#syncWidth"
+          data-dropdown-toggle="<%= menu_id %>"
+          data-dropdown-placement="bottom-start"
+          aria-haspopup="listbox"
+          aria-required="true">
+    <span class="truncate <%= "text-body-subtle" unless selected %>" data-assets-category-select-target="label"><%= selected_label %></span>
+    <%= icon(:chevron_down, class: "ms-2 text-xs text-body-subtle") %>
+  </button>
+  <% if field_error.present? %>
+    <p class="mt-2 text-sm text-fg-danger"><%= field_error %></p>
+  <% end %>
+
+  <div id="<%= menu_id %>"
+       data-assets-category-select-target="menu"
+       class="z-50 !z-[70] hidden divide-y divide-default rounded-base border border-default bg-neutral-secondary-medium shadow-sm">
+    <ul class="max-h-56 overflow-y-auto py-2 text-sm text-heading" role="listbox">
+      <% assets_categories.each do |assets_category| %>
+        <% editing = editing_type&.id == assets_category.id %>
+        <li data-assets-category-option data-value="<%= assets_category.id %>">
+          <div class="flex items-center <%= selected_class if assets_category.id == selected&.id %> <%= "hidden" if editing %>"
+               data-assets-category-row>
+            <button type="button"
+                    class="<%= option_class %>"
+                    data-assets-category-choose
+                    data-value="<%= assets_category.id %>"
+                    data-label="<%= assets_category.name %>">
+              <%= assets_category.name %>
+            </button>
+            <button type="button"
+                    class="<%= icon_button_class %>"
+                    data-assets-category-edit
+                    data-edit-url="<%= assets_category_path(assets_category) %>"
+                    aria-label="Editar <%= assets_category.name %>">
+              <%= icon(:edit) %>
+            </button>
+            <%= link_to assets_category_path(assets_category, selected_id: selected&.id),
+                        class: "inline-flex h-9 w-9 shrink-0 items-center justify-center text-fg-danger hover:bg-danger-soft",
+                        data: {
+                          assets_category_destroy: true,
+                          turbo_method: :delete,
+                          turbo_confirm: "¿Seguro que querés borrar esta categoría?"
+                        },
+                        aria: {label: "Eliminar #{assets_category.name}"} do %>
+              <%= icon(:trash) %>
+            <% end %>
+          </div>
+          <div class="px-4 py-2 <%= "hidden" unless editing %>" data-assets-category-edit-panel>
+              <label class="mb-2 block text-sm font-medium text-heading" for="assets_category_edit_name_<%= assets_category.id %>">Nombre</label>
+              <input id="assets_category_edit_name_<%= assets_category.id %>"
+                     form="edit_assets_category"
+                     type="text"
+                     name="assets_category[name]"
+                     value="<%= editing ? name_value : assets_category.name %>"
+                     data-original-name="<%= assets_category.name %>"
+                     <%= "disabled" unless editing %>
+                     class="block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand">
+              <input form="edit_assets_category"
+                     type="hidden"
+                     name="selected_id"
+                     value="<%= selected&.id %>"
+                     data-selected-mirror
+                     <%= "disabled" unless editing %>>
+              <% if editing && error.present? %>
+                <p class="mt-2 text-sm text-fg-danger"><%= error %></p>
+              <% end %>
+              <div class="mt-3 flex gap-2">
+                <button form="edit_assets_category"
+                        type="submit"
+                        class="<%= ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>"
+                        data-keep-modal-open="true"
+                        <%= "disabled" unless editing %>>
+                  Guardar
+                </button>
+                <button type="button"
+                        class="inline-flex items-center justify-center rounded-lg border border-default bg-neutral-primary px-4 py-2.5 text-sm font-medium text-body transition-colors hover:bg-neutral-tertiary hover:text-heading"
+                        data-assets-category-cancel
+                        <%= "disabled" unless editing %>>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="py-2 text-sm text-heading">
+      <button type="button"
+              class="<%= option_class %> w-full text-fg-brand <%= "hidden" if adding %>"
+              data-assets-category-select-target="addToggle"
+              data-assets-category-add>
+        Añadir nueva categoría...
+      </button>
+
+      <div class="px-4 py-2 <%= "hidden" unless adding %>" data-assets-category-select-target="addPanel">
+        <label class="mb-2 block text-sm font-medium text-heading" for="assets_category_name">Nueva categoría</label>
+        <input id="assets_category_name"
+               form="new_assets_category"
+               type="text"
+               name="assets_category[name]"
+               value="<%= name_value %>"
+               placeholder="Nombre"
+               class="block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand">
+        <input form="new_assets_category"
+               type="hidden"
+               name="selected_id"
+               value="<%= selected&.id %>"
+               data-selected-mirror>
+        <% if adding && error.present? %>
+          <p class="mt-2 text-sm text-fg-danger"><%= error %></p>
+        <% end %>
+        <div class="mt-3 flex gap-2">
+          <button form="new_assets_category"
+                  type="submit"
+                  class="<%= ApplicationHelper::FLOWBITE_BUTTON_CLASSES %>"
+                  data-keep-modal-open="true">
+            Agregar
+          </button>
+          <button type="button"
+                  class="inline-flex items-center justify-center rounded-lg border border-default bg-neutral-primary px-4 py-2.5 text-sm font-medium text-body transition-colors hover:bg-neutral-tertiary hover:text-heading"
+                  data-assets-category-cancel>
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
