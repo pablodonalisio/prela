@@ -120,6 +120,11 @@ class NativeSelectUpgrade {
     this.menu = document.createElement("div");
     this.menu.id = this.id;
     this.menu.className = `${SELECT_MENU_CLASSES} !z-[70]`;
+    const panel = this.select.closest("[data-cell-menu]");
+    if (panel) {
+      this.menu.classList.add("cell-panel-popover");
+      this.menu.dataset.cellPanel = panel.id;
+    }
     this.list = document.createElement("ul");
     this.list.className = SELECT_LIST_CLASSES;
     this.list.setAttribute("role", "listbox");

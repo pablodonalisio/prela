@@ -1,0 +1,97 @@
+class Section < ApplicationRecord
+  belongs_to :report_template, optional: true
+  belongs_to :report, optional: true
+  belongs_to :section_kind
+
+  has_one :text_section, dependent: :destroy, autosave: true, inverse_of: :section
+  has_one :image_section, dependent: :destroy, autosave: true, inverse_of: :section
+  has_one :table_section, dependent: :destroy, autosave: true, inverse_of: :section
+  has_one :list_section, dependent: :destroy, autosave: true, inverse_of: :section
+
+  accepts_nested_attributes_for :text_section, :image_section, :table_section, :list_section, allow_destroy: true
+
+  attr_accessor :source_section_id
+
+  validates :title, presence: true
+  validates :position, numericality: {only_integer: true, greater_than_or_equal_to: 0}
+  validate :exactly_one_owner
+
+  before_validation :sync_kind_detail
+
+  scope :with_details, -> {
+    includes(
+      :section_kind,
+      :text_section,
+      {image_section: {images_attachments: :blob}},
+      {table_section: [:table_labels, {table_cells: :table_cell_options}]},
+      {list_section: :list_items}
+    )
+  }
+
+  def text?
+    section_kind&.key == "text"
+  end
+
+  def images?
+    section_kind&.key == "images"
+  end
+
+  def table?
+    section_kind&.key == "table"
+  end
+
+  def list?
+    section_kind&.key == "list"
+  end
+
+  def input_key
+    source_section_id.presence || id
+  end
+
+  private
+
+  def exactly_one_owner
+    has_template = report_template_id.present? || report_template.present?
+    has_report = report_id.present? || report.present?
+    return if has_template ^ has_report
+
+    errors.add(:base, "La sección debe pertenecer a una plantilla o a un informe.")
+  end
+
+  def sync_kind_detail
+    return if section_kind.blank? || marked_for_destruction?
+
+    keeper = detail_name_for(section_kind.key)
+    return if keeper.blank?
+
+    %i[text_section image_section table_section list_section].each do |detail|
+      record = public_send(detail)
+      next if record.nil? || detail == keeper
+
+      record.mark_for_destruction
+    end
+
+    kept = public_send(keeper)
+    return if kept.present? && !kept.marked_for_destruction?
+
+    case keeper
+    when :text_section
+      build_text_section
+    when :image_section
+      build_image_section
+    when :table_section
+      build_table_section(row_count: 1, column_count: 1)
+    when :list_section
+      build_list_section
+    end
+  end
+
+  def detail_name_for(key)
+    {
+      "text" => :text_section,
+      "images" => :image_section,
+      "table" => :table_section,
+      "list" => :list_section
+    }[key]
+  end
+end

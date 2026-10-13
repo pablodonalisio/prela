@@ -2,7 +2,7 @@ class ReportTemplatesController < ApplicationController
   before_action :set_report_template, only: %i[edit update destroy]
 
   def index
-    @report_templates = policy_scope(ReportTemplate)
+    @report_templates = policy_scope(ReportTemplate).includes(:sections)
   end
 
   def new
@@ -15,26 +15,18 @@ class ReportTemplatesController < ApplicationController
   def create
     @report_template = authorize ReportTemplate.new(report_template_params)
 
-    respond_to do |format|
-      if @report_template.save
-        format.html { redirect_to report_templates_path, notice: "La plantilla de informe se creó correctamente." }
-        format.turbo_stream { flash.now[:notice] = "La plantilla de informe se creó correctamente." }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render :form_update, status: :unprocessable_entity }
-      end
+    if @report_template.save
+      redirect_to report_templates_path, notice: "La plantilla de informe se creó correctamente."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
   def update
-    respond_to do |format|
-      if @report_template.update(report_template_params)
-        format.html { redirect_to report_templates_path, notice: "La plantilla de informe se actualizó correctamente.", status: :see_other }
-        format.turbo_stream { flash.now[:notice] = "La plantilla de informe se actualizó correctamente." }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render :form_update, status: :unprocessable_entity }
-      end
+    if @report_template.update(report_template_params)
+      redirect_to report_templates_path, notice: "La plantilla de informe se actualizó correctamente.", status: :see_other
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -47,23 +39,6 @@ class ReportTemplatesController < ApplicationController
     end
   end
 
-  def add_field
-    @section = section_param
-    @field_key = ReportTemplate.generate_field_key
-
-    respond_to do |format|
-      format.turbo_stream
-    end
-  end
-
-  def remove_field
-    @field_key = params[:field_key]
-
-    respond_to do |format|
-      format.turbo_stream
-    end
-  end
-
   private
 
   def set_report_template
@@ -71,24 +46,25 @@ class ReportTemplatesController < ApplicationController
   end
 
   def report_template_params
-    permitted = params.require(:report_template).permit(
+    params.require(:report_template).permit(
       :name,
-      equipment_specifications: {},
-      location_specifications: {},
-      measurements: {},
-      room_specifications: {},
-      report_template_tasks_attributes: %i[id name position _destroy]
+      sections_attributes: [
+        :id, :title, :position, :section_kind_id, :_destroy,
+        text_section_attributes: %i[id _destroy],
+        image_section_attributes: %i[id _destroy],
+        list_section_attributes: [
+          :id, :_destroy,
+          {list_items_attributes: %i[id name position _destroy]}
+        ],
+        table_section_attributes: [
+          :id, :row_count, :column_count, :_destroy,
+          table_cells_attributes: [
+            :id, :row_index, :column_index, :value_type, :value, :for_metrics, :fixed, :choice, :_destroy,
+            {table_cell_options_attributes: %i[id value label _destroy]}
+          ],
+          table_labels_attributes: %i[id axis position label _destroy]
+        ]
+      ]
     )
-
-    ReportTemplate::SECTIONS.each do |section|
-      permitted[section.to_sym] ||= {}
-    end
-
-    permitted
-  end
-
-  def section_param
-    section = params.fetch(:section, ReportTemplate::SECTIONS.first)
-    ReportTemplate::SECTIONS.include?(section) ? section : ReportTemplate::SECTIONS.first
   end
 end

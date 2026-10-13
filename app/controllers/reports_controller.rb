@@ -25,7 +25,7 @@ class ReportsController < ApplicationController
     assign_report_attributes
 
     if @report.save
-      location_equipment.associate_report_template!(@report.report_template) if @report.template_based?
+      location_equipment.associate_report_template!(@report.report_template) if @report.template_based? && @report.report_template
       return report_pdf_error if legacy_mode? && !attach_pdf
 
       respond_to do |format|
@@ -41,16 +41,18 @@ class ReportsController < ApplicationController
 
   def edit
     @report = authorize report
+    preload_template_sections if @report.template_based?
     load_template_form_data if @report.template_based?
   end
 
   def update
     @report = authorize report
     prepare_report_signatures
+    @report.section_inputs = section_inputs_param if @report.template_based?
 
     if @report.update(report_update_params)
       purge_removed_images
-      location_equipment.associate_report_template!(@report.report_template) if @report.template_based?
+      location_equipment.associate_report_template!(@report.report_template) if @report.template_based? && @report.report_template
       return report_pdf_error if !@report.template_based? && !attach_pdf
 
       respond_to do |format|
@@ -72,11 +74,6 @@ class ReportsController < ApplicationController
     @report_template = ReportTemplate.find(params[:report_template_id])
     @report = report_for_template_fields
     @report.report_template = @report_template
-    if @report.new_record?
-      @report.build_tasks_from_template!
-      @report.build_comments_from_previous_report!
-    end
-
     render :template_fields, layout: false
   end
 
@@ -101,6 +98,7 @@ class ReportsController < ApplicationController
   def assign_report_attributes
     if template_create? || (@report.persisted? && @report.template_based?)
       @report.assign_attributes(template_report_params)
+      @report.section_inputs = section_inputs_param
     else
       @report.assign_attributes(legacy_report_params)
     end
@@ -133,11 +131,15 @@ class ReportsController < ApplicationController
   def load_template_form_data
     @associated_templates = location_equipment.report_templates.order(:name)
     @all_templates = ReportTemplate.order(:name)
-    @report.report_template ||= @associated_templates.first || @all_templates.first
-    return unless @report.new_record? && @report.report_template.present?
+    return if @report.persisted?
 
-    @report.build_tasks_from_template! if @report.report_tasks.empty?
-    @report.build_comments_from_previous_report! if @report.report_comments.empty?
+    @report.report_template ||= @associated_templates.first || @all_templates.first
+  end
+
+  def preload_template_sections
+    return if @report.sections.loaded?
+
+    @report.sections.with_details.load
   end
 
   def shared_report_params
@@ -148,17 +150,50 @@ class ReportsController < ApplicationController
     params.require(:report).permit(
       :date,
       :report_template_id,
-      field_values: {
-        equipment_specifications: {},
-        location_specifications: {},
-        measurements: {},
-        room_specifications: {}
-      },
-      report_tasks_attributes: %i[id name completed position _destroy],
-      report_comments_attributes: %i[id description position _destroy],
-      images: [],
       signature_ids: []
     )
+  end
+
+  def section_inputs_param
+    raw = params.dig(:report, :section_inputs)
+    return {} if raw.blank?
+
+    raw.to_unsafe_h.each_with_object({}) do |(section_id, values), result|
+      next unless section_id.to_s.match?(/\A\d+\z/)
+
+      values = values.to_h.stringify_keys
+      payload = {}
+      payload["body"] = values["body"].to_s if values.key?("body")
+      payload["images"] = extract_section_images(values["images"]) if values.key?("images")
+      payload["removed_image_ids"] = Array(values["removed_image_ids"]).map(&:to_s).reject(&:blank?) if values.key?("removed_image_ids")
+      payload["cells"] = extract_section_cells(values["cells"]) if values.key?("cells")
+      payload["items"] = extract_section_items(values["items"]) if values.key?("items")
+      result[section_id.to_s] = payload
+    end
+  end
+
+  def extract_section_images(images)
+    Array(images).select { |image| image.present? }
+  end
+
+  def extract_section_items(items)
+    return {} if items.blank?
+
+    items.to_h.each_with_object({}) do |(id, item), result|
+      next unless id.to_s.match?(/\A\d+\z/)
+
+      result[id.to_s] = {"checked" => item.to_h.stringify_keys["checked"].to_s}
+    end
+  end
+
+  def extract_section_cells(cells)
+    return {} if cells.blank?
+
+    cells.to_h.each_with_object({}) do |(key, cell), result|
+      next unless key.to_s.match?(/\A\d+_\d+\z/)
+
+      result[key.to_s] = {"value" => cell.to_h.stringify_keys["value"].to_s}
+    end
   end
 
   def report_signatures

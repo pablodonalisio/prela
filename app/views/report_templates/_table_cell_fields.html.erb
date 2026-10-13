@@ -1,0 +1,105 @@
+<%# locals: (f:, row_index: nil, column_index: nil, menu_id: nil) %>
+<% row_index = row_index.nil? ? f.object.row_index : row_index %>
+<% column_index = column_index.nil? ? f.object.column_index : column_index %>
+<% menu_id = menu_id.presence || "cell-panel-#{f.object.object_id}-#{row_index}-#{column_index}" %>
+<% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2 text-sm text-heading" %>
+<% radio_classes = "h-4 w-4 rounded-full border-default bg-neutral-secondary-medium text-brand focus:ring-2 focus:ring-brand disabled:cursor-not-allowed" %>
+<% radio_label_classes = "ms-2 select-none text-sm font-medium text-heading" %>
+<% choice = f.object.choice %>
+<% type_label = t("activerecord.attributes.equipment_kind.field_types.#{f.object.value_type}", default: "Texto") %>
+<% summary = [type_label] %>
+<% summary << f.object.value if f.object.fixed? && f.object.value.present? %>
+<% summary << "Métricas" if f.object.for_metrics? %>
+<div class="relative" data-cell data-row="<%= row_index %>" data-col="<%= column_index %>" data-action="pointerdown->table-grid#prepareRadio click->table-grid#releaseRadio change->table-grid#syncCell input->table-grid#syncCell">
+  <%= f.hidden_field :id, data: {name: "id"} %>
+  <%= f.hidden_field :row_index, value: row_index, data: {name: "row_index"} %>
+  <%= f.hidden_field :column_index, value: column_index, data: {name: "column_index"} %>
+  <%= f.hidden_field :_destroy, value: "0", data: {name: "_destroy"} %>
+
+  <button type="button"
+          class="w-full rounded-lg border border-default bg-neutral-secondary-medium px-2 py-1.5 text-left text-sm text-heading <%= "border-red-500" if f.object.errors.any? %>"
+          data-cell-trigger="<%= menu_id %>"
+          data-cell-summary>
+    <%= summary.join(" · ") %>
+  </button>
+
+  <div id="<%= menu_id %>"
+       class="z-50 hidden w-64 rounded-lg border border-default bg-neutral-primary p-3 shadow-lg"
+       data-cell-menu>
+    <label class="mb-1 block text-xs font-medium text-body">Tipo de valor</label>
+    <select class="<%= input_classes %> mb-3"
+            name="<%= f.object_name %>[value_type]"
+            data-name="value_type">
+      <% TableCell::VALUE_TYPES.each do |type| %>
+        <option value="<%= type %>" <%= "selected" if f.object.value_type == type %>><%= t("activerecord.attributes.equipment_kind.field_types.#{type}") %></option>
+      <% end %>
+    </select>
+
+    <fieldset data-boolean-options class="mb-3 mt-2 space-y-2 <%= "hidden" unless f.object.boolean? %>" <%= "disabled" unless f.object.boolean? %>>
+      <% [true, false].each do |state| %>
+        <% option = f.object.ensure_option(state) %>
+        <%= f.fields_for :table_cell_options, option, child_index: (state ? "1" : "0") do |option_form| %>
+          <div data-boolean-option data-boolean-value="<%= state %>">
+            <%= option_form.hidden_field :id, data: {name: "id"} %>
+            <%= option_form.hidden_field :value, value: state, data: {name: "option_value"} %>
+            <label class="mb-1 block text-xs font-medium text-body"><%= state ? "Verdadero" : "Falso" %></label>
+            <input class="<%= input_classes %>"
+                   type="text"
+                   name="<%= option_form.object_name %>[label]"
+                   value="<%= option.label %>"
+                   placeholder="<%= state ? "Sí" : "No" %>"
+                   aria-label="<%= state ? "Texto del valor verdadero" : "Texto del valor falso" %>"
+                   data-name="label">
+          </div>
+        <% end %>
+      <% end %>
+    </fieldset>
+
+    <input type="hidden" name="<%= f.object_name %>[choice]" value="">
+    <div class="mb-2 mt-2 flex items-center <%= "cursor-not-allowed opacity-50" unless f.object.fixable? %>" data-fixed-row>
+      <input id="<%= menu_id %>-fixed"
+             class="<%= radio_classes %>"
+             type="radio"
+             name="<%= f.object_name %>[choice]"
+             value="fixed"
+             data-name="fixed"
+             <%= "checked" if choice == "fixed" && f.object.fixable? %>
+             <%= "disabled" unless f.object.fixable? %>>
+      <label class="<%= radio_label_classes %>" for="<%= menu_id %>-fixed">Valor fijo</label>
+    </div>
+    <% if f.object.errors[:fixed].any? %>
+      <p class="mb-2 text-sm text-red-500"><%= f.object.errors[:fixed].to_sentence %></p>
+    <% end %>
+
+    <div data-value-wrap class="<%= ["mb-3", ("hidden" unless f.object.fixed?)].compact.join(" ") %>">
+      <label class="mb-1 block text-xs font-medium text-body">Valor</label>
+      <input class="<%= input_classes %> <%= "border-red-500" if f.object.errors[:value].any? %>"
+             type="text"
+             name="<%= f.object_name %>[value]"
+             value="<%= f.object.fixed? ? f.object.value : nil %>"
+             inputmode="<%= "numeric" if f.object.value_type == "integer" %>"
+             autocomplete="off"
+             data-controller="integer-field"
+             data-action="beforeinput->integer-field#block input->integer-field#filter"
+             data-name="value">
+      <% if f.object.errors[:value].any? %>
+        <p class="mt-1 text-sm text-red-500"><%= f.object.errors[:value].to_sentence %></p>
+      <% end %>
+    </div>
+
+    <div class="flex items-center <%= "cursor-not-allowed opacity-50" unless f.object.numeric? %>" data-metrics-row>
+      <input id="<%= menu_id %>-metrics"
+             class="<%= radio_classes %>"
+             type="radio"
+             name="<%= f.object_name %>[choice]"
+             value="metrics"
+             data-name="for_metrics"
+             <%= "checked" if choice == "metrics" %>
+             <%= "disabled" unless f.object.numeric? %>>
+      <label class="<%= radio_label_classes %>" for="<%= menu_id %>-metrics">Métricas</label>
+    </div>
+    <% if f.object.errors[:for_metrics].any? %>
+      <p class="mt-1 text-sm text-red-500"><%= f.object.errors[:for_metrics].to_sentence %></p>
+    <% end %>
+  </div>
+</div>
