@@ -160,6 +160,35 @@ RSpec.describe ServiceOccurrence, type: :model do
     end
   end
 
+  describe ".earliest_pending_or_scheduled_on" do
+    it "returns the earliest pending due_on or scheduled start date" do
+      create(:service_occurrence, due_on: Date.current + 10)
+      scheduled = create(:service_occurrence, :scheduled,
+        planned_on_init: (Date.current + 3).in_time_zone.change(hour: 9, min: 0, sec: 0),
+        due_on: Date.current + 30)
+      create(:service_occurrence, :suspended, due_on: Date.current - 10)
+      create(:service_occurrence, :completed, due_on: Date.current - 20, completed_on: Date.current - 20)
+
+      expect(described_class.earliest_pending_or_scheduled_on).to eq(scheduled.planned_on_init.to_date)
+    end
+
+    it "uses a pending due_on when it is earlier than every scheduled start" do
+      pending = create(:service_occurrence, due_on: Date.current - 5)
+      create(:service_occurrence, :scheduled,
+        planned_on_init: (Date.current + 3).in_time_zone.change(hour: 9, min: 0, sec: 0),
+        due_on: Date.current + 30)
+
+      expect(described_class.earliest_pending_or_scheduled_on).to eq(pending.due_on)
+    end
+
+    it "is nil when there is no pending or scheduled occurrence" do
+      create(:service_occurrence, :suspended, due_on: Date.current)
+      create(:service_occurrence, :completed, due_on: Date.current, completed_on: Date.current)
+
+      expect(described_class.earliest_pending_or_scheduled_on).to be_nil
+    end
+  end
+
   describe "#service_date" do
     it "uses planned_on_init when scheduled" do
       init = Time.current.change(hour: 9, min: 0, sec: 0)
