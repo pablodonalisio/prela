@@ -73,6 +73,8 @@ RSpec.describe ServiceOccurrences::Update do
   end
 
   describe "schedule" do
+    let(:technician) { create(:technician) }
+
     it "moves pending to scheduled with start and finish datetimes" do
       init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
       finish = init.change(hour: 10, min: 30)
@@ -82,7 +84,8 @@ RSpec.describe ServiceOccurrences::Update do
           occurrence,
           status: :scheduled,
           planned_on_init: init,
-          planned_on_finish: finish
+          planned_on_finish: finish,
+          technician_ids: [technician.id]
         )
       ).to be(true)
 
@@ -90,6 +93,7 @@ RSpec.describe ServiceOccurrences::Update do
       expect(occurrence).to be_scheduled
       expect(occurrence.planned_on_init).to eq(init)
       expect(occurrence.planned_on_finish).to eq(finish)
+      expect(occurrence.technicians).to contain_exactly(technician)
     end
 
     it "requires planned_on_init and planned_on_finish" do
@@ -107,7 +111,8 @@ RSpec.describe ServiceOccurrences::Update do
           occurrence,
           status: :scheduled,
           planned_on_init: init.strftime("%Y-%m-%dT%H:%M"),
-          planned_on_finish: finish.strftime("%Y-%m-%dT%H:%M")
+          planned_on_finish: finish.strftime("%Y-%m-%dT%H:%M"),
+          technician_ids: [technician.id]
         )
       ).to be(true)
 
@@ -125,7 +130,8 @@ RSpec.describe ServiceOccurrences::Update do
           occurrence,
           status: :scheduled,
           planned_on_init: init,
-          planned_on_finish: finish
+          planned_on_finish: finish,
+          technician_ids: [technician.id]
         )
       ).to be(true)
 
@@ -155,17 +161,120 @@ RSpec.describe ServiceOccurrences::Update do
           occurrence,
           status: :scheduled,
           planned_on_init: init,
-          planned_on_finish: init + 1.hour
+          planned_on_finish: init + 1.hour,
+          technician_ids: [technician.id]
         )
       ).to be(true)
       expect(occurrence.reload).to be_scheduled
     end
   end
 
+  describe "technicians" do
+    let(:technician) { create(:technician) }
+    let(:init) { 1.week.from_now.change(hour: 9, min: 0, sec: 0) }
+    let(:finish) { init.change(hour: 10, min: 30) }
+
+    def schedule(record, technician_ids:, planned_on_init: init, planned_on_finish: finish)
+      described_class.call(
+        record,
+        status: :scheduled,
+        planned_on_init: planned_on_init,
+        planned_on_finish: planned_on_finish,
+        technician_ids: technician_ids
+      )
+    end
+
+    it "rejects a schedule without technicians" do
+      expect(schedule(occurrence, technician_ids: [])).to be(false)
+      expect(occurrence.errors[:technicians]).to be_present
+      expect(occurrence.reload).to be_pending
+    end
+
+    it "rejects a user who is not a technician" do
+      admin = create(:admin)
+
+      expect(schedule(occurrence, technician_ids: [admin.id])).to be(false)
+      expect(occurrence.errors[:technicians]).to be_present
+      expect(occurrence.reload).to be_pending
+    end
+
+    it "rejects a technician who is already scheduled in an overlapping window" do
+      other = create(:service_occurrence, :scheduled,
+        location_equipment_service: create(:location_equipment_service, location_equipment: location_equipment),
+        planned_on_init: init.change(hour: 10),
+        planned_on_finish: init.change(hour: 11))
+      create(:service_occurrence_assignment, service_occurrence: other, user: technician)
+
+      expect(schedule(occurrence, technician_ids: [technician.id])).to be(false)
+      expect(occurrence.errors.full_messages_for(:technicians).join).to include(technician.email)
+      expect(occurrence.reload).to be_pending
+      expect(occurrence.technicians).to be_empty
+    end
+
+    it "names only the technicians who are already booked" do
+      free = create(:technician, email: "libre@prela.test")
+      other = create(:service_occurrence, :scheduled,
+        location_equipment_service: create(:location_equipment_service, location_equipment: location_equipment),
+        planned_on_init: init.change(hour: 10),
+        planned_on_finish: init.change(hour: 11))
+      create(:service_occurrence_assignment, service_occurrence: other, user: technician)
+
+      expect(schedule(occurrence, technician_ids: [technician.id, free.id])).to be(false)
+
+      message = occurrence.errors.full_messages_for(:technicians).join
+      expect(message).to include(technician.email)
+      expect(message).not_to include(free.email)
+    end
+
+    it "names an unavailable technician by name" do
+      technician.update!(name: "Ana", last_name: "Pérez")
+      other = create(:service_occurrence, :scheduled,
+        location_equipment_service: create(:location_equipment_service, location_equipment: location_equipment),
+        planned_on_init: init.change(hour: 10),
+        planned_on_finish: init.change(hour: 11))
+      create(:service_occurrence_assignment, service_occurrence: other, user: technician)
+
+      expect(schedule(occurrence, technician_ids: [technician.id])).to be(false)
+      expect(occurrence.errors.full_messages_for(:technicians).join).to include("Ana Pérez")
+    end
+
+    it "allows a window that only touches the previous job at the boundary" do
+      other = create(:service_occurrence, :scheduled,
+        location_equipment_service: create(:location_equipment_service, location_equipment: location_equipment),
+        planned_on_init: init,
+        planned_on_finish: finish)
+      create(:service_occurrence_assignment, service_occurrence: other, user: technician)
+
+      expect(
+        schedule(
+          occurrence,
+          technician_ids: [technician.id],
+          planned_on_init: finish,
+          planned_on_finish: finish + 1.hour
+        )
+      ).to be(true)
+      expect(occurrence.reload.technicians).to contain_exactly(technician)
+    end
+
+    it "allows the same technician when the other occurrence is completed" do
+      other = create(:service_occurrence, :scheduled,
+        location_equipment_service: create(:location_equipment_service, location_equipment: location_equipment),
+        planned_on_init: init,
+        planned_on_finish: finish)
+      create(:service_occurrence_assignment, service_occurrence: other, user: technician)
+      other.update!(status: :completed, completed_on: Date.current)
+
+      expect(schedule(occurrence, technician_ids: [technician.id])).to be(true)
+      expect(occurrence.reload.technicians).to contain_exactly(technician)
+    end
+  end
+
   describe "revert" do
     it "returns scheduled to pending and clears the schedule, and updates notes" do
       init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
+      technician = create(:technician)
       occurrence.update!(status: :scheduled, planned_on_init: init, planned_on_finish: init.change(hour: 10, min: 30), notes: "Visita original")
+      create(:service_occurrence_assignment, service_occurrence: occurrence, user: technician)
 
       expect(described_class.call(occurrence, status: :pending, notes: "Reprogramar")).to be(true)
 
@@ -174,6 +283,7 @@ RSpec.describe ServiceOccurrences::Update do
       expect(occurrence.planned_on_init).to be_nil
       expect(occurrence.planned_on_finish).to be_nil
       expect(occurrence.notes).to eq("Reprogramar")
+      expect(occurrence.technicians).to be_empty
     end
   end
 
@@ -230,13 +340,16 @@ RSpec.describe ServiceOccurrences::Update do
     it "completes from a scheduled occurrence and keeps the schedule" do
       init = 1.week.from_now.change(hour: 9, min: 0, sec: 0)
       finish = init.change(hour: 10, min: 30)
+      technician = create(:technician)
       occurrence.update!(status: :scheduled, planned_on_init: init, planned_on_finish: finish)
+      create(:service_occurrence_assignment, service_occurrence: occurrence, user: technician)
 
       expect(described_class.call(occurrence, status: :completed, completed_on: Date.current)).to be(true)
       occurrence.reload
       expect(occurrence).to be_completed
       expect(occurrence.planned_on_init).to eq(init)
       expect(occurrence.planned_on_finish).to eq(finish)
+      expect(occurrence.technicians).to contain_exactly(technician)
       expect(recurring_les.service_occurrences.pending).to exist
     end
   end

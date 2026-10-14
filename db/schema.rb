@@ -444,6 +444,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.index ["normalized_name"], name: "index_service_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
   end
 
+  create_table "service_occurrence_assignments", force: :cascade do |t|
+    t.bigint "service_occurrence_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["service_occurrence_id", "user_id"], name: "index_service_occurrence_assignments_uniqueness", unique: true
+    t.index ["service_occurrence_id"], name: "index_service_occurrence_assignments_on_service_occurrence_id"
+    t.index ["user_id"], name: "index_service_occurrence_assignments_on_user_id"
+  end
+
   create_table "service_occurrences", force: :cascade do |t|
     t.bigint "location_equipment_service_id", null: false
     t.date "due_on", null: false
@@ -525,6 +535,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.integer "role", default: 0, null: false
     t.bigint "client_id"
     t.boolean "editor"
+    t.string "name"
+    t.string "last_name"
     t.index ["client_id"], name: "index_users_on_client_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -570,6 +582,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
   add_foreign_key "reports_signatures", "reports"
   add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
+  add_foreign_key "service_occurrence_assignments", "service_occurrences"
+  add_foreign_key "service_occurrence_assignments", "users"
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "signatures", "users"
   add_foreign_key "taggings", "tags"

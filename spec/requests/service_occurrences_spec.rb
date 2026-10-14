@@ -13,6 +13,7 @@ RSpec.describe "ServiceOccurrences", type: :request do
   end
 
   let(:les) { location_equipment.location_equipment_service_for(:service) }
+  let(:technician) { create(:technician) }
   let!(:pending_occurrence) {
     les.service_occurrences.pending.destroy_all
     create(:service_occurrence, location_equipment_service: les, due_on: 1.month.from_now.to_date)
@@ -98,7 +99,8 @@ RSpec.describe "ServiceOccurrences", type: :request do
           service_occurrence: {
             status: "scheduled",
             planned_on_init: init.strftime("%Y-%m-%dT%H:%M"),
-            planned_on_finish: finish.strftime("%Y-%m-%dT%H:%M")
+            planned_on_finish: finish.strftime("%Y-%m-%dT%H:%M"),
+            technician_ids: [technician.id]
           }
         },
         headers: {"Accept" => "text/vnd.turbo-stream.html"}
@@ -107,9 +109,39 @@ RSpec.describe "ServiceOccurrences", type: :request do
       expect(pending_occurrence).to be_scheduled
       expect(pending_occurrence.planned_on_init.strftime("%Y-%m-%dT%H:%M")).to eq(init.strftime("%Y-%m-%dT%H:%M"))
       expect(pending_occurrence.planned_on_finish.strftime("%Y-%m-%dT%H:%M")).to eq(finish.strftime("%Y-%m-%dT%H:%M"))
+      expect(pending_occurrence.technicians).to contain_exactly(technician)
       expect(response).to have_http_status(:success)
       expect(response.body).to include("08:30")
       expect(response.body).to include("11:00")
+      expect(response.body).to include(technician.email)
+    end
+
+    it "rejects a technician who is already scheduled in that window" do
+      init = 1.week.from_now.change(hour: 8, min: 30, sec: 0)
+      finish = init.change(hour: 11, min: 0)
+      other_les = create(:location_equipment_service, location_equipment: location_equipment)
+      other = create(:service_occurrence, :scheduled,
+        location_equipment_service: other_les,
+        planned_on_init: init,
+        planned_on_finish: finish)
+      create(:service_occurrence_assignment, service_occurrence: other, user: technician)
+
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {
+          intent: "schedule",
+          service_occurrence: {
+            status: "scheduled",
+            planned_on_init: init.strftime("%Y-%m-%dT%H:%M"),
+            planned_on_finish: finish.strftime("%Y-%m-%dT%H:%M"),
+            technician_ids: [technician.id]
+          }
+        },
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(pending_occurrence.reload).to be_pending
+      expect(response.body).to include(technician.email)
+      expect(response.body).to include("no está disponible en ese horario")
     end
 
     it "rejects a schedule without datetimes" do
