@@ -2,6 +2,7 @@ class LocationEquipment < ApplicationRecord
   include Discard::Model
   include Filterable
   include Taggable
+  include QrScannable
 
   has_paper_trail
 
