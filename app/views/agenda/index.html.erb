@@ -7,28 +7,34 @@
     <% if @agenda_services.blank? %>
       <p class="my-4 text-center text-sm text-body-subtle">No hay servicios en este período</p>
     <% else %>
-      <div class="mt-4 overflow-x-auto">
-        <div class="overflow-hidden rounded-xl border border-default">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-neutral-secondary-medium text-xs uppercase tracking-wide text-body-subtle">
-              <tr>
-                <th class="px-4 py-3 font-semibold">Inicio</th>
-                <th class="px-4 py-3 font-semibold">Fin</th>
-                <th class="px-4 py-3 font-semibold">Cliente</th>
-                <th class="px-4 py-3 font-semibold">Sede</th>
-                <th class="px-4 py-3 font-semibold">Equipo</th>
-                <th class="px-4 py-3 font-semibold">Tipo</th>
-                <th class="px-4 py-3 font-semibold">Prioridad</th>
-                <th class="px-4 py-3 font-semibold">Notas</th>
-                <th class="px-4 py-3 font-semibold"></th>
-                <th class="px-4 py-3 font-semibold"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= render partial: "agenda/row", collection: @agenda_services, as: :service_occurrence %>
-            </tbody>
-          </table>
+      <div class="mt-4" data-controller="scroll-to-list">
+        <div id="agenda_services"
+             class="scroll-mt-20 overflow-x-auto md:scroll-mt-28"
+             data-scroll-to-list-target="list">
+          <div class="overflow-hidden rounded-xl border border-default">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-neutral-secondary-medium text-xs uppercase tracking-wide text-body-subtle">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Inicio</th>
+                  <th class="px-4 py-3 font-semibold">Fin</th>
+                  <th class="px-4 py-3 font-semibold">Cliente</th>
+                  <th class="px-4 py-3 font-semibold">Sede</th>
+                  <th class="px-4 py-3 font-semibold">Equipo</th>
+                  <th class="px-4 py-3 font-semibold">Tipo</th>
+                  <th class="px-4 py-3 font-semibold">Prioridad</th>
+                  <th class="px-4 py-3 font-semibold">Notas</th>
+                  <th class="px-4 py-3 font-semibold"></th>
+                  <th class="px-4 py-3 font-semibold"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= render partial: "agenda/row", collection: @agenda_services, as: :service_occurrence %>
+              </tbody>
+            </table>
+          </div>
         </div>
+
+        <%= render "shared/pagination", pagy: @pagy %>
       </div>
     <% end %>
   </div>

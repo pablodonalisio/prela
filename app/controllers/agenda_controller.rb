@@ -6,11 +6,12 @@ class AgendaController < ApplicationController
     @to = parse_date(params[:to]) || (Date.current + 90)
 
     scope = policy_scope(ServiceOccurrence.filter(service_filter_params))
-    @agenda_services = scope.for_agenda(@from..@to)
+    agenda = scope.for_agenda(@from..@to)
       .includes(location_equipment_service: {
         location_equipment: [:equipment, {location: :client}],
         service_kind: []
       })
+    @pagy, @agenda_services = pagy(agenda)
   end
 
   private
