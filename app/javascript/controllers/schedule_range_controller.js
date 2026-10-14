@@ -19,8 +19,9 @@ export default class extends Controller {
     const finish = this.#output(this.finishTarget)
     if (!start || !finish) return
 
-    const timeBlank = this.#timeInput(this.finishTarget).value.trim() === ""
-    if (finish.slice(0, 10) < start.slice(0, 10) || (!timeBlank && finish <= start)) {
+    // A blank or earlier clock time must not wipe the finish date. Only a
+    // finish day before the start day is a date problem.
+    if (finish.slice(0, 10) < start.slice(0, 10)) {
       this.#clear(this.finishTarget)
     }
   }
