@@ -1,0 +1,10 @@
+<% url = qr_url(token: @qr_token.token) %>
+<% svg = RQRCode::QRCode.new(url).as_svg(viewbox: true, use_path: true, svg_attributes: {class: "h-48 w-48"}) %>
+<% svg = svg.sub(/(<svg\b[^>]*>)/, "\\1<title>#{ERB::Util.html_escape(url)}</title>") %>
+<div class="mx-auto max-w-sm p-6 text-center">
+  <%= render "#{@scannable.model_name.collection}/qr_label", location_equipment: @scannable %>
+  <div class="mt-8 flex justify-center">
+    <%= raw svg %>
+  </div>
+  <button type="button" class="no-print mt-8 inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-medium text-white hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft" onclick="window.print()">Imprimir</button>
+</div>

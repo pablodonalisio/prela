@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     resources :contacts, except: [:index, :show]
   end
   resources :location_equipments do
+    resource :qr_token, only: [:show]
     get :field_inputs, on: :collection
     get :location_inputs, on: :collection
     resources :reports do

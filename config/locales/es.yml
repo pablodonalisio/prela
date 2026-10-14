@@ -34,6 +34,8 @@ es:
         location_id: "Sede"
         equipment: "Equipo"
         equipment_id: "Equipo"
+        zone: "Sala"
+        floor: "Piso"
         serial_number: "Número de serie"
         code: "Código"
         details: "Detalles"

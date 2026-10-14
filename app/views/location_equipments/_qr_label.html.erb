@@ -1,0 +1,21 @@
+<h1 class="text-xl font-bold"><%= location_equipment.equipment.name %></h1>
+<p class="mt-2 text-sm"><%= location_equipment.location.client.name %></p>
+<p class="text-sm"><%= location_equipment.location.name %></p>
+<dl class="mt-4 space-y-1 text-sm">
+  <div class="flex justify-between gap-4">
+    <dt><%= LocationEquipment.human_attribute_name(:zone) %></dt>
+    <dd><%= location_equipment.zone.presence || "—" %></dd>
+  </div>
+  <div class="flex justify-between gap-4">
+    <dt><%= LocationEquipment.human_attribute_name(:floor) %></dt>
+    <dd><%= location_equipment.floor.presence || "—" %></dd>
+  </div>
+  <div class="flex justify-between gap-4">
+    <dt><%= LocationEquipment.human_attribute_name(:serial_number) %></dt>
+    <dd><%= location_equipment.serial_number.presence || "—" %></dd>
+  </div>
+  <div class="flex justify-between gap-4">
+    <dt><%= LocationEquipment.human_attribute_name(:code) %></dt>
+    <dd><%= location_equipment.code.presence || "—" %></dd>
+  </div>
+</dl>

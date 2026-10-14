@@ -92,6 +92,7 @@ gem "prawn-table"
 
 gem "pundit", "~> 2.3"
 gem "discard", "~> 1.4"
+gem "rqrcode"
 gem "pagy", "~> 9.3"
 gem "paper_trail"
 
