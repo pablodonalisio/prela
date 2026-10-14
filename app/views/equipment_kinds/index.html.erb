@@ -7,15 +7,9 @@
     <% end %>
   <% end %>
 
-  <%= turbo_frame_tag "equipment_kinds", class: "mx-4 mt-4 flex flex-col gap-2 md:mx-6" do %>
-    <% if @equipment_kinds.any? %>
-      <%= render @equipment_kinds %>
-    <% else %>
-      <%= render "shared/empty_collection",
-                 id: "equipment_kinds_empty",
-                 message: "No hay tipos de activos todavía.",
-                 action_text: current_user.admin? ? "Agregar" : nil,
-                 action_path: current_user.admin? ? new_equipment_kind_path : nil %>
-    <% end %>
-  <% end %>
+  <div class="mx-4 mt-4 w-full max-w-xs md:mx-6">
+    <%= render "filter_form" %>
+  </div>
+
+  <%= render "list" %>
 <% end %>
