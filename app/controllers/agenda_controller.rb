@@ -7,9 +7,11 @@ class AgendaController < ApplicationController
 
     scope = policy_scope(ServiceOccurrence.filter(service_filter_params))
     agenda = scope.for_agenda(@from..@to)
-      .includes(location_equipment_service: {
-        location_equipment: [:equipment, {location: :client}],
-        service_kind: []
+      .includes(
+        :technicians,
+        location_equipment_service: {
+          location_equipment: [:equipment, {location: :client}],
+          service_kind: []
       })
     @pagy, @agenda_services = pagy(agenda)
   end

@@ -1,4 +1,5 @@
 <%= content_tag :tr, id: dom_id(user), class: "border-t border-default" do %>
+  <td class="px-4 py-3 align-middle text-heading"><%= [user.name, user.last_name].compact_blank.join(" ").presence || "—" %></td>
   <td class="px-4 py-3 align-middle text-heading"><%= user.email %></td>
   <td class="px-4 py-3 align-middle text-body"><%= user.full_role %></td>
   <td class="px-4 py-3 align-middle text-body"><%= user.client&.name %></td>

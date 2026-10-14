@@ -8,13 +8,14 @@ import { Controller } from "@hotwired/stimulus";
 // would miss content injected later by the frame.
 export default class extends Controller {
   connect() {
-    const Modal = window.Flowbite?.Modal ?? window.Flowbite?.default?.Modal ?? window.Modal;
+    const Modal =
+      window.Flowbite?.Modal ?? window.Flowbite?.default?.Modal ?? window.Modal;
     if (!Modal) return;
 
     this.modal = new Modal(this.element, {
       placement: "center",
       backdrop: "dynamic",
-      closable: true
+      closable: true,
     });
 
     // turbo:frame-load does not bubble, and Turbo replaces the frame node so a
@@ -24,7 +25,11 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.element.removeEventListener("turbo:frame-load", this.onFrameLoad, true);
+    this.element.removeEventListener(
+      "turbo:frame-load",
+      this.onFrameLoad,
+      true,
+    );
 
     // Leaves no orphan backdrop or overflow-hidden on <body> behind when Turbo
     // swaps the page out while the modal is open.

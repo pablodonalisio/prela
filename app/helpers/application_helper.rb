@@ -31,6 +31,7 @@ module ApplicationHelper
     plug: "fa fa-plug",
     print: "fa fa-print",
     reports: "fa-solid fa-file-lines",
+    search: "fa-solid fa-magnifying-glass",
     settings: "fa fa-sliders-h",
     supplies: "fa-solid fa-car-battery",
     theme_dark: "fa-solid fa-moon",

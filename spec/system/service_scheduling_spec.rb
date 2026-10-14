@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Scheduling a service", type: :system do
   let(:admin) { create(:admin) }
+  let!(:technician) { create(:technician, email: "tecnico@prela.test") }
 
   before { login_as(admin, scope: :user) }
 
@@ -35,6 +36,11 @@ RSpec.describe "Scheduling a service", type: :system do
     expect_schedule_fields_aligned
 
     fill_schedule "Fin programado", finish
+    click_button "Técnicos"
+    menu = find_field("Buscar técnico").ancestor("[data-dropdown-search-target='menu']")
+    expect((menu.rect.width - find_button("Técnicos").rect.width).abs).to be <= 2
+    fill_in "Buscar técnico", with: "tecnico@prela.test"
+    check "tecnico@prela.test"
     click_button "Programar"
 
     expect(page).to have_text("El servicio se programó correctamente.")
