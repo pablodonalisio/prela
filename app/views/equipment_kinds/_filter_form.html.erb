@@ -1,0 +1,11 @@
+<%= form_with url: equipment_kinds_path,
+              method: :get,
+              id: "equipment_kind_filters",
+              data: {turbo_frame: "equipment_kinds", turbo_action: "advance", controller: "assets-category-filter"} do %>
+  <%= render "shared/multi_select",
+             name: "assets_category_ids[]",
+             label: "Categoría",
+             placeholder: "Todos",
+             selected: @assets_category_ids,
+             options: AssetsCategory.visible.order(:name).pluck(:name, :id) %>
+<% end %>

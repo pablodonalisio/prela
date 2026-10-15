@@ -32,7 +32,8 @@
       <% end %>
     </span>
   </td>
-  <td class="px-4 py-3 align-middle text-sm text-body-subtle"><%= service_occurrence.notes.presence || "—" %></td>
+  <td class="max-w-xs px-4 py-3 align-middle text-sm text-body-subtle"><%= service_occurrence.notes.presence || "—" %></td>
+  <td class="max-w-xs px-4 py-3 align-middle text-sm text-body"><%= service_occurrence.technicians.map(&:display_name).sort.join(", ").presence || "—" %></td>
   <td class="px-4 py-3 align-middle">
     <% if service_occurrence.scheduled? %>
       <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">Programado</span>

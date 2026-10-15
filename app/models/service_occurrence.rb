@@ -7,6 +7,9 @@ class ServiceOccurrence < ApplicationRecord
 
   belongs_to :location_equipment_service
 
+  has_many :assignments, class_name: "ServiceOccurrenceAssignment", dependent: :destroy
+  has_many :technicians, through: :assignments, source: :user
+
   has_one_attached :document
 
   before_validation :inherit_priority_from_service_kind, on: :create

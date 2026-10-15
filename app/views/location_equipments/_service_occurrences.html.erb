@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "service_occurrences" do %>
   <h1 class="mb-1 mt-8 font-semibold uppercase tracking-wide text-heading">Servicios</h1>
   <% occurrences = location_equipment.service_occurrences
-       .includes(location_equipment_service: :service_kind)
+       .includes(:technicians, location_equipment_service: :service_kind)
        .order(Arel.sql("COALESCE(service_occurrences.completed_on::timestamp, service_occurrences.planned_on_init, service_occurrences.due_on::timestamp) DESC")) %>
   <% if occurrences.any? %>
     <div class="my-2 max-h-[400px] overflow-y-auto rounded-xl border border-default">
@@ -15,6 +15,7 @@
             <th class="px-4 py-3 font-semibold">Prioridad</th>
             <th class="px-4 py-3 font-semibold">Estado</th>
             <th class="px-4 py-3 font-semibold">Notas</th>
+            <th class="px-4 py-3 font-semibold">Técnicos</th>
             <th class="px-4 py-3 font-semibold"></th>
             <th class="px-4 py-3 font-semibold"></th>
           </tr>
@@ -53,6 +54,7 @@
                 </span>
               </td>
               <td class="px-4 py-3 text-sm text-body-subtle"><%= occurrence.notes.presence || "—" %></td>
+              <td class="px-4 py-3 text-sm text-body"><%= occurrence.technicians.map(&:display_name).sort.join(", ").presence || "—" %></td>
               <td class="whitespace-nowrap px-4 py-3">
                 <% if occurrence.document.attached? %>
                   <%= link_to rails_blob_path(occurrence.document, disposition: "inline"),

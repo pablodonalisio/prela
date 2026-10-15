@@ -1,0 +1,54 @@
+<%# locals: (name:, options:, selected: [], placeholder: "Todos", label: nil, aria_label: nil) %>
+<% selected_values = Array(selected).compact_blank.map(&:to_s) %>
+<% selected_labels = options.filter_map { |option_label, value| option_label if selected_values.include?(value.to_s) } %>
+<% button_label = selected_labels.presence&.join(", ") || placeholder %>
+<% button_id = "multi-select-#{SecureRandom.hex(4)}" %>
+<% menu_id = "#{button_id}-menu" %>
+<% control_label = aria_label || label || placeholder %>
+
+<div class="relative"
+     data-controller="multi-select"
+     data-multi-select-placeholder-value="<%= placeholder %>"
+     data-action="keydown->multi-select#closeOnEscape">
+  <% if label.present? %>
+    <%= label_tag button_id, label, class: "mb-2 block text-sm font-medium text-heading" %>
+  <% end %>
+
+  <button type="button"
+          id="<%= button_id %>"
+          class="inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
+          data-multi-select-target="button"
+          data-action="click->multi-select#toggle"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-controls="<%= menu_id %>"
+          aria-label="<%= control_label %>">
+    <span class="truncate" data-multi-select-target="label"><%= button_label %></span>
+    <%= icon(:chevron_down, class: "ms-2 shrink-0 text-xs text-body-subtle") %>
+  </button>
+
+  <div id="<%= menu_id %>"
+       class="absolute left-0 right-0 top-full z-50 mt-1 hidden max-h-56 overflow-y-auto rounded-base border border-default bg-neutral-secondary-medium py-2 shadow-sm"
+       data-multi-select-target="menu"
+       role="group"
+       aria-label="<%= control_label %>">
+    <% if options.blank? %>
+      <p class="px-4 py-2 text-sm text-body-subtle">Sin opciones</p>
+    <% else %>
+      <% options.each do |option_label, value| %>
+        <label class="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm text-heading hover:bg-neutral-tertiary-medium">
+          <%= check_box_tag name,
+                            value,
+                            selected_values.include?(value.to_s),
+                            class: "h-4 w-4 rounded border-default bg-neutral-secondary-medium text-brand focus:ring-brand",
+                            data: {
+                              multi_select_target: "option",
+                              label: option_label,
+                              action: "change->multi-select#changed"
+                            } %>
+          <span class="truncate"><%= option_label %></span>
+        </label>
+      <% end %>
+    <% end %>
+  </div>
+</div>

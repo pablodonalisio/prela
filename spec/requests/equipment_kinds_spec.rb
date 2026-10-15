@@ -16,9 +16,12 @@ RSpec.describe "/equipment_kinds", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # EquipmentKind. As you add validations to EquipmentKind, be sure to
   # adjust the attributes here as well.
+  let(:assets_category) { create(:assets_category) }
+
   let(:valid_attributes) {
     {
       name: "Tipo personalizado",
+      assets_category_id: assets_category.id,
       generic_fields: {EquipmentKind.generate_field_key => {name: "Marca", type: "string"}},
       specific_fields: {}
     }
@@ -40,6 +43,42 @@ RSpec.describe "/equipment_kinds", type: :request do
       get equipment_kinds_url
       expect(response).to be_successful
       expect(response.body).to include("Duplicar")
+    end
+
+    it "shows the asset type on each card" do
+      assets_category = create(:assets_category, name: "Generador")
+      EquipmentKind.create! valid_attributes.merge(name: "Tablero", assets_category_id: assets_category.id)
+      get equipment_kinds_url
+      expect(response.body).to include("Tablero")
+      expect(response.body).to include("Generador")
+    end
+
+    it "filters by one or more asset types" do
+      generator = create(:assets_category, name: "Generador")
+      panel = create(:assets_category, name: "Tablero eléctrico")
+      EquipmentKind.create! valid_attributes.merge(name: "Grupo diesel", assets_category_id: generator.id)
+      EquipmentKind.create! valid_attributes.merge(name: "Tablero principal", assets_category_id: panel.id)
+      EquipmentKind.create! valid_attributes.merge(name: "UPS online")
+
+      get equipment_kinds_url, params: {assets_category_ids: [generator.id]}
+      expect(response.body).to include("Grupo diesel")
+      expect(response.body).not_to include("Tablero principal")
+      expect(response.body).not_to include("UPS online")
+
+      get equipment_kinds_url, params: {assets_category_ids: [generator.id, panel.id]}
+      expect(response.body).to include("Grupo diesel")
+      expect(response.body).to include("Tablero principal")
+      expect(response.body).not_to include("UPS online")
+    end
+
+    it "shows an empty message when no equipment kind matches the filter" do
+      generator = create(:assets_category, name: "Generador")
+      EquipmentKind.create! valid_attributes.merge(name: "UPS online")
+
+      get equipment_kinds_url, params: {assets_category_ids: [generator.id]}
+
+      expect(response.body).to include("No hay tipos de activos para los filtros seleccionados.")
+      expect(response.body).not_to include("UPS online")
     end
 
     context "when user is not admin" do
@@ -76,6 +115,18 @@ RSpec.describe "/equipment_kinds", type: :request do
     it "renders a successful response" do
       get new_equipment_kind_url
       expect(response).to be_successful
+    end
+
+    it "renders the asset type dropdown with the existing type and the add action" do
+      create(:assets_category, name: "Generador")
+
+      get new_equipment_kind_url
+      expect(response.body).to include("Categoría <abbr title=\"required\">*</abbr>")
+      expect(response.body).to include("Seleccioná una categoría")
+      expect(response.body).to include("Generador")
+      expect(response.body).to include("Añadir nueva categoría...")
+      expect(response.body).to include("Eliminar Generador")
+      expect(response.body).to include("Editar Generador")
     end
 
     context "when user is not admin" do
@@ -215,6 +266,7 @@ RSpec.describe "/equipment_kinds", type: :request do
         field_key = EquipmentKind.generate_field_key
         equipment_kind = EquipmentKind.create!(
           name: "Tipo personalizado",
+          assets_category_id: assets_category.id,
           generic_fields: {field_key => {name: "Marca", type: "string"}},
           specific_fields: {}
         )

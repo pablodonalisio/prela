@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Scheduling a service", type: :system do
   let(:admin) { create(:admin) }
+  let!(:technician) { create(:technician, email: "tecnico@prela.test") }
 
   before { login_as(admin, scope: :user) }
 
@@ -27,14 +28,22 @@ RSpec.describe "Scheduling a service", type: :system do
     fill_schedule "Inicio programado", init
     fill_schedule "Fin programado", init.change(hour: 9)
     expect(find_field("Fin programado")[:min]).to eq(init.to_date.iso8601)
-    expect(find_field("Fin programado").value).to eq("")
-    click_button "Programar"
+    expect(find_field("Fin programado").value).to eq(init.strftime("%d/%m/%Y"))
+    expect(schedule_picker("Fin programado").find_field("Hora (formato 24hs)").value).to eq("09:00")
 
-    expect(page).to have_text("Programar servicio")
-    expect(page).to have_css("#service_occurrence_planned_on_finish_date:invalid")
+    clear_schedule_time "Fin programado"
+    expect(find_field("Fin programado").value).to eq(init.strftime("%d/%m/%Y"))
+
+    set_schedule_time "Fin programado", "25:99"
+    expect(find_field("Fin programado").value).to eq(init.strftime("%d/%m/%Y"))
     expect_schedule_fields_aligned
 
     fill_schedule "Fin programado", finish
+    click_button "Técnicos"
+    menu = find_field("Buscar técnico").ancestor("[data-dropdown-search-target='menu']")
+    expect((menu.rect.width - find_button("Técnicos").rect.width).abs).to be <= 2
+    fill_in "Buscar técnico", with: "tecnico@prela.test"
+    check "tecnico@prela.test"
     click_button "Programar"
 
     expect(page).to have_text("El servicio se programó correctamente.")
@@ -43,6 +52,20 @@ RSpec.describe "Scheduling a service", type: :system do
     visit agenda_index_path
 
     expect_time_under_date("Inspección programada", "12:15")
+  end
+
+  def clear_schedule_time(label)
+    set_schedule_time label, ""
+  end
+
+  def set_schedule_time(label, value)
+    time_field = schedule_picker(label).find_field("Hora (formato 24hs)")
+    page.execute_script(<<~JS, time_field.native, value)
+      const timeInput = arguments[0]
+      timeInput.value = arguments[1]
+      timeInput.dispatchEvent(new Event("input", { bubbles: true }))
+      timeInput.dispatchEvent(new Event("change", { bubbles: true }))
+    JS
   end
 
   def fill_schedule(label, time)
@@ -68,7 +91,21 @@ RSpec.describe "Scheduling a service", type: :system do
 
       expect((time_field.rect.y - date_field.rect.y).abs).to be <= 2
       expect((time_field.rect.height - date_field.rect.height).abs).to be <= 2
+      expect(time_field[:type]).to eq("text")
+      expect(time_field[:placeholder]).to eq("00:00")
+      expect(clock_gap(time_field, picker.find("i.fa-clock"))).to be >= 4
     end
+  end
+
+  def clock_gap(input, icon)
+    page.evaluate_script(<<~JS, input, icon)
+      (function(field, icon) {
+        const fieldRect = field.getBoundingClientRect()
+        const iconRect = icon.getBoundingClientRect()
+        const textStart = fieldRect.left + parseFloat(getComputedStyle(field).paddingLeft)
+        return textStart - iconRect.right
+      })(arguments[0], arguments[1])
+    JS
   end
 
   def schedule_picker(label)

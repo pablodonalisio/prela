@@ -82,6 +82,30 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "display_name" do
+    let(:user) { create(:user, email: "ana@prela.test") }
+
+    it "joins name and last name" do
+      user.update!(name: "Ana", last_name: "Pérez")
+
+      expect(user.display_name).to eq("Ana Pérez")
+    end
+
+    it "uses whichever part is present" do
+      user.update!(name: "Ana", last_name: nil)
+      expect(user.display_name).to eq("Ana")
+
+      user.update!(name: nil, last_name: "Pérez")
+      expect(user.display_name).to eq("Pérez")
+    end
+
+    it "falls back to the email when both are blank" do
+      user.update!(name: nil, last_name: " ")
+
+      expect(user.display_name).to eq("ana@prela.test")
+    end
+  end
+
   describe ".with_kept_client" do
     it "excludes users whose client is discarded" do
       kept_user = create(:user, role: :client, client: create(:client))

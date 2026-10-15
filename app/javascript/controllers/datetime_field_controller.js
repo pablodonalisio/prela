@@ -18,6 +18,8 @@ export default class extends Controller {
   }
 
   sync() {
+    this.#coerceTimeInput();
+
     const iso = this.#isoDate();
     if (!iso) {
       this.#write("");
@@ -34,6 +36,15 @@ export default class extends Controller {
     const normalized = normalize24HourTime(this.timeTarget.value);
     if (normalized) this.timeTarget.value = normalized;
     this.sync();
+  }
+
+  #coerceTimeInput() {
+    const input = this.timeTarget;
+    const coerced = coerce24HourTimeInput(input.value);
+    if (coerced === input.value) return;
+
+    input.value = coerced;
+    if (document.activeElement === input) input.setSelectionRange(coerced.length, coerced.length);
   }
 
   #time() {
@@ -59,6 +70,18 @@ export default class extends Controller {
     const parsed = parseIsoDate(this.dateTarget.value);
     return parsed ? formatIsoDate(parsed) : "";
   }
+}
+
+function coerce24HourTimeInput(value) {
+  const cleaned = String(value || "").replace(/[^\d:]/g, "");
+  if (!cleaned.includes(":")) {
+    const digits = cleaned.slice(0, 4);
+    if (digits.length <= 2) return digits;
+    return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+  }
+
+  const [hours, minutes = ""] = cleaned.split(":");
+  return `${hours.slice(0, 2)}:${minutes.replace(/\D/g, "").slice(0, 2)}`;
 }
 
 function normalize24HourTime(value) {
