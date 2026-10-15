@@ -1,6 +1,9 @@
 <% location_equipment = service_occurrence.location_equipment %>
 <tr id="<%= dom_id(service_occurrence, :agenda) %>" class="border-t border-default">
   <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
+    <%= schedule_point(service_occurrence.due_on) %>
+  </td>
+  <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
     <%= schedule_point(service_occurrence.planned_on_init.presence || service_occurrence.agenda_date) %>
   </td>
   <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
