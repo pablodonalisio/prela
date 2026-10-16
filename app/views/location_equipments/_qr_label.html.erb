@@ -1,9 +1,9 @@
 <% rows = qr_label_rows(location_equipment) %>
 <h1 class="mt-1 line-clamp-2 text-base font-bold leading-tight"><%= location_equipment.equipment.name %></h1>
-<p class="mt-1 text-xs"><%= location_equipment.location.client.name %></p>
+<p class="text-xs"><%= location_equipment.location.client.name %></p>
 <p class="text-xs"><%= location_equipment.location.name %></p>
 <% if rows.any? %>
-  <dl class="mt-2 w-full text-left text-xs">
+  <dl class="mt-1 w-full text-left text-xs leading-tight">
     <% rows.each do |label, value| %>
       <div class="flex justify-between gap-2">
         <dt class="shrink-0 text-gray-500"><%= label %></dt>

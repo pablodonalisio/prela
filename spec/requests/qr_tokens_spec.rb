@@ -86,6 +86,19 @@ RSpec.describe "GET /location_equipments/:id/qr_token", type: :request do
     expect(label.at_css("dl").text.squish).to include("Código #{location_equipment.code}")
   end
 
+  it "ends the label with the emergency phone and the Prela website" do
+    sign_in create(:admin)
+
+    get location_equipment_qr_token_path(location_equipment)
+
+    label = Nokogiri::HTML(response.body).at_css("[data-qr-label-print-target='label']")
+    footer = label.element_children.last
+    expect(footer.text.squish).to eq(
+      "#{CompanyInfo.emergency_phone_label}: #{CompanyInfo.emergency_phone} #{CompanyInfo.website}"
+    )
+    expect(footer.css("p").map { |line| line.at_css("i")["class"] }).to eq(["fa-solid fa-phone", "fa-solid fa-globe"])
+  end
+
   it "previews the label at the same physical size it prints at" do
     sign_in create(:admin)
 
@@ -93,8 +106,12 @@ RSpec.describe "GET /location_equipments/:id/qr_token", type: :request do
 
     page = Nokogiri::HTML(response.body)
     label = page.at_css("[data-qr-label-print-target='label']")
-    expect(label["style"]).to include("width: 62mm; height: 100mm;")
-    expect(page.at_css("[data-controller='qr-label-print']")["data-qr-label-print-page-size-value"]).to eq("62mm 100mm")
+    expect(label["style"]).to include("width: 62mm; height: 110mm;")
+    printer = page.at_css("[data-controller='qr-label-print']")
+    expect(printer["data-qr-label-print-page-size-value"]).to eq("62mm 110mm")
+    expect(JSON.parse(printer["data-qr-label-print-stylesheets-value"])).to contain_exactly(
+      a_string_including("tailwind"), a_string_including("fontawesome")
+    )
   end
 
   it "lets a technician open the label" do

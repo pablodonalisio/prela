@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus";
 // equipment page behind it as well.
 export default class extends Controller {
   static targets = ["label"];
-  static values = { stylesheet: String, pageSize: String };
+  static values = { stylesheets: Array, pageSize: String };
 
   print() {
     const frame = document.createElement("iframe");
@@ -13,11 +13,15 @@ export default class extends Controller {
       "position:fixed;width:0;height:0;border:0;opacity:0;pointer-events:none";
     document.body.appendChild(frame);
 
+    const links = this.stylesheetsValue
+      .map((href) => `<link rel="stylesheet" href="${href}">`)
+      .join("\n  ");
+
     frame.srcdoc = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="${this.stylesheetValue}">
+  ${links}
   <style>
     @page { size: ${this.pageSizeValue}; margin: 0; }
     html, body { margin: 0; padding: 0; }
@@ -27,21 +31,27 @@ export default class extends Controller {
 <body class="bg-white">${this.labelTarget.outerHTML}</body>
 </html>`;
 
-    frame.onload = () => {
-      const print = () => {
-        frame.contentWindow?.focus();
-        frame.contentWindow?.print();
-        window.setTimeout(() => frame.remove(), 1000);
-      };
+    frame.onload = async () => {
+      const doc = frame.contentDocument;
+      const stylesheets = [...doc.querySelectorAll('link[rel="stylesheet"]')];
+      await Promise.all(stylesheets.map(stylesheetLoaded));
 
-      const link = frame.contentDocument?.querySelector('link[rel="stylesheet"]');
-      if (!link || link.sheet) {
-        print();
-        return;
-      }
+      // The icon font only starts downloading once layout needs it.
+      doc.body.getBoundingClientRect();
+      await doc.fonts?.ready;
 
-      link.addEventListener("load", print, { once: true });
-      link.addEventListener("error", print, { once: true });
+      frame.contentWindow?.focus();
+      frame.contentWindow?.print();
+      window.setTimeout(() => frame.remove(), 1000);
     };
   }
+}
+
+function stylesheetLoaded(link) {
+  if (link.sheet) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    link.addEventListener("load", resolve, { once: true });
+    link.addEventListener("error", resolve, { once: true });
+  });
 }
