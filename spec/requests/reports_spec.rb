@@ -87,10 +87,9 @@ RSpec.describe "Reports", type: :request do
 
     it "allows to select a report date from 2016 to the current year" do
       get new_location_equipment_report_path(report1.location_equipment)
-      expect(response.body).to include("option value=\"2016\"")
-      expect(response.body).to include("option value=\"#{Date.today.year}\"")
-      expect(response.body).not_to include("option value=\"#{Date.today.year + 1}\"")
-      expect(response.body).not_to include("option value=\"2015\"")
+      expect(response.body).to include('min="2016-01-01"')
+      expect(response.body).to include(%(max="#{Date.current.year}-12-31"))
+      expect(response.body).not_to include('min="2015-01-01"')
     end
   end
 
@@ -104,10 +103,9 @@ RSpec.describe "Reports", type: :request do
 
     it "allows to select a report date from 2016 to the current year" do
       get edit_location_equipment_report_path(report1.location_equipment, report1)
-      expect(response.body).to include("option value=\"2016\"")
-      expect(response.body).to include("option value=\"#{Date.today.year}\"")
-      expect(response.body).not_to include("option value=\"#{Date.today.year + 1}\"")
-      expect(response.body).not_to include("option value=\"2015\"")
+      expect(response.body).to include('min="2016-01-01"')
+      expect(response.body).to include(%(max="#{Date.current.year}-12-31"))
+      expect(response.body).not_to include('min="2015-01-01"')
     end
   end
 
@@ -235,16 +233,19 @@ RSpec.describe "Reports", type: :request do
 
   context "template-based report" do
     let(:equipment_kind) { "ups" }
-    let(:report_template) { create(:report_template, :with_measurements, :with_tasks) }
+    let(:report_template) { create(:report_template, :with_measurements, :with_list) }
+    let(:measurement_section) { report_template.sections.find_by!(title: "Tensión L1") }
+    let(:photos_section) { report_template.sections.find_by!(title: "Fotos") }
     let(:template_params) do
       {
         report: {
           report_template_id: report_template.id,
           date: Date.today,
-          field_values: {
-            measurements: {"1739280000" => "220.5"}
-          },
-          images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
+          section_inputs: {
+            measurement_section.id => {
+              cells: {"0_1" => {value: "220.5"}}
+            }
+          }
         }
       }
     end
@@ -258,26 +259,35 @@ RSpec.describe "Reports", type: :request do
     end
 
     describe "GET /template_fields" do
+      it "returns boolean option labels for a boolean cell" do
+        cell = measurement_section.table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+        cell.update!(value_type: "boolean", for_metrics: false, fixed: false)
+        cell.table_cell_options.find_by!(value: true).update!(label: "Aprobado")
+        cell.table_cell_options.find_by!(value: false).update!(label: "Rechazado")
+
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+
+        expect(response.body).to include("Aprobado")
+        expect(response.body).to include("Rechazado")
+        expect(response.body).to include('type="radio"')
+      end
+
       it "returns dynamic fields for the selected template" do
         get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
         expect(response).to be_successful
         expect(response.body).to include("Tensión L1")
+        expect(response.body).to include("Concepto")
+        expect(response.body).to include("Fase")
+        expect(response.body).to include("Línea 1")
       end
 
-      it "preloads template tasks for a new report" do
+      it "shows list items with checkboxes" do
         get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+        expect(response.body).to include("Protocolo")
         expect(response.body).to include("Limpieza general")
         expect(response.body).to include("Verificación de torque")
-        expect(response.body).to include("Protocolo de tareas")
-      end
-
-      it "preloads comments from the previous template report" do
-        previous = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: 1.day.ago)
-        create(:report_comment, report: previous, description: "Comentario heredado", position: 0)
-
-        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
-        expect(response.body).to include("Comentario heredado")
-        expect(response.body).to include("Comentarios y recomendaciones técnicas")
+        expect(response.body).to include('type="checkbox"')
+        expect(response.body).not_to include("Comentarios y recomendaciones técnicas")
       end
     end
 
@@ -289,22 +299,34 @@ RSpec.describe "Reports", type: :request do
       it "creates a template-based report" do
         expect { request }.to change(Report, :count).by(1)
         expect(Report.last.template_based?).to be true
-        expect(Report.last.field_values.dig("measurements", "1739280000")).to eq("220.5")
+        cell = Report.last.sections.find_by!(title: "Tensión L1").table_section.cell_at(0, 1)
+        expect(cell.value).to eq("220.5")
       end
 
-      it "seeds report tasks from the template" do
-        expect { request }.to change(ReportTask, :count).by(2)
-        expect(Report.last.report_tasks.order(:position).map(&:name)).to eq(
-          ["Limpieza general", "Verificación de torque"]
+      it "copies list items from the template" do
+        request
+        items = Report.last.sections.find_by!(title: "Protocolo").list_section.list_items.order(:position)
+        expect(items.map(&:name)).to eq(["Limpieza general", "Verificación de torque"])
+        expect(items.map(&:checked?)).to all(be false)
+      end
+
+      it "stores which list items were checked" do
+        list_section = report_template.sections.find_by!(title: "Protocolo")
+        item = list_section.list_section.list_items.find_by!(name: "Limpieza general")
+        params = template_params.deep_merge(
+          report: {
+            section_inputs: {
+              list_section.id => {
+                items: {item.id => {checked: "1"}}
+              }
+            }
+          }
         )
-      end
 
-      it "seeds comments from the previous template report" do
-        previous = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template, date: 1.day.ago)
-        create(:report_comment, report: previous, description: "Comentario heredado", position: 0)
-
-        expect { request }.to change(ReportComment, :count).by(1)
-        expect(Report.order(:id).last.report_comments.map(&:description)).to eq(["Comentario heredado"])
+        post location_equipment_reports_path(location_equipment), params: params
+        items = Report.last.sections.find_by!(title: "Protocolo").list_section.list_items.order(:position)
+        expect(items.find_by!(name: "Limpieza general")).to be_checked
+        expect(items.find_by!(name: "Verificación de torque")).not_to be_checked
       end
 
       it "does not attach a PDF" do
@@ -312,9 +334,19 @@ RSpec.describe "Reports", type: :request do
         expect(Report.last.pdf).not_to be_attached
       end
 
-      it "uploads images to the report" do
-        request
-        expect(Report.last.images).to be_attached
+      it "uploads images to the image section" do
+        params = template_params.deep_merge(
+          report: {
+            section_inputs: {
+              photos_section.id => {
+                images: [fixture_file_upload(Rails.root.join("app", "assets", "images", "placeholder-img.jpeg"), "image/jpeg")]
+              }
+            }
+          }
+        )
+
+        post location_equipment_reports_path(location_equipment), params: params
+        expect(Report.last.sections.find_by!(title: "Fotos").image_section.images).to be_attached
       end
 
       it "auto-assigns the template to the location equipment" do
@@ -399,7 +431,6 @@ RSpec.describe "Reports", type: :request do
             report: {
               date: Date.today,
               report_template_id: template_report.report_template_id,
-              field_values: {measurements: {"1739280000" => "220.5"}},
               signature_ids: [own_signature.id, shared_signature.id]
             }
           }
@@ -411,33 +442,16 @@ RSpec.describe "Reports", type: :request do
 
     describe "PATCH /update" do
       let(:template_report) { create(:report, :template_based, location_equipment: location_equipment, report_template: report_template) }
-      let(:report_task) { template_report.report_tasks.find_by!(name: "Limpieza general") }
+      let(:measurement) { template_report.sections.find_by!(title: "Tensión L1") }
       let(:request) do
         patch location_equipment_report_path(location_equipment, template_report),
           params: {
             report: {
               date: Date.today,
               report_template_id: template_report.report_template_id,
-              field_values: {
-                measurements: {"1739280000" => "230.0"}
-              },
-              report_tasks_attributes: {
-                report_task.id.to_s => {
-                  id: report_task.id,
-                  name: "Limpieza general",
-                  completed: "1",
-                  position: 0
-                },
-                "1739289999" => {
-                  name: "Tarea adicional",
-                  completed: "0",
-                  position: 1
-                }
-              },
-              report_comments_attributes: {
-                "1739290000" => {
-                  description: "Nuevo comentario",
-                  position: 0
+              section_inputs: {
+                measurement.id => {
+                  cells: {"0_1" => {value: "230.0"}}
                 }
               }
             }
@@ -447,21 +461,27 @@ RSpec.describe "Reports", type: :request do
       it "updates the template report" do
         request
         template_report.reload
-        expect(template_report.field_values.dig("measurements", "1739280000")).to eq("230.0")
+        expect(template_report.sections.find_by!(title: "Tensión L1").table_section.cell_at(0, 1).value).to eq("230.0")
       end
 
-      it "updates and adds report tasks" do
-        existing_ids = template_report.report_tasks.pluck(:id)
-        request
-        template_report.reload
-        expect(report_task.reload).to be_completed
-        expect(template_report.report_tasks.map(&:name)).to include("Tarea adicional")
-        expect(template_report.report_tasks.where.not(id: existing_ids).pluck(:name)).to eq(["Tarea adicional"])
-      end
+      it "updates a checked list item" do
+        list = template_report.sections.find_by!(title: "Protocolo").list_section
+        item = list.list_items.find_by!(name: "Verificación de torque")
 
-      it "adds report comments" do
-        expect { request }.to change(ReportComment, :count).by(1)
-        expect(template_report.reload.report_comments.map(&:description)).to include("Nuevo comentario")
+        patch location_equipment_report_path(location_equipment, template_report), params: {
+          report: {
+            date: Date.today,
+            report_template_id: template_report.report_template_id,
+            section_inputs: {
+              list.section_id => {
+                items: {item.id => {checked: "1"}}
+              }
+            }
+          }
+        }
+
+        expect(item.reload).to be_checked
+        expect(list.list_items.find_by!(name: "Limpieza general")).not_to be_checked
       end
 
       it "does not attach a PDF" do
@@ -473,14 +493,26 @@ RSpec.describe "Reports", type: :request do
     describe "GET /show" do
       let(:template_report) do
         create(:report, :template_based, location_equipment: location_equipment, report_template: report_template).tap do |report|
-          report.report_tasks.find_by!(name: "Limpieza general").update!(completed: true)
-          create(:report_comment, report: report, description: "Comentario visible", position: 0)
+          report.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1).update!(value: "220.5")
+          report.sections.find_by!(title: "Protocolo").list_section.list_items.find_by!(name: "Limpieza general").update!(checked: true)
         end
       end
 
       it "returns a successful response" do
         get location_equipment_report_path(location_equipment, template_report)
         expect(response).to have_http_status(:success)
+      end
+
+      it "prints the selected boolean option label" do
+        cell = measurement_section.table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+        cell.update!(value_type: "boolean", for_metrics: false, fixed: false)
+        cell.table_cell_options.find_by!(value: true).update!(label: "Aprobado")
+        report = create(:report, :template_based, location_equipment: location_equipment, report_template: report_template)
+        report.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1).update!(value: "1")
+
+        get location_equipment_report_path(location_equipment, report)
+
+        expect(response.body).to include("Aprobado")
       end
 
       it "renders the modern template report layout" do
@@ -496,32 +528,21 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include(equipment.brand)
         expect(response.body).to include("2.0 Información de localización")
         expect(response.body).to include(location_equipment.location.name)
-        expect(response.body).to include("Estado de parámetros físicos y mediciones")
         expect(response.body).to include("Tensión L1")
-        expect(response.body).to include("Parámetro registrado")
+        expect(response.body).to include("Concepto")
+        expect(response.body).to include("Fase")
+        expect(response.body).to include("Línea 1")
+        expect(response.body).to include("220.5")
+        expect(response.body).to include("Notas")
         expect(response.body).to include("Imprimir / Guardar PDF")
       end
 
-      it "renders the tasks checklist" do
+      it "renders checked and unchecked list items" do
         get location_equipment_report_path(location_equipment, template_report)
-        expect(response.body).to include("Protocolo de tareas y acciones realizadas")
+        expect(response.body).to include("Protocolo")
         expect(response.body).to include("Limpieza general")
         expect(response.body).to include("Verificación de torque")
-        expect(response.body).to include("OK / Ejecutado")
-        expect(response.body).to include("Pendiente")
-      end
-
-      it "renders the comments table when comments exist" do
-        get location_equipment_report_path(location_equipment, template_report)
-        expect(response.body).to include("Comentarios y recomendaciones técnicas")
-        expect(response.body).to include("Comentario visible")
-        expect(response.body).to include("Nº")
-        expect(response.body).to include("Descripción")
-      end
-
-      it "omits the comments section when there are no comments" do
-        ReportComment.where(report: template_report).delete_all
-        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).to include("template-report__list-check--on")
         expect(response.body).not_to include("Comentarios y recomendaciones técnicas")
       end
     end

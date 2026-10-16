@@ -15,6 +15,9 @@ export default class extends Controller {
     resizeWidth: Number,
     resizeHeight: Number,
     resizeQuality: Number,
+    inputName: {type: String, default: "report[images][]"},
+    removedInputName: {type: String, default: "report[removed_image_ids][]"},
+    existingInputName: {type: String, default: "report[existing_image_ids][]"},
   };
 
   connect() {
@@ -111,7 +114,7 @@ export default class extends Controller {
 
     const input = document.createElement("input");
     input.type = "hidden";
-    input.name = "report[images][]";
+    input.name = this.inputNameValue;
     input.value = signedId;
     input.dataset.dropzoneFileId = this.fileIdentifier(file);
     this.hiddenInputsTarget.appendChild(input);
@@ -122,7 +125,7 @@ export default class extends Controller {
 
     const input = document.createElement("input");
     input.type = "hidden";
-    input.name = "report[removed_image_ids][]";
+    input.name = this.removedInputNameValue;
     input.value = blobId;
     input.dataset.dropzoneFileId = this.fileIdentifier(file);
     this.removedInputsTarget.appendChild(input);
@@ -160,7 +163,7 @@ export default class extends Controller {
       // Existing attachments are already on the record and do not need a signed_id.
       const input = document.createElement("input");
       input.type = "hidden";
-      input.name = "report[existing_image_ids][]";
+      input.name = this.existingInputNameValue;
       input.value = file.id;
       input.dataset.dropzoneFileId = this.fileIdentifier(mockFile);
       this.hiddenInputsTarget.appendChild(input);

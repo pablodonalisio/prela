@@ -2,12 +2,13 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = ["container", "template"];
+  static values = {placeholder: {type: String, default: "NEW_RECORD"}};
 
   add(event) {
     event.preventDefault();
     if (!this.hasTemplateTarget || !this.hasContainerTarget) return;
 
-    const html = this.templateTarget.innerHTML.replace(/NEW_RECORD/g, Date.now().toString());
+    const html = this.templateTarget.innerHTML.split(this.placeholderValue).join(Date.now().toString());
     this.containerTarget.insertAdjacentHTML("beforeend", html);
   }
 

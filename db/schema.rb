@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -253,11 +253,36 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.index ["location_equipment_id"], name: "index_failures_on_location_equipment_id"
   end
 
+  create_table "image_sections", force: :cascade do |t|
+    t.bigint "section_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id"], name: "index_image_sections_on_section_id", unique: true
+  end
+
   create_table "links", force: :cascade do |t|
     t.string "title"
     t.string "url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "list_items", force: :cascade do |t|
+    t.bigint "list_section_id", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "checked", default: false, null: false
+    t.index ["list_section_id", "position"], name: "index_list_items_on_list_section_id_and_position"
+    t.index ["list_section_id"], name: "index_list_items_on_list_section_id"
+  end
+
+  create_table "list_sections", force: :cascade do |t|
+    t.bigint "section_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id"], name: "index_list_sections_on_section_id", unique: true
   end
 
   create_table "location_equipment_services", force: :cascade do |t|
@@ -346,43 +371,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
   end
 
-  create_table "report_comments", force: :cascade do |t|
-    t.bigint "report_id", null: false
-    t.text "description", null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["report_id", "position"], name: "index_report_comments_on_report_id_and_position"
-    t.index ["report_id"], name: "index_report_comments_on_report_id"
-  end
-
-  create_table "report_tasks", force: :cascade do |t|
-    t.bigint "report_id", null: false
-    t.string "name", null: false
-    t.boolean "completed", default: false, null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["report_id", "position"], name: "index_report_tasks_on_report_id_and_position"
-    t.index ["report_id"], name: "index_report_tasks_on_report_id"
-  end
-
-  create_table "report_template_tasks", force: :cascade do |t|
-    t.bigint "report_template_id", null: false
-    t.string "name", null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["report_template_id", "position"], name: "index_report_template_tasks_on_report_template_id_and_position"
-    t.index ["report_template_id"], name: "index_report_template_tasks_on_report_template_id"
-  end
-
   create_table "report_templates", force: :cascade do |t|
     t.string "name", null: false
-    t.jsonb "equipment_specifications", default: {}, null: false
-    t.jsonb "location_specifications", default: {}, null: false
-    t.jsonb "measurements", default: {}, null: false
-    t.jsonb "room_specifications", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "normalized_name"
@@ -397,12 +387,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.datetime "updated_at", null: false
     t.datetime "date"
     t.bigint "report_template_id"
-    t.jsonb "field_values", default: {}, null: false
     t.integer "number"
+    t.boolean "template_based", default: false, null: false
     t.jsonb "observation_values", default: {}, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
     t.index ["report_template_id"], name: "index_reports_on_report_template_id"
+    t.index ["template_based"], name: "index_reports_on_template_based"
   end
 
   create_table "reports_signatures", id: false, force: :cascade do |t|
@@ -426,6 +417,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.string "free_access_to_panel"
     t.string "with_access_key"
     t.index ["report_id"], name: "index_room_report_stats_on_report_id"
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.bigint "report_template_id"
+    t.bigint "report_id"
+    t.string "title", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "kind", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id", "position"], name: "index_sections_on_report_id_and_position"
+    t.index ["report_id"], name: "index_sections_on_report_id"
+    t.index ["report_template_id", "position"], name: "index_sections_on_report_template_id_and_position"
+    t.index ["report_template_id"], name: "index_sections_on_report_template_id"
+    t.check_constraint "report_template_id IS NOT NULL AND report_id IS NULL OR report_template_id IS NULL AND report_id IS NOT NULL", name: "sections_exactly_one_owner"
   end
 
   create_table "service_kinds", force: :cascade do |t|
@@ -480,6 +486,50 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.index ["user_id"], name: "index_signatures_on_user_id"
   end
 
+  create_table "table_cell_options", force: :cascade do |t|
+    t.bigint "table_cell_id", null: false
+    t.boolean "value", null: false
+    t.string "label", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_cell_id", "value"], name: "index_table_cell_options_on_value", unique: true
+    t.index ["table_cell_id"], name: "index_table_cell_options_on_table_cell_id"
+  end
+
+  create_table "table_cells", force: :cascade do |t|
+    t.bigint "table_section_id", null: false
+    t.integer "row_index", null: false
+    t.integer "column_index", null: false
+    t.string "value_type", null: false
+    t.text "value"
+    t.boolean "for_metrics", default: false, null: false
+    t.boolean "fixed", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_section_id", "row_index", "column_index"], name: "index_table_cells_on_position", unique: true
+    t.index ["table_section_id"], name: "index_table_cells_on_table_section_id"
+  end
+
+  create_table "table_labels", force: :cascade do |t|
+    t.bigint "table_section_id", null: false
+    t.string "axis", null: false
+    t.integer "position", null: false
+    t.string "label", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_section_id", "axis", "position"], name: "index_table_labels_on_position", unique: true
+    t.index ["table_section_id"], name: "index_table_labels_on_table_section_id"
+  end
+
+  create_table "table_sections", force: :cascade do |t|
+    t.bigint "section_id", null: false
+    t.integer "row_count", null: false
+    t.integer "column_count", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id"], name: "index_table_sections_on_section_id", unique: true
+  end
+
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id", null: false
     t.string "taggable_type", null: false
@@ -501,6 +551,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.index ["discarded_at"], name: "index_tags_on_discarded_at"
     t.index ["name"], name: "index_tags_on_name", unique: true, where: "(discarded_at IS NULL)"
     t.index ["normalized_name"], name: "index_tags_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+  end
+
+  create_table "text_sections", force: :cascade do |t|
+    t.bigint "section_id", null: false
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id"], name: "index_text_sections_on_section_id", unique: true
   end
 
   create_table "ups_report_stats", force: :cascade do |t|
@@ -566,6 +624,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
   add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
   add_foreign_key "failures", "location_equipments"
+  add_foreign_key "image_sections", "sections", on_delete: :cascade
+  add_foreign_key "list_items", "list_sections", on_delete: :cascade
+  add_foreign_key "list_sections", "sections", on_delete: :cascade
   add_foreign_key "location_equipment_services", "location_equipments"
   add_foreign_key "location_equipment_services", "service_kinds"
   add_foreign_key "location_equipments", "equipment"
@@ -574,19 +635,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
   add_foreign_key "location_equipments_report_templates", "report_templates"
   add_foreign_key "locations", "clients"
   add_foreign_key "power_unit_report_stats", "reports"
-  add_foreign_key "report_comments", "reports"
-  add_foreign_key "report_tasks", "reports"
-  add_foreign_key "report_template_tasks", "report_templates"
   add_foreign_key "reports", "location_equipments"
-  add_foreign_key "reports", "report_templates"
+  add_foreign_key "reports", "report_templates", on_delete: :nullify
   add_foreign_key "reports_signatures", "reports"
   add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
+  add_foreign_key "sections", "report_templates"
+  add_foreign_key "sections", "reports", on_delete: :cascade
   add_foreign_key "service_occurrence_assignments", "service_occurrences"
   add_foreign_key "service_occurrence_assignments", "users"
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "signatures", "users"
+  add_foreign_key "table_cell_options", "table_cells", on_delete: :cascade
+  add_foreign_key "table_cells", "table_sections", on_delete: :cascade
+  add_foreign_key "table_labels", "table_sections", on_delete: :cascade
+  add_foreign_key "table_sections", "sections", on_delete: :cascade
   add_foreign_key "taggings", "tags"
+  add_foreign_key "text_sections", "sections", on_delete: :cascade
   add_foreign_key "ups_report_stats", "reports"
   add_foreign_key "users", "clients"
 end
