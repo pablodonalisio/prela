@@ -13,6 +13,16 @@ module LocationEquipmentsHelper
     pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
   }.freeze
 
+  def qr_label_rows(location_equipment)
+    equipment = location_equipment.equipment
+    [
+      [Equipment.human_attribute_name(:brand), equipment.brand],
+      [Equipment.human_attribute_name(:model), equipment.model],
+      [LocationEquipment.human_attribute_name(:serial_number), location_equipment.serial_number],
+      [LocationEquipment.human_attribute_name(:code), location_equipment.code]
+    ].select { |_label, value| value.present? }
+  end
+
   def humanize_floor(floor)
     return unless floor
 

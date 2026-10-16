@@ -1,16 +1,17 @@
 <% url = qr_url(token: @qr_token.token) %>
-<% svg = RQRCode::QRCode.new(url).as_svg(viewbox: true, use_path: true, svg_attributes: {class: "h-48 w-48"}) %>
+<% svg = RQRCode::QRCode.new(url).as_svg(viewbox: true, use_path: true, svg_attributes: {class: "h-32 w-32"}) %>
 <% svg = svg.sub(/(<svg\b[^>]*>)/, "\\1<title>#{ERB::Util.html_escape(url)}</title>") %>
+<% label_width, label_height = "62mm", "100mm" %>
 <%= render "shared/remote_modal", title: "Etiqueta QR" do %>
   <div data-controller="qr-label-print"
-       data-qr-label-print-stylesheet-value="<%= asset_path("tailwind.css") %>">
-    <div class="mx-auto max-w-sm text-center text-heading" data-qr-label-print-target="label">
+       data-qr-label-print-stylesheet-value="<%= asset_path("tailwind.css") %>"
+       data-qr-label-print-page-size-value="<%= label_width %> <%= label_height %>">
+    <div class="mx-auto flex flex-col items-center overflow-hidden border border-dashed border-gray-300 bg-white p-3 text-center text-gray-900"
+         style="width: <%= label_width %>; height: <%= label_height %>;"
+         data-qr-label-print-target="label">
+      <%= raw svg %>
+      <%= image_tag "prela_logotipo-1.png", alt: "Prela", class: "mt-1 h-16 w-auto" %>
       <%= render "#{@scannable.model_name.collection}/qr_label", location_equipment: @scannable %>
-      <div class="mt-4 flex justify-center">
-        <div class="rounded-lg bg-white p-3">
-          <%= raw svg %>
-        </div>
-      </div>
     </div>
     <div class="mt-4 flex justify-center">
       <button type="button"

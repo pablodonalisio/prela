@@ -69,6 +69,34 @@ RSpec.describe "GET /location_equipments/:id/qr_token", type: :request do
     expect(location_equipment.reload.qr_token).to eq(token)
   end
 
+  it "puts the QR code first, then the logo and the equipment details" do
+    sign_in create(:admin)
+
+    get location_equipment_qr_token_path(location_equipment)
+
+    label = Nokogiri::HTML(response.body).at_css("[data-qr-label-print-target='label']")
+    expect(label.element_children.first.name).to eq("svg")
+    expect(label.at_css("img[alt='Prela']")["src"]).to include("prela_logotipo-1")
+    expect(label.text.squish).to include(
+      "#{location_equipment.equipment.name} #{location_equipment.location.client.name} #{location_equipment.location.name}"
+    )
+    expect(label.at_css("dl").text.squish).to include("Marca APC")
+    expect(label.at_css("dl").text.squish).to include("Modelo Smart-RT 10000")
+    expect(label.at_css("dl").text.squish).to include("Número de serie #{location_equipment.serial_number}")
+    expect(label.at_css("dl").text.squish).to include("Código #{location_equipment.code}")
+  end
+
+  it "previews the label at the same physical size it prints at" do
+    sign_in create(:admin)
+
+    get location_equipment_qr_token_path(location_equipment)
+
+    page = Nokogiri::HTML(response.body)
+    label = page.at_css("[data-qr-label-print-target='label']")
+    expect(label["style"]).to include("width: 62mm; height: 100mm;")
+    expect(page.at_css("[data-controller='qr-label-print']")["data-qr-label-print-page-size-value"]).to eq("62mm 100mm")
+  end
+
   it "lets a technician open the label" do
     sign_in create(:technician)
 

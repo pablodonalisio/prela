@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus";
 // equipment page behind it as well.
 export default class extends Controller {
   static targets = ["label"];
-  static values = { stylesheet: String };
+  static values = { stylesheet: String, pageSize: String };
 
   print() {
     const frame = document.createElement("iframe");
@@ -18,8 +18,13 @@ export default class extends Controller {
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="${this.stylesheetValue}">
+  <style>
+    @page { size: ${this.pageSizeValue}; margin: 0; }
+    html, body { margin: 0; padding: 0; }
+    [data-qr-label-print-target="label"] { border: 0; }
+  </style>
 </head>
-<body class="bg-white p-6">${this.labelTarget.outerHTML}</body>
+<body class="bg-white">${this.labelTarget.outerHTML}</body>
 </html>`;
 
     frame.onload = () => {
