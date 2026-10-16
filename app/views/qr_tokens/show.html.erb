@@ -1,10 +1,23 @@
 <% url = qr_url(token: @qr_token.token) %>
 <% svg = RQRCode::QRCode.new(url).as_svg(viewbox: true, use_path: true, svg_attributes: {class: "h-48 w-48"}) %>
 <% svg = svg.sub(/(<svg\b[^>]*>)/, "\\1<title>#{ERB::Util.html_escape(url)}</title>") %>
-<div class="mx-auto max-w-sm p-6 text-center">
-  <%= render "#{@scannable.model_name.collection}/qr_label", location_equipment: @scannable %>
-  <div class="mt-8 flex justify-center">
-    <%= raw svg %>
+<%= render "shared/remote_modal", title: "Etiqueta QR" do %>
+  <div data-controller="qr-label-print"
+       data-qr-label-print-stylesheet-value="<%= asset_path("tailwind.css") %>">
+    <div class="mx-auto max-w-sm text-center text-heading" data-qr-label-print-target="label">
+      <%= render "#{@scannable.model_name.collection}/qr_label", location_equipment: @scannable %>
+      <div class="mt-4 flex justify-center">
+        <div class="rounded-lg bg-white p-3">
+          <%= raw svg %>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 flex justify-center">
+      <button type="button"
+              class="inline-flex h-10 items-center gap-2 rounded-lg bg-brand px-4 text-sm font-medium text-white hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft"
+              data-action="qr-label-print#print">
+        <%= icon(:print) %>Imprimir
+      </button>
+    </div>
   </div>
-  <button type="button" class="no-print mt-8 inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-medium text-white hover:bg-brand-strong focus:ring-4 focus:ring-brand-soft" onclick="window.print()">Imprimir</button>
-</div>
+<% end %>

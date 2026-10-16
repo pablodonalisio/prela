@@ -57,6 +57,8 @@ RSpec.describe "GET /location_equipments/:id/qr_token", type: :request do
     token = location_equipment.reload.qr_token
     expect(token).to be_present
     expect(response).to be_successful
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css("turbo-frame#remote_modal #remote_modal_title").text).to eq("Etiqueta QR")
     expect(response.body).to include("<svg")
     expect(response.body).to include("<title>#{qr_url(token: token.token)}</title>")
     expect(response.body).to include(location_equipment.equipment.name)
@@ -86,12 +88,15 @@ RSpec.describe "GET /location_equipments/:id/qr_token", type: :request do
     expect(location_equipment.reload.qr_token).to be_nil
   end
 
-  it "links to the label from the equipment page for an admin" do
+  it "opens the label in the modal from the equipment actions menu for an admin" do
     sign_in create(:admin)
 
     get location_equipment_path(location_equipment)
 
-    expect(response.body).to include("Etiqueta QR")
-    expect(response.body).to include(location_equipment_qr_token_path(location_equipment))
+    document = Nokogiri::HTML(response.body)
+    link = document.at_css("[data-dropdown-target='menu'] a[href='#{location_equipment_qr_token_path(location_equipment)}']")
+    expect(link.text).to eq("Etiqueta QR")
+    expect(link["data-turbo-frame"]).to eq("remote_modal")
+    expect(link["target"]).to be_nil
   end
 end

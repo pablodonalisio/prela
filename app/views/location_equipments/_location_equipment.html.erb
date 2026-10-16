@@ -29,22 +29,14 @@
           <% end %>
         </div>
       </div>
-      <% qr_label = location_equipment.qr_token || QrToken.new(scannable: location_equipment) %>
-      <% if policy(qr_label).show? || policy(location_equipment).update? %>
-        <div class="flex shrink-0 items-center gap-2">
-          <% if policy(qr_label).show? %>
-            <%= link_to "Etiqueta QR",
-                  location_equipment_qr_token_path(location_equipment),
-                  target: "_blank",
-                  rel: "noopener",
-                  class: "inline-flex h-10 items-center rounded-lg border border-default px-3 text-sm font-medium text-heading hover:bg-neutral-tertiary" %>
-          <% end %>
-          <% if policy(location_equipment).update? %>
-            <%= render "shared/dropdown" do %>
-              <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
-                                                       delete_path: location_equipment_path(location_equipment),
-                                                       confirm: "¿Seguro querés borrar este equipo?" %>
-            <% end %>
+      <% if policy(location_equipment).update? %>
+        <% qr_label = location_equipment.qr_token || QrToken.new(scannable: location_equipment) %>
+        <div class="shrink-0">
+          <%= render "shared/dropdown" do %>
+            <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
+                                                     delete_path: location_equipment_path(location_equipment),
+                                                     qr_label_path: (location_equipment_qr_token_path(location_equipment) if policy(qr_label).show?),
+                                                     confirm: "¿Seguro querés borrar este equipo?" %>
           <% end %>
         </div>
       <% end %>

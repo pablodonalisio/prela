@@ -7,7 +7,6 @@ class QrTokensController < ApplicationController
     @scannable = find_scannable
     authorize @scannable.qr_token || QrToken.new(scannable: @scannable)
     @qr_token = @scannable.ensure_qr_token!
-    render layout: "label"
   end
 
   def scan
