@@ -2,21 +2,25 @@ class AgendaController < ApplicationController
   def index
     authorize :agenda, :index?
 
-    @from = parse_date(params[:from]) || Date.current.beginning_of_week
-    @to = parse_date(params[:to]) || (@from + 4.weeks).end_of_week
+    @from = parse_date(params[:from]) || default_from
+    @to = parse_date(params[:to]) || (Date.current + 90)
 
     scope = policy_scope(ServiceOccurrence.filter(service_filter_params))
-    @agenda_services = scope.for_agenda(@from..@to)
+    agenda = scope.for_agenda(@from..@to)
       .includes(
         :technicians,
         location_equipment_service: {
           location_equipment: [:equipment, {location: :client}],
           service_kind: []
-        }
-      )
+      })
+    @pagy, @agenda_services = pagy(agenda)
   end
 
   private
+
+  def default_from
+    policy_scope(ServiceOccurrence).earliest_pending_or_scheduled_on || Date.current
+  end
 
   def parse_date(value)
     return if value.blank?
