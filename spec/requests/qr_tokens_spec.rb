@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "GET /q/:token", type: :request do
+RSpec.describe "GET /qr/:token", type: :request do
   let(:location_equipment) { create(:location_equipment) }
   let(:qr_token) { location_equipment.ensure_qr_token! }
 

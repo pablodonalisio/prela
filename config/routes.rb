@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   get "home/index"
 
-  get "q/:token", to: "qr_tokens#scan", as: :qr
+  get "qr/:token", to: "qr_tokens#scan", as: :qr
 
   resources :agenda, only: [:index]
   resources :clients do
