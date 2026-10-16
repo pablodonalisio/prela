@@ -8,7 +8,10 @@
 <% choice = f.object.choice %>
 <% type_label = t("activerecord.attributes.equipment_kind.field_types.#{f.object.value_type}", default: "Texto") %>
 <% summary = [type_label] %>
-<% summary << f.object.value if f.object.fixed? && f.object.value.present? %>
+<% if f.object.fixed? %>
+  <% summary << "Valor fijo" %>
+  <% summary << f.object.value if f.object.value.present? %>
+<% end %>
 <% summary << "Métricas" if f.object.for_metrics? %>
 <div class="relative" data-cell data-row="<%= row_index %>" data-col="<%= column_index %>" data-action="pointerdown->table-grid#prepareRadio click->table-grid#releaseRadio change->table-grid#syncCell input->table-grid#syncCell">
   <%= f.hidden_field :id, data: {name: "id"} %>

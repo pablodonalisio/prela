@@ -275,7 +275,10 @@ export default class extends Controller {
     const parts = [TYPE_LABELS[type] || type];
     const fixed = Boolean(this.checkbox(cell, "fixed")?.checked);
     const value = this.field(cell, "value")?.value || "";
-    if (fixed && value) parts.push(value);
+    if (fixed) {
+      parts.push("Valor fijo");
+      if (value) parts.push(value);
+    }
     if (this.checkbox(cell, "for_metrics")?.checked) parts.push("Métricas");
     return parts.join(" · ");
   }

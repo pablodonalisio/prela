@@ -4,17 +4,13 @@ FactoryBot.define do
 
     trait :with_measurements do
       after(:create) do |template|
-        text_kind = SectionKind.fetch("text")
-        table_kind = SectionKind.fetch("table")
-        images_kind = SectionKind.fetch("images")
-
-        notes = template.sections.create!(title: "Notas", position: 0, section_kind: text_kind)
+        notes = template.sections.create!(title: "Notas", position: 0, kind: :text)
         notes.text_section.update!(body: "Texto base")
 
         measurements = template.sections.create!(
           title: "Tensión L1",
           position: 1,
-          section_kind: table_kind,
+          kind: :table,
           table_section_attributes: {
             row_count: 1,
             column_count: 2,
@@ -39,7 +35,7 @@ FactoryBot.define do
           for_metrics: true
         )
 
-        template.sections.create!(title: "Fotos", position: 2, section_kind: images_kind)
+        template.sections.create!(title: "Fotos", position: 2, kind: :images)
       end
     end
 
@@ -49,7 +45,7 @@ FactoryBot.define do
         template.sections.create!(
           title: "Protocolo",
           position: next_position.nil? ? 0 : next_position + 1,
-          section_kind: SectionKind.fetch("list"),
+          kind: :list,
           list_section_attributes: {
             list_items_attributes: {
               "0" => {name: "Limpieza general", position: 0},

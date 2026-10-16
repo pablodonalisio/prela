@@ -49,7 +49,7 @@ class ReportTemplatesController < ApplicationController
     params.require(:report_template).permit(
       :name,
       sections_attributes: [
-        :id, :title, :position, :section_kind_id, :_destroy,
+        :id, :title, :position, :kind, :_destroy,
         text_section_attributes: %i[id _destroy],
         image_section_attributes: %i[id _destroy],
         list_section_attributes: [

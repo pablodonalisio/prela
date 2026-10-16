@@ -8,7 +8,7 @@ export default class extends Controller {
   }
 
   toggle() {
-    const key = this.kindTarget.selectedOptions[0]?.dataset.key || "text";
+    const key = this.kindTarget.value || "text";
     this.show(this.textTarget, key === "text");
     this.show(this.imagesTarget, key === "images");
     this.show(this.tableTarget, key === "table");

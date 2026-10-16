@@ -3,7 +3,7 @@
 <% section = f.object %>
 <% table_section = section.table_section || TableSection.new(row_count: 1, column_count: 1) %>
 <% list_section = section.list_section || ListSection.new %>
-<% kind_key = section.section_kind&.key || "text" %>
+<% kind_key = section.kind.presence || "text" %>
 <div class="mb-3 flex items-start gap-2" data-controller="section-kind" data-nested-form-target="item" data-sortable-fields-target="item">
   <%= f.hidden_field :id %>
   <%= f.hidden_field :position, data: {sortable_fields_position: true} %>
@@ -23,14 +23,12 @@
     <div class="min-w-40">
       <label class="mb-2 block text-sm font-medium text-heading">Tipo</label>
       <select class="<%= input_classes %>"
-              name="<%= f.object_name %>[section_kind_id]"
+              name="<%= f.object_name %>[kind]"
               data-section-kind-target="kind"
               data-action="change->section-kind#toggle">
-        <% SectionKind.order(:id).each do |kind| %>
-          <option value="<%= kind.id %>"
-                  data-key="<%= kind.key %>"
-                  <%= "selected" if section.section_kind_id == kind.id || (section.section_kind_id.blank? && kind.key == "text") %>>
-            <%= kind.name %>
+        <% Section.kinds.each_key do |key| %>
+          <option value="<%= key %>" <%= "selected" if kind_key == key %>>
+            <%= t("activerecord.attributes.section.kinds.#{key}") %>
           </option>
         <% end %>
       </select>

@@ -1,7 +1,8 @@
 class Section < ApplicationRecord
   belongs_to :report_template, optional: true
   belongs_to :report, optional: true
-  belongs_to :section_kind
+
+  enum :kind, {text: 0, images: 1, table: 2, list: 3}, default: :text, validate: true, scopes: false
 
   has_one :text_section, dependent: :destroy, autosave: true, inverse_of: :section
   has_one :image_section, dependent: :destroy, autosave: true, inverse_of: :section
@@ -20,29 +21,12 @@ class Section < ApplicationRecord
 
   scope :with_details, -> {
     includes(
-      :section_kind,
       :text_section,
       {image_section: {images_attachments: :blob}},
       {table_section: [:table_labels, {table_cells: :table_cell_options}]},
       {list_section: :list_items}
     )
   }
-
-  def text?
-    section_kind&.key == "text"
-  end
-
-  def images?
-    section_kind&.key == "images"
-  end
-
-  def table?
-    section_kind&.key == "table"
-  end
-
-  def list?
-    section_kind&.key == "list"
-  end
 
   def input_key
     source_section_id.presence || id
@@ -59,9 +43,9 @@ class Section < ApplicationRecord
   end
 
   def sync_kind_detail
-    return if section_kind.blank? || marked_for_destruction?
+    return if kind.blank? || marked_for_destruction?
 
-    keeper = detail_name_for(section_kind.key)
+    keeper = detail_name_for(kind)
     return if keeper.blank?
 
     %i[text_section image_section table_section list_section].each do |detail|

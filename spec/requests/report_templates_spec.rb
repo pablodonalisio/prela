@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "/report_templates", type: :request do
-  let(:text_kind) { SectionKind.fetch("text") }
   let(:valid_attributes) do
     {
       name: "Preventivo UPS",
@@ -9,7 +8,7 @@ RSpec.describe "/report_templates", type: :request do
         "0" => {
           title: "Notas",
           position: 0,
-          section_kind_id: text_kind.id,
+          kind: "text",
           text_section_attributes: {body: "Detalle"}
         }
       }
@@ -116,7 +115,7 @@ RSpec.describe "/report_templates", type: :request do
               id: section.id,
               title: section.title,
               position: section.position,
-              section_kind_id: section.section_kind_id,
+              kind: section.kind,
               table_section_attributes: {
                 id: table.id,
                 row_count: table.row_count,
@@ -170,7 +169,7 @@ RSpec.describe "/report_templates", type: :request do
               "0" => {
                 title: "Protocolo",
                 position: 0,
-                section_kind_id: SectionKind.fetch("list").id,
+                kind: "list",
                 list_section_attributes: {
                   list_items_attributes: {
                     "0" => {name: "Limpieza general", position: 0},
@@ -202,7 +201,7 @@ RSpec.describe "/report_templates", type: :request do
               "0" => {
                 title: "Resultado",
                 position: 0,
-                section_kind_id: SectionKind.fetch("table").id,
+                kind: "table",
                 table_section_attributes: {
                   row_count: 1,
                   column_count: 1,
@@ -262,7 +261,7 @@ RSpec.describe "/report_templates", type: :request do
                 "0" => {
                   title: "Tabla",
                   position: 0,
-                  section_kind_id: SectionKind.fetch("table").id,
+                  kind: "table",
                   table_section_attributes: {
                     row_count: 1,
                     column_count: 1,
@@ -287,7 +286,7 @@ RSpec.describe "/report_templates", type: :request do
             report_template: {
               name: "Sin título",
               sections_attributes: {
-                "0" => {title: "", position: 0, section_kind_id: text_kind.id}
+                "0" => {title: "", position: 0, kind: "text"}
               }
             }
           }
@@ -323,7 +322,7 @@ RSpec.describe "/report_templates", type: :request do
             "0" => {
               title: "Temperatura",
               position: 0,
-              section_kind_id: text_kind.id,
+              kind: "text",
               text_section_attributes: {body: "Sala"}
             }
           }

@@ -26,11 +26,11 @@ module Reports
       copy = report.sections.build(
         title: source.title,
         position: source.position,
-        section_kind: source.section_kind,
+        kind: source.kind,
         source_section_id: source.id
       )
 
-      case source.section_kind.key
+      case source.kind
       when "text"
         copy.build_text_section(body: submitted_text_body(source))
       when "images"

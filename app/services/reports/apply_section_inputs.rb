@@ -25,7 +25,7 @@ module Reports
     attr_reader :report
 
     def apply(section, values)
-      case section.section_kind&.key
+      case section.kind
       when "text"
         apply_text(section, values)
       when "images"

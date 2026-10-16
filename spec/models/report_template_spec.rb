@@ -29,7 +29,7 @@ RSpec.describe ReportTemplate, type: :model do
     report_template = ReportTemplate.new(
       name: "Preventivo UPS",
       sections_attributes: {
-        "0" => {title: " ", position: 0, section_kind_id: SectionKind.fetch("text").id}
+        "0" => {title: " ", position: 0, kind: "text"}
       }
     )
 
@@ -45,7 +45,7 @@ RSpec.describe ReportTemplate, type: :model do
         "0" => {
           title: "Tabla",
           position: 0,
-          section_kind_id: SectionKind.fetch("table").id,
+          kind: "table",
           table_section_attributes: {
             row_count: 1,
             column_count: 1,
@@ -75,8 +75,8 @@ RSpec.describe ReportTemplate, type: :model do
     report_template = ReportTemplate.create!(
       name: "Preventivo UPS",
       sections_attributes: {
-        "0" => {title: "Segundo", position: 1, section_kind_id: SectionKind.fetch("text").id, text_section_attributes: {body: "B"}},
-        "1" => {title: "Primero", position: 0, section_kind_id: SectionKind.fetch("text").id, text_section_attributes: {body: "A"}}
+        "0" => {title: "Segundo", position: 1, kind: "text", text_section_attributes: {body: "B"}},
+        "1" => {title: "Primero", position: 0, kind: "text", text_section_attributes: {body: "A"}}
       }
     )
 
@@ -91,7 +91,7 @@ RSpec.describe ReportTemplate, type: :model do
         "0" => {
           title: "Mediciones",
           position: 0,
-          section_kind_id: SectionKind.fetch("table").id,
+          kind: "table",
           table_section_attributes: {
             row_count: 2,
             column_count: 2,
@@ -153,7 +153,7 @@ RSpec.describe ReportTemplate, type: :model do
         "0" => {
           title: "Resultado",
           position: 0,
-          section_kind_id: SectionKind.fetch("table").id,
+          kind: "table",
           table_section_attributes: {
             row_count: 1,
             column_count: 1,

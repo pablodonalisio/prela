@@ -390,7 +390,6 @@ seed_contact!(
 )
 
 puts "  Demo Org 20: #{large.contacts.kept.count} contacts, #{large.locations.kept.count} locations"
-SectionKind.seed!
 
 puts "Done. Open clients 'Demo Org 5' and 'Demo Org 20'."
 puts "Look for multi-sede contacts (e.g. Gerente General, Coordinador de Mantenimiento)"

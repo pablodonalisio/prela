@@ -96,6 +96,13 @@ es:
           critical: "Crítico"
           normal: "Normal"
           low: "Baja"
+      section:
+        kind: "Tipo"
+        kinds:
+          text: "Texto"
+          images: "Imágenes"
+          table: "Tabla"
+          list: "Listado"
       report_template:
         name: "Nombre"
         optimal_value: "Valor óptimo"
