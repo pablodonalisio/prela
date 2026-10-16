@@ -191,10 +191,6 @@ html.theme-transitioning *::after {
   display: none !important;
 }
 
-.dark input[type="time"] {
-  color-scheme: dark;
-}
-
 /* Control-panel accordion: the expanded tree keeps heading-colored
    titles; unselected sibling trees go gray. With nothing expanded,
    every title stays heading-colored. */

@@ -67,6 +67,8 @@ class ServiceOccurrencesController < ApplicationController
       params.require(:service_occurrence).permit(:completed_on, :notes, :document)
     when "notes"
       params.require(:service_occurrence).permit(:notes)
+    when "schedule"
+      params.require(:service_occurrence).permit(:status, :due_on, :planned_on_init, :planned_on_finish, :notes, technician_ids: [])
     else
       params.require(:service_occurrence).permit(:status, :due_on, :planned_on_init, :planned_on_finish, :notes)
     end

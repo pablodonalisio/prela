@@ -1,5 +1,17 @@
 <%= simple_form_for equipment_kind do |f| %>
   <%= f.input :name, label: "Nombre" %>
+
+  <div class="mb-5">
+    <%= f.label :assets_category, label: "Categoría", class: "mb-2 block text-sm font-medium text-heading", for: "assets_category_picker_button" %>
+    <%= render "assets_category_select",
+               selected_id: equipment_kind.assets_category_id,
+               adding: false,
+               editing_id: nil,
+               error: nil,
+               name_value: nil,
+               field_error: equipment_kind.errors.full_messages_for(:assets_category).to_sentence.presence %>
+  </div>
+
   <%= f.input :description, label: "Descripción", required: false, hint: "Opcional." %>
 
   <%= render "field_set_section",
@@ -27,4 +39,10 @@
   </div>
 
   <%= f.button :submit, "Aceptar" %>
+<% end %>
+
+<%= form_with model: AssetsCategory.new, url: assets_categories_path, html: {id: "new_assets_category", class: "hidden"} do %>
+<% end %>
+
+<%= form_with url: assets_category_path("placeholder"), method: :patch, html: {id: "edit_assets_category", class: "hidden"} do %>
 <% end %>

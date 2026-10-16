@@ -31,12 +31,15 @@
         <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
           <%= icon(:clock, class: "text-body") %>
         </div>
-        <%= tag.input type: "time",
+        <%= tag.input type: "text",
                       id: time_id,
                       value: timestamp&.strftime("%H:%M"),
                       disabled: disabled,
-                      step: 60,
+                      inputmode: "numeric",
+                      maxlength: 5,
+                      placeholder: "00:00",
                       autocomplete: "off",
+                      spellcheck: false,
                       class: input_classes.sub("p-2.5", "py-2.5 pe-2.5 ps-10"),
                       data: {
                         datetime_field_target: "time",

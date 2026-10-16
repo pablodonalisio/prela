@@ -34,8 +34,10 @@ RSpec.describe "Agenda", type: :request do
 
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Agenda")
-      expect(response.body).to include("Inicio")
-      expect(response.body).to include("Fin")
+      expect(response.body).to include("Vencimiento Service")
+      expect(response.body).to include("Inicio Service")
+      expect(response.body).to include("Fin Service")
+      expect(response.body).to include(scheduled_in_range.due_on.strftime("%d/%m/%Y"))
       expect(response.body).to include(service_kind.name)
       expect(response.body).to include("Programado")
       expect(response.body).to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
@@ -166,6 +168,27 @@ RSpec.describe "Agenda", type: :request do
 
       expect(response.body).to include(battery_scheduled.planned_on_init.strftime("%d/%m/%Y"))
       expect(response.body).not_to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
+    end
+
+    it "paginates results 12 per page" do
+      12.times do |index|
+        kind = create(:service_kind, name: "Tipo paginado #{index}")
+        extra_les = create(:location_equipment_service, location_equipment: location_equipment, service_kind: kind)
+        create(:service_occurrence,
+          location_equipment_service: extra_les,
+          due_on: Date.current + index + 1)
+      end
+
+      get agenda_index_path
+
+      expect(response).to have_http_status(:success)
+      expect(response.body.scan(/id="agenda_service_occurrence_\d+"/).size).to eq(12)
+      expect(response.body).to include("page=2")
+
+      get agenda_index_path, params: {page: 2}
+
+      expect(response).to have_http_status(:success)
+      expect(response.body.scan(/id="agenda_service_occurrence_\d+"/).size).to eq(1)
     end
 
     it "filters by client_id" do

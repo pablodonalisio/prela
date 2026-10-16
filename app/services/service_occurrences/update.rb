@@ -112,7 +112,54 @@ class ServiceOccurrences::Update
       assignment[:notes] = attrs[:notes] if attrs.key?(:notes)
     end
 
-    occurrence.update!(assignment)
+    # Has to be checked before the occurrence is updated
+    schedule_technicians = scheduling?
+    clear_assignments = clearing_schedule?
+
+    occurrence.transaction do
+      occurrence.update!(assignment)
+      if schedule_technicians
+        sync_technicians!
+      elsif clear_assignments
+        occurrence.assignments.destroy_all
+      end
+    end
+  end
+
+  def scheduling?
+    target_status == "scheduled" && (status_changing? || attrs.key?(:technician_ids))
+  end
+
+  def clearing_schedule?
+    status_changing? && %w[pending suspended cancelled].include?(target_status)
+  end
+
+  def sync_technicians!
+    ids = Array(attrs[:technician_ids]).reject(&:blank?).map(&:to_i).uniq
+    if ids.empty?
+      occurrence.errors.add(:technicians, :blank)
+      raise ActiveRecord::RecordInvalid, occurrence
+    end
+
+    locked_users = User.lock.where(id: ids).order(:id).to_a
+    unless locked_users.size == ids.size && locked_users.all?(&:technician?)
+      occurrence.errors.add(:technicians, :invalid)
+      raise ActiveRecord::RecordInvalid, occurrence
+    end
+
+    unavailable_ids = User.unavailable_ids_for(occurrence.planned_on_init...occurrence.planned_on_finish, except: occurrence)
+    unavailable = locked_users.select { |user| unavailable_ids.include?(user.id) }
+    if unavailable.any?
+      occurrence.errors.add(
+        :technicians,
+        :unavailable,
+        count: unavailable.size,
+        names: unavailable.map(&:display_name).to_sentence
+      )
+      raise ActiveRecord::RecordInvalid, occurrence
+    end
+
+    occurrence.technician_ids = ids
   end
 
   def update_completed!

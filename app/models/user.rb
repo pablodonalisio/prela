@@ -6,6 +6,9 @@ class User < ApplicationRecord
 
   belongs_to :client, optional: true
 
+  has_many :service_occurrence_assignments, dependent: :destroy
+  has_many :assigned_service_occurrences, through: :service_occurrence_assignments, source: :service_occurrence
+
   enum :role, {client: 0, admin: 1, technician: 2}
 
   validates :role, presence: true
@@ -21,6 +24,23 @@ class User < ApplicationRecord
 
   def inactive_message
     client_discarded_for_authentication? ? :client_discarded : super
+  end
+
+  def self.unavailable_ids_for(range, except: nil)
+    init = range.begin
+    finish = range.end
+    return [] if init.blank? || finish.blank?
+
+    scope = joins(:assigned_service_occurrences)
+      .where(service_occurrences: {status: ServiceOccurrence.statuses[:scheduled]})
+      .where("service_occurrences.planned_on_init < ?", finish)
+      .where("service_occurrences.planned_on_finish > ?", init)
+    scope = scope.where.not(service_occurrences: {id: except.id}) if except&.id.present?
+    scope.distinct.pluck(:id)
+  end
+
+  def display_name
+    [name, last_name].compact_blank.join(" ").presence || email
   end
 
   def full_role

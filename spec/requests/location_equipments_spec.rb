@@ -255,8 +255,9 @@ RSpec.describe "/location_equipments", type: :request do
       get location_equipment_url(location_equipment)
 
       expect(response.body).to include("Estado")
-      expect(response.body).to include("Inicio")
-      expect(response.body).to include("Fin")
+      expect(response.body).to include("Vencimiento Service")
+      expect(response.body).to include("Inicio Service")
+      expect(response.body).to include("Fin Service")
       expect(response.body).to include("Completado")
       expect(response.body).to include("Pendiente")
       expect(response.body).to include(scheduled.planned_on_init.strftime("%d/%m/%Y"))

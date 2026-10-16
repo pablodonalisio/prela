@@ -52,6 +52,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
     t.index ["location_equipment_id"], name: "index_activities_on_location_equipment_id"
   end
 
+  create_table "assets_categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_assets_categories_on_discarded_at"
+    t.index ["normalized_name"], name: "index_assets_categories_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+  end
+
   create_table "batteries", force: :cascade do |t|
     t.string "model"
     t.float "voltage"
@@ -206,6 +216,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
     t.text "description"
     t.string "normalized_name"
     t.datetime "discarded_at"
+    t.bigint "assets_category_id", null: false
+    t.index ["assets_category_id"], name: "index_equipment_kinds_on_assets_category_id"
     t.index ["discarded_at"], name: "index_equipment_kinds_on_discarded_at"
     t.index ["legacy_kind"], name: "index_equipment_kinds_on_legacy_kind", unique: true, where: "((legacy_kind IS NOT NULL) AND (discarded_at IS NULL))"
     t.index ["name"], name: "index_equipment_kinds_on_name", unique: true, where: "(discarded_at IS NULL)"
@@ -364,6 +376,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "normalized_name"
+    t.jsonb "layout", default: [], null: false
     t.index ["normalized_name"], name: "index_report_templates_on_normalized_name", unique: true
   end
 
@@ -376,6 +389,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
     t.bigint "report_template_id"
     t.integer "number"
     t.boolean "template_based", default: false, null: false
+    t.jsonb "observation_values", default: {}, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
     t.index ["report_template_id"], name: "index_reports_on_report_template_id"
@@ -606,6 +620,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
   add_foreign_key "contacts_locations", "contacts"
   add_foreign_key "contacts_locations", "locations"
   add_foreign_key "electrical_panel_report_stats", "reports"
+  add_foreign_key "equipment_kinds", "assets_categories"
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
   add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
   add_foreign_key "failures", "location_equipments"

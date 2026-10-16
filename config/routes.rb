@@ -50,6 +50,7 @@ Rails.application.routes.draw do
     get "remove_field", on: :collection
     get "duplicate", on: :member
   end
+  resources :assets_categories, only: [:create, :update, :destroy]
   resources :service_kinds, except: %i[show]
   resources :report_templates, except: [:show]
   resources :tags, except: [:show]

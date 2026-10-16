@@ -1,4 +1,6 @@
 <%= simple_form_for user, html: {data: {controller: "user-form"}} do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :last_name, label: "Apellido" %>
   <%= f.input :email, label: "Email" %>
   <% if user.new_record? %>
     <%= f.input :password, label: "Password" %>
