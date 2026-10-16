@@ -61,7 +61,7 @@ RSpec.describe "Agenda", type: :request do
       belt_les.service_occurrences.destroy_all
       suspended = create(:service_occurrence, :suspended,
         location_equipment_service: belt_les,
-        due_on: Date.current.beginning_of_week + 1.day,
+        due_on: scheduled_in_range.planned_on_init.to_date,
         notes: "Espera cliente")
 
       get agenda_index_path
@@ -94,8 +94,8 @@ RSpec.describe "Agenda", type: :request do
       ups_les.service_occurrences.destroy_all
       out_of_range = create(:service_occurrence, :scheduled,
         location_equipment_service: ups_les,
-        planned_on_init: 3.months.from_now.change(hour: 9, min: 0, sec: 0),
-        due_on: 3.months.from_now.to_date)
+        planned_on_init: (Date.current + 91).in_time_zone.change(hour: 9, min: 0, sec: 0),
+        due_on: Date.current + 91)
 
       get agenda_index_path
 
@@ -103,6 +103,39 @@ RSpec.describe "Agenda", type: :request do
       expect(response.body).not_to include("No mostrar")
       expect(response.body).not_to include("UPS Fuera de rango")
       expect(response.body).not_to include(out_of_range.planned_on_init.strftime("%d/%m/%Y"))
+    end
+
+    it "defaults Desde to the earliest pending or scheduled date and Hasta to 90 days from today" do
+      battery_les = location_equipment.location_equipment_services.find_by!(service_kind: battery_change_kind)
+      battery_les.service_occurrences.destroy_all
+      early_pending = create(:service_occurrence,
+        location_equipment_service: battery_les,
+        due_on: Date.current - 20)
+
+      belt_les = location_equipment.location_equipment_services.find_by!(service_kind: belt_change_kind)
+      belt_les.service_occurrences.destroy_all
+      create(:service_occurrence, :suspended,
+        location_equipment_service: belt_les,
+        due_on: Date.current - 40,
+        notes: "Antes del inicio")
+
+      get agenda_index_path
+
+      expect(response.body).to include(%(value="#{early_pending.due_on.iso8601}"))
+      expect(response.body).to include(%(value="#{(Date.current + 90).iso8601}"))
+      expect(response.body).to include(early_pending.due_on.strftime("%d/%m/%Y"))
+      expect(response.body).not_to include("Antes del inicio")
+    end
+
+    it "uses explicit from and to over the default window" do
+      from = Date.current + 10
+      to = Date.current + 12
+
+      get agenda_index_path, params: {from: from.iso8601, to: to.iso8601}
+
+      expect(response.body).to include(%(value="#{from.iso8601}"))
+      expect(response.body).to include(%(value="#{to.iso8601}"))
+      expect(response.body).not_to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
     end
 
     it "filters by service_kind_id" do
@@ -124,15 +157,36 @@ RSpec.describe "Agenda", type: :request do
       battery_les.service_occurrences.destroy_all
       battery_scheduled = create(:service_occurrence, :scheduled,
         location_equipment_service: battery_les,
-        planned_on: Date.current.beginning_of_week + 1.day,
+        planned_on_init: (Date.current.beginning_of_week + 1.day).in_time_zone.change(hour: 9, min: 0, sec: 0),
         due_on: 1.month.from_now.to_date)
       battery_scheduled.update!(priority: :critical)
       scheduled_in_range.update!(priority: :low)
 
       get agenda_index_path, params: {priority: "critical"}
 
-      expect(response.body).to include(battery_scheduled.planned_on.strftime("%d/%m/%Y"))
-      expect(response.body).not_to include(scheduled_in_range.planned_on.strftime("%d/%m/%Y"))
+      expect(response.body).to include(battery_scheduled.planned_on_init.strftime("%d/%m/%Y"))
+      expect(response.body).not_to include(scheduled_in_range.planned_on_init.strftime("%d/%m/%Y"))
+    end
+
+    it "paginates results 12 per page" do
+      12.times do |index|
+        kind = create(:service_kind, name: "Tipo paginado #{index}")
+        extra_les = create(:location_equipment_service, location_equipment: location_equipment, service_kind: kind)
+        create(:service_occurrence,
+          location_equipment_service: extra_les,
+          due_on: Date.current + index + 1)
+      end
+
+      get agenda_index_path
+
+      expect(response).to have_http_status(:success)
+      expect(response.body.scan(/id="agenda_service_occurrence_\d+"/).size).to eq(12)
+      expect(response.body).to include("page=2")
+
+      get agenda_index_path, params: {page: 2}
+
+      expect(response).to have_http_status(:success)
+      expect(response.body.scan(/id="agenda_service_occurrence_\d+"/).size).to eq(1)
     end
 
     it "filters by client_id" do

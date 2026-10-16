@@ -114,6 +114,18 @@ class ServiceOccurrence < ApplicationRecord
       DUE_SOON_WINDOW.from_now.to_date
     end
 
+    def earliest_pending_or_scheduled_on
+      date = where(status: [:pending, :scheduled]).minimum(
+        Arel.sql(
+          sanitize_sql_array([
+            "CASE WHEN service_occurrences.status = ? THEN service_occurrences.planned_on_init::date ELSE service_occurrences.due_on END",
+            statuses[:scheduled]
+          ])
+        )
+      )
+      date&.to_date
+    end
+
     def due_for_attention_by_equipment_kind(scope = all)
       scope.actionable_for_attention
         .for_visible_location_equipments
