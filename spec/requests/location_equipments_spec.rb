@@ -211,28 +211,28 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include(location_equipment.equipment.equipment_kind.name)
     end
 
-    it "renders content tabs with Informes as the default active tab" do
+    it "renders content tabs with Controles as the default active tab" do
       get location_equipment_url(location_equipment)
 
       expect(response.body).to include("content-tabs")
-      expect(response.body).to include("Informes")
+      expect(response.body).to include("Controles")
       expect(response.body).to include("Servicios")
       expect(response.body).to include("Fallas")
       expect(response.body).to include("Actividades")
       expect(response.body).to include("Documentos")
       expect(response.body).to include("Comentarios")
       expect(response.body).to include("Insumos")
-      expect(response.body).to match(/class="tab-pane fade show active"[^>]*id="tab_location_equipment_#{location_equipment.id}-informes"/)
+      expect(response.body).to match(/class="tab-pane fade show active"[^>]*id="tab_location_equipment_#{location_equipment.id}-controles"/)
     end
 
-    it "shows Informes for building equipment" do
+    it "shows Controles for building equipment" do
       building = create(:location_equipment, equipment: create(:equipment, :building))
 
       get location_equipment_url(building)
 
       expect(response).to be_successful
-      expect(response.body).to include("Informes")
-      expect(response.body).to match(/id="tab_location_equipment_#{building.id}-informes"/)
+      expect(response.body).to include("Controles")
+      expect(response.body).to match(/id="tab_location_equipment_#{building.id}-controles"/)
     end
 
     it "lists every service occurrence with status and actions in the Servicios tab" do
