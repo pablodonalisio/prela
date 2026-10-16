@@ -14,12 +14,15 @@ Rails.application.routes.draw do
 
   get "home/index"
 
+  get "qr/:token", to: "qr_tokens#scan", as: :qr
+
   resources :agenda, only: [:index]
   resources :clients do
     resources :locations, except: [:index, :show]
     resources :contacts, except: [:index, :show]
   end
   resources :location_equipments do
+    resource :qr_token, only: [:show]
     get :field_inputs, on: :collection
     get :location_inputs, on: :collection
     resources :reports do

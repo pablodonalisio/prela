@@ -25,6 +25,10 @@ module CompanyInfo
     "contacto@prela.com.ar"
   end
 
+  def website
+    "prela.com.ar"
+  end
+
   def address
     "Hualfin 758 - Córdoba"
   end

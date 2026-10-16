@@ -1,6 +1,31 @@
 require "rails_helper"
 
 RSpec.describe LocationEquipmentsHelper, type: :helper do
+  describe "#qr_label_rows" do
+    let(:equipment) { build(:equipment, brand: "APC", model: "Smart-UPS", field_values: {"kva" => 10}) }
+
+    it "lists brand and model, serial number, and code without field values" do
+      location_equipment = build(:location_equipment, equipment: equipment, serial_number: "SN-1", code: "EQ-1",
+        field_values: {"rack" => "A"})
+
+      expect(helper.qr_label_rows(location_equipment)).to eq([
+        ["Marca", "APC"],
+        ["Modelo", "Smart-UPS"],
+        ["Número de serie", "SN-1"],
+        ["Código", "EQ-1"]
+      ])
+    end
+
+    it "omits brand, model, serial number, and code when they are blank" do
+      equipment.assign_attributes(brand: "", model: "Smart-UPS")
+      location_equipment = build(:location_equipment, equipment: equipment, serial_number: nil, code: "")
+
+      expect(helper.qr_label_rows(location_equipment)).to eq([
+        ["Modelo", "Smart-UPS"]
+      ])
+    end
+  end
+
   describe "#failures_last_year_indicator" do
     it "shows the last-year failure count" do
       location_equipment = build_stubbed(:location_equipment)

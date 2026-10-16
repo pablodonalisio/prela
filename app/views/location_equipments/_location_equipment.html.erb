@@ -30,10 +30,12 @@
         </div>
       </div>
       <% if policy(location_equipment).update? %>
+        <% qr_label = location_equipment.qr_token || QrToken.new(scannable: location_equipment) %>
         <div class="shrink-0">
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
                                                      delete_path: location_equipment_path(location_equipment),
+                                                     qr_label_path: (location_equipment_qr_token_path(location_equipment) if policy(qr_label).show?),
                                                      confirm: "¿Seguro querés borrar este equipo?" %>
           <% end %>
         </div>
