@@ -12,7 +12,7 @@ RSpec.describe "Reports", type: :system do
     visit location_equipment_path(location_equipment)
     click_on "Button link"
 
-    expect(page).to have_text("Nuevo Informe")
+    expect(page).to have_text("Nuevo Informe de Control")
 
     fill_in "Observaciones", with: "Revisión de prueba"
     click_on "Aceptar"
