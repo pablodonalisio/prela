@@ -139,12 +139,14 @@ GEM
       railties (>= 6.1)
     drb (2.2.3)
     erb (5.0.2)
+    error_highlight (0.7.2)
     erubi (1.13.1)
     factory_bot (6.5.5)
       activesupport (>= 6.1.0)
     factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
+    ffi (1.17.2)
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm-linux-gnu)
@@ -217,6 +219,7 @@ GEM
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (5.25.5)
     msgpack (1.8.0)
     net-imap (0.5.10)
@@ -229,6 +232,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
+    nokogiri (1.18.9)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.18.9-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.9-aarch64-linux-musl)
@@ -386,6 +392,9 @@ GEM
       ffi (~> 1.12)
       logger
     rubyzip (3.0.2)
+    sass-embedded (1.92.0)
+      google-protobuf (~> 4.31)
+      rake (>= 13)
     sass-embedded (1.92.0-aarch64-linux-gnu)
       google-protobuf (~> 4.31)
     sass-embedded (1.92.0-aarch64-linux-musl)
@@ -465,8 +474,6 @@ GEM
       railties (>= 7.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    tzinfo-data (1.2026.5)
-      tzinfo (>= 1.0.0)
     unicode-display_width (3.1.5)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
@@ -497,6 +504,7 @@ PLATFORMS
   arm-linux-musl
   arm-linux-musleabihf
   arm64-darwin
+  ruby
   x64-mingw-ucrt
   x86_64-darwin
   x86_64-linux
