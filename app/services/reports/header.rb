@@ -36,6 +36,8 @@ class Reports::Header < Reports::Content
   end
 
   def client_image
+    return "" if @client_logo.blank?
+
     {image: @client_logo.path, fit: [100, 50], position: :center}
   end
 
