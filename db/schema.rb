@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_14_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -344,6 +344,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_12_150000) do
     t.string "cable_and_electrical_connections"
     t.string "oil_pressure_unit"
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
+  end
+
+  create_table "qr_tokens", force: :cascade do |t|
+    t.string "token", null: false
+    t.string "scannable_type", null: false
+    t.bigint "scannable_id", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_qr_tokens_on_discarded_at"
+    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_kept_scannable", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_scannable"
+    t.index ["token"], name: "index_qr_tokens_on_token", unique: true
   end
 
   create_table "report_comments", force: :cascade do |t|
