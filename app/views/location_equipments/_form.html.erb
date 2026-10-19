@@ -36,7 +36,7 @@
                                       prompt: "Seleccione una sede",
                                       wrapper_html: { class: "mb-3" } %>
           <% else %>
-            <p class="mb-3 text-sm text-fg-danger" data-missing-locations>Este cliente no tiene sedes registradas.</p>
+            <p class="mb-3 text-sm text-fg-danger">Este cliente no tiene sedes registradas.</p>
           <% end %>
         <% end %>
       <% end %>
@@ -123,8 +123,6 @@
   </div>
 
   <div class="mt-4 flex justify-end">
-    <%= f.button :submit, "Aceptar",
-          data: {location_equipment_form_target: "submit"},
-          class: "disabled:cursor-not-allowed disabled:opacity-50" %>
+    <%= f.button :submit, "Aceptar"%>
   </div>
 <% end %>

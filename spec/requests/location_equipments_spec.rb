@@ -48,7 +48,6 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response).to be_successful
       expect(response.body).to include("Este cliente no tiene sedes registradas.")
       expect(response.body).to include("text-fg-danger")
-      expect(response.body).to include("data-missing-locations")
     end
   end
 
