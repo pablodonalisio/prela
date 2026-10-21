@@ -263,6 +263,14 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include(scheduled.planned_on_init.strftime("%d/%m/%Y"))
       expect(response.body).to include("08:30")
       expect(response.body).to include("11:00")
+      document = Nokogiri::HTML(response.body)
+      scheduled_start = document.at_css("#row_service_occurrence_#{scheduled.id}").css("td")[1]
+      pending_start = document.at_css("#row_service_occurrence_#{pending.id}").css("td")[1]
+      completed_start = document.at_css("#row_service_occurrence_#{completed.id}").css("td")[1]
+      expect(scheduled_start.text).to include(scheduled.planned_on_init.strftime("%d/%m/%Y"))
+      expect(pending_start.text).to include("—")
+      expect(pending_start.text).not_to include(pending.due_on.strftime("%d/%m/%Y"))
+      expect(completed_start.text).to include("—")
       expect(response.body).to include(ServiceKind.find_by!(legacy_key: "service").name)
       expect(response.body).to include(completed.completed_on.strftime("%d/%m/%Y"))
       expect(response.body).to include(pending.due_on.strftime("%d/%m/%Y"))
