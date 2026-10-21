@@ -33,5 +33,15 @@ RSpec.describe Reports::PdfGenerator do
         expect(pdf_service_object).not_to be_success
       end
     end
+
+    context "when the client has no avatar" do
+      before { report.location_equipment.client.avatar.purge }
+
+      it "generates the PDF without a client logo" do
+        expect(pdf_service_object).to be_success
+        expect(pdf_service_object.error).to be_nil
+        expect(pdf_service_object.pdf).to start_with("%PDF")
+      end
+    end
   end
 end
