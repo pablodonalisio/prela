@@ -36,7 +36,7 @@
                                       prompt: "Seleccione una sede",
                                       wrapper_html: { class: "mb-3" } %>
           <% else %>
-            <p class="mb-3 text-sm text-body-subtle">Este cliente no tiene sedes registradas.</p>
+            <p class="mb-3 text-sm text-fg-danger">Este cliente no tiene sedes registradas.</p>
           <% end %>
         <% end %>
       <% end %>
@@ -123,6 +123,6 @@
   </div>
 
   <div class="mt-4 flex justify-end">
-    <%= f.button :submit, "Aceptar" %>
+    <%= f.button :submit, "Aceptar"%>
   </div>
 <% end %>

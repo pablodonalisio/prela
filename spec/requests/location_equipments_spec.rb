@@ -41,6 +41,14 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response).to be_successful
       expect(response.body).to include("le_location_inputs")
     end
+
+    it "shows a red message when the client has no locations" do
+      get location_inputs_location_equipments_url, params: {client_id: client.id}
+
+      expect(response).to be_successful
+      expect(response.body).to include("Este cliente no tiene sedes registradas.")
+      expect(response.body).to include("text-fg-danger")
+    end
   end
 
   describe "GET /index" do
