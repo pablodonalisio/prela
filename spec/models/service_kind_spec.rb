@@ -123,5 +123,24 @@ RSpec.describe ServiceKind, type: :model do
       service_kind.discard!
       expect(ServiceKind.visible).not_to include(service_kind)
     end
+
+    it "does not discard a service kind assigned to a location equipment" do
+      service_kind = create(:service_kind)
+      create(:location_equipment_service, location_equipment: create(:location_equipment), service_kind: service_kind)
+
+      expect(service_kind.discard).to be(false)
+      expect(service_kind).not_to be_discarded
+      expect(service_kind.errors[:base]).to include("No se puede eliminar porque está asignado a otros activos")
+    end
+
+    it "discards a service kind whose only assignment belongs to a discarded asset" do
+      service_kind = create(:service_kind)
+      location_equipment = create(:location_equipment)
+      create(:location_equipment_service, location_equipment: location_equipment, service_kind: service_kind)
+      location_equipment.discard!
+
+      expect(service_kind.discard).to be(true)
+      expect(service_kind.reload).to be_discarded
+    end
   end
 end
