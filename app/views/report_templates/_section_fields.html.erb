@@ -78,7 +78,9 @@
   <fieldset class="<%= "hidden" unless kind_key == "table" %>" <%= "disabled" unless kind_key == "table" %> data-section-kind-target="table">
     <%= f.simple_fields_for :table_section, table_section do |table_form| %>
       <%= table_form.hidden_field :id %>
-      <div data-controller="table-grid">
+      <div data-controller="table-grid"
+           data-table-grid-max-rows-value="<%= TableSection::MAX_ROWS %>"
+           data-table-grid-max-columns-value="<%= TableSection::MAX_COLUMNS %>">
         <div class="mb-3 flex flex-wrap gap-3">
           <div>
             <label class="mb-2 block text-sm font-medium text-heading">Filas</label>

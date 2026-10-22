@@ -81,6 +81,10 @@ RSpec.describe "/report_templates", type: :request do
       expect(response.body).to include('value="L1"')
       expect(response.body).to include('data-value-wrap class="mb-3 hidden"')
       expect(response.body).to include('type="radio"')
+      expect(response.body).to include(%(data-table-grid-max-rows-value="#{TableSection::MAX_ROWS}"))
+      expect(response.body).to include(%(data-table-grid-max-columns-value="#{TableSection::MAX_COLUMNS}"))
+      expect(response.body).to include(%(max="#{TableSection::MAX_ROWS}"))
+      expect(response.body).to include(%(max="#{TableSection::MAX_COLUMNS}"))
     end
 
     it "renders boolean option inputs only for a boolean cell" do

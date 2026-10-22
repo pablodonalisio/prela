@@ -217,9 +217,16 @@ RSpec.describe ReportTemplate, type: :model do
     expect(cell.value).to eq("22.2")
   end
 
-  it "rejects a grid larger than the limit" do
+  it "rejects a grid larger than the row limit" do
     table = TableSection.new(row_count: TableSection::MAX_ROWS + 1, column_count: 1)
     expect(table).not_to be_valid
+    expect(table.errors[:row_count]).to be_present
+  end
+
+  it "rejects a grid larger than the column limit" do
+    table = TableSection.new(row_count: 1, column_count: TableSection::MAX_COLUMNS + 1)
+    expect(table).not_to be_valid
+    expect(table.errors[:column_count]).to be_present
   end
 
   describe "#location_equipments_count" do

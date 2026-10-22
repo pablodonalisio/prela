@@ -13,8 +13,8 @@ const TYPE_LABELS = {
 export default class extends Controller {
   static targets = ["rows", "columns", "body", "cellTemplate", "labelTemplate"];
   static values = {
-    maxRows: {type: Number, default: 32},
-    maxColumns: {type: Number, default: 10},
+    maxRows: {type: Number, default: 16},
+    maxColumns: {type: Number, default: 12},
   };
 
   connect() {
