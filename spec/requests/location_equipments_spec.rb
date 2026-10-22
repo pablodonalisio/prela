@@ -269,6 +269,16 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include("Registrar servicio")
       expect(response.body).to include("Editar servicio")
       expect(response.body).not_to include("completed_service_occurrences")
+
+      document = Nokogiri::HTML(response.body)
+      {
+        completed => "text-green-800",
+        pending => "text-yellow-800",
+        scheduled => "text-blue-800"
+      }.each do |occurrence, color|
+        date_cells = document.at_css("##{ActionView::RecordIdentifier.dom_id(occurrence, :row)}").css("td").first(3)
+        expect(date_cells.map { |cell| cell["class"] }).to all(include(color))
+      end
     end
   end
 
