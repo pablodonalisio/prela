@@ -28,7 +28,7 @@
                 <%= schedule_point(occurrence.due_on) %>
               </td>
               <td class="whitespace-nowrap px-4 py-3 <%= schedule_color %>">
-                <%= schedule_point(occurrence.planned_on_init.presence || occurrence.service_date) %>
+                <%= schedule_point(occurrence.scheduled? ? occurrence.planned_on_init : nil) %>
               </td>
               <td class="whitespace-nowrap px-4 py-3 <%= schedule_color %>">
                 <%= schedule_point(occurrence.planned_on_finish) %>
