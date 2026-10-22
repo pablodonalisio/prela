@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :report_template do
-    sequence(:name) { |n| "Plantilla de informe #{n}" }
+    sequence(:name) { |n| "Plantilla de informe de control #{n}" }
 
     trait :with_measurements do
       after(:create) do |template|

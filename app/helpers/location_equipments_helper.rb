@@ -13,6 +13,16 @@ module LocationEquipmentsHelper
     pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
   }.freeze
 
+  def qr_label_rows(location_equipment)
+    equipment = location_equipment.equipment
+    [
+      [Equipment.human_attribute_name(:brand), equipment.brand],
+      [Equipment.human_attribute_name(:model), equipment.model],
+      [LocationEquipment.human_attribute_name(:serial_number), location_equipment.serial_number],
+      [LocationEquipment.human_attribute_name(:code), location_equipment.code]
+    ].select { |_label, value| value.present? }
+  end
+
   def humanize_floor(floor)
     return unless floor
 
@@ -44,9 +54,17 @@ module LocationEquipmentsHelper
   end
 
   def occurrence_status_badge_classes(occurrence)
-    key = %i[completed scheduled suspended cancelled].find { |status| occurrence.public_send("#{status}?") } || :pending
-    OCCURRENCE_STATUS_BADGE_CLASSES.fetch(key)
+    OCCURRENCE_STATUS_BADGE_CLASSES.fetch(occurrence_status_key(occurrence))
   end
+
+  def occurrence_status_text_classes(occurrence)
+    occurrence_status_badge_classes(occurrence).split.grep(/\A(?:dark:)?text-/).join(" ")
+  end
+
+  def occurrence_status_key(occurrence)
+    %i[completed scheduled suspended cancelled].find { |status| occurrence.public_send("#{status}?") } || :pending
+  end
+  private :occurrence_status_key
 
   def failures_last_year_indicator(location_equipment)
     "Último año: #{location_equipment.failures_last_year_count}"

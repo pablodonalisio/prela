@@ -56,6 +56,9 @@ RSpec.describe "Agenda", type: :request do
 
       expect(response.body).to include("Pendiente")
       expect(response.body).to include(pending_in_range.due_on.strftime("%d/%m/%Y"))
+      start_cell = Nokogiri::HTML(response.body).at_css("#agenda_service_occurrence_#{pending_in_range.id}").css("td")[1]
+      expect(start_cell.text).to include("—")
+      expect(start_cell.text).not_to include(pending_in_range.due_on.strftime("%d/%m/%Y"))
     end
 
     it "shows suspended occurrences using due_on" do
@@ -71,6 +74,9 @@ RSpec.describe "Agenda", type: :request do
       expect(response.body).to include("Suspendido")
       expect(response.body).to include("Espera cliente")
       expect(response.body).to include(suspended.due_on.strftime("%d/%m/%Y"))
+      start_cell = Nokogiri::HTML(response.body).at_css("#agenda_service_occurrence_#{suspended.id}").css("td")[1]
+      expect(start_cell.text).to include("—")
+      expect(start_cell.text).not_to include(suspended.due_on.strftime("%d/%m/%Y"))
     end
 
     it "shows service actions for admins" do

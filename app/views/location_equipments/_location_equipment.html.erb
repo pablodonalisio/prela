@@ -30,10 +30,12 @@
         </div>
       </div>
       <% if policy(location_equipment).update? %>
+        <% qr_label = location_equipment.qr_token || QrToken.new(scannable: location_equipment) %>
         <div class="shrink-0">
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box", edit_path: edit_location_equipment_path(location_equipment),
                                                      delete_path: location_equipment_path(location_equipment),
+                                                     qr_label_path: (location_equipment_qr_token_path(location_equipment) if policy(qr_label).show?),
                                                      confirm: "¿Seguro querés borrar este equipo?" %>
           <% end %>
         </div>
@@ -54,7 +56,7 @@
       <div class="border-b border-default">
         <ul class="-mb-px flex flex-wrap gap-1 text-sm font-medium" id="<%= tab_prefix %>-tabs" data-tabs-toggle="#<%= tab_prefix %>-content" role="tablist">
           <% [
-            ["informes", "Informes", true],
+            ["controles", "Controles", true],
             ["servicios", "Servicios", false],
             ["fallas", "Fallas", false],
             ["actividades", "Actividades", false],
@@ -78,9 +80,9 @@
       </div>
 
       <div id="<%= tab_prefix %>-content" class="pt-4">
-        <div id="<%= tab_prefix %>-informes" role="tabpanel" aria-labelledby="<%= tab_prefix %>-informes-tab">
+        <div id="<%= tab_prefix %>-controles" role="tabpanel" aria-labelledby="<%= tab_prefix %>-controles-tab">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Informes</h3>
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Controles</h3>
             <% if policy(Report).create? %>
               <%= render "shared/button_link", icon: :add,
                                                text: "",

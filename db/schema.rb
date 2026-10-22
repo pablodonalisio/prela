@@ -384,6 +384,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.index ["token"], name: "index_qr_tokens_on_token", unique: true
   end
 
+  create_table "report_comments", force: :cascade do |t|
+    t.bigint "report_id", null: false
+    t.text "description", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_qr_tokens_on_discarded_at"
+    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_kept_scannable", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_scannable"
+    t.index ["token"], name: "index_qr_tokens_on_token", unique: true
+  end
+
   create_table "report_templates", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false

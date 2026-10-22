@@ -4,7 +4,7 @@
     <%= schedule_point(service_occurrence.due_on) %>
   </td>
   <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
-    <%= schedule_point(service_occurrence.planned_on_init.presence || service_occurrence.agenda_date) %>
+    <%= schedule_point(service_occurrence.scheduled? ? service_occurrence.planned_on_init : nil) %>
   </td>
   <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
     <%= schedule_point(service_occurrence.planned_on_finish) %>
