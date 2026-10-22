@@ -6,9 +6,17 @@ es:
       signature:
         one: "Firma"
         other: "Firmas"
+      contract:
+        one: "Contrato"
+        other: "Contratos"
     attributes:
       client:
         name: "Nombre"
+      contract:
+        name: "Nombre"
+        file: "Archivo"
+        starts_on: "Fecha de inicio"
+        ends_on: "Fecha de fin"
       equipment:
         name: "Nombre"
         kind: "Tipo"

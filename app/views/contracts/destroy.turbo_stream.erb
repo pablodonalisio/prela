@@ -1,0 +1,11 @@
+<%= turbo_stream.remove @contract %>
+
+<% if @client.contracts.kept.none? %>
+  <%= turbo_stream.append "contracts" do %>
+    <tr id="empty_contracts">
+      <td colspan="5" class="px-3 py-6 text-center text-sm text-body-subtle">
+        Todavía no hay contratos cargados.
+      </td>
+    </tr>
+  <% end %>
+<% end %>

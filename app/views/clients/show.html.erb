@@ -37,6 +37,11 @@
                   data-tabs-target="#client-organigrama" type="button" role="tab"
                   aria-controls="client-organigrama" aria-selected="false">Organigrama</button>
         </li>
+        <li role="presentation">
+          <button class="inline-block border-b-2 px-4 py-3" id="client-contratos-tab"
+                  data-tabs-target="#client-contratos" type="button" role="tab"
+                  aria-controls="client-contratos" aria-selected="false">Contratos</button>
+        </li>
       </ul>
     </div>
 
@@ -106,6 +111,40 @@
           <div id="organigram">
             <%= render "contacts/organigram", client: @client %>
           </div>
+        </div>
+      </div>
+
+      <div class="hidden rounded-xl border border-default bg-neutral-primary" id="client-contratos" role="tabpanel" aria-labelledby="client-contratos-tab">
+        <div class="flex items-center justify-between gap-4 border-b border-default px-5 py-4">
+          <h3 class="text-lg font-semibold text-heading">Contratos</h3>
+          <% if policy(Contract).create? %>
+            <%= render "shared/button_link", text: "Agregar", path: [:new, @client, :contract] %>
+          <% end %>
+        </div>
+        <div class="overflow-x-auto p-2 md:p-4">
+          <table class="w-full text-left text-sm">
+            <thead class="text-xs uppercase tracking-wide text-body-subtle">
+              <tr>
+                <th class="px-3 py-3 font-semibold">Nombre</th>
+                <th class="px-3 py-3 font-semibold">Archivo</th>
+                <th class="px-3 py-3 font-semibold">Fecha de inicio</th>
+                <th class="px-3 py-3 font-semibold">Fecha de fin</th>
+                <th class="px-3 py-3 text-end font-semibold">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="contracts">
+              <% kept_contracts = @client.contracts.kept.with_attached_file.order(starts_on: :desc, created_at: :desc) %>
+              <% if kept_contracts.any? %>
+                <%= render kept_contracts, client: @client %>
+              <% else %>
+                <tr id="empty_contracts">
+                  <td colspan="5" class="px-3 py-6 text-center text-sm text-body-subtle">
+                    Todavía no hay contratos cargados.
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

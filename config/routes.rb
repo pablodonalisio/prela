@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   resources :clients do
     resources :locations, except: [:index, :show]
     resources :contacts, except: [:index, :show]
+    resources :contracts, except: [:index, :show]
   end
   resources :location_equipments do
     resource :qr_token, only: [:show]

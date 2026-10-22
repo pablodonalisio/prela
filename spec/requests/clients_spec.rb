@@ -42,6 +42,8 @@ RSpec.describe "/clients", type: :request do
       get client_path(client)
       expect(response).to have_http_status(:success)
       expect(response.body).to include(client.name)
+      expect(response.body).to include("Contratos")
+      expect(response.body).to include("Todavía no hay contratos cargados.")
     end
 
     it "links each sede to Activos filtered by that client and location" do

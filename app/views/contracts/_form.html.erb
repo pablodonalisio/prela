@@ -1,0 +1,19 @@
+<%= simple_form_for [client, contract] do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :starts_on, label: "Fecha de inicio", as: :date, html5: true %>
+  <%= f.input :ends_on, label: "Fecha de fin", as: :date, html5: true %>
+
+  <div class="mb-5 rounded-lg border border-default p-4">
+    <h4 class="mb-3 text-sm font-medium text-heading">Archivo</h4>
+    <% attached_file = contract.file if contract.file.attached? && contract.file.blob.persisted? %>
+    <%= render "shared/file_upload", file: attached_file,
+                                     form: f,
+                                     resize: [nil, 250],
+                                     file_field: :file,
+                                     new_label: "Archivo del contrato",
+                                     accepted_formats: "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                     multiple: false %>
+  </div>
+
+  <%= f.button :submit, "Aceptar" %>
+<% end %>
