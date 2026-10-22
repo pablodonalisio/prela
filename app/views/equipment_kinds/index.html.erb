@@ -1,4 +1,10 @@
 <%= turbo_frame_tag "main_content" do %>
+  <% if params[:open] == "new" && policy(EquipmentKind).new? %>
+    <div hidden
+         data-controller="open-remote-modal"
+         data-open-remote-modal-url-value="<%= new_equipment_kind_path %>"></div>
+  <% end %>
+
   <%= render "shared/section_nav", active: "equipment_kinds" %>
 
   <%= render "shared/content_header", title: "Tipos de Activos" do %>
