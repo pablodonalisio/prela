@@ -29,8 +29,8 @@ class ReportsController < ApplicationController
       return report_pdf_error if legacy_mode? && !attach_pdf
 
       respond_to do |format|
-        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se creó correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El reporte se creó correctamente." }
+        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El informe se creó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El informe se creó correctamente." }
       end
     else
       load_template_form_data if template_mode?
@@ -54,8 +54,8 @@ class ReportsController < ApplicationController
       return report_pdf_error if !@report.template_based? && !attach_pdf
 
       respond_to do |format|
-        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El reporte se editó correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El reporte se editó correctamente." }
+        format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El informe se editó correctamente." }
+        format.turbo_stream { flash.now[:notice] = "El informe se editó correctamente." }
       end
     else
       load_template_form_data if @report.template_based?
@@ -64,7 +64,7 @@ class ReportsController < ApplicationController
   end
 
   def destroy
-    flash.now[:notice] = "El reporte ha sido eliminado." if report.destroy
+    flash.now[:notice] = "El informe ha sido eliminado." if report.destroy
   end
 
   def template_fields

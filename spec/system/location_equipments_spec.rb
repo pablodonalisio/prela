@@ -18,7 +18,7 @@ RSpec.describe "Location equipments", type: :system do
     click_on "Ver"
 
     expect(page).to have_text("UPS sala norte")
-    expect(page).to have_button("Informes")
+    expect(page).to have_button("Controles")
   end
 
   it "creates a location equipment from the modal" do
