@@ -50,7 +50,7 @@
                   <span class="text-heading"><%= format_report_field_value(cell.value_type, cell.value) %></span>
                 <% else %>
                   <% field_name = "report[section_inputs][#{input_key}][cells][#{row}_#{column}][value]" %>
-                  <% if cell.value_type == "boolean" %>
+                  <% if cell.boolean? %>
                     <% selected = ActiveModel::Type::Boolean.new.cast(cell.value) %>
                     <% answered = cell.value.present? || cell.value == false %>
                     <input type="hidden" name="<%= field_name %>" value="">
@@ -65,17 +65,16 @@
                       </label>
                     <% end %>
                   <% else %>
-                    <% integer = cell.value_type == "integer" %>
-                    <% input_type = integer ? "text" : {"float" => "number", "date" => "date"}.fetch(cell.value_type, "text") %>
+                    <% input_type = cell.float? ? "number" : (cell.date? ? "date" : "text") %>
                     <input class="<%= input_classes %> <%= "border-red-500" if cell.errors[:value].any? %>"
                            type="<%= input_type %>"
-                           <% if integer %>
+                           <% if cell.integer? %>
                              inputmode="numeric"
                              autocomplete="off"
                              data-controller="integer-field"
                              data-action="beforeinput->integer-field#block input->integer-field#filter"
                            <% end %>
-                           <%= "step=any" if cell.value_type == "float" %>
+                           <%= "step=any" if cell.float? %>
                            name="<%= field_name %>"
                            value="<%= cell.value %>">
                   <% end %>

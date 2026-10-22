@@ -99,7 +99,7 @@ module ReportsHelper
   end
 
   def format_table_cell_value(cell)
-    if cell.value_type == "boolean" && (cell.value.present? || cell.value == false)
+    if cell.boolean? && (cell.value.present? || cell.value == false)
       cell.option_label(cell.value)
     else
       format_report_field_value(cell.value_type, cell.value)

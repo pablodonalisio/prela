@@ -33,7 +33,7 @@
     <select class="<%= input_classes %> mb-3"
             name="<%= f.object_name %>[value_type]"
             data-name="value_type">
-      <% TableCell::VALUE_TYPES.each do |type| %>
+      <% TableCell.value_types.each_key do |type| %>
         <option value="<%= type %>" <%= "selected" if f.object.value_type == type %>><%= t("activerecord.attributes.equipment_kind.field_types.#{type}") %></option>
       <% end %>
     </select>
@@ -80,7 +80,7 @@
              type="text"
              name="<%= f.object_name %>[value]"
              value="<%= f.object.fixed? ? f.object.value : nil %>"
-             inputmode="<%= "numeric" if f.object.value_type == "integer" %>"
+             inputmode="<%= "numeric" if f.object.integer? %>"
              autocomplete="off"
              data-controller="integer-field"
              data-action="beforeinput->integer-field#block input->integer-field#filter"

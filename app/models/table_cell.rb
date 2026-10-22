@@ -1,14 +1,17 @@
 class TableCell < ApplicationRecord
-  VALUE_TYPES = %w[string integer float date boolean].freeze
-  NUMERIC_TYPES = %w[integer float].freeze
-  FIXABLE_TYPES = %w[string integer float].freeze
-
   belongs_to :table_section
   has_many :table_cell_options, dependent: :destroy, autosave: true, inverse_of: :table_cell
 
   accepts_nested_attributes_for :table_cell_options, allow_destroy: true
 
-  validates :value_type, inclusion: {in: VALUE_TYPES}
+  enum :value_type, {
+    string: "string",
+    integer: "integer",
+    float: "float",
+    date: "date",
+    boolean: "boolean"
+  }, validate: true, scopes: false
+
   validates :row_index, :column_index, numericality: {only_integer: true, greater_than_or_equal_to: 0}
   validate :value_matches_type
   validate :metrics_only_on_numeric_types
@@ -17,15 +20,11 @@ class TableCell < ApplicationRecord
   before_validation :clear_value_unless_fixed_on_template, :normalize_decimal_value, :sync_boolean_options
 
   def numeric?
-    NUMERIC_TYPES.include?(value_type)
+    integer? || float?
   end
 
   def fixable?
-    FIXABLE_TYPES.include?(value_type)
-  end
-
-  def boolean?
-    value_type == "boolean"
+    string? || integer? || float?
   end
 
   def option_at(state)
@@ -88,7 +87,7 @@ class TableCell < ApplicationRecord
   end
 
   def normalize_decimal_value
-    return unless value_type == "float"
+    return unless float?
     return if value.blank?
 
     normalized = value.to_s.strip.gsub(/[[:space:]]/, "")
