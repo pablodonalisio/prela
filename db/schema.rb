@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -371,6 +371,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
     t.index ["report_id"], name: "index_power_unit_report_stats_on_report_id"
   end
 
+  create_table "qr_tokens", force: :cascade do |t|
+    t.string "token", null: false
+    t.string "scannable_type", null: false
+    t.bigint "scannable_id", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_qr_tokens_on_discarded_at"
+    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_kept_scannable", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_scannable"
+    t.index ["token"], name: "index_qr_tokens_on_token", unique: true
+  end
+
   create_table "report_templates", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -388,8 +401,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
     t.datetime "date"
     t.bigint "report_template_id"
     t.integer "number"
-    t.boolean "template_based", default: false, null: false
     t.jsonb "observation_values", default: {}, null: false
+    t.boolean "template_based", default: false, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
     t.index ["report_template_id"], name: "index_reports_on_report_template_id"
@@ -420,18 +433,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
   end
 
   create_table "sections", force: :cascade do |t|
-    t.bigint "report_template_id"
-    t.bigint "report_id"
     t.string "title", null: false
     t.integer "position", default: 0, null: false
-    t.integer "kind", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["report_id", "position"], name: "index_sections_on_report_id_and_position"
-    t.index ["report_id"], name: "index_sections_on_report_id"
-    t.index ["report_template_id", "position"], name: "index_sections_on_report_template_id_and_position"
-    t.index ["report_template_id"], name: "index_sections_on_report_template_id"
-    t.check_constraint "report_template_id IS NOT NULL AND report_id IS NULL OR report_template_id IS NULL AND report_id IS NOT NULL", name: "sections_exactly_one_owner"
+    t.integer "kind", default: 0, null: false
+    t.string "sectionable_type", null: false
+    t.bigint "sectionable_id", null: false
+    t.index ["sectionable_type", "sectionable_id", "position"], name: "index_sections_on_sectionable_and_position"
+    t.check_constraint "sectionable_type::text = ANY (ARRAY['Report'::character varying, 'ReportTemplate'::character varying]::text[])", name: "sections_sectionable_type"
   end
 
   create_table "service_kinds", force: :cascade do |t|
@@ -640,8 +650,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_16_120000) do
   add_foreign_key "reports_signatures", "reports"
   add_foreign_key "reports_signatures", "signatures"
   add_foreign_key "room_report_stats", "reports"
-  add_foreign_key "sections", "report_templates"
-  add_foreign_key "sections", "reports", on_delete: :cascade
   add_foreign_key "service_occurrence_assignments", "service_occurrences"
   add_foreign_key "service_occurrence_assignments", "users"
   add_foreign_key "service_occurrences", "location_equipment_services"

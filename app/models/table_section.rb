@@ -23,11 +23,7 @@ class TableSection < ApplicationRecord
   before_validation :sync_cell_grid, :sync_label_grid
 
   def owned_by_template?
-    owner = section
-    return false if owner.blank?
-    return false if owner.report.present? || owner.report_id.present?
-
-    owner.report_template.present? || owner.report_template_id.present?
+    section&.owned_by_template? || false
   end
 
   def cell_at(row, column)

@@ -1,6 +1,7 @@
 class Section < ApplicationRecord
-  belongs_to :report_template, optional: true
-  belongs_to :report, optional: true
+  SECTIONABLE_TYPES = %w[Report ReportTemplate].freeze
+
+  belongs_to :sectionable, polymorphic: true
 
   enum :kind, {text: 0, images: 1, table: 2, list: 3}, default: :text, validate: true, scopes: false
 
@@ -15,7 +16,7 @@ class Section < ApplicationRecord
 
   validates :title, presence: true
   validates :position, numericality: {only_integer: true, greater_than_or_equal_to: 0}
-  validate :exactly_one_owner
+  validates :sectionable_type, inclusion: {in: SECTIONABLE_TYPES}
 
   before_validation :sync_kind_detail
 
@@ -32,15 +33,11 @@ class Section < ApplicationRecord
     source_section_id.presence || id
   end
 
-  private
-
-  def exactly_one_owner
-    has_template = report_template_id.present? || report_template.present?
-    has_report = report_id.present? || report.present?
-    return if has_template ^ has_report
-
-    errors.add(:base, "La sección debe pertenecer a una plantilla o a un informe.")
+  def owned_by_template?
+    sectionable_type == "ReportTemplate"
   end
+
+  private
 
   def sync_kind_detail
     return if kind.blank? || marked_for_destruction?

@@ -1,7 +1,7 @@
 class ReportTemplate < ApplicationRecord
   has_and_belongs_to_many :location_equipments
   has_many :reports, dependent: :nullify
-  has_many :sections, -> { order(:position) }, dependent: :destroy, inverse_of: :report_template, autosave: true
+  has_many :sections, -> { order(:position) }, as: :sectionable, dependent: :destroy, inverse_of: :sectionable, autosave: true
 
   accepts_nested_attributes_for :sections, allow_destroy: true
 

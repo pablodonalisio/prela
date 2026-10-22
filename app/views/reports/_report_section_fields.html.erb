@@ -3,7 +3,7 @@
 <% input_key = section.input_key %>
 <h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= section.title %></h2>
 
-<% structure_only = section.report_template_id.present? %>
+<% structure_only = section.owned_by_template? %>
 <% if section.text? %>
   <textarea class="<%= input_classes %>"
             name="report[section_inputs][<%= input_key %>][body]"

@@ -10,7 +10,7 @@ class Report < ApplicationRecord
   has_one :power_unit_report_stat, dependent: :destroy
   has_one :electrical_panel_report_stat, dependent: :destroy
   has_one :room_report_stat, dependent: :destroy
-  has_many :sections, -> { order(:position) }, dependent: :destroy, inverse_of: :report, autosave: true
+  has_many :sections, -> { order(:position) }, as: :sectionable, dependent: :destroy, inverse_of: :sectionable, autosave: true
   has_and_belongs_to_many :signatures
 
   attr_accessor :allowed_signatures, :section_inputs, :sections_copied_from_template

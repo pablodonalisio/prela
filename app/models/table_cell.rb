@@ -100,11 +100,7 @@ class TableCell < ApplicationRecord
 
   def clear_value_unless_fixed_on_template
     return if fixed?
-
-    section = table_section&.section
-    return if section.blank?
-    return if section.report.present? || section.report_id.present?
-    return unless section.report_template.present? || section.report_template_id.present?
+    return unless table_section&.owned_by_template?
 
     self.value = nil
   end
