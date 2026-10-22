@@ -349,6 +349,31 @@ RSpec.describe "Reports", type: :request do
         expect(Report.last.sections.find_by!(title: "Fotos").image_section.images).to be_attached
       end
 
+      it "uploads directly uploaded images to the image section" do
+        blobs = Array.new(2) do |index|
+          ActiveStorage::Blob.create_and_upload!(
+            io: StringIO.new("img-#{index}"),
+            filename: "foto-#{index}.png",
+            content_type: "image/png"
+          )
+        end
+        params = template_params.deep_merge(
+          report: {
+            section_inputs: {
+              photos_section.id => {images: blobs.map(&:signed_id)}
+            }
+          }
+        )
+
+        post location_equipment_reports_path(location_equipment), params: params
+        report = Report.last
+        images = report.sections.find_by!(title: "Fotos").image_section.images
+        expect(images.blobs).to match_array(blobs)
+
+        get location_equipment_report_path(location_equipment, report)
+        expect(response.body).to include("foto-0.png", "foto-1.png")
+      end
+
       it "auto-assigns the template to the location equipment" do
         request
         expect(location_equipment.reload.report_templates).to include(report_template)
@@ -487,6 +512,33 @@ RSpec.describe "Reports", type: :request do
       it "does not attach a PDF" do
         request
         expect(template_report.reload.pdf).not_to be_attached
+      end
+
+      it "keeps images added while editing" do
+        photos = template_report.sections.find_by!(title: "Fotos")
+        blobs = Array.new(2) do |index|
+          ActiveStorage::Blob.create_and_upload!(
+            io: StringIO.new("edit-#{index}"),
+            filename: "edicion-#{index}.png",
+            content_type: "image/png"
+          )
+        end
+
+        patch location_equipment_report_path(location_equipment, template_report), params: {
+          report: {
+            date: Date.today,
+            report_template_id: template_report.report_template_id,
+            section_inputs: {
+              photos.id => {images: blobs.map(&:signed_id)}
+            }
+          }
+        }
+
+        images = photos.reload.image_section.images
+        expect(images.blobs).to match_array(blobs)
+
+        get location_equipment_report_path(location_equipment, template_report)
+        expect(response.body).to include("edicion-0.png", "edicion-1.png")
       end
     end
 
