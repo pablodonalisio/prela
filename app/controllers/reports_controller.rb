@@ -19,7 +19,13 @@ class ReportsController < ApplicationController
   end
 
   def create
-    @report_mode = template_create? ? "template" : "legacy"
+    @report_mode = if template_create?
+      "template"
+    elsif upload_create?
+      "upload"
+    else
+      "legacy"
+    end
     @report = authorize location_equipment.reports.build
     prepare_report_signatures
     assign_report_attributes
@@ -99,6 +105,8 @@ class ReportsController < ApplicationController
     if template_create? || (@report.persisted? && @report.template_based?)
       @report.assign_attributes(template_report_params)
       @report.section_inputs = section_inputs_param
+    elsif upload_create? || (@report.persisted? && @report.uploaded?)
+      @report.assign_attributes(upload_report_params)
     else
       @report.assign_attributes(legacy_report_params)
     end
@@ -107,6 +115,8 @@ class ReportsController < ApplicationController
   def report_update_params
     if @report.template_based?
       template_report_params
+    elsif @report.uploaded?
+      upload_report_params
     else
       legacy_report_params
     end
@@ -116,16 +126,26 @@ class ReportsController < ApplicationController
     params.dig(:report, :report_template_id).present?
   end
 
+  def upload_create?
+    ActiveModel::Type::Boolean.new.cast(params.dig(:report, :uploaded))
+  end
+
   def report_mode_param
-    params[:report_mode].in?(%w[template legacy]) ? params[:report_mode] : "legacy"
+    params[:report_mode].in?(%w[template legacy upload]) ? params[:report_mode] : "legacy"
+  end
+
+  def upload_mode?
+    @report_mode == "upload" || @report&.uploaded?
   end
 
   def template_mode?
+    return false if upload_mode?
+
     @report_mode == "template" || (@report&.template_based? && !@report.new_record?)
   end
 
   def legacy_mode?
-    !template_mode?
+    !template_mode? && !upload_mode?
   end
 
   def load_template_form_data
@@ -144,6 +164,12 @@ class ReportsController < ApplicationController
 
   def shared_report_params
     params.require(:report).permit(:observations, :date, images: [])
+  end
+
+  def upload_report_params
+    permitted = [:date, :pdf]
+    permitted << :uploaded unless @report&.persisted?
+    params.require(:report).permit(*permitted)
   end
 
   def template_report_params

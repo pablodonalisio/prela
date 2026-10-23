@@ -86,6 +86,31 @@ RSpec.describe Report, type: :model do
     end
   end
 
+  describe "uploaded report" do
+    it "requires a PDF" do
+      report = build(:report, uploaded: true)
+
+      expect(report).not_to be_valid
+      expect(report.errors[:pdf]).to include("no puede estar en blanco")
+    end
+
+    it "rejects a file that is not a PDF" do
+      report = build(:report, uploaded: true)
+      report.pdf.attach(io: StringIO.new("img"), filename: "photo.jpg", content_type: "image/jpeg")
+
+      expect(report).not_to be_valid
+      expect(report.errors[:pdf]).to include("debe ser un PDF")
+    end
+
+    it "accepts a PDF and does not assign a report number" do
+      report = create(:report, :uploaded)
+
+      expect(report.pdf).to be_attached
+      expect(report.number).to be_nil
+      expect(report.report_code).to be_nil
+    end
+  end
+
   describe "image limit" do
     it "rejects more than MAX_IMAGES images" do
       report = build(:report)

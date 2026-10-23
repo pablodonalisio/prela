@@ -608,4 +608,91 @@ RSpec.describe "Reports", type: :request do
       end
     end
   end
+
+  context "uploaded report" do
+    let(:equipment_kind) { "ups" }
+    let(:pdf) { fixture_file_upload(Rails.root.join("spec/fixtures/files/test.pdf"), "application/pdf") }
+
+    describe "GET /new" do
+      it "renders the upload form when report_mode is upload" do
+        get new_location_equipment_report_path(location_equipment, report_mode: "upload")
+
+        expect(response).to be_successful
+        expect(response.body).to include("Subir archivo")
+        expect(response.body).to include("Informe PDF")
+        expect(response.body).not_to include("Estado de la sala")
+      end
+    end
+
+    describe "POST /create" do
+      it "attaches the uploaded PDF and skips generated stats" do
+        expect {
+          post location_equipment_reports_path(location_equipment), params: {
+            report: {date: Date.new(2024, 3, 2), uploaded: true, pdf: pdf}
+          }
+        }.to change(Report, :count).by(1)
+
+        report = Report.last
+        expect(report).to be_uploaded
+        expect(report.pdf).to be_attached
+        expect(report.pdf.content_type).to eq("application/pdf")
+        expect(report.room_report_stat).to be_nil
+        expect(report.ups_report_stat).to be_nil
+        expect(report.number).to be_nil
+      end
+
+      it "rejects a report without a file" do
+        expect {
+          post location_equipment_reports_path(location_equipment), params: {
+            report: {date: Date.new(2024, 3, 2), uploaded: true}
+          }
+        }.not_to change(Report, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("no puede estar en blanco")
+      end
+
+      it "rejects a non-PDF file" do
+        image = fixture_file_upload(Rails.root.join("app/assets/images/placeholder-img.jpeg"), "image/jpeg")
+
+        expect {
+          post location_equipment_reports_path(location_equipment), params: {
+            report: {date: Date.new(2024, 3, 2), uploaded: true, pdf: image}
+          }
+        }.not_to change(Report, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("debe ser un PDF")
+      end
+    end
+
+    describe "PATCH /update" do
+      let(:uploaded_report) { create(:report, :uploaded, location_equipment: location_equipment) }
+
+      it "changes the date without generating a new PDF" do
+        original_blob_id = uploaded_report.pdf.blob.id
+        expect(Reports::PdfGenerator).not_to receive(:call)
+
+        patch location_equipment_report_path(location_equipment, uploaded_report), params: {
+          report: {date: Date.new(2020, 5, 1)}
+        }
+
+        uploaded_report.reload
+        expect(uploaded_report.date.to_date).to eq(Date.new(2020, 5, 1))
+        expect(uploaded_report.pdf.blob.id).to eq(original_blob_id)
+      end
+    end
+
+    describe "GET /edit" do
+      it "renders the upload form" do
+        uploaded_report = create(:report, :uploaded, location_equipment: location_equipment)
+
+        get edit_location_equipment_report_path(location_equipment, uploaded_report)
+
+        expect(response).to be_successful
+        expect(response.body).to include("Informe PDF")
+        expect(response.body).not_to include("Estado de la sala")
+      end
+    end
+  end
 end

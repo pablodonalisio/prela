@@ -27,6 +27,7 @@ class Report < ApplicationRecord
   validate :images_count_within_limit
   validate :number_unique_for_equipment_and_year, if: -> { number.present? && date.present? }
   validate :signatures_must_be_selectable, if: :validate_signatures?
+  validate :uploaded_pdf_must_be_a_pdf, if: :uploaded?
 
   def report_code
     return unless template_based? && number.present? && date.present?
@@ -94,6 +95,15 @@ class Report < ApplicationRecord
     return unless images.attached?
 
     errors.add(:images, "no puede tener más de #{MAX_IMAGES} imágenes.") if images.count > MAX_IMAGES
+  end
+
+  def uploaded_pdf_must_be_a_pdf
+    unless pdf.attached?
+      errors.add(:pdf, :blank)
+      return
+    end
+
+    errors.add(:pdf, :invalid) unless pdf.content_type == "application/pdf"
   end
 
   def validate_signatures?

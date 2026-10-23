@@ -1,0 +1,21 @@
+<%= f.hidden_field :uploaded, value: true %>
+
+<h2 class="mb-3 mt-4 text-lg font-semibold text-heading">Fecha</h2>
+<%= render "shared/datetime_picker",
+           form: f,
+           value: report.date || Time.current,
+           disabled: !(current_user.admin? || current_user.technician?),
+           min: Date.new(2016, 1, 1),
+           max: Date.new(Date.current.year, 12, 31) %>
+
+<div class="mb-5 rounded-lg border border-default p-4">
+  <% file = report.pdf.attached? && report.pdf.blob.persisted? ? report.pdf : nil %>
+  <%= render "shared/file_upload",
+             file: file,
+             form: f,
+             resize: [nil, 250],
+             file_field: :pdf,
+             new_label: "Informe PDF",
+             accepted_formats: "application/pdf",
+             multiple: false %>
+</div>

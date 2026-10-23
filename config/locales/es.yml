@@ -135,6 +135,7 @@ es:
         image: "Imagen"
       report:
         signatures: "Firmas"
+        pdf: "Archivo"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
@@ -151,6 +152,11 @@ es:
               unavailable:
                 one: "%{names} no está disponible en ese horario"
                 other: "%{names} no están disponibles en ese horario"
+        report:
+          attributes:
+            pdf:
+              blank: "no puede estar en blanco"
+              invalid: "debe ser un PDF"
         restrict_dependent_destroy:
           has_one: No se puede eliminar el registro porque existe un %{record} dependiente
           has_many: No se puede eliminar el registro porque existen %{record} dependientes
