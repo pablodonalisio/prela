@@ -1,9 +1,10 @@
 <%= turbo_stream.remove @contract %>
 
+<% show_actions = policy(Contract).update? || policy(Contract).destroy? %>
 <% if @client.contracts.kept.none? %>
   <%= turbo_stream.append "contracts" do %>
     <tr id="empty_contracts">
-      <td colspan="5" class="px-3 py-6 text-center text-sm text-body-subtle">
+      <td colspan="<%= show_actions ? 5 : 4 %>" class="px-3 py-6 text-center text-sm text-body-subtle">
         Todavía no hay contratos cargados.
       </td>
     </tr>

@@ -13,6 +13,18 @@ RSpec.describe "/contracts", type: :request do
 
   before { sign_in create(:admin) }
 
+  describe "GET /index" do
+    it "renders the contracts table" do
+      contract
+      get client_contracts_url(client)
+
+      expect(response).to be_successful
+      expect(response.body).to include(contract.name)
+      expect(response.body).to include("Fecha de inicio")
+      expect(response.body).to include("Acciones")
+    end
+  end
+
   describe "GET /new" do
     it "renders a successful response" do
       get new_client_contract_url(client)

@@ -18,9 +18,10 @@ Rails.application.routes.draw do
 
   resources :agenda, only: [:index]
   resources :clients do
-    resources :locations, except: [:index, :show]
-    resources :contacts, except: [:index, :show]
-    resources :contracts, except: [:index, :show]
+    get :organigram, on: :member
+    resources :locations, except: [:show]
+    resources :contacts, except: [:show]
+    resources :contracts, except: [:show]
   end
   resources :location_equipments do
     resource :qr_token, only: [:show]

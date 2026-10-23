@@ -1,6 +1,12 @@
 class ContractsController < ApplicationController
   before_action :set_contract, only: [:edit, :update, :destroy]
 
+  def index
+    authorize client, :contracts?
+    @panel = :contracts
+    render "clients/show"
+  end
+
   def new
     @contract = authorize client.contracts.build
   end

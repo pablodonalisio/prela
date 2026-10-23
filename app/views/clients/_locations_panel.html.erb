@@ -1,0 +1,20 @@
+<div class="rounded-xl border border-default bg-neutral-primary">
+  <div class="flex items-center justify-between gap-4 border-b border-default px-5 py-4">
+    <h3 class="text-lg font-semibold text-heading">Sedes</h3>
+    <% if policy(Location).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: [:new, client, :location] %>
+    <% end %>
+  </div>
+  <div class="p-5">
+    <div id="locations" class="flex flex-wrap gap-2">
+      <% kept_locations = client.locations.kept %>
+      <% if kept_locations.any? %>
+        <%= render kept_locations, client: client %>
+      <% else %>
+        <div id="empty_locations" class="w-full text-sm text-body-subtle">
+          Todavía no hay sedes cargadas.
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
