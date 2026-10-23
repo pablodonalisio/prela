@@ -39,6 +39,17 @@ RSpec.describe "/equipments", type: :request do
       expect(link).to be_present
       expect(link.text).to eq("Crear uno nuevo")
       expect(link["data-turbo-frame"]).to eq("_top")
+      expect(response.body).to include("¿No encontrás el tipo de activo?")
+    end
+
+    it "hides the new asset type link from technicians" do
+      sign_in create(:technician)
+
+      get new_equipment_url
+
+      expect(response).to be_successful
+      expect(response.body).not_to include("¿No encontrás el tipo de activo?")
+      expect(response.body).not_to include(equipment_kinds_path(open: "new"))
     end
   end
 

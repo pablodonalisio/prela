@@ -3,15 +3,17 @@
   <%= f.input :equipment_kind_id, label: "Tipo de activo",
                                   collection: EquipmentKind.visible.order(:name).pluck(:name, :id),
                                   include_blank: "Seleccione un tipo",
-                                  wrapper_html: {class: "!mb-0"},
+                                  wrapper_html: {class: ("!mb-0" unless current_user.technician?)},
                                   input_html: {data: {dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>
-  <p class="-mt-1 mb-5 text-sm text-body-subtle">
-    ¿No encontrás el tipo de activo?
-    <%= link_to "Crear uno nuevo",
-                equipment_kinds_path(open: "new"),
-                class: "text-fg-brand hover:underline",
-                data: {turbo_frame: "_top"} %>.
-  </p>
+  <% unless current_user.technician? %>
+    <p class="-mt-1 mb-5 text-sm text-body-subtle">
+      ¿No encontrás el tipo de activo?
+      <%= link_to "Crear uno nuevo",
+                  equipment_kinds_path(open: "new"),
+                  class: "text-fg-brand hover:underline",
+                  data: {turbo_frame: "_top"} %>.
+    </p>
+  <% end %>
   <%= f.input :name %>
   <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4">
     <%= f.input :brand %>
