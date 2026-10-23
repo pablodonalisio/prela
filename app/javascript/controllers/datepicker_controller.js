@@ -178,6 +178,7 @@ export default class extends Controller {
       if (input.value.trim() === "") {
         input.dataset.isoDate = "";
         if (hidden) hidden.value = "";
+        this.#syncDependents(input);
       }
       return;
     }
@@ -185,6 +186,59 @@ export default class extends Controller {
     const iso = formatIsoDate(date);
     input.dataset.isoDate = iso;
     if (hidden) hidden.value = iso;
+    this.#syncDependents(input);
+  }
+
+  // An input with data-datepicker-min-from="<start id>" cannot be earlier than
+  // that start input. A later start clears an end date that no longer fits.
+  #syncDependents(input) {
+    if (!input.id) return;
+
+    const startDay = input.dataset.isoDate || "";
+    this.element.querySelectorAll(`[data-datepicker-min-from="${CSS.escape(input.id)}"]`).forEach((end) => {
+      this.#setMin(end, startDay);
+      const endDay = this.#iso(end);
+      if (startDay && endDay && endDay < startDay) this.#clear(end);
+    });
+  }
+
+  #iso(input) {
+    const picked = input.datepicker?.getDate();
+    if (picked instanceof Date && !Number.isNaN(picked.getTime())) return formatIsoDate(picked);
+    if (input.dataset.isoDate) return input.dataset.isoDate;
+
+    const hidden = input.nextElementSibling?.dataset.datepickerValue === "true"
+      ? input.nextElementSibling
+      : null;
+    if (hidden) return hidden.value || "";
+
+    const value = input.value || "";
+    return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+  }
+
+  #setMin(input, isoDay) {
+    if (isoDay) {
+      input.min = isoDay;
+    } else {
+      input.removeAttribute("min");
+    }
+
+    if (!input.datepicker) return;
+    input.datepicker.setOptions({minDate: parseIsoDate(isoDay)});
+  }
+
+  #clear(input) {
+    if (input.datepicker?.getDate()) {
+      input.datepicker.setDate({clear: true});
+      return;
+    }
+
+    input.value = "";
+    input.dataset.isoDate = "";
+    const hidden = input.nextElementSibling?.dataset.datepickerValue === "true"
+      ? input.nextElementSibling
+      : null;
+    if (hidden) hidden.value = "";
   }
 
   // The library only flips upward when the whole popup fits above the field.

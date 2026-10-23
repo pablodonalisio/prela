@@ -11,7 +11,8 @@
 <%= simple_form_for [client, contract] do |f| %>
   <%= f.input :name, label: "Nombre" %>
   <%= f.input :starts_on, label: "Fecha de inicio", as: :date, html5: true %>
-  <%= f.input :ends_on, label: "Fecha de fin", as: :date, html5: true %>
+  <%= f.input :ends_on, label: "Fecha de fin", as: :date, html5: true,
+                        input_html: {min: contract.starts_on&.iso8601, data: {datepicker_min_from: f.field_id(:starts_on)}} %>
 
   <div class="mb-5">
     <h4 class="mb-3 text-sm font-medium text-heading">Archivos</h4>

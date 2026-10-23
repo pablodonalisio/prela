@@ -39,6 +39,13 @@ RSpec.describe "/contracts", type: :request do
       get edit_client_contract_url(client, contract)
       expect(response).to be_successful
     end
+
+    it "does not offer an end date before the start date" do
+      get edit_client_contract_url(client, contract)
+
+      expect(response.body).to include(%(name="contract[ends_on]"))
+      expect(response.body).to include(%(min="#{contract.starts_on.iso8601}"))
+    end
   end
 
   describe "POST /create" do
