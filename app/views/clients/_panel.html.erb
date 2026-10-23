@@ -1,0 +1,4 @@
+<%= turbo_frame_tag "client_panel" do %>
+  <%= render "clients/tabs", client: client, panel: panel %>
+  <%= render "clients/#{panel}_panel", client: client %>
+<% end %>

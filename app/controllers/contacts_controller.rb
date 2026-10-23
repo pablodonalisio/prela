@@ -1,6 +1,12 @@
 class ContactsController < ApplicationController
   before_action :set_contact, only: [:edit, :update, :destroy]
 
+  def index
+    authorize client, :contacts?
+    @panel = :contacts
+    render "clients/show"
+  end
+
   def new
     @contact = authorize client.contacts.build
   end

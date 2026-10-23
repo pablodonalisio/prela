@@ -1,0 +1,36 @@
+<div class="rounded-xl border border-default bg-neutral-primary">
+  <div class="flex items-center justify-between gap-4 border-b border-default px-5 py-4">
+    <h3 class="text-lg font-semibold text-heading">Contratos</h3>
+    <% if policy(Contract).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: [:new, client, :contract] %>
+    <% end %>
+  </div>
+  <div class="overflow-x-auto p-2 md:p-4">
+    <table class="w-full text-left text-sm">
+      <% show_actions = policy(Contract).update? || policy(Contract).destroy? %>
+      <thead class="text-xs uppercase tracking-wide text-body-subtle">
+        <tr>
+          <th class="px-3 py-3 font-semibold">Nombre</th>
+          <th class="px-3 py-3 font-semibold">Archivos</th>
+          <th class="px-3 py-3 font-semibold">Fecha de inicio</th>
+          <th class="px-3 py-3 font-semibold">Fecha de fin</th>
+          <% if show_actions %>
+            <th class="px-3 py-3 text-end font-semibold">Acciones</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody id="contracts">
+        <% kept_contracts = client.contracts.kept.with_attached_files.order(starts_on: :desc, created_at: :desc) %>
+        <% if kept_contracts.any? %>
+          <%= render kept_contracts, client: client %>
+        <% else %>
+          <tr id="empty_contracts">
+            <td colspan="<%= show_actions ? 5 : 4 %>" class="px-3 py-6 text-center text-sm text-body-subtle">
+              Todavía no hay contratos cargados.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,6 +1,12 @@
 class LocationsController < ApplicationController
   before_action :set_location, only: [:edit, :update, :destroy]
 
+  def index
+    authorize client, :locations?
+    @panel = :locations
+    render "clients/show"
+  end
+
   def new
     @location = authorize client.locations.build
   end
@@ -55,4 +61,3 @@ class LocationsController < ApplicationController
     @location = authorize client.locations.kept.find(params[:id])
   end
 end
-

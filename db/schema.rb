@@ -113,6 +113,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.index ["location_id"], name: "index_contacts_locations_on_location_id"
   end
 
+  create_table "contracts", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "name", null: false
+    t.date "starts_on", null: false
+    t.date "ends_on", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_contracts_on_client_id"
+    t.index ["discarded_at"], name: "index_contracts_on_discarded_at"
+  end
+
   create_table "documents", force: :cascade do |t|
     t.string "description"
     t.string "documentable_type", null: false
@@ -641,6 +653,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
   add_foreign_key "contacts", "contacts", column: "reports_to_id"
   add_foreign_key "contacts_locations", "contacts"
   add_foreign_key "contacts_locations", "locations"
+  add_foreign_key "contracts", "clients"
   add_foreign_key "electrical_panel_report_stats", "reports"
   add_foreign_key "equipment_kinds", "assets_categories"
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"

@@ -42,6 +42,9 @@ RSpec.describe "/clients", type: :request do
       get client_path(client)
       expect(response).to have_http_status(:success)
       expect(response.body).to include(client.name)
+      expect(response.body).to include("Contratos")
+      expect(response.body).to include("Todavía no hay sedes cargadas.")
+      expect(response.body).not_to include("Todavía no hay contratos cargados.")
     end
 
     it "links each sede to Activos filtered by that client and location" do
@@ -63,6 +66,36 @@ RSpec.describe "/clients", type: :request do
       expect(response.body).to include("location_equipment_#{matching.id}")
       expect(response.body).not_to include("location_equipment_#{other_sede.id}")
       expect(response.body).not_to include("location_equipment_#{other_client.id}")
+    end
+
+    context "when signed in as a technician" do
+      before { sign_in create(:technician) }
+
+      it "does not show the Contratos tab" do
+        get client_path(client)
+        expect(response).to be_successful
+        expect(response.body).not_to include("Contratos")
+      end
+
+      it "loads sedes, contactos, and the organigrama" do
+        get client_locations_path(client)
+        expect(response).to be_successful
+        expect(response.body).to include("Todavía no hay sedes cargadas.")
+
+        get client_contacts_path(client)
+        expect(response).to be_successful
+        expect(response.body).to include("Todavía no hay contactos cargados.")
+        expect(response.body).not_to include("Acciones")
+
+        get organigram_client_path(client)
+        expect(response).to be_successful
+        expect(response.body).to include("armar el organigrama")
+      end
+
+      it "refuses the contracts tab" do
+        get client_contracts_path(client)
+        expect(flash[:alert]).to eq("No estás autorizado para realizar esta acción.")
+      end
     end
   end
 
