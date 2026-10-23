@@ -5,10 +5,10 @@
         <h5 class="mb-2 font-semibold text-heading"><%= report_template.name %></h5>
 
         <div class="flex flex-wrap gap-2">
-          <% if report_template.active_sections.any? %>
-            <% report_template.active_sections.each do |section| %>
+          <% if report_template.sections.any? %>
+            <% report_template.sections.each do |section| %>
               <span class="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-medium text-fg-brand">
-                <%= t("activerecord.attributes.report_template.sections.#{section}") %>
+                <%= section.title %>
               </span>
             <% end %>
           <% else %>
@@ -28,7 +28,8 @@
             <%= render "shared/button_box",
                        edit_path: edit_report_template_path(report_template),
                        delete_path: report_template_path(report_template),
-                       confirm: "¿Seguro que querés borrar esta plantilla de informe?" %>
+                       confirm: "¿Seguro que querés borrar esta plantilla de informe?",
+                       turbo_frame: "_top" %>
           <% end %>
         </div>
       <% end %>

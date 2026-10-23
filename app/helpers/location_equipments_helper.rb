@@ -54,9 +54,17 @@ module LocationEquipmentsHelper
   end
 
   def occurrence_status_badge_classes(occurrence)
-    key = %i[completed scheduled suspended cancelled].find { |status| occurrence.public_send("#{status}?") } || :pending
-    OCCURRENCE_STATUS_BADGE_CLASSES.fetch(key)
+    OCCURRENCE_STATUS_BADGE_CLASSES.fetch(occurrence_status_key(occurrence))
   end
+
+  def occurrence_status_text_classes(occurrence)
+    occurrence_status_badge_classes(occurrence).split.grep(/\A(?:dark:)?text-/).join(" ")
+  end
+
+  def occurrence_status_key(occurrence)
+    %i[completed scheduled suspended cancelled].find { |status| occurrence.public_send("#{status}?") } || :pending
+  end
+  private :occurrence_status_key
 
   def failures_last_year_indicator(location_equipment)
     "Último año: #{location_equipment.failures_last_year_count}"
