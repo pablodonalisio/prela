@@ -14,7 +14,7 @@ es:
         name: "Nombre"
       contract:
         name: "Nombre"
-        file: "Archivo"
+        files: "Archivos"
         starts_on: "Fecha de inicio"
         ends_on: "Fecha de fin"
       equipment:

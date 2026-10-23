@@ -15,7 +15,8 @@ class ContractsController < ApplicationController
   end
 
   def create
-    @contract = authorize client.contracts.build(contract_params)
+    @contract = authorize client.contracts.build(contract_attributes)
+    attach_new_files
 
     if @contract.save
       respond_to do |format|
@@ -28,7 +29,12 @@ class ContractsController < ApplicationController
   end
 
   def update
-    if @contract.update(contract_params)
+    @contract.assign_attributes(contract_attributes)
+    attach_new_files
+    @contract.removed_file_blob_ids = removed_file_ids
+
+    if @contract.save
+      purge_removed_files
       respond_to do |format|
         format.html { redirect_to client_path(client), notice: "Se ha actualizado el contrato." }
         format.turbo_stream {}
@@ -49,8 +55,29 @@ class ContractsController < ApplicationController
 
   private
 
-  def contract_params
-    params.require(:contract).permit(:name, :file, :starts_on, :ends_on)
+  def contract_attributes
+    params.require(:contract).permit(:name, :starts_on, :ends_on)
+  end
+
+  def new_files
+    Array(params.dig(:contract, :files)).compact_blank
+  end
+
+  def removed_file_ids
+    Array(params.dig(:contract, :removed_file_ids)).compact_blank
+  end
+
+  def attach_new_files
+    return if new_files.empty?
+
+    @contract.files.attach(new_files)
+  end
+
+  def purge_removed_files
+    return if removed_file_ids.empty?
+
+    @contract.files.where(blob_id: removed_file_ids).find_each(&:purge)
+    @contract.files.reload
   end
 
   def client

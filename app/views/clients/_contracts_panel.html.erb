@@ -11,7 +11,7 @@
       <thead class="text-xs uppercase tracking-wide text-body-subtle">
         <tr>
           <th class="px-3 py-3 font-semibold">Nombre</th>
-          <th class="px-3 py-3 font-semibold">Archivo</th>
+          <th class="px-3 py-3 font-semibold">Archivos</th>
           <th class="px-3 py-3 font-semibold">Fecha de inicio</th>
           <th class="px-3 py-3 font-semibold">Fecha de fin</th>
           <% if show_actions %>
@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody id="contracts">
-        <% kept_contracts = client.contracts.kept.with_attached_file.order(starts_on: :desc, created_at: :desc) %>
+        <% kept_contracts = client.contracts.kept.with_attached_files.order(starts_on: :desc, created_at: :desc) %>
         <% if kept_contracts.any? %>
           <%= render kept_contracts, client: client %>
         <% else %>

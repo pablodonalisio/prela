@@ -3,11 +3,12 @@ require "rails_helper"
 RSpec.describe "/contracts", type: :request do
   let(:client) { create(:client) }
   let(:file) { fixture_file_upload("spec/fixtures/files/test.pdf", "application/pdf") }
+  let(:image) { fixture_file_upload("spec/test_files/placeholder-img.jpeg", "image/jpeg") }
   let(:valid_attributes) {
-    {name: "Contrato 2026", starts_on: Date.current, ends_on: 1.year.from_now.to_date, file: file}
+    {name: "Contrato 2026", starts_on: Date.current, ends_on: 1.year.from_now.to_date, files: [file, image]}
   }
   let(:invalid_attributes) {
-    {name: "", starts_on: "", ends_on: "", file: nil}
+    {name: "", starts_on: "", ends_on: "", files: []}
   }
   let(:contract) { create(:contract, client:) }
 
@@ -22,6 +23,7 @@ RSpec.describe "/contracts", type: :request do
       expect(response.body).to include(contract.name)
       expect(response.body).to include("Fecha de inicio")
       expect(response.body).to include("Acciones")
+      expect(response.body).to include("test.pdf")
     end
   end
 
@@ -47,7 +49,7 @@ RSpec.describe "/contracts", type: :request do
         }.to change(Contract, :count).by(1)
 
         created = Contract.order(:id).last
-        expect(created.file).to be_attached
+        expect(created.files.map { |attached| attached.filename.to_s }).to contain_exactly("test.pdf", "placeholder-img.jpeg")
         expect(created.name).to eq("Contrato 2026")
         expect(created.starts_on).to eq(Date.current)
         expect(created.ends_on).to eq(1.year.from_now.to_date)
@@ -97,6 +99,20 @@ RSpec.describe "/contracts", type: :request do
       it "redirects to the client" do
         patch client_contract_url(client, contract), params: {contract: new_attributes}
         expect(response).to redirect_to(client_url(client))
+      end
+
+      it "removes a file and rerenders the row" do
+        contract.files.attach(image)
+        removed = contract.files.blobs.find_by!(filename: "test.pdf")
+
+        patch client_contract_url(client, contract),
+          params: {contract: {removed_file_ids: [removed.id]}},
+          as: :turbo_stream
+
+        expect(response).to be_successful
+        expect(response.body).to include("placeholder-img.jpeg")
+        expect(response.body).not_to include("test.pdf")
+        expect(contract.reload.files.map { |file| file.filename.to_s }).to eq(["placeholder-img.jpeg"])
       end
     end
 

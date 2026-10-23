@@ -1,11 +1,18 @@
 <%= content_tag :tr, id: dom_id(contract), class: "border-t border-default" do %>
   <td class="px-3 py-3 align-middle font-medium text-heading"><%= contract.name %></td>
   <td class="px-3 py-3 align-middle">
-    <% if contract.file.attached? %>
-      <%= link_to contract.file.filename.to_s,
-                  rails_blob_path(contract.file, disposition: "attachment"),
-                  class: "font-medium text-fg-brand hover:underline",
-                  data: {turbo: false} %>
+    <% if contract.files.attached? %>
+      <ul class="space-y-1">
+        <% contract.files.each do |file| %>
+          <% next unless file.blob %>
+          <li>
+            <%= link_to file.filename.to_s,
+                        rails_blob_path(file, disposition: "attachment"),
+                        class: "font-medium text-fg-brand hover:underline",
+                        data: {turbo: false} %>
+          </li>
+        <% end %>
+      </ul>
     <% else %>
       <span class="text-body-subtle">—</span>
     <% end %>

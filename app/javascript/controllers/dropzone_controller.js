@@ -15,6 +15,12 @@ export default class extends Controller {
     resizeWidth: Number,
     resizeHeight: Number,
     resizeQuality: Number,
+    acceptedFiles: {type: String, default: "image/*"},
+    inputName: {type: String, default: "report[images][]"},
+    removedInputName: {type: String, default: "report[removed_image_ids][]"},
+    existingInputName: {type: String, default: "report[existing_image_ids][]"},
+    resize: {type: Boolean, default: true},
+    trackExisting: {type: Boolean, default: true},
   };
 
   connect() {
@@ -37,7 +43,7 @@ export default class extends Controller {
       autoProcessQueue: false,
       clickable: true,
       maxFiles: this.maxFilesValue || 5,
-      acceptedFiles: "image/*",
+      acceptedFiles: this.acceptedFilesValue,
       addRemoveLinks: true,
       resizeWidth: this.resizeWidthValue || null,
       resizeHeight: this.resizeHeightValue || null,
@@ -67,6 +73,13 @@ export default class extends Controller {
       return;
     }
 
+    const shouldResize =
+      this.resizeValue && uploadFile.type?.startsWith("image/");
+    if (!shouldResize) {
+      this.directUpload(uploadFile, file);
+      return;
+    }
+
     const transformFile = this.dropzoneInstance.options.transformFile.bind(
       this.dropzoneInstance,
     );
@@ -76,20 +89,24 @@ export default class extends Controller {
         type: resizedBlob.type,
       });
 
-      const directUploadUrl =
-        this.directUploadUrlValue || "/rails/active_storage/direct_uploads";
-      const directUpload = new DirectUpload(resizedFile, directUploadUrl);
+      this.directUpload(resizedFile, file);
+    });
+  }
 
-      directUpload.create((error, blob) => {
-        if (error) {
-          this.dropzoneInstance.emit("error", file, error);
-          return;
-        }
+  directUpload(uploadFile, file) {
+    const directUploadUrl =
+      this.directUploadUrlValue || "/rails/active_storage/direct_uploads";
+    const directUpload = new DirectUpload(uploadFile, directUploadUrl);
 
-        this.appendHiddenInput(blob.signed_id, file);
-        this.dropzoneInstance.emit("success", file, "Upload completed");
-        this.dropzoneInstance.emit("complete", file);
-      });
+    directUpload.create((error, blob) => {
+      if (error) {
+        this.dropzoneInstance.emit("error", file, error);
+        return;
+      }
+
+      this.appendHiddenInput(blob.signed_id, file);
+      this.dropzoneInstance.emit("success", file, "Upload completed");
+      this.dropzoneInstance.emit("complete", file);
     });
   }
 
@@ -111,7 +128,7 @@ export default class extends Controller {
 
     const input = document.createElement("input");
     input.type = "hidden";
-    input.name = "report[images][]";
+    input.name = this.inputNameValue;
     input.value = signedId;
     input.dataset.dropzoneFileId = this.fileIdentifier(file);
     this.hiddenInputsTarget.appendChild(input);
@@ -122,7 +139,7 @@ export default class extends Controller {
 
     const input = document.createElement("input");
     input.type = "hidden";
-    input.name = "report[removed_image_ids][]";
+    input.name = this.removedInputNameValue;
     input.value = blobId;
     input.dataset.dropzoneFileId = this.fileIdentifier(file);
     this.removedInputsTarget.appendChild(input);
@@ -153,14 +170,18 @@ export default class extends Controller {
       };
 
       this.dropzoneInstance.emit("addedfile", mockFile);
-      this.dropzoneInstance.emit("thumbnail", mockFile, file.url);
+      if (file.url) {
+        this.dropzoneInstance.emit("thumbnail", mockFile, file.url);
+      }
       this.dropzoneInstance.emit("complete", mockFile);
+
+      if (!this.trackExistingValue) return;
 
       // Keep one extra hidden field for existing items if needed by UI state.
       // Existing attachments are already on the record and do not need a signed_id.
       const input = document.createElement("input");
       input.type = "hidden";
-      input.name = "report[existing_image_ids][]";
+      input.name = this.existingInputNameValue;
       input.value = file.id;
       input.dataset.dropzoneFileId = this.fileIdentifier(mockFile);
       this.hiddenInputsTarget.appendChild(input);

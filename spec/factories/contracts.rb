@@ -4,6 +4,6 @@ FactoryBot.define do
     name { "Contrato de mantenimiento" }
     starts_on { Date.current }
     ends_on { 1.year.from_now.to_date }
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/test.pdf"), "application/pdf") }
+    files { [Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/test.pdf"), "application/pdf")] }
   end
 end
