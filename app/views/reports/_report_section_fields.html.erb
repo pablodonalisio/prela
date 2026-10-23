@@ -1,0 +1,110 @@
+<%# locals: (section:) %>
+<% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading" %>
+<% input_key = section.input_key %>
+<h2 class="mb-3 mt-4 text-lg font-semibold text-heading"><%= section.title %></h2>
+
+<% structure_only = section.owned_by_template? %>
+<% if section.text? %>
+  <textarea class="<%= input_classes %>"
+            name="report[section_inputs][<%= input_key %>][body]"
+            rows="4"><%= structure_only ? nil : section.text_section&.body %></textarea>
+<% elsif section.images? %>
+  <% image_section = section.image_section %>
+  <% existing_images = !structure_only && image_section&.images&.attached? ? image_section.images.map { |image|
+       {
+         id: image.blob.id,
+         filename: image.filename.to_s,
+         url: url_for(image.variant(resize_and_pad: [120, 120])),
+         byte_size: image.byte_size
+       }
+     } : [] %>
+  <%= render "shared/image_dropzone",
+             images: existing_images,
+             input_name: "report[section_inputs][#{input_key}][images][]",
+             removed_input_name: "report[section_inputs][#{input_key}][removed_image_ids][]" %>
+  <% if image_section&.errors&.[](:images)&.any? %>
+    <p class="text-sm text-red-500"><%= image_section.errors[:images].to_sentence %></p>
+  <% end %>
+<% elsif section.table? %>
+  <% table = section.table_section %>
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr>
+          <th class="border border-default p-2 text-left font-medium text-heading"><%= table.corner_label %></th>
+          <% table.column_count.times do |column| %>
+            <th class="border border-default p-2 text-left font-medium text-heading"><%= table.column_label(column) %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% table.row_count.times do |row| %>
+          <tr>
+            <th class="border border-default p-2 text-left font-medium text-heading"><%= table.row_label(row) %></th>
+            <% table.column_count.times do |column| %>
+              <% cell = table.cell_at(row, column) %>
+              <td class="border border-default p-2 align-top">
+                <% if cell.nil? %>
+                  —
+                <% elsif cell.fixed? %>
+                  <span class="text-heading"><%= format_report_field_value(cell.value_type, cell.value) %></span>
+                <% else %>
+                  <% field_name = "report[section_inputs][#{input_key}][cells][#{row}_#{column}][value]" %>
+                  <% if cell.boolean? %>
+                    <% selected = ActiveModel::Type::Boolean.new.cast(cell.value) %>
+                    <% answered = cell.value.present? || cell.value == false %>
+                    <input type="hidden" name="<%= field_name %>" value="">
+                    <% [true, false].each do |state| %>
+                      <label class="mb-1 flex items-center text-sm text-heading">
+                        <input class="h-4 w-4 rounded-full border-default bg-neutral-secondary-medium text-brand focus:ring-2 focus:ring-brand"
+                               type="radio"
+                               name="<%= field_name %>"
+                               value="<%= state ? 1 : 0 %>"
+                               <%= "checked" if answered && selected == state %>>
+                        <span class="ms-2"><%= cell.option_label(state) %></span>
+                      </label>
+                    <% end %>
+                  <% else %>
+                    <% input_type = cell.float? ? "number" : (cell.date? ? "date" : "text") %>
+                    <input class="<%= input_classes %> <%= "border-red-500" if cell.errors[:value].any? %>"
+                           type="<%= input_type %>"
+                           <% if cell.integer? %>
+                             inputmode="numeric"
+                             autocomplete="off"
+                             data-controller="integer-field"
+                             data-action="beforeinput->integer-field#block input->integer-field#filter"
+                           <% end %>
+                           <%= "step=any" if cell.float? %>
+                           name="<%= field_name %>"
+                           value="<%= cell.value %>">
+                  <% end %>
+                  <% if cell.errors[:value].any? %>
+                    <p class="mt-1 text-sm text-red-500"><%= cell.errors[:value].to_sentence %></p>
+                  <% end %>
+                <% end %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% elsif section.list? %>
+  <% items = Array(section.list_section&.list_items) %>
+  <% if items.any? %>
+    <ul class="space-y-3">
+      <% items.each do |item| %>
+        <% field_name = "report[section_inputs][#{input_key}][items][#{item.input_key}][checked]" %>
+        <li class="flex items-center gap-2 text-sm text-heading">
+          <input type="hidden" name="<%= field_name %>" value="0">
+          <input class="h-4 w-4 rounded-[2px] border-default bg-neutral-secondary-medium text-brand focus:ring-brand"
+                 type="checkbox"
+                 name="<%= field_name %>"
+                 value="1"
+                 <%= "checked" if item.checked? %>>
+          <span><%= item.name %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
