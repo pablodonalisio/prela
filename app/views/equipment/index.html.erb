@@ -1,4 +1,10 @@
 <%= turbo_frame_tag "main_content" do %>
+  <% if params[:open] == "new" && policy(Equipment).new? %>
+    <div hidden
+         data-controller="open-remote-modal"
+         data-open-remote-modal-url-value="<%= new_equipment_path %>"></div>
+  <% end %>
+
   <%= render "shared/section_nav", active: "equipment" %>
 
   <%= render "shared/content_header", title: "Equipos" do %>

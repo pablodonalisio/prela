@@ -15,6 +15,15 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include("Foto")
       expect(response.body).to include("Aceptar")
     end
+
+    it "links to the equipment page and opens the new equipment modal there" do
+      get new_location_equipment_url
+
+      link = Nokogiri::HTML(response.body).at_css("a[href='#{equipment_index_path(open: "new")}']")
+      expect(link).to be_present
+      expect(link.text).to eq("Crear uno nuevo")
+      expect(link["data-turbo-frame"]).to eq("_top")
+    end
   end
 
   describe "GET /location_inputs" do
