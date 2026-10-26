@@ -10,11 +10,11 @@ RSpec.describe "Contract dates", type: :system do
   it "blocks an end date before the start date" do
     visit edit_client_contract_path(client, contract)
 
-    expect(page).to have_css("#contract_starts_on[data-datepicker-ready]")
-    end_input = find("#contract_ends_on")
+    expect(page).to have_css("#contract_starts_on_date[data-datepicker-ready]")
+    end_input = find("#contract_ends_on_date")
     expect(end_input[:min]).to eq("2026-01-01")
 
-    start_input = find("#contract_starts_on")
+    start_input = find("#contract_starts_on_date")
     page.execute_script("arguments[0].datepicker.setDate(new Date(2026, 7, 1))", start_input)
 
     expect(end_input[:min]).to eq("2026-08-01")
