@@ -8,9 +8,9 @@ FactoryBot.define do
       uploaded { true }
 
       after(:build) do |report|
-        next if report.pdf.attached?
+        next if report.files.attached?
 
-        report.pdf.attach(
+        report.files.attach(
           io: StringIO.new(File.binread(Rails.root.join("spec/fixtures/files/test.pdf"))),
           filename: "test.pdf",
           content_type: "application/pdf"

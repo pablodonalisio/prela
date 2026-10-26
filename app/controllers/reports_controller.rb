@@ -29,6 +29,7 @@ class ReportsController < ApplicationController
     @report = authorize location_equipment.reports.build
     prepare_report_signatures
     assign_report_attributes
+    attach_uploaded_files if upload_mode?
 
     if @report.save
       location_equipment.associate_report_template!(@report.report_template) if @report.template_based? && @report.report_template
@@ -56,10 +57,11 @@ class ReportsController < ApplicationController
     prepare_report_signatures
     @report.section_inputs = section_inputs_param if @report.template_based?
 
-    if @report.update(report_update_params)
-      purge_removed_images
+    if save_report_update
+      purge_removed_images unless @report.uploaded?
+      purge_removed_uploaded_files if @report.uploaded?
       location_equipment.associate_report_template!(@report.report_template) if @report.template_based? && @report.report_template
-      return report_pdf_error if !@report.template_based? && !attach_pdf
+      return report_pdf_error if legacy_mode? && !attach_pdf
 
       respond_to do |format|
         format.html { redirect_to location_equipment_reports_path(location_equipment), notice: "El informe se editó correctamente." }
@@ -167,9 +169,39 @@ class ReportsController < ApplicationController
   end
 
   def upload_report_params
-    permitted = [:date, :pdf]
+    permitted = [:date]
     permitted << :uploaded unless @report&.persisted?
     params.require(:report).permit(*permitted)
+  end
+
+  def save_report_update
+    return @report.update(report_update_params) unless @report.uploaded?
+
+    @report.assign_attributes(upload_report_params)
+    attach_uploaded_files
+    @report.removed_file_blob_ids = removed_uploaded_file_ids
+    @report.save
+  end
+
+  def uploaded_files
+    Array(params.dig(:report, :files)).compact_blank
+  end
+
+  def removed_uploaded_file_ids
+    Array(params.dig(:report, :removed_file_ids)).compact_blank
+  end
+
+  def attach_uploaded_files
+    return if uploaded_files.empty?
+
+    @report.files.attach(uploaded_files)
+  end
+
+  def purge_removed_uploaded_files
+    return if removed_uploaded_file_ids.empty?
+
+    @report.files.where(blob_id: removed_uploaded_file_ids).find_each(&:purge)
+    @report.files.reload
   end
 
   def template_report_params

@@ -8,14 +8,34 @@
            min: Date.new(2016, 1, 1),
            max: Date.new(Date.current.year, 12, 31) %>
 
-<div class="mb-5 rounded-lg border border-default p-4">
-  <% file = report.pdf.attached? && report.pdf.blob.persisted? ? report.pdf : nil %>
-  <%= render "shared/file_upload",
-             file: file,
-             form: f,
-             resize: [nil, 250],
-             file_field: :pdf,
-             new_label: "Informe PDF",
-             accepted_formats: "application/pdf",
-             multiple: false %>
+<% accepted_formats = "application/pdf,image/jpeg,image/jpg,image/png" %>
+<% existing_files = report.files.filter_map { |file|
+     next unless file.blob&.persisted?
+     data = {id: file.blob.id, filename: file.filename.to_s, byte_size: file.byte_size}
+     if file.image? && file.representable?
+       data[:url] = url_for(file.variant(resize_to_limit: [120, 120]))
+     end
+     data
+   } %>
+
+<div class="mb-5">
+  <h4 class="mb-3 text-sm font-medium text-heading">Archivos</h4>
+  <% if report.errors[:files].any? %>
+    <p class="mb-3 text-sm text-red-600"><%= report.errors.full_messages_for(:files).to_sentence %></p>
+  <% end %>
+  <div data-controller="dropzone"
+       data-dropzone-direct-upload-url-value="<%= rails_direct_uploads_url %>"
+       data-dropzone-existing-files-value='<%= existing_files.to_json.html_safe %>'
+       data-dropzone-accepted-files-value="<%= accepted_formats %>"
+       data-dropzone-input-name-value="report[files][]"
+       data-dropzone-removed-input-name-value="report[removed_file_ids][]"
+       data-dropzone-track-existing-value="false"
+       data-dropzone-resize-value="false"
+       data-dropzone-max-files-value="<%= Report::MAX_UPLOADED_FILES %>">
+    <div data-dropzone-target="dropzone" class="dropzone rounded-lg border border-dashed border-default p-3">
+      <div class="dz-message text-center">Arrastra archivos aquí o haz click para seleccionar.</div>
+    </div>
+    <div data-dropzone-target="hiddenInputs"></div>
+    <div data-dropzone-target="removedInputs"></div>
+  </div>
 </div>

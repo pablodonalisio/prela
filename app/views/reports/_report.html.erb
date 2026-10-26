@@ -13,6 +13,20 @@
       </div>
       <%= render "template_report", report: report %>
     </div>
+  <% elsif report.uploaded? %>
+    <% if report.files.attached? %>
+      <div class="space-y-4">
+        <% report.files.each do |file| %>
+          <% if file.image? %>
+            <%= image_tag file, class: "max-w-full", alt: file.filename.to_s %>
+          <% elsif file.content_type == "application/pdf" %>
+            <%= tag.iframe src: rails_blob_path(file, disposition: "inline"), class: "h-[800px] w-full border-0", title: file.filename.to_s %>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <p>No hay archivos adjuntos a este informe.</p>
+    <% end %>
   <% elsif report.pdf.attached? %>
     <%= tag.iframe src: rails_blob_path(report.pdf, disposition: "inline"), class: "h-full w-full border-0" %>
   <% else %>

@@ -136,6 +136,7 @@ es:
       report:
         signatures: "Firmas"
         pdf: "Archivo"
+        files: "Archivos"
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
@@ -157,6 +158,8 @@ es:
             pdf:
               blank: "no puede estar en blanco"
               invalid: "debe ser un PDF"
+            files:
+              blank: "no puede estar en blanco"
         restrict_dependent_destroy:
           has_one: No se puede eliminar el registro porque existe un %{record} dependiente
           has_many: No se puede eliminar el registro porque existen %{record} dependientes
