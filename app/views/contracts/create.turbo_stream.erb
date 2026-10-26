@@ -1,0 +1,7 @@
+<%= turbo_stream.update nested_dom_id(@client, Contract.new), "" %>
+
+<%= turbo_stream.remove "empty_contracts" %>
+
+<%= turbo_stream.append "contracts" do %>
+  <%= render @contract, client: @client %>
+<% end %>

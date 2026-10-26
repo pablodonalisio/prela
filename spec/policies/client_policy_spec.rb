@@ -6,7 +6,7 @@ RSpec.describe ClientPolicy, type: :policy do
 
   subject { described_class }
 
-  permissions :show?, :index?, :create?, :update?, :destroy? do
+  permissions :show?, :locations?, :contacts?, :organigram?, :contracts?, :index?, :create?, :update?, :destroy? do
     it_behaves_like "admin level access policy"
   end
 
