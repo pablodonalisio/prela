@@ -60,28 +60,33 @@
   width: 100%;
 }
 
-/* A generated PDF is the only child of the report frame, so it fills the body
-   under the header. Uploaded reports stack files inside a wrapper, and a
-   percentage height there falls back to the browser's 150px iframe default. */
-#remote_modal_shell:has(.modal-size-full) #remote_modal_body:has(> turbo-frame > iframe) {
+/* A generated PDF, or an uploaded report viewer, fills the body under the
+   header. A percentage height only works once this chain has a real height. */
+#remote_modal_shell:has(.modal-size-full) #remote_modal_body:has(> turbo-frame > iframe),
+#remote_modal_shell:has(.modal-size-full) #remote_modal_body:has(.uploaded-report) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   padding: 0;
 }
 
-#remote_modal_shell:has(.modal-size-full) #remote_modal_body:has(> turbo-frame > iframe) > turbo-frame {
+#remote_modal_shell:has(.modal-size-full) #remote_modal_body:has(> turbo-frame > iframe) > turbo-frame,
+#remote_modal_shell:has(.modal-size-full) #remote_modal_body:has(.uploaded-report) > turbo-frame {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
 }
 
-#remote_modal_shell:has(.modal-size-full) #remote_modal_body > turbo-frame > iframe {
+#remote_modal_shell:has(.modal-size-full) #remote_modal_body > turbo-frame > iframe,
+#remote_modal_shell:has(.modal-size-full) .uploaded-report {
   flex: 1 1 auto;
   width: 100%;
   height: 100%;
   min-height: 0;
+}
+
+#remote_modal_shell:has(.modal-size-full) #remote_modal_body > turbo-frame > iframe {
   border: 0;
 }
 @source inline("top-0");

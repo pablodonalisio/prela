@@ -689,13 +689,34 @@ RSpec.describe "Reports", type: :request do
     end
 
     describe "GET /show" do
-      it "renders each uploaded file" do
+      it "lists a single PDF and offers a download" do
         uploaded_report = create(:report, :uploaded, location_equipment: location_equipment)
 
         get location_equipment_report_path(location_equipment, uploaded_report)
 
         expect(response).to be_successful
         expect(response.body).to include("test.pdf")
+        expect(response.body).to include("uploaded-report-viewer")
+        expect(response.body).to include("flex-col md:flex-row")
+        expect(response.body).to include("disposition=attachment")
+        expect(response.body).to include(uploaded_report.date.strftime("%d/%m/%Y - %H:%M"))
+      end
+
+      it "lists every file and previews the first one" do
+        uploaded_report = create(:report, :uploaded, location_equipment: location_equipment)
+        uploaded_report.files.attach(
+          io: StringIO.new(File.binread(Rails.root.join("app/assets/images/placeholder-img.jpeg"))),
+          filename: "photo.jpg",
+          content_type: "image/jpeg"
+        )
+
+        get location_equipment_report_path(location_equipment, uploaded_report)
+
+        expect(response).to be_successful
+        expect(response.body).to include("uploaded-report-viewer")
+        expect(response.body).to include("test.pdf")
+        expect(response.body).to include("photo.jpg")
+        expect(response.body).to include("absolute inset-0 hidden")
       end
     end
 
