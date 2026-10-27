@@ -83,6 +83,7 @@ RSpec.describe "Reports", type: :request do
     it "renders a successful response" do
       get new_location_equipment_report_path(report1.location_equipment)
       expect(response).to be_successful
+      expect(response.body).to include('data-controller="auto-save"')
     end
 
     it "allows to select a report date from 2016 to the current year" do
@@ -156,6 +157,12 @@ RSpec.describe "Reports", type: :request do
         request
         expect(Report.last.ups_report_stat).to be_present
         expect(Report.last.ups_report_stat.attributes).to include(params[:report][:ups_report_stat_attributes].stringify_keys)
+      end
+
+      it "clears the classic draft from local storage" do
+        post location_equipment_reports_path(location_equipment), params: params, as: :turbo_stream
+
+        expect(response.body).to include("delete-local-storage")
       end
     end
 
@@ -255,6 +262,7 @@ RSpec.describe "Reports", type: :request do
         get new_location_equipment_report_path(location_equipment, report_mode: "template")
         expect(response).to be_successful
         expect(response.body).to include("Plantilla")
+        expect(response.body).not_to include("auto-save")
       end
     end
 
@@ -332,6 +340,12 @@ RSpec.describe "Reports", type: :request do
       it "does not attach a PDF" do
         request
         expect(Report.last.pdf).not_to be_attached
+      end
+
+      it "does not clear local storage" do
+        post location_equipment_reports_path(location_equipment), params: template_params, as: :turbo_stream
+
+        expect(response.body).not_to include("delete-local-storage")
       end
 
       it "uploads images to the image section" do
