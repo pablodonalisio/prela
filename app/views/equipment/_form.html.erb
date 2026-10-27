@@ -3,9 +3,9 @@
   <%= f.input :equipment_kind_id, label: "Tipo de activo",
                                   collection: EquipmentKind.visible.order(:name).pluck(:name, :id),
                                   include_blank: "Seleccione un tipo",
-                                  wrapper_html: {class: ("!mb-0" unless current_user.technician?)},
+                                  wrapper_html: {class: ("!mb-0" if policy(EquipmentKind).new?)},
                                   input_html: {data: {dynamic_form_target: "selectInput", action: "change->dynamic-form#displayInputsForSelectValue"}} %>
-  <% unless current_user.technician? %>
+  <% if policy(EquipmentKind).new? %>
     <p class="-mt-1 mb-5 text-sm text-body-subtle">
       ¿No encontrás el tipo de activo?
       <%= link_to "Crear uno nuevo",
