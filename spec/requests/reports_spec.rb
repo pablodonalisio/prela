@@ -256,6 +256,17 @@ RSpec.describe "Reports", type: :request do
         expect(response).to be_successful
         expect(response.body).to include("Plantilla")
       end
+
+      it "renders the text section with the wysiwyg editor and no image tools" do
+        report_template
+        get new_location_equipment_report_path(location_equipment, report_mode: "template")
+
+        expect(response.body).to include('data-controller="wysiwyg"')
+        expect(response.body).to include("Negrita")
+        expect(response.body).to include("Formato")
+        expect(response.body).not_to include("Agregar imagen")
+        expect(response.body).not_to include('type="file"')
+      end
     end
 
     describe "GET /template_fields" do
@@ -332,6 +343,34 @@ RSpec.describe "Reports", type: :request do
       it "does not attach a PDF" do
         request
         expect(Report.last.pdf).not_to be_attached
+      end
+
+      it "stores formatted text and drops images from the text section" do
+        notes = report_template.sections.find_by!(title: "Notas")
+        params = template_params.deep_merge(
+          report: {
+            section_inputs: {
+              notes.id => {
+                body: '<p>Hola <strong>equipo</strong></p><img src="data:image/png;base64,aaaa" alt="foto"><p style="background-image:url(https://evil.test/a.png)">resto</p>'
+              }
+            }
+          }
+        )
+
+        post location_equipment_reports_path(location_equipment), params: params
+        report = Report.last
+        body = report.sections.find_by!(title: "Notas").text_section.body
+
+        expect(body).to include("<strong>equipo</strong>")
+        expect(body).to include("resto")
+        expect(body).not_to include("<img")
+        expect(body).not_to include("data:image")
+        expect(body).not_to include("url(")
+
+        get location_equipment_report_path(location_equipment, report)
+        expect(response.body).to include("<strong>equipo</strong>")
+        expect(response.body).not_to include("data:image")
+        expect(response.body).not_to include('alt="foto"')
       end
 
       it "uploads images to the image section" do
@@ -555,6 +594,24 @@ RSpec.describe "Reports", type: :request do
         expect(response).to have_http_status(:success)
       end
 
+      it "shows the client name in the logo cell when the client has no avatar" do
+        get location_equipment_report_path(location_equipment, template_report)
+
+        expect(response.body).to include("template-report__client-name")
+        expect(response.body).to include(location_equipment.client.name)
+      end
+
+      it "shows the client avatar when one is attached" do
+        location_equipment.client.avatar.attach(
+          Rack::Test::UploadedFile.new(Rails.root.join("app/assets/images/placeholder-img.jpeg"), "image/jpeg")
+        )
+
+        get location_equipment_report_path(location_equipment, template_report)
+
+        expect(response.body).to include("template-report__logo--client")
+        expect(response.body).not_to include("template-report__client-name")
+      end
+      
       it "prints the selected boolean option label" do
         cell = measurement_section.table_section.table_cells.find_by!(row_index: 0, column_index: 1)
         cell.update!(value_type: "boolean", for_metrics: false, fixed: false)
@@ -595,6 +652,7 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Limpieza general")
         expect(response.body).to include("Verificación de torque")
         expect(response.body).to include("template-report__list-check--on")
+        expect(response.body).not_to include("template-report__list-index")
         expect(response.body).not_to include("Comentarios y recomendaciones técnicas")
       end
     end

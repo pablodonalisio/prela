@@ -84,7 +84,7 @@ class Report < ApplicationRecord
 
   def apply_section_inputs
     return if sections_copied_from_template
-
+    
     Reports::ApplySectionInputs.call(self)
   ensure
     self.sections_copied_from_template = false

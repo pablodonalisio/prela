@@ -1,0 +1,4 @@
+// @tiptap/extension-code@2.27.3 downloaded from https://ga.jspm.io/npm:@tiptap/extension-code@2.27.3/dist/index.js
+
+import{Mark as e,markPasteRule as t,markInputRule as n,mergeAttributes as r}from"@tiptap/core";const i=/(^|[^`])`([^`]+)`(?!`)/,a=/(^|[^`])`([^`]+)`(?!`)/g,o=e.create({name:`code`,addOptions(){return{HTMLAttributes:{}}},excludes:`_`,code:!0,exitable:!0,parseHTML(){return[{tag:`code`}]},renderHTML({HTMLAttributes:e}){return[`code`,r(this.options.HTMLAttributes,e),0]},addCommands(){return{setCode:()=>({commands:e})=>e.setMark(this.name),toggleCode:()=>({commands:e})=>e.toggleMark(this.name),unsetCode:()=>({commands:e})=>e.unsetMark(this.name)}},addKeyboardShortcuts(){return{"Mod-e":()=>this.editor.commands.toggleCode()}},addInputRules(){return[n({find:i,type:this.type})]},addPasteRules(){return[t({find:a,type:this.type})]}});export{o as Code,o as default,i as inputRegex,a as pasteRegex};
+

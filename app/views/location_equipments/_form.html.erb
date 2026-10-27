@@ -36,7 +36,7 @@
                                       prompt: "Seleccione una sede",
                                       wrapper_html: { class: "mb-3" } %>
           <% else %>
-            <p class="mb-3 text-sm text-body-subtle">Este cliente no tiene sedes registradas.</p>
+            <p class="mb-3 text-sm text-fg-danger">Este cliente no tiene sedes registradas.</p>
           <% end %>
         <% end %>
       <% end %>
@@ -62,7 +62,10 @@
                                                        action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
       <p class="mb-3 text-sm text-body">
         ¿No encontrás el equipo?
-        <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-fg-brand hover:underline" %>.
+        <%= link_to "Crear uno nuevo",
+                    equipment_index_path(open: "new"),
+                    class: "text-fg-brand hover:underline",
+                    data: {turbo_frame: "_top"} %>.
       </p>
 
       <%= f.input :avatar, label: "Foto",
@@ -123,6 +126,6 @@
   </div>
 
   <div class="mt-4 flex justify-end">
-    <%= f.button :submit, "Aceptar" %>
+    <%= f.button :submit, "Aceptar"%>
   </div>
 <% end %>

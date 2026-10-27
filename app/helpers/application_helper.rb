@@ -110,6 +110,20 @@ module ApplicationHelper
     link[:visible_for].include?(current_user.role.to_sym)
   end
 
+  # Sanitized HTML from the shared rich text editor. Plain legacy text still
+  # goes through simple_format. Callers that print the result should not mark
+  # the original string html_safe themselves.
+  def format_rich_text(body)
+    sanitized = RichText::Sanitize.call(body)
+    return if sanitized.blank?
+
+    if sanitized.match?(/<\/?[a-z][^>]*>/i)
+      sanitized.html_safe
+    else
+      simple_format(sanitized)
+    end
+  end
+
   def schedule_point(value)
     return tag.span("—", class: "text-body-subtle") if value.blank?
 

@@ -31,6 +31,26 @@ RSpec.describe "/equipments", type: :request do
       get new_equipment_url
       expect(response).to be_successful
     end
+
+    it "links to the asset types page and opens the new type modal there" do
+      get new_equipment_url
+
+      link = Nokogiri::HTML(response.body).at_css("a[href='#{equipment_kinds_path(open: "new")}']")
+      expect(link).to be_present
+      expect(link.text).to eq("Crear uno nuevo")
+      expect(link["data-turbo-frame"]).to eq("_top")
+      expect(response.body).to include("¿No encontrás el tipo de activo?")
+    end
+
+    it "hides the new asset type link from technicians" do
+      sign_in create(:technician)
+
+      get new_equipment_url
+
+      expect(response).to be_successful
+      expect(response.body).not_to include("¿No encontrás el tipo de activo?")
+      expect(response.body).not_to include(equipment_kinds_path(open: "new"))
+    end
   end
 
   describe "GET /index" do
@@ -42,6 +62,14 @@ RSpec.describe "/equipments", type: :request do
       expect(response.body).to include(equipment.first.name)
       expect(response.body).to include(equipment.second.name)
       expect(response.body).to include(equipment.third.name)
+    end
+
+    it "prepares the new equipment modal when open=new" do
+      get equipment_index_url, params: {open: "new"}
+
+      expect(response).to be_successful
+      expect(response.body).to include('data-controller="open-remote-modal"')
+      expect(response.body).to include(%(data-open-remote-modal-url-value="#{new_equipment_path}"))
     end
 
     context "with more than one page of records" do
