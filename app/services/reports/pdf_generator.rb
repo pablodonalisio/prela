@@ -88,7 +88,10 @@ class Reports::PdfGenerator < PdfGenerator
   end
 
   def client_logo
-    @client_avatar_temp_file = create_tempfile(location_equipment.client.avatar)
+    avatar = location_equipment.client.avatar
+    return unless avatar.attached?
+
+    @client_avatar_temp_file = create_tempfile(avatar)
   end
 
   def report_images
