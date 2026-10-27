@@ -78,46 +78,10 @@ class Report < ApplicationRecord
 
   def apply_section_inputs
     return if sections_copied_from_template
+    
     Reports::ApplySectionInputs.call(self)
   ensure
     self.sections_copied_from_template = false
-  end
-
-  def previous_report_comments_for_seed
-    previous = previous_report_for_comments
-    return [] if previous.blank?
-
-    previous.report_comments.reset
-    previous.report_comments.to_a
-  end
-
-  def template_tasks_for_seed
-    report_template.report_template_tasks.reset
-    report_template.report_template_tasks.to_a
-  end
-
-  def normalize_task_positions
-    return unless template_based?
-
-    report_tasks.reject(&:marked_for_destruction?).each_with_index do |task, index|
-      task.position = index
-    end
-  end
-
-  def normalize_comment_positions
-    return unless template_based?
-
-    report_comments.reject(&:marked_for_destruction?).each_with_index do |comment, index|
-      comment.position = index
-    end
-  end
-
-  def reject_blank_report_task(attributes)
-    attributes["name"].blank? && attributes["id"].blank?
-  end
-
-  def reject_blank_report_comment(attributes)
-    attributes["description"].blank? && attributes["id"].blank?
   end
 
   def report_template_must_exist
