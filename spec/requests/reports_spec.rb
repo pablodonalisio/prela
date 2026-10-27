@@ -483,6 +483,24 @@ RSpec.describe "Reports", type: :request do
         expect(response).to have_http_status(:success)
       end
 
+      it "shows the client name in the logo cell when the client has no avatar" do
+        get location_equipment_report_path(location_equipment, template_report)
+
+        expect(response.body).to include("template-report__client-name")
+        expect(response.body).to include(location_equipment.client.name)
+      end
+
+      it "shows the client avatar when one is attached" do
+        location_equipment.client.avatar.attach(
+          Rack::Test::UploadedFile.new(Rails.root.join("app/assets/images/placeholder-img.jpeg"), "image/jpeg")
+        )
+
+        get location_equipment_report_path(location_equipment, template_report)
+
+        expect(response.body).to include("template-report__logo--client")
+        expect(response.body).not_to include("template-report__client-name")
+      end
+
       it "renders the modern template report layout" do
         get location_equipment_report_path(location_equipment, template_report)
         equipment = location_equipment.equipment

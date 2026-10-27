@@ -31,6 +31,8 @@
           <%= image_tag client.avatar.variant(resize_to_limit: [280, 140]),
                         alt: client.name,
                         class: "template-report__logo template-report__logo--client" %>
+        <% else %>
+          <span class="template-report__client-name"><%= client.name %></span>
         <% end %>
       </div>
       <div class="template-report__header-cell">

@@ -165,12 +165,16 @@ class Report < ApplicationRecord
   end
 
   def normalize_task_positions
+    return unless template_based?
+
     report_tasks.reject(&:marked_for_destruction?).each_with_index do |task, index|
       task.position = index
     end
   end
 
   def normalize_comment_positions
+    return unless template_based?
+
     report_comments.reject(&:marked_for_destruction?).each_with_index do |comment, index|
       comment.position = index
     end
