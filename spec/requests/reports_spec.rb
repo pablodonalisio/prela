@@ -652,6 +652,7 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Limpieza general")
         expect(response.body).to include("Verificación de torque")
         expect(response.body).to include("template-report__list-check--on")
+        expect(response.body).not_to include("template-report__list-index")
         expect(response.body).not_to include("Comentarios y recomendaciones técnicas")
       end
     end

@@ -38,10 +38,9 @@
   </table>
 <% elsif section.list? && section.list_section&.list_items&.any? %>
   <ul class="template-report__list">
-    <% section.list_section.list_items.each_with_index do |item, index| %>
+    <% section.list_section.list_items.each do |item| %>
       <li class="template-report__list-item">
         <span class="template-report__list-check<%= " template-report__list-check--on" if item.checked? %>"><%= "✓" if item.checked? %></span>
-        <span class="template-report__list-index">[<%= format("%02d", index + 1) %>]</span>
         <span class="template-report__list-name"><%= item.name %></span>
       </li>
     <% end %>
