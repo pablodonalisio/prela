@@ -33,7 +33,7 @@ class ServiceOccurrence < ApplicationRecord
   scope :scheduled, -> { where(status: :scheduled) }
   scope :for_visible_location_equipments, -> {
     joins(location_equipment_service: :location_equipment)
-      .where(location_equipment_services: {location_equipment_id: LocationEquipment.visible.select(:id)})
+      .where(location_equipment_services: {removed_at: nil, location_equipment_id: LocationEquipment.visible.select(:id)})
   }
   scope :overdue, -> {
     open.where(service_occurrences: {due_on: ...Date.current})

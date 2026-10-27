@@ -152,6 +152,50 @@ RSpec.describe "/location_equipments/:location_equipment_id/location_equipment_s
         delete location_equipment_location_equipment_service_url(location_equipment, les)
       }.to change(LocationEquipmentService, :count).by(-1)
     end
+
+    it "drops pending occurrences and keeps completed ones on a removed assignment" do
+      les = location_equipment.location_equipment_services.find_by!(service_kind: service_kind)
+      pending = les.pending_service_occurrence
+      completed = create(:service_occurrence, :completed, location_equipment_service: les, completed_on: 2.months.ago.to_date, due_on: 2.months.ago.to_date)
+
+      expect {
+        delete location_equipment_location_equipment_service_url(location_equipment, les)
+      }.not_to change(LocationEquipmentService, :count)
+
+      expect(les.reload).to be_removed
+      expect(ServiceOccurrence.exists?(pending.id)).to be(false)
+      expect(completed.reload).to be_completed
+      expect(completed.completed_on).to eq(2.months.ago.to_date)
+    end
+  end
+
+  describe "POST /create when the service was removed" do
+    it "reactivates the same assignment without changing completed occurrences" do
+      les = location_equipment.location_equipment_services.find_by!(service_kind: service_kind)
+      completed = create(:service_occurrence, :completed, location_equipment_service: les, completed_on: 2.months.ago.to_date, due_on: 2.months.ago.to_date, notes: "Historial")
+      delete location_equipment_location_equipment_service_url(location_equipment, les)
+      due_on = 3.weeks.from_now.to_date
+
+      expect {
+        post location_equipment_location_equipment_services_url(location_equipment),
+          params: {
+            location_equipment_service: {
+              service_kind_id: service_kind.id,
+              interval: 6,
+              interval_unit: "months",
+              due_on: due_on
+            }
+          }
+      }.not_to change(LocationEquipmentService, :count)
+
+      expect(les.reload).to be_active
+      expect(les.interval).to eq(6)
+      expect(les.interval_unit).to eq("months")
+      expect(les.pending_service_occurrence.due_on).to eq(due_on)
+      expect(completed.reload.notes).to eq("Historial")
+      expect(completed.completed_on).to eq(2.months.ago.to_date)
+      expect(completed).to be_completed
+    end
   end
 
   context "when user is a client" do

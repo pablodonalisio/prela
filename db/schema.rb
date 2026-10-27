@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -304,8 +304,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.integer "interval_unit"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "removed_at"
     t.index ["location_equipment_id", "service_kind_id"], name: "index_location_equipment_services_uniqueness", unique: true
     t.index ["location_equipment_id"], name: "index_location_equipment_services_on_location_equipment_id"
+    t.index ["removed_at"], name: "index_location_equipment_services_on_removed_at"
     t.index ["service_kind_id"], name: "index_location_equipment_services_on_service_kind_id"
   end
 
@@ -388,18 +390,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.string "scannable_type", null: false
     t.bigint "scannable_id", null: false
     t.datetime "discarded_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["discarded_at"], name: "index_qr_tokens_on_discarded_at"
-    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_kept_scannable", unique: true, where: "(discarded_at IS NULL)"
-    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_scannable"
-    t.index ["token"], name: "index_qr_tokens_on_token", unique: true
-  end
-
-  create_table "report_comments", force: :cascade do |t|
-    t.bigint "report_id", null: false
-    t.text "description", null: false
-    t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_qr_tokens_on_discarded_at"
@@ -562,6 +552,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["section_id"], name: "index_table_sections_on_section_id", unique: true
+    t.check_constraint "row_count >= 1 AND row_count <= 16 AND column_count >= 1 AND column_count <= 12", name: "table_sections_grid_size"
   end
 
   create_table "taggings", force: :cascade do |t|

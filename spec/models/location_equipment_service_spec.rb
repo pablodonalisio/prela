@@ -111,6 +111,93 @@ RSpec.describe LocationEquipmentService, type: :model do
     end
   end
 
+  describe "#unassign!" do
+    let(:les) { create(:location_equipment_service, interval: 1, interval_unit: :years) }
+
+    before { les.service_occurrences.destroy_all }
+
+    it "drops pending and scheduled occurrences" do
+      pending = create(:service_occurrence, location_equipment_service: les, due_on: Date.yesterday)
+      scheduled_les = create(:location_equipment_service, interval: 1, interval_unit: :years)
+      scheduled_les.service_occurrences.destroy_all
+      scheduled = create(:service_occurrence, :scheduled, location_equipment_service: scheduled_les)
+
+      les.unassign!
+      scheduled_les.unassign!
+
+      expect(ServiceOccurrence.exists?(pending.id)).to be(false)
+      expect(ServiceOccurrence.exists?(scheduled.id)).to be(false)
+      expect(LocationEquipmentService.exists?(les.id)).to be(false)
+      expect(LocationEquipmentService.exists?(scheduled_les.id)).to be(false)
+    end
+
+    it "keeps completed occurrences and cancelled or suspended ones due today or earlier" do
+      completed = create(:service_occurrence, :completed, location_equipment_service: les, completed_on: 1.year.ago.to_date, due_on: 1.year.ago.to_date)
+      cancelled_today = create(:service_occurrence, location_equipment_service: les, status: :cancelled, due_on: Date.current)
+      future_cancelled = create(:service_occurrence, location_equipment_service: les, status: :cancelled, due_on: Date.tomorrow)
+      suspended = create(:service_occurrence, :suspended, location_equipment_service: les, due_on: Date.yesterday)
+
+      les.unassign!
+
+      expect(les.reload).to be_removed
+      expect(completed.reload.completed_on).to eq(1.year.ago.to_date)
+      expect(completed).to be_completed
+      expect(cancelled_today.reload).to be_cancelled
+      expect(suspended.reload).to be_suspended
+      expect(ServiceOccurrence.exists?(future_cancelled.id)).to be(false)
+    end
+
+    it "keeps a past occurrence in the equipment history and drops it from operational lists" do
+      suspended = create(:service_occurrence, :suspended, location_equipment_service: les, due_on: Date.current)
+
+      expect(ServiceOccurrence.for_visible_location_equipments.where(id: suspended.id)).to exist
+
+      les.unassign!
+
+      expect(les.location_equipment.service_occurrences).to include(suspended)
+      expect(les.location_equipment.open_service_occurrences).not_to include(suspended)
+      expect(ServiceOccurrence.for_visible_location_equipments.where(id: suspended.id)).to be_empty
+    end
+
+    it "drops a suspended occurrence due after today" do
+      future_suspended = create(:service_occurrence, :suspended, location_equipment_service: les, due_on: Date.tomorrow)
+
+      les.unassign!
+
+      expect(ServiceOccurrence.exists?(future_suspended.id)).to be(false)
+      expect(LocationEquipmentService.exists?(les.id)).to be(false)
+    end
+
+    it "leaves completed occurrences unchanged when the service is assigned again" do
+      completed = create(:service_occurrence, :completed, location_equipment_service: les, completed_on: 6.months.ago.to_date, due_on: 6.months.ago.to_date, notes: "Hecho")
+      create(:service_occurrence, location_equipment_service: les, due_on: Date.current)
+
+      les.unassign!
+      les.update!(removed_at: nil, interval: 4, interval_unit: :months)
+      les.due_on = 2.weeks.from_now.to_date
+      pending = les.create_pending_occurrence!
+
+      expect(les.reload).to be_active
+      expect(les.interval).to eq(4)
+      expect(pending.due_on).to eq(2.weeks.from_now.to_date)
+      expect(completed.reload.notes).to eq("Hecho")
+      expect(completed.completed_on).to eq(6.months.ago.to_date)
+      expect(completed).to be_completed
+    end
+
+    it "does not create another occurrence when an open one is still there" do
+      suspended = create(:service_occurrence, :suspended, location_equipment_service: les, due_on: Date.current, notes: "En pausa")
+
+      les.unassign!
+      les.update!(removed_at: nil)
+      les.due_on = 1.month.from_now.to_date
+
+      expect(les.create_pending_occurrence!).to be_nil
+      expect(suspended.reload.notes).to eq("En pausa")
+      expect(les.service_occurrences.open).to contain_exactly(suspended)
+    end
+  end
+
   describe "#interval_label" do
     it "combines interval and unit" do
       les = build(:location_equipment_service, interval: 3, interval_unit: :months)
