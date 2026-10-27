@@ -1,7 +1,7 @@
 <%# locals: (section:) %>
 <% if section.text? %>
-  <% if section.text_section&.body.present? %>
-    <div class="template-report__text"><%= simple_format(section.text_section.body) %></div>
+  <% if (formatted = format_rich_text(section.text_section&.body)) %>
+    <div class="template-report__text"><%= formatted %></div>
   <% else %>
     <p>—</p>
   <% end %>
