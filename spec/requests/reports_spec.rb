@@ -756,6 +756,8 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("test.pdf")
         expect(response.body).to include("uploaded-report-viewer")
         expect(response.body).to include("flex-col md:flex-row")
+        expect(response.body).to include("/rails/active_storage/blobs/proxy/")
+        expect(response.body).to include("disposition=inline")
         expect(response.body).to include("disposition=attachment")
         expect(response.body).to include(uploaded_report.date.strftime("%d/%m/%Y - %H:%M"))
       end
