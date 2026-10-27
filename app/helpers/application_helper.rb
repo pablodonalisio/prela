@@ -14,6 +14,7 @@ module ApplicationHelper
     chevron_down: "fa-solid fa-chevron-down",
     clients: "fa-solid fa-building",
     dot: "fa fa-circle",
+    download: "fa-solid fa-download",
     edit: "fas fa-edit",
     envelope: "fa-solid fa-envelope",
     equipment: "fa-solid fa-wrench",
