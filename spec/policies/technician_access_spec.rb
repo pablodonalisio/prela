@@ -76,13 +76,13 @@ RSpec.describe "Technician access", type: :policy do
   end
 
   describe ClientPolicy do
-    permissions :index?, :show? do
+    permissions :index?, :show?, :locations?, :contacts?, :organigram? do
       it "grants access" do
         expect(described_class).to permit(technician, Client.new)
       end
     end
 
-    permissions :create?, :update?, :destroy? do
+    permissions :contracts?, :create?, :update?, :destroy? do
       it "denies access" do
         expect(described_class).not_to permit(technician, Client.new)
       end

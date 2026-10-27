@@ -264,6 +264,17 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Plantilla")
         expect(response.body).not_to include("auto-save")
       end
+
+      it "renders the text section with the wysiwyg editor and no image tools" do
+        report_template
+        get new_location_equipment_report_path(location_equipment, report_mode: "template")
+
+        expect(response.body).to include('data-controller="wysiwyg"')
+        expect(response.body).to include("Negrita")
+        expect(response.body).to include("Formato")
+        expect(response.body).not_to include("Agregar imagen")
+        expect(response.body).not_to include('type="file"')
+      end
     end
 
     describe "GET /template_fields" do
@@ -346,6 +357,34 @@ RSpec.describe "Reports", type: :request do
         post location_equipment_reports_path(location_equipment), params: template_params, as: :turbo_stream
 
         expect(response.body).not_to include("delete-local-storage")
+      end
+      
+      it "stores formatted text and drops images from the text section" do
+        notes = report_template.sections.find_by!(title: "Notas")
+        params = template_params.deep_merge(
+          report: {
+            section_inputs: {
+              notes.id => {
+                body: '<p>Hola <strong>equipo</strong></p><img src="data:image/png;base64,aaaa" alt="foto"><p style="background-image:url(https://evil.test/a.png)">resto</p>'
+              }
+            }
+          }
+        )
+
+        post location_equipment_reports_path(location_equipment), params: params
+        report = Report.last
+        body = report.sections.find_by!(title: "Notas").text_section.body
+
+        expect(body).to include("<strong>equipo</strong>")
+        expect(body).to include("resto")
+        expect(body).not_to include("<img")
+        expect(body).not_to include("data:image")
+        expect(body).not_to include("url(")
+
+        get location_equipment_report_path(location_equipment, report)
+        expect(response.body).to include("<strong>equipo</strong>")
+        expect(response.body).not_to include("data:image")
+        expect(response.body).not_to include('alt="foto"')
       end
 
       it "uploads images to the image section" do

@@ -48,7 +48,8 @@ export default class extends Controller {
 
   #clear(wrapper) {
     this.clearing = true
-    this.#timeInput(wrapper).value = ""
+    const timeInput = this.#timeInput(wrapper)
+    if (timeInput) timeInput.value = ""
 
     const dateInput = this.#dateInput(wrapper)
     const output = wrapper.querySelector("[data-datetime-field-target='output']")

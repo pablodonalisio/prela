@@ -1,4 +1,5 @@
-<%# locals: (form:, field: :date, label: "Fecha", value: nil, disabled: false, min: nil, max: nil, required: false, blank: false, data: {}) %>
+<%# locals: (form:, field: :date, label: "Fecha", value: nil, disabled: false, min: nil, max: nil, required: false, blank: false, time: true, data: {}) %>
+<% show_time = local_assigns.fetch(:time, true) %>
 <% resolved = value || form.object.public_send(field) %>
 <% resolved = Time.current if resolved.blank? && !blank %>
 <% timestamp = resolved&.in_time_zone %>
@@ -12,7 +13,7 @@
               controller: "datetime-field",
               datetime_field_offset_value: Time.zone.now.formatted_offset
             }.merge(data || {}) do %>
-  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+  <div class="<%= "grid grid-cols-1 gap-3 sm:grid-cols-2" if show_time %>">
     <div>
       <%= form.label field, label, for: date_id, class: "mb-2 block text-sm font-medium text-heading" %>
       <%= tag.input type: "date",
@@ -25,6 +26,7 @@
                     class: input_classes,
                     data: {datetime_field_target: "date"} %>
     </div>
+    <% if show_time %>
     <div>
       <%= form.label field, "Hora (formato 24hs)", for: time_id, class: "mb-2 block text-sm font-medium text-heading" %>
       <div class="relative">
@@ -47,10 +49,11 @@
                       } %>
       </div>
     </div>
+    <% end %>
   </div>
 
   <%= form.hidden_field field,
-                         value: timestamp&.iso8601,
+                         value: (show_time ? timestamp&.iso8601 : timestamp&.to_date&.iso8601),
                          disabled: disabled,
                          data: {datetime_field_target: "output"} %>
 

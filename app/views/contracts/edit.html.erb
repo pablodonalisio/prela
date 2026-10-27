@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @contract do %>
+  <%= render "shared/remote_modal", title: "Editar Contrato" do %>
+    <%= render "form", client: @client, contract: @contract %>
+  <% end %>
+<% end %>
