@@ -1,0 +1,48 @@
+<%# locals: (section:) %>
+<% if section.text? %>
+  <% if (formatted = format_rich_text(section.text_section&.body)) %>
+    <div class="template-report__text"><%= formatted %></div>
+  <% else %>
+    <p>—</p>
+  <% end %>
+<% elsif section.images? && section.image_section&.images&.attached? %>
+  <div class="template-report__images">
+    <% section.image_section.images.each do |image| %>
+      <%= link_to url_for(image), target: "_blank", rel: "noopener", class: "template-report__image-link" do %>
+        <%= image_tag image.variant(resize_to_limit: [900, 900]), alt: image.filename.to_s %>
+      <% end %>
+    <% end %>
+  </div>
+<% elsif section.table? %>
+  <% table = section.table_section %>
+  <table class="template-report__table">
+    <thead>
+      <tr>
+        <th><%= table.corner_label %></th>
+        <% table.column_count.times do |column| %>
+          <th><%= table.column_label(column) %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% table.row_count.times do |row| %>
+        <tr>
+          <th><%= table.row_label(row) %></th>
+          <% table.column_count.times do |column| %>
+            <% cell = table.cell_at(row, column) %>
+            <td><%= cell ? format_table_cell_value(cell) : "—" %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% elsif section.list? && section.list_section&.list_items&.any? %>
+  <ul class="template-report__list">
+    <% section.list_section.list_items.each do |item| %>
+      <li class="template-report__list-item">
+        <span class="template-report__list-check<%= " template-report__list-check--on" if item.checked? %>"><%= "✓" if item.checked? %></span>
+        <span class="template-report__list-name"><%= item.name %></span>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

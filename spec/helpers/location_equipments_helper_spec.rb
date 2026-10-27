@@ -26,6 +26,23 @@ RSpec.describe LocationEquipmentsHelper, type: :helper do
     end
   end
 
+  describe "#occurrence_status_text_classes" do
+    it "uses the text color of the matching Estado pill" do
+      {
+        completed: "text-green-800 dark:text-green-300",
+        scheduled: "text-blue-800 dark:text-blue-300",
+        suspended: "text-gray-800 dark:text-gray-300",
+        pending: "text-yellow-800 dark:text-yellow-300"
+      }.each do |status, text_classes|
+        occurrence = ServiceOccurrence.new(status: status)
+        badge_classes = helper.occurrence_status_badge_classes(occurrence)
+
+        expect(helper.occurrence_status_text_classes(occurrence)).to eq(text_classes)
+        expect(badge_classes.split).to include(*text_classes.split)
+      end
+    end
+  end
+
   describe "#failures_last_year_indicator" do
     it "shows the last-year failure count" do
       location_equipment = build_stubbed(:location_equipment)

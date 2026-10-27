@@ -23,6 +23,14 @@ RSpec.describe "/service_kinds", type: :request do
       expect(response).to be_successful
     end
 
+    it "prepares the new service modal when open=new" do
+      get service_kinds_url, params: {open: "new"}
+
+      expect(response).to be_successful
+      expect(response.body).to include('data-controller="open-remote-modal"')
+      expect(response.body).to include(%(data-open-remote-modal-url-value="#{new_service_kind_path}"))
+    end
+
     context "when user is not admin" do
       let(:user) { create(:user) }
 

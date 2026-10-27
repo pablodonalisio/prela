@@ -1,0 +1,38 @@
+<div class="rounded-xl border border-default bg-neutral-primary">
+  <div class="flex items-center justify-between gap-4 border-b border-default px-5 py-4">
+    <h3 class="text-lg font-semibold text-heading">Contactos</h3>
+    <% if policy(Contact).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: [:new, client, :contact] %>
+    <% end %>
+  </div>
+  <div class="overflow-x-auto p-2 md:p-4">
+    <table class="w-full text-left text-sm">
+      <% show_actions = policy(Contact).update? || policy(Contact).destroy? %>
+      <thead class="text-xs uppercase tracking-wide text-body-subtle">
+        <tr>
+          <th class="px-3 py-3 font-semibold">Nombre</th>
+          <th class="px-3 py-3 font-semibold">Puesto</th>
+          <th class="px-3 py-3 font-semibold">Área</th>
+          <th class="px-3 py-3 font-semibold">Sedes</th>
+          <th class="px-3 py-3 font-semibold">Email</th>
+          <th class="px-3 py-3 font-semibold">Teléfono</th>
+          <% if show_actions %>
+            <th class="px-3 py-3 text-end font-semibold">Acciones</th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody id="contacts">
+        <% kept_contacts = client.contacts.kept.includes(:locations) %>
+        <% if kept_contacts.any? %>
+          <%= render kept_contacts, client: client %>
+        <% else %>
+          <tr id="empty_contacts">
+            <td colspan="<%= show_actions ? 7 : 6 %>" class="px-3 py-6 text-center text-sm text-body-subtle">
+              Todavía no hay contactos cargados.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

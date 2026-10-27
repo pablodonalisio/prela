@@ -22,6 +22,18 @@ RSpec.describe "/location_equipments/:location_equipment_id/location_equipment_s
     equipment_kind.service_kinds << service_kind unless equipment_kind.service_kinds.exists?(service_kind.id)
   end
 
+  describe "GET /new" do
+    it "links to the services tab and opens the new service modal there" do
+      get new_location_equipment_location_equipment_service_url(location_equipment)
+
+      expect(response).to be_successful
+      link = Nokogiri::HTML(response.body).at_css("a[href='#{service_kinds_path(open: "new")}']")
+      expect(link).to be_present
+      expect(link.text).to eq("Crear uno nuevo")
+      expect(link["data-turbo-frame"]).to eq("_top")
+    end
+  end
+
   describe "POST /create" do
     it "creates a location equipment service" do
       clear_location_equipment_services!

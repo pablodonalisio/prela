@@ -22,15 +22,67 @@ RSpec.describe Report, type: :model do
   end
 
   describe "template report validations" do
-    it "requires a report template when template based" do
+    it "requires an existing report template on create" do
       report = build(:report, report_template_id: 999_999)
       expect(report).not_to be_valid
     end
 
-    it "rejects invalid field value types" do
-      report = build(:report, :template_based, field_values: {"measurements" => {"1739280000" => "not-a-number"}})
+    it "rejects an editable cell value that does not match its type" do
+      report = build(:report, :template_based)
+      section = report.report_template.sections.find_by!(title: "Tensión L1")
+      report.section_inputs = {
+        section.id.to_s => {"cells" => {"0_1" => {"value" => "not-a-number"}}}
+      }
+
       expect(report).not_to be_valid
-      expect(report.errors[:field_values]).to be_present
+    end
+
+    it "copies boolean option labels as records owned by the report" do
+      template = create(:report_template, :with_measurements)
+      source = template.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      source.update!(value_type: "boolean", for_metrics: false, fixed: false)
+      source.table_cell_options.find_by!(value: true).update!(label: "Aprobado")
+      source.table_cell_options.find_by!(value: false).update!(label: "Rechazado")
+
+      report = create(:report, :template_based, report_template: template)
+      copied = report.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      option = copied.table_cell_options.find_by!(value: true)
+
+      expect(option.label).to eq("Aprobado")
+      expect(option.id).not_to eq(source.table_cell_options.find_by!(value: true).id)
+      expect(copied.option_label(false)).to eq("Rechazado")
+    end
+
+    it "copies table labels as records owned by the report" do
+      report = create(:report, :template_based)
+      source = report.report_template.sections.find_by!(title: "Tensión L1").table_section
+      copied = report.sections.find_by!(title: "Tensión L1").table_section
+      label = copied.table_labels.find_by!(axis: "column", position: 0)
+
+      expect(label.label).to eq("Fase")
+      expect(label.id).not_to eq(source.table_labels.find_by!(axis: "column", position: 0).id)
+      expect(copied.table_labels.count).to eq(source.table_labels.count)
+    end
+
+    it "keeps fixed cell values" do
+      report = create(:report, :template_based)
+      section = report.sections.find_by!(title: "Tensión L1")
+      report.section_inputs = {
+        section.id.to_s => {"cells" => {"0_0" => {"value" => "cambiado"}, "0_1" => {"value" => "230"}}}
+      }
+
+      expect(report.save).to be true
+      cells = section.table_section.table_cells
+      expect(cells.find_by!(row_index: 0, column_index: 0).value).to eq("L1")
+      expect(cells.find_by!(row_index: 0, column_index: 1).value).to eq("230")
+    end
+
+    it "does not change a generated report when the template changes" do
+      report = create(:report, :template_based)
+      report.report_template.sections.find_by!(title: "Notas").update!(title: "Notas editadas")
+
+      expect(report.reload.sections.find_by(title: "Notas")).to be_present
+      expect(report.sections.find_by(title: "Notas editadas")).to be_nil
     end
   end
 

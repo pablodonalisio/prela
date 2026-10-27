@@ -18,8 +18,10 @@ Rails.application.routes.draw do
 
   resources :agenda, only: [:index]
   resources :clients do
-    resources :locations, except: [:index, :show]
-    resources :contacts, except: [:index, :show]
+    get :organigram, on: :member
+    resources :locations, except: [:show]
+    resources :contacts, except: [:show]
+    resources :contracts, except: [:show]
   end
   resources :location_equipments do
     resource :qr_token, only: [:show]
@@ -55,9 +57,6 @@ Rails.application.routes.draw do
   end
   resources :assets_categories, only: [:create, :update, :destroy]
   resources :service_kinds, except: %i[show]
-  resources :report_templates, except: [:show] do
-    get "add_field", on: :collection
-    get "remove_field", on: :collection
-  end
+  resources :report_templates, except: [:show]
   resources :tags, except: [:show]
 end

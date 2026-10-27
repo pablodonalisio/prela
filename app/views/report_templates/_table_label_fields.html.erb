@@ -1,0 +1,23 @@
+<%# locals: (f:, axis:, position:) %>
+<% input_classes = "block w-full rounded-lg border border-default bg-neutral-secondary-medium px-2 py-1.5 text-sm text-heading placeholder:text-body-subtle" %>
+<% placeholder = {"column" => "Encabezado", "corner" => "Título"}.fetch(axis, "Fila") %>
+<% aria_label = if axis == "column"
+     "Encabezado de columna #{position.to_i + 1}"
+   elsif axis == "corner"
+     "Título"
+   else
+     "Nombre de fila #{position.to_i + 1}"
+   end %>
+<div data-label data-axis="<%= axis %>" data-position="<%= position %>">
+  <%= f.hidden_field :id, data: {name: "id"} %>
+  <%= f.hidden_field :axis, value: axis, data: {name: "axis"} %>
+  <%= f.hidden_field :position, value: position, data: {name: "position"} %>
+  <%= f.hidden_field :_destroy, value: "0", data: {name: "_destroy"} %>
+  <input class="<%= input_classes %> <%= "border-red-500" if f.object.errors[:label].any? %>"
+         type="text"
+         name="<%= f.object_name %>[label]"
+         value="<%= f.object.label %>"
+         placeholder="<%= placeholder %>"
+         aria-label="<%= aria_label %>"
+         data-name="label">
+</div>
