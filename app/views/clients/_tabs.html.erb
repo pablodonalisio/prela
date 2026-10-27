@@ -1,0 +1,40 @@
+<% active_classes = "inline-block border-b-2 border-brand px-4 py-3 text-fg-brand" %>
+<% inactive_classes = "inline-block border-b-2 border-transparent px-4 py-3 text-body hover:border-default hover:text-heading" %>
+<% link_data = {turbo_frame: "client_panel", turbo_action: "advance"} %>
+
+<nav class="border-b border-default">
+  <ul class="-mb-px flex flex-wrap gap-1 text-sm font-medium">
+    <% if policy(client).locations? %>
+      <li>
+        <%= link_to "Sedes", client_locations_path(client),
+                    class: (panel == :locations) ? active_classes : inactive_classes,
+                    data: link_data,
+                    aria: {current: ("page" if panel == :locations)} %>
+      </li>
+    <% end %>
+    <% if policy(client).contacts? %>
+      <li>
+        <%= link_to "Contactos", client_contacts_path(client),
+                    class: (panel == :contacts) ? active_classes : inactive_classes,
+                    data: link_data,
+                    aria: {current: ("page" if panel == :contacts)} %>
+      </li>
+    <% end %>
+    <% if policy(client).organigram? %>
+      <li>
+        <%= link_to "Organigrama", organigram_client_path(client),
+                    class: (panel == :organigram) ? active_classes : inactive_classes,
+                    data: link_data,
+                    aria: {current: ("page" if panel == :organigram)} %>
+      </li>
+    <% end %>
+    <% if policy(client).contracts? %>
+      <li>
+        <%= link_to "Contratos", client_contracts_path(client),
+                    class: (panel == :contracts) ? active_classes : inactive_classes,
+                    data: link_data,
+                    aria: {current: ("page" if panel == :contracts)} %>
+      </li>
+    <% end %>
+  </ul>
+</nav>

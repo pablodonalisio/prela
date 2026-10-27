@@ -1,11 +1,17 @@
 class ClientsController < ApplicationController
-  before_action :set_client, only: %i[show edit update destroy]
+  before_action :set_client, only: %i[show edit update destroy organigram]
 
   def index
     @clients = authorize Client.visible
   end
 
   def show
+    @panel = :locations
+  end
+
+  def organigram
+    @panel = :organigram
+    render :show
   end
 
   def new

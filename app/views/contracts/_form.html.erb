@@ -1,0 +1,54 @@
+<% accepted_formats = "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png" %>
+<% existing_files = contract.files.filter_map { |file|
+     next unless file.blob&.persisted?
+     data = {id: file.blob.id, filename: file.filename.to_s, byte_size: file.byte_size}
+     if file.image? && file.representable?
+       data[:url] = url_for(file.variant(resize_to_limit: [120, 120]))
+     end
+     data
+   } %>
+
+<%= simple_form_for [client, contract] do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <div data-controller="schedule-range"
+       data-action="change->schedule-range#syncFinishMin">
+    <%= render "shared/datetime_picker",
+               form: f,
+               field: :starts_on,
+               label: "Fecha de inicio",
+               blank: true,
+               time: false,
+               required: true,
+               data: {schedule_range_target: "init"} %>
+    <%= render "shared/datetime_picker",
+               form: f,
+               field: :ends_on,
+               label: "Fecha de fin",
+               blank: true,
+               time: false,
+               min: contract.starts_on,
+               required: true,
+               data: {schedule_range_target: "finish"} %>
+  </div>
+
+  <div class="mb-5">
+    <h4 class="mb-3 text-sm font-medium text-heading">Archivos</h4>
+    <div data-controller="dropzone"
+         data-dropzone-direct-upload-url-value="<%= rails_direct_uploads_url %>"
+         data-dropzone-existing-files-value='<%= existing_files.to_json.html_safe %>'
+         data-dropzone-accepted-files-value="<%= accepted_formats %>"
+         data-dropzone-input-name-value="contract[files][]"
+         data-dropzone-removed-input-name-value="contract[removed_file_ids][]"
+         data-dropzone-track-existing-value="false"
+         data-dropzone-resize-value="false"
+         data-dropzone-max-files-value="20">
+      <div data-dropzone-target="dropzone" class="dropzone rounded-lg border border-dashed border-default p-3">
+        <div class="dz-message text-center">Arrastra archivos aquí o haz click para seleccionar.</div>
+      </div>
+      <div data-dropzone-target="hiddenInputs"></div>
+      <div data-dropzone-target="removedInputs"></div>
+    </div>
+  </div>
+
+  <%= f.button :submit, "Aceptar" %>
+<% end %>

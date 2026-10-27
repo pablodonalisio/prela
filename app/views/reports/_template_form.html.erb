@@ -6,11 +6,14 @@
            min: Date.new(2016, 1, 1),
            max: Date.new(Date.current.year, 12, 31) %>
 
-<% report_template = report.report_template || @all_templates&.first %>
-<% if report_template %>
+<% if report.persisted? %>
+  <h2 class="mb-3 mt-4 text-lg font-semibold text-heading">Plantilla</h2>
+  <p class="mb-3 text-sm text-body"><%= report.report_template&.name || "Plantilla eliminada" %></p>
+  <%= render "template_fields", report: report %>
+<% elsif (report_template = report.report_template || @all_templates&.first) %>
   <div data-controller="report-template-picker"
        data-report-template-picker-base-url-value="<%= template_fields_location_equipment_reports_path(location_equipment) %>"
-       data-report-template-picker-report-id-value="<%= report.persisted? ? report.id : "" %>">
+       data-report-template-picker-report-id-value="">
 
     <h2 class="mb-3 mt-4 text-lg font-semibold text-heading">Plantilla</h2>
 
@@ -54,8 +57,6 @@
 <% else %>
   <p class="text-yellow-500">No hay plantillas de informe disponibles. Creá una desde Informes.</p>
 <% end %>
-
-<%= render "report_images", report: report, f: f %>
 
 <% selectable_signatures = report_signatures.order(:name).to_a %>
 <% if report.persisted? %>

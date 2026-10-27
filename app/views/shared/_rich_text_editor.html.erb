@@ -1,0 +1,151 @@
+<%# Shared rich text field. locals: (name:, body:, uid:) %>
+<% btn = "inline-flex items-center justify-center rounded-sm p-1.5 text-body hover:bg-neutral-tertiary hover:text-heading" %>
+<% menu = "z-[80] hidden rounded-lg border border-default bg-neutral-primary p-2 shadow-lg" %>
+<% item = "flex w-full items-center rounded-sm px-3 py-2 text-left text-sm text-heading hover:bg-neutral-tertiary" %>
+<% colors = [
+  ["#1A56DB", "Azul"], ["#0E9F6E", "Verde"], ["#FACA15", "Amarillo"], ["#F05252", "Rojo"],
+  ["#FF8A4C", "Naranja"], ["#0694A2", "Cian"], ["#B4C6FC", "Índigo claro"], ["#5145CD", "Violeta"],
+  ["#771D1D", "Marrón"], ["#FCD9BD", "Naranja claro"], ["#99154B", "Bordó"], ["#7E3AF2", "Púrpura"],
+  ["#D61F69", "Rosa oscuro"], ["#F8B4D9", "Rosa"], ["#1E429F", "Azul marino"], ["#03543F", "Verde bosque"],
+  ["#111928", "Negro"], ["#4B5563", "Piedra"], ["#6B7280", "Gris"], ["#D1D5DB", "Gris claro"]
+] %>
+<% fonts = [
+  ["", "Predeterminada", "font-sans"],
+  ["Arial, sans-serif", "Arial", nil],
+  ["'Courier New', monospace", "Courier New", nil],
+  ["Georgia, serif", "Georgia", nil],
+  ["Tahoma, sans-serif", "Tahoma", nil],
+  ["'Times New Roman', serif", "Times New Roman", nil],
+  ["Verdana, sans-serif", "Verdana", nil]
+] %>
+<% sizes = [
+  ["", "16px (predeterminado)", "text-base"],
+  ["12px", "12px", "text-xs"],
+  ["14px", "14px", "text-sm"],
+  ["18px", "18px", "text-lg"],
+  ["24px", "24px", "text-2xl"],
+  ["36px", "36px", "text-4xl"]
+] %>
+
+<div class="rich-text-editor rounded-lg border border-default bg-neutral-secondary-medium" data-controller="wysiwyg">
+  <textarea class="hidden"
+            name="<%= name %>"
+            tabindex="-1"
+            aria-hidden="true"
+            data-wysiwyg-target="input"><%= body %></textarea>
+
+  <div class="flex flex-wrap items-center gap-0.5 border-b border-default px-2 py-1.5">
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-mark="bold" data-action="wysiwyg#bold" data-controller="tooltip" data-tooltip-text-value="Negrita" aria-label="Negrita">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h4.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0-7H6m2 7h6.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0 0H6"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-mark="italic" data-action="wysiwyg#italic" data-controller="tooltip" data-tooltip-text-value="Cursiva" aria-label="Cursiva">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.874 19 6.143-14M6 19h6.33m-.66-14H18"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-mark="underline" data-action="wysiwyg#underline" data-controller="tooltip" data-tooltip-text-value="Subrayado" aria-label="Subrayado">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M6 19h12M8 5v9a4 4 0 0 0 8 0V5M6 5h4m4 0h4"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-mark="strike" data-action="wysiwyg#strike" data-controller="tooltip" data-tooltip-text-value="Tachado" aria-label="Tachado">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6.2V5h12v1.2M7 19h6m.2-14-1.677 6.523M9.6 19l1.029-4M5 5l6.523 6.523M19 19l-7.477-7.477"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-mark="highlight" data-action="wysiwyg#highlight" data-controller="tooltip" data-tooltip-text-value="Resaltar" aria-label="Resaltar">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 19.2H5.5c-.3 0-.5-.2-.5-.5V16c0-.2.2-.4.5-.4h13c.3 0 .5.2.5.4v2.7c0 .3-.2.5-.5.5H18m-6-1 1.4 1.8h.2l1.4-1.7m-7-5.4L12 4c0-.1 0-.1 0 0l4 8.8m-6-2.7h4m-7 2.7h2.5m5 0H17"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-mark="code" data-action="wysiwyg#code" data-controller="tooltip" data-tooltip-text-value="Código" aria-label="Código">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 8-4 4 4 4m8 0 4-4-4-4m-2-3-4 14"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-mark="link" data-action="wysiwyg#link" data-controller="tooltip" data-tooltip-text-value="Enlace" aria-label="Enlace">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-action="wysiwyg#unlink" data-controller="tooltip" data-tooltip-text-value="Quitar enlace" aria-label="Quitar enlace">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M13.2 9.8a3.4 3.4 0 0 0-4.8 0L5 13.2A3.4 3.4 0 0 0 9.8 18l.3-.3m-.3-4.5a3.4 3.4 0 0 0 4.8 0L18 9.8A3.4 3.4 0 0 0 13.2 5l-1 1m7.4 14-1.8-1.8m0 0L16 16.4m1.8 1.8 1.8-1.8m-1.8 1.8L16 20"/></svg>
+    </button>
+
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="menuButton" data-menu-id="<%= uid %>-size" data-controller="tooltip" data-tooltip-text-value="Tamaño de texto" aria-label="Tamaño de texto">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6.2V5h11v1.2M8 5v14m-3 0h6m2-6.8V11h8v1.2M17 11v8m-1.5 0h3"/></svg>
+    </button>
+    <div id="<%= uid %>-size" class="<%= menu %> w-64" data-wysiwyg-target="menu">
+      <ul class="space-y-1">
+        <% sizes.each do |value, label, text_class| %>
+          <li>
+            <button type="button" class="<%= item %> <%= text_class %>" data-action="wysiwyg#textSize" data-text-size="<%= value %>"><%= label %></button>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="menuButton" data-menu-id="<%= uid %>-color" data-controller="tooltip" data-tooltip-text-value="Color de texto" aria-label="Color de texto">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 25 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m6.532 15.982 1.573-4m-1.573 4h-1.1m1.1 0h1.65m-.077-4 2.725-6.93a.11.11 0 0 1 .204 0l2.725 6.93m-5.654 0H8.1m.006 0h5.654m0 0 .617 1.569m5.11 4.453c0 1.102-.854 1.996-1.908 1.996-1.053 0-1.907-.894-1.907-1.996 0-1.103 1.907-4.128 1.907-4.128s1.909 3.025 1.909 4.128Z"/></svg>
+    </button>
+    <div id="<%= uid %>-color" class="<%= menu %> w-52" data-wysiwyg-target="menu">
+      <label class="mb-2 flex items-center gap-2 rounded-lg px-1.5 py-1 text-sm text-body hover:bg-neutral-tertiary">
+        <input type="color" value="#1A56DB" class="h-8 w-10 cursor-pointer rounded-md border border-default bg-transparent" data-action="input->wysiwyg#pickColor" aria-label="Elegir un color">
+        <span>Elegir un color</span>
+      </label>
+      <div class="mb-2 grid grid-cols-6 gap-1">
+        <% colors.each do |hex, name| %>
+          <button type="button" class="h-6 w-6 rounded-md border border-default" style="background-color: <%= hex %>" data-action="wysiwyg#setColor" data-hex-color="<%= hex %>" aria-label="<%= name %>"></button>
+        <% end %>
+      </div>
+      <button type="button" class="<%= item %> justify-center" data-action="wysiwyg#resetColor">Quitar color</button>
+    </div>
+
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="menuButton" data-menu-id="<%= uid %>-font" data-controller="tooltip" data-tooltip-text-value="Fuente" aria-label="Fuente">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10.6 19 4.298-10.93a.11.11 0 0 1 .204 0L19.4 19m-8.8 0H9.5m1.1 0h1.65m7.15 0h-1.65m1.65 0h1.1m-7.7-3.985h4.4M3.021 16l1.567-3.985m0 0L7.32 5.07a.11.11 0 0 1 .205 0l2.503 6.945h-5.44Z"/></svg>
+    </button>
+    <div id="<%= uid %>-font" class="<%= menu %> w-56" data-wysiwyg-target="menu">
+      <ul class="space-y-1">
+        <% fonts.each do |family, label, text_class| %>
+          <li>
+            <button type="button" class="<%= item %> <%= text_class %>" style="<%= "font-family: #{family}" if family.present? %>" data-action="wysiwyg#fontFamily" data-font-family="<%= family %>"><%= label %></button>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <span class="mx-1 hidden h-4 w-px bg-default sm:block"></span>
+
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-align="left" data-action="wysiwyg#align" data-controller="tooltip" data-tooltip-text-value="Alinear a la izquierda" aria-label="Alinear a la izquierda">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6h8m-8 4h12M6 14h8m-8 4h12"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-align="center" data-action="wysiwyg#align" data-controller="tooltip" data-tooltip-text-value="Centrar" aria-label="Centrar">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h8M6 10h12M8 14h8M6 18h12"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-wysiwyg-target="markButton" data-align="right" data-action="wysiwyg#align" data-controller="tooltip" data-tooltip-text-value="Alinear a la derecha" aria-label="Alinear a la derecha">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6h-8m8 4H6m12 4h-8m8 4H6"/></svg>
+    </button>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-0.5 border-b border-default px-2 py-1.5">
+    <button type="button" class="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium text-body hover:bg-neutral-tertiary hover:text-heading" data-wysiwyg-target="menuButton" data-menu-id="<%= uid %>-format">
+      Formato
+      <svg class="-me-0.5 ms-1.5 h-3.5 w-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
+    </button>
+    <div id="<%= uid %>-format" class="<%= menu %> w-48" data-wysiwyg-target="menu">
+      <ul class="space-y-1">
+        <li><button type="button" class="<%= item %>" data-action="wysiwyg#paragraph">Párrafo</button></li>
+        <% (1..6).each do |level| %>
+          <li><button type="button" class="<%= item %>" data-action="wysiwyg#heading" data-heading-level="<%= level %>">Título <%= level %></button></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <span class="mx-1 hidden h-4 w-px bg-default sm:block"></span>
+
+    <button type="button" class="<%= btn %>" data-action="wysiwyg#bulletList" data-controller="tooltip" data-tooltip-text-value="Lista" aria-label="Lista">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-action="wysiwyg#orderedList" data-controller="tooltip" data-tooltip-text-value="Lista numerada" aria-label="Lista numerada">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6h8m-8 6h8m-8 6h8M4 16a2 2 0 1 1 3.321 1.5L4 20h5M4 5l2-1v6m-2 0h4"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-action="wysiwyg#blockquote" data-controller="tooltip" data-tooltip-text-value="Cita" aria-label="Cita">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M6 6a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a3 3 0 0 1-3 3H5a1 1 0 1 0 0 2h1a5 5 0 0 0 5-5V8a2 2 0 0 0-2-2H6Zm9 0a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a3 3 0 0 1-3 3h-1a1 1 0 1 0 0 2h1a5 5 0 0 0 5-5V8a2 2 0 0 0-2-2h-3Z" clip-rule="evenodd"/></svg>
+    </button>
+    <button type="button" class="<%= btn %>" data-action="wysiwyg#horizontalRule" data-controller="tooltip" data-tooltip-text-value="Línea horizontal" aria-label="Línea horizontal">
+      <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 12h14"/><path stroke="currentColor" stroke-linecap="round" d="M6 9.5h12m-12 9h12M6 7.5h12m-12 9h12M6 5.5h12m-12 9h12"/></svg>
+    </button>
+  </div>
+
+  <div class="bg-neutral-primary px-3 py-2 text-sm text-heading">
+    <div data-wysiwyg-target="editor"></div>
+  </div>
+</div>

@@ -1,13 +1,32 @@
-<%= simple_form_for report_template do |f| %>
+<%= simple_form_for report_template, html: {data: {turbo_frame: "_top"}} do |f| %>
   <%= f.input :name, label: "Nombre" %>
 
-  <% ReportTemplate::SECTIONS.each do |section| %>
-    <%= render "section_fields",
-               section: section,
-               report_template: report_template %>
-  <% end %>
+  <div class="mb-5" data-controller="nested-form">
+    <label class="mb-2 block text-sm font-medium text-heading"><%= t("activerecord.attributes.report_template.sections") %></label>
+    <div class="rounded-lg border border-default p-3">
+      <div data-controller="sortable-fields">
+        <div data-nested-form-target="container" data-sortable-fields-target="list" data-action="dragover->sortable-fields#dragOver">
+          <%= f.simple_fields_for :sections do |section_form| %>
+            <%= render "section_fields", f: section_form %>
+          <% end %>
+        </div>
+      </div>
 
-  <%= render "tasks_fields", f: f, report_template: report_template %>
+      <template data-nested-form-target="template">
+        <%= f.simple_fields_for :sections, Section.new, child_index: "NEW_RECORD" do |section_form| %>
+          <%= render "section_fields", f: section_form %>
+        <% end %>
+      </template>
+    </div>
+
+    <div class="my-2">
+      <button type="button"
+              class="inline-flex items-center rounded-lg border border-default px-3 py-1.5 text-sm text-body hover:bg-neutral-tertiary"
+              data-action="nested-form#add">
+        <%= t("activerecord.attributes.report_template.add_section") %>
+      </button>
+    </div>
+  </div>
 
   <%= f.button :submit, "Aceptar" %>
 <% end %>

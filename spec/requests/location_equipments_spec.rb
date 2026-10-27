@@ -41,6 +41,14 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response).to be_successful
       expect(response.body).to include("le_location_inputs")
     end
+
+    it "shows a red message when the client has no locations" do
+      get location_inputs_location_equipments_url, params: {client_id: client.id}
+
+      expect(response).to be_successful
+      expect(response.body).to include("Este cliente no tiene sedes registradas.")
+      expect(response.body).to include("text-fg-danger")
+    end
   end
 
   describe "GET /index" do
@@ -211,28 +219,28 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include(location_equipment.equipment.equipment_kind.name)
     end
 
-    it "renders content tabs with Informes as the default active tab" do
+    it "renders content tabs with Controles as the default active tab" do
       get location_equipment_url(location_equipment)
 
       expect(response.body).to include("content-tabs")
-      expect(response.body).to include("Informes")
+      expect(response.body).to include("Controles")
       expect(response.body).to include("Servicios")
       expect(response.body).to include("Fallas")
       expect(response.body).to include("Actividades")
       expect(response.body).to include("Documentos")
       expect(response.body).to include("Comentarios")
       expect(response.body).to include("Insumos")
-      expect(response.body).to match(/class="tab-pane fade show active"[^>]*id="tab_location_equipment_#{location_equipment.id}-informes"/)
+      expect(response.body).to match(/class="tab-pane fade show active"[^>]*id="tab_location_equipment_#{location_equipment.id}-controles"/)
     end
 
-    it "shows Informes for building equipment" do
+    it "shows Controles for building equipment" do
       building = create(:location_equipment, equipment: create(:equipment, :building))
 
       get location_equipment_url(building)
 
       expect(response).to be_successful
-      expect(response.body).to include("Informes")
-      expect(response.body).to match(/id="tab_location_equipment_#{building.id}-informes"/)
+      expect(response.body).to include("Controles")
+      expect(response.body).to match(/id="tab_location_equipment_#{building.id}-controles"/)
     end
 
     it "lists every service occurrence with status and actions in the Servicios tab" do
@@ -263,12 +271,30 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include(scheduled.planned_on_init.strftime("%d/%m/%Y"))
       expect(response.body).to include("08:30")
       expect(response.body).to include("11:00")
+      document = Nokogiri::HTML(response.body)
+      scheduled_start = document.at_css("#row_service_occurrence_#{scheduled.id}").css("td")[1]
+      pending_start = document.at_css("#row_service_occurrence_#{pending.id}").css("td")[1]
+      completed_start = document.at_css("#row_service_occurrence_#{completed.id}").css("td")[1]
+      expect(scheduled_start.text).to include(scheduled.planned_on_init.strftime("%d/%m/%Y"))
+      expect(pending_start.text).to include("—")
+      expect(pending_start.text).not_to include(pending.due_on.strftime("%d/%m/%Y"))
+      expect(completed_start.text).to include("—")
       expect(response.body).to include(ServiceKind.find_by!(legacy_key: "service").name)
       expect(response.body).to include(completed.completed_on.strftime("%d/%m/%Y"))
       expect(response.body).to include(pending.due_on.strftime("%d/%m/%Y"))
       expect(response.body).to include("Registrar servicio")
       expect(response.body).to include("Editar servicio")
       expect(response.body).not_to include("completed_service_occurrences")
+
+      document = Nokogiri::HTML(response.body)
+      {
+        completed => "text-green-800",
+        pending => "text-yellow-800",
+        scheduled => "text-blue-800"
+      }.each do |occurrence, color|
+        date_cells = document.at_css("##{ActionView::RecordIdentifier.dom_id(occurrence, :row)}").css("td").first(3)
+        expect(date_cells.map { |cell| cell["class"] }).to all(include(color))
+      end
     end
   end
 

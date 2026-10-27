@@ -7,6 +7,7 @@
 @import "../../../node_modules/flowbite/src/themes/default.css";
 
 @plugin "../../../node_modules/flowbite/plugin";
+@plugin "../../../node_modules/flowbite-typography";
 
 /* Class-based dark mode instead of prefers-color-scheme, so the theme toggle
    can override the OS setting. Matches the `.dark` selector used above. */
@@ -189,6 +190,20 @@ html.theme-transitioning *::after {
 
 .datepicker.hidden {
   display: none !important;
+}
+
+.rich-text-editor .ProseMirror {
+  min-height: 8rem;
+  outline: none;
+}
+
+.rich-text-editor .ProseMirror img,
+.rich-text-editor .ProseMirror picture,
+.rich-text-editor .ProseMirror video,
+.rich-text-editor .ProseMirror iframe,
+.rich-text-editor .ProseMirror svg,
+.rich-text-editor .ProseMirror object {
+  display: none;
 }
 
 /* Control-panel accordion: the expanded tree keeps heading-colored

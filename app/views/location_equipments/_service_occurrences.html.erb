@@ -22,13 +22,13 @@
         </thead>
         <tbody>
           <% occurrences.each do |occurrence| %>
-            <% schedule_color = occurrence.open? ? service_date_color(occurrence.due_on) : "text-heading" %>
+            <% schedule_color = occurrence_status_text_classes(occurrence) %>
             <tr id="<%= dom_id(occurrence, :row) %>" class="border-t border-default">
               <td class="whitespace-nowrap px-4 py-3 <%= schedule_color %>">
                 <%= schedule_point(occurrence.due_on) %>
               </td>
               <td class="whitespace-nowrap px-4 py-3 <%= schedule_color %>">
-                <%= schedule_point(occurrence.planned_on_init.presence || occurrence.service_date) %>
+                <%= schedule_point(occurrence.scheduled? ? occurrence.planned_on_init : nil) %>
               </td>
               <td class="whitespace-nowrap px-4 py-3 <%= schedule_color %>">
                 <%= schedule_point(occurrence.planned_on_finish) %>

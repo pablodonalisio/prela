@@ -13,6 +13,22 @@ class ClientPolicy < ApplicationPolicy
     index?
   end
 
+  def locations?
+    show?
+  end
+
+  def contacts?
+    show?
+  end
+
+  def organigram?
+    show?
+  end
+
+  def contracts?
+    user.admin?
+  end
+
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     def resolve

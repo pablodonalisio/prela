@@ -1,0 +1,15 @@
+<%# locals: (images:, input_name:, removed_input_name:) %>
+<div data-controller="dropzone"
+     data-dropzone-direct-upload-url-value="<%= rails_direct_uploads_url %>"
+     data-dropzone-existing-files-value="<%= images.to_json %>"
+     data-dropzone-resize-height-value="250"
+     data-dropzone-max-files-value="<%= ImageSection::MAX_IMAGES %>"
+     data-dropzone-input-name-value="<%= input_name %>"
+     data-dropzone-removed-input-name-value="<%= removed_input_name %>"
+     class="mb-4">
+  <div data-dropzone-target="dropzone" class="dropzone rounded-lg border border-dashed border-default p-3">
+    <div class="dz-message text-center">Arrastra imágenes aquí o haz click para seleccionar. Se redimensionarán automáticamente.</div>
+  </div>
+  <div data-dropzone-target="hiddenInputs"></div>
+  <div data-dropzone-target="removedInputs"></div>
+</div>

@@ -6,9 +6,17 @@ es:
       signature:
         one: "Firma"
         other: "Firmas"
+      contract:
+        one: "Contrato"
+        other: "Contratos"
     attributes:
       client:
         name: "Nombre"
+      contract:
+        name: "Nombre"
+        files: "Archivos"
+        starts_on: "Fecha de inicio"
+        ends_on: "Fecha de fin"
       equipment:
         name: "Nombre"
         kind: "Tipo"
@@ -104,25 +112,23 @@ es:
           critical: "Crítico"
           normal: "Normal"
           low: "Baja"
+      section:
+        kind: "Tipo"
+        kinds:
+          text: "Texto"
+          images: "Imágenes"
+          table: "Tabla"
+          list: "Listado"
       report_template:
         name: "Nombre"
         optimal_value: "Valor óptimo"
         units: "Unidades"
-        reorder_field: "Reordenar campo"
-        tasks: "Tareas"
-        add_task: "Añadir tarea"
-        sections:
-          equipment_specifications: "Especificaciones de equipo"
-          location_specifications: "Especificaciones de ubicación"
-          measurements: "Mediciones"
-          room_specifications: "Especificaciones de sala"
-      report_template_task:
-        name: "Nombre de la tarea"
-      report_task:
-        name: "Tarea"
-        completed: "Completada"
-      report_comment:
-        description: "Descripción"
+        reorder_section: "Reordenar sección"
+        sections: "Secciones"
+        add_section: "Añadir sección"
+        add_item: "Añadir ítem"
+      list_item:
+        name: "Ítem"
       signature:
         name: "Nombre"
         title: "Cargo"
@@ -160,8 +166,6 @@ es:
       equipment_section: "Especificaciones del equipo"
       location_section: "Información de localización"
       measurements_section: "Estado de parámetros físicos y mediciones"
-      tasks_section: "Protocolo de tareas y acciones realizadas"
-      comments_section: "Comentarios y recomendaciones técnicas"
       observations_section: "Observaciones y recomendaciones técnicas"
       maintenance_section: "Mantenimiento preventivo"
       activities_section: "Últimas actividades"
@@ -175,12 +179,6 @@ es:
       location: "Ubicación"
       zone: "Sala"
       floor: "Piso"
-      add_task: "Añadir tarea"
-      add_comment: "Añadir comentario"
-      task_placeholder: "Descripción de la tarea"
-      comment_placeholder: "Descripción del comentario"
-      task_completed: "OK / Ejecutado"
-      task_pending: "Pendiente"
       table:
         parameter: "Parámetro registrado"
         value: "Valor obtenido"
