@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_28_183000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_28_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,14 +60,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_183000) do
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_assets_categories_on_discarded_at"
     t.index ["normalized_name"], name: "index_assets_categories_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
-  end
-
-  create_table "batteries", force: :cascade do |t|
-    t.string "model"
-    t.float "voltage"
-    t.float "amps"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "clients", force: :cascade do |t|

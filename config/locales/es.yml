@@ -50,10 +50,6 @@ es:
         statuses:
           active: "En servicio"
           out_of_service: "Fuera de servicio"
-      battery:
-        model: "Modelo"
-        voltage: "Voltaje"
-        amps: "Amperes"
       supply:
         name: "Nombre"
         description: "Descripción"

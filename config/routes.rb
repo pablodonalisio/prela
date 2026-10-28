@@ -45,7 +45,6 @@ Rails.application.routes.draw do
   resources :equipment do
     get :field_inputs, on: :collection
   end
-  resources :batteries, except: %i[index]
   resources :supplies, except: [:show]
   resources :supply_kinds, except: [:show]
   resources :users
