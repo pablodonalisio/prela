@@ -1,20 +1,49 @@
 <%= turbo_frame_tag "main_content" do %>
-  <%= render "shared/content_header", title: "Informes" do %>
-    <% if current_user.admin? %>
-      <%= render "shared/button_link", text: "Agregar", path: new_report_template_path, turbo_frame: "_top" %>
-    <% end %>
-  <% end %>
+  <%= turbo_frame_tag "report_template_panel" do %>
+    <% lista = @tab != "valores" %>
+    <div class="border-b border-default px-4 pt-4 md:px-6">
+      <h2 class="mb-3 text-xl font-bold text-heading">Informes</h2>
+      <ul class="-mb-px flex flex-wrap gap-1 text-sm font-medium" id="report-template-tabs" role="tablist">
+        <li role="presentation">
+          <%= link_to "Lista", report_templates_path(tab: "lista"),
+                      id: "report-templates-lista-tab",
+                      class: "inline-block border-b-2 px-4 py-3 #{lista ? "border-brand text-fg-brand" : "border-transparent text-body hover:border-default hover:text-heading"}",
+                      role: "tab",
+                      data: {turbo_action: "advance"},
+                      aria: {selected: lista, controls: "report-template-panel"} %>
+        </li>
+        <li role="presentation">
+          <%= link_to "Valores Desplegables", report_templates_path(tab: "valores"),
+                      id: "report-templates-valores-tab",
+                      class: "inline-block border-b-2 px-4 py-3 #{lista ? "border-transparent text-body hover:border-default hover:text-heading" : "border-brand text-fg-brand"}",
+                      role: "tab",
+                      data: {turbo_action: "advance"},
+                      aria: {selected: !lista, controls: "report-template-panel"} %>
+        </li>
+      </ul>
+    </div>
 
-  <%= turbo_frame_tag "report_templates", class: "mx-4 mt-4 flex flex-col gap-2 md:mx-6" do %>
-    <% if @report_templates.any? %>
-      <%= render @report_templates %>
+    <% if lista %>
+      <div class="flex justify-end px-4 pt-4 md:px-6">
+        <% if current_user.admin? %>
+          <%= render "shared/button_link", text: "Agregar", path: new_report_template_path, turbo_frame: "_top" %>
+        <% end %>
+      </div>
+
+      <%= turbo_frame_tag "report_templates", class: "mx-4 mt-4 flex flex-col gap-2 md:mx-6" do %>
+        <% if @report_templates.any? %>
+          <%= render @report_templates %>
+        <% else %>
+          <%= render "shared/empty_collection",
+                     id: "report_templates_empty",
+                     message: "No hay plantillas de informe todavía.",
+                     action_text: current_user.admin? ? "Agregar" : nil,
+                     action_path: current_user.admin? ? new_report_template_path : nil,
+                     turbo_frame: "_top" %>
+        <% end %>
+      <% end %>
     <% else %>
-      <%= render "shared/empty_collection",
-                 id: "report_templates_empty",
-                 message: "No hay plantillas de informe todavía.",
-                 action_text: current_user.admin? ? "Agregar" : nil,
-                 action_path: current_user.admin? ? new_report_template_path : nil,
-                 turbo_frame: "_top" %>
+      <%= render "table_dropdowns/list" %>
     <% end %>
   <% end %>
 <% end %>

@@ -1,0 +1,16 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash" %>
+<% end %>
+
+<% if @table_dropdown.discarded? %>
+  <%= turbo_stream.remove @table_dropdown %>
+  <% if policy_scope(TableDropdown).none? %>
+    <%= turbo_stream.append "table_dropdowns" do %>
+      <%= render "shared/empty_collection",
+                 id: "table_dropdowns_empty",
+                 message: "No hay valores desplegables todavía.",
+                 action_text: current_user.admin? ? "Agregar" : nil,
+                 action_path: current_user.admin? ? new_table_dropdown_path : nil %>
+    <% end %>
+  <% end %>
+<% end %>

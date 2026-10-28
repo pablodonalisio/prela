@@ -56,5 +56,6 @@ Rails.application.routes.draw do
   resources :assets_categories, only: [:create, :update, :destroy]
   resources :service_kinds, except: %i[show]
   resources :report_templates, except: [:show]
+  resources :table_dropdowns, except: [:show]
   resources :tags, except: [:show]
 end

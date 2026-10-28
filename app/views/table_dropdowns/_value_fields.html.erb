@@ -1,0 +1,24 @@
+<%# locals: (f:) %>
+<% invalid = f.object.errors[:label].any? %>
+<% input_classes = "block min-w-0 flex-1 rounded-lg border bg-neutral-secondary-medium p-2.5 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand #{invalid ? "border-red-500" : "border-default"}" %>
+
+<div class="mb-3" data-nested-form-target="item">
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :position %>
+  <%= f.hidden_field :_destroy, value: "0" %>
+
+  <div class="flex items-center gap-2">
+    <button type="button"
+            class="inline-flex shrink-0 items-center rounded-lg px-2 py-1 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40"
+            data-action="nested-form#remove"
+            aria-label="Eliminar valor">
+      X
+    </button>
+    <%= f.label :label, "Valor", class: "mb-0 shrink-0 whitespace-nowrap text-sm font-medium text-heading" %>
+    <%= f.input_field :label, class: input_classes %>
+  </div>
+
+  <% if invalid %>
+    <p class="mt-1 ps-8 text-sm text-fg-danger"><%= f.object.errors.full_messages_for(:label).to_sentence %></p>
+  <% end %>
+</div>

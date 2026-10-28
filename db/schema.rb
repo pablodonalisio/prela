@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -111,6 +111,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.index ["contact_id", "location_id"], name: "index_contacts_locations_uniqueness", unique: true
     t.index ["contact_id"], name: "index_contacts_locations_on_contact_id"
     t.index ["location_id"], name: "index_contacts_locations_on_location_id"
+  end
+
+  create_table "contracts", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "name", null: false
+    t.date "starts_on", null: false
+    t.date "ends_on", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_contracts_on_client_id"
+    t.index ["discarded_at"], name: "index_contracts_on_discarded_at"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -292,8 +304,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.integer "interval_unit"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "removed_at"
     t.index ["location_equipment_id", "service_kind_id"], name: "index_location_equipment_services_uniqueness", unique: true
     t.index ["location_equipment_id"], name: "index_location_equipment_services_on_location_equipment_id"
+    t.index ["removed_at"], name: "index_location_equipment_services_on_removed_at"
     t.index ["service_kind_id"], name: "index_location_equipment_services_on_service_kind_id"
   end
 
@@ -384,18 +398,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.index ["token"], name: "index_qr_tokens_on_token", unique: true
   end
 
-  create_table "report_comments", force: :cascade do |t|
-    t.bigint "report_id", null: false
-    t.text "description", null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["discarded_at"], name: "index_qr_tokens_on_discarded_at"
-    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_kept_scannable", unique: true, where: "(discarded_at IS NULL)"
-    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_scannable"
-    t.index ["token"], name: "index_qr_tokens_on_token", unique: true
-  end
-
   create_table "report_templates", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -415,6 +417,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.integer "number"
     t.jsonb "observation_values", default: {}, null: false
     t.boolean "template_based", default: false, null: false
+    t.boolean "uploaded", default: false, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
     t.index ["report_template_id"], name: "index_reports_on_report_template_id"
@@ -528,8 +531,32 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.boolean "fixed", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "table_dropdown_id"
+    t.index ["table_dropdown_id"], name: "index_table_cells_on_table_dropdown_id"
     t.index ["table_section_id", "row_index", "column_index"], name: "index_table_cells_on_position", unique: true
     t.index ["table_section_id"], name: "index_table_cells_on_table_section_id"
+  end
+
+  create_table "table_dropdown_values", force: :cascade do |t|
+    t.bigint "table_dropdown_id", null: false
+    t.string "label", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_dropdown_id", "position"], name: "index_table_dropdown_values_on_table_dropdown_id_and_position"
+    t.index ["table_dropdown_id"], name: "index_table_dropdown_values_on_table_dropdown_id"
+  end
+
+  create_table "table_dropdowns", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "report_id"
+    t.index ["discarded_at"], name: "index_table_dropdowns_on_discarded_at"
+    t.index ["normalized_name"], name: "index_table_dropdowns_on_normalized_name", unique: true, where: "((discarded_at IS NULL) AND (report_id IS NULL))"
+    t.index ["report_id"], name: "index_table_dropdowns_on_report_id"
   end
 
   create_table "table_labels", force: :cascade do |t|
@@ -550,6 +577,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["section_id"], name: "index_table_sections_on_section_id", unique: true
+    t.check_constraint "row_count >= 1 AND row_count <= 16 AND column_count >= 1 AND column_count <= 12", name: "table_sections_grid_size"
   end
 
   create_table "taggings", force: :cascade do |t|
@@ -641,6 +669,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
   add_foreign_key "contacts", "contacts", column: "reports_to_id"
   add_foreign_key "contacts_locations", "contacts"
   add_foreign_key "contacts_locations", "locations"
+  add_foreign_key "contracts", "clients"
   add_foreign_key "electrical_panel_report_stats", "reports"
   add_foreign_key "equipment_kinds", "assets_categories"
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
@@ -667,7 +696,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "signatures", "users"
   add_foreign_key "table_cell_options", "table_cells", on_delete: :cascade
+  add_foreign_key "table_cells", "table_dropdowns", on_delete: :restrict
   add_foreign_key "table_cells", "table_sections", on_delete: :cascade
+  add_foreign_key "table_dropdown_values", "table_dropdowns", on_delete: :cascade
+  add_foreign_key "table_dropdowns", "reports", on_delete: :restrict
   add_foreign_key "table_labels", "table_sections", on_delete: :cascade
   add_foreign_key "table_sections", "sections", on_delete: :cascade
   add_foreign_key "taggings", "tags"

@@ -1,5 +1,6 @@
 class TableCell < ApplicationRecord
   belongs_to :table_section
+  belongs_to :table_dropdown, optional: true
   has_many :table_cell_options, dependent: :destroy, autosave: true, inverse_of: :table_cell
 
   accepts_nested_attributes_for :table_cell_options, allow_destroy: true
@@ -9,15 +10,17 @@ class TableCell < ApplicationRecord
     integer: "integer",
     float: "float",
     date: "date",
-    boolean: "boolean"
+    boolean: "boolean",
+    dropdown: "dropdown"
   }, validate: true, scopes: false
 
   validates :row_index, :column_index, numericality: {only_integer: true, greater_than_or_equal_to: 0}
+  validates :table_dropdown, presence: true, if: :dropdown?
   validate :value_matches_type
   validate :metrics_only_on_numeric_types
   validate :fixed_only_on_fixable_types
 
-  before_validation :clear_value_unless_fixed_on_template, :normalize_decimal_value, :sync_boolean_options
+  before_validation :clear_dropdown_unless_dropdown_type, :clear_value_unless_fixed_on_template, :normalize_decimal_value, :sync_boolean_options
 
   def numeric?
     integer? || float?
@@ -25,6 +28,16 @@ class TableCell < ApplicationRecord
 
   def fixable?
     string? || integer? || float?
+  end
+
+  def metrics_allowed?
+    numeric? || dropdown?
+  end
+
+  def dropdown_option_labels
+    labels = dropdown_labels
+    labels |= [value] if value.present?
+    labels
   end
 
   def option_at(state)
@@ -67,6 +80,10 @@ class TableCell < ApplicationRecord
   end
 
   private
+
+  def clear_dropdown_unless_dropdown_type
+    self.table_dropdown = nil unless dropdown?
+  end
 
   def sync_boolean_options
     return if marked_for_destruction?
@@ -118,22 +135,36 @@ class TableCell < ApplicationRecord
       raise ArgumentError
     when "date"
       Date.parse(value.to_s)
+    when "dropdown"
+      return if dropdown_value_allowed?(value)
+
+      raise ArgumentError
     end
   rescue ArgumentError, TypeError
     errors.add(:value, "de la fila #{row_index.to_i + 1}, columna #{column_index.to_i + 1} no es válido.")
   end
 
+  def dropdown_labels
+    return [] if table_dropdown.nil?
+
+    table_dropdown.table_dropdown_values.reject(&:marked_for_destruction?).map(&:label)
+  end
+
+  def dropdown_value_allowed?(text)
+    dropdown_labels.include?(text) || (persisted? && text == value_in_database)
+  end
+
   def metrics_only_on_numeric_types
     return unless for_metrics?
-    return if numeric?
+    return if metrics_allowed?
 
-    errors.add(:for_metrics, "solo se permite en valores numéricos.")
+    errors.add(:for_metrics, "solo se permite en valores numéricos o desplegables.")
   end
 
   def fixed_only_on_fixable_types
     return unless fixed?
     return if fixable?
 
-    errors.add(:fixed, "no se permite en fecha o booleano.")
+    errors.add(:fixed, "no se permite en fecha, booleano o desplegable.")
   end
 end

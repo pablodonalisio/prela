@@ -77,6 +77,76 @@ RSpec.describe Report, type: :model do
       expect(cells.find_by!(row_index: 0, column_index: 1).value).to eq("230")
     end
 
+    it "copies the dropdown set and stores the chosen label" do
+      template = create(:report_template, :with_measurements)
+      dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno", "Malo"])
+      source = template.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      source.update!(value_type: "dropdown", for_metrics: true, fixed: false, table_dropdown: dropdown)
+      section = template.sections.find_by!(title: "Tensión L1")
+
+      report = build(:report, :template_based, report_template: template)
+      report.section_inputs = {
+        section.id.to_s => {"cells" => {"0_1" => {"value" => "Bueno"}}}
+      }
+
+      expect(report.save).to be true
+      copied = report.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      expect(copied.table_dropdown).not_to eq(dropdown)
+      expect(copied.table_dropdown.report).to eq(report)
+      expect(copied.table_dropdown.table_dropdown_values.order(:position).map(&:label)).to eq(["Bueno", "Malo"])
+      expect(copied.value).to eq("Bueno")
+      expect(copied).to be_for_metrics
+    end
+
+    it "shares one copied set between cells that used the same catalog set" do
+      template = create(:report_template, :with_measurements)
+      dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno", "Malo"])
+      table = template.sections.find_by!(title: "Tensión L1").table_section
+      table.table_cells.each do |cell|
+        cell.update!(value_type: "dropdown", for_metrics: false, fixed: false, table_dropdown: dropdown)
+      end
+
+      report = create(:report, :template_based, report_template: template)
+      copied_ids = report.sections.find_by!(title: "Tensión L1").table_section.table_cells.map(&:table_dropdown_id)
+
+      expect(copied_ids.uniq).to eq([report.table_dropdowns.pick(:id)])
+      expect(copied_ids).not_to include(dropdown.id)
+      expect(report.table_dropdowns.count).to eq(1)
+    end
+
+    it "keeps a saved dropdown answer when the catalog label changes" do
+      template = create(:report_template, :with_measurements)
+      dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno", "Malo"])
+      source = template.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      source.update!(value_type: "dropdown", for_metrics: false, fixed: false, table_dropdown: dropdown)
+      report = create(:report, :template_based, report_template: template)
+      copied = report.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      copied.update!(value: "Bueno")
+
+      dropdown.table_dropdown_values.find_by!(label: "Bueno").update!(label: "Aceptable")
+
+      copied.reload
+      expect(copied.value).to eq("Bueno")
+      expect(copied.dropdown_option_labels).to eq(["Bueno", "Malo"])
+      expect(copied).to be_valid
+      copied.value = "Inexistente"
+      expect(copied).not_to be_valid
+    end
+
+    it "destroys the copied set with the report and keeps the catalog set" do
+      template = create(:report_template, :with_measurements)
+      dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno", "Malo"])
+      source = template.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      source.update!(value_type: "dropdown", for_metrics: false, fixed: false, table_dropdown: dropdown)
+      report = create(:report, :template_based, report_template: template)
+      snapshot_id = report.table_dropdowns.pick(:id)
+
+      report.destroy!
+
+      expect(TableDropdown.find_by(id: snapshot_id)).to be_nil
+      expect(TableDropdown.find(dropdown.id)).to eq(dropdown)
+    end
+
     it "does not change a generated report when the template changes" do
       report = create(:report, :template_based)
       report.report_template.sections.find_by!(title: "Notas").update!(title: "Notas editadas")

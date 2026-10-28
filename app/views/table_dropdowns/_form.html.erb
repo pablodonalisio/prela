@@ -1,0 +1,32 @@
+<%= simple_form_for table_dropdown do |f| %>
+  <% if local_assigns[:from].present? %>
+    <%= hidden_field_tag :from, local_assigns[:from] %>
+  <% end %>
+  <% if table_dropdown.errors[:base].any? %>
+    <p class="mb-3 text-sm text-red-500"><%= table_dropdown.errors[:base].to_sentence %></p>
+  <% end %>
+
+  <%= f.input :name, label: "Nombre del Listado" %>
+
+  <div class="mb-5" data-controller="nested-form">
+    <div data-nested-form-target="container">
+      <%= f.simple_fields_for :table_dropdown_values do |value_form| %>
+        <%= render "value_fields", f: value_form %>
+      <% end %>
+    </div>
+
+    <template data-nested-form-target="template">
+      <%= f.simple_fields_for :table_dropdown_values, TableDropdownValue.new, child_index: "NEW_RECORD" do |value_form| %>
+        <%= render "value_fields", f: value_form %>
+      <% end %>
+    </template>
+
+    <button type="button"
+            class="inline-flex items-center rounded-lg border border-default px-3 py-1.5 text-sm text-body hover:bg-neutral-tertiary"
+            data-action="nested-form#add">
+      Añadir valor
+    </button>
+  </div>
+
+  <%= f.button :submit, "Aceptar" %>
+<% end %>

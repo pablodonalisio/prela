@@ -89,6 +89,7 @@ es:
           float: "Número decimal"
           date: "Fecha"
           boolean: "Booleano"
+          dropdown: "Desplegable"
       service_kind:
         name: "Nombre"
         recurring: "Recurrente"
@@ -104,6 +105,10 @@ es:
           critical: "Crítico"
           normal: "Normal"
           low: "Baja"
+      table_dropdown:
+        name: "Nombre del Listado"
+      table_dropdown_value:
+        label: "Valor"
       section:
         kind: "Tipo"
         kinds:
