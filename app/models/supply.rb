@@ -21,6 +21,11 @@ class Supply < ApplicationRecord
 
   scope :visible, -> { kept }
   scope :by_supply_kind_ids, ->(supply_kind_ids) { where(supply_kind_id: supply_kind_ids) }
+  scope :by_name, ->(name) {
+    normalize_name(name).split.reduce(all) do |scope, token|
+      scope.where("normalized_name ILIKE ?", "%#{sanitize_sql_like(token)}%")
+    end
+  }
 
   def self.normalize_name(value)
     ActiveSupport::Inflector.transliterate(value.to_s.strip.downcase)

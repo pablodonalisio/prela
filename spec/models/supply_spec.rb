@@ -19,6 +19,21 @@ RSpec.describe Supply, type: :model do
     expect(build(:supply, supply_kind: supply_kind)).not_to be_valid
   end
 
+  it "finds supplies by a partial name ignoring case and accents" do
+    battery = create(:supply, name: "Batería CSB")
+    create(:supply, name: "Correa A-42")
+
+    expect(Supply.by_name("bateria")).to contain_exactly(battery)
+  end
+
+  it "finds a supply when each search word appears anywhere in the name" do
+    oil = create(:supply, name: "Aceite hidráulico ISO 68")
+    create(:supply, name: "Aceite 15W40")
+
+    expect(Supply.by_name("Aceite iso 68")).to contain_exactly(oil)
+    expect(Supply.by_name("68 aceite")).to contain_exactly(oil)
+  end
+
   it "is not valid with a duplicate name ignoring case and accents" do
     create(:supply, name: "Aceite 15W40")
     supply = build(:supply, name: "aceite 15w40")

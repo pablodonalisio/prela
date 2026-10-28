@@ -66,11 +66,12 @@ class SuppliesController < ApplicationController
   def load_supplies
     context = list_context
     @supply_kind_ids = Array(context[:supply_kind_ids]).compact_blank
+    @name = context[:name].to_s.strip.presence
     @pagy, @supplies = paginate_supplies(supplies_scope, context[:page])
   end
 
   def supplies_scope
-    policy_scope(Supply.filter(supply_kind_ids: @supply_kind_ids))
+    policy_scope(Supply.filter(supply_kind_ids: @supply_kind_ids, name: @name))
       .includes(:supply_kind, replacement_links: :replacement, replaced_by_links: :supply)
       .with_attached_avatar
       .order(:name)
@@ -78,12 +79,12 @@ class SuppliesController < ApplicationController
 
   def list_context
     source = request.get? ? params : referer_query_params
-    {page: source[:page], supply_kind_ids: source[:supply_kind_ids]}
+    {page: source[:page], supply_kind_ids: source[:supply_kind_ids], name: source[:name]}
   end
 
   def referer_query_params
     query = URI.parse(request.referer.to_s).query
-    ActionController::Parameters.new(Rack::Utils.parse_nested_query(query.to_s)).permit(:page, supply_kind_ids: [])
+    ActionController::Parameters.new(Rack::Utils.parse_nested_query(query.to_s)).permit(:page, :name, supply_kind_ids: [])
   rescue URI::InvalidURIError
     ActionController::Parameters.new
   end
@@ -91,7 +92,10 @@ class SuppliesController < ApplicationController
   def paginate_supplies(scope, page)
     pagy_vars = {request_path: supplies_path}
     pagy_vars[:page] = page if page.present?
-    pagy_vars[:params] = {supply_kind_ids: @supply_kind_ids} if @supply_kind_ids.present?
+    filter_params = {}
+    filter_params[:supply_kind_ids] = @supply_kind_ids if @supply_kind_ids.present?
+    filter_params[:name] = @name if @name.present?
+    pagy_vars[:params] = filter_params if filter_params.present?
     pagy(scope, **pagy_vars)
   rescue Pagy::OverflowError => error
     pagy(scope, **pagy_vars, page: error.pagy.last)

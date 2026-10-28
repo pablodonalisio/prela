@@ -1,6 +1,10 @@
 <%= turbo_frame_tag "supplies", class: "mx-4 mt-4 mb-4 flex flex-col gap-2 md:mx-6" do %>
   <% if @supplies.any? %>
     <%= render @supplies %>
+  <% elsif @name.present? %>
+    <%= render "shared/empty_collection",
+               id: "supplies_empty",
+               message: "No hay insumos que coincidan con la búsqueda." %>
   <% elsif @supply_kind_ids.present? %>
     <%= render "shared/empty_collection",
                id: "supplies_empty",

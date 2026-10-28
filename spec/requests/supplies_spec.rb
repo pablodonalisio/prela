@@ -63,6 +63,26 @@ RSpec.describe "/supplies", type: :request do
       expect(response.body).not_to include("Insumo 01")
     end
 
+    it "searches by supply name" do
+      create(:supply, name: "BP5-12", supply_kind: supply_kind)
+      create(:supply, name: "Aceite 15W40", supply_kind: supply_kind)
+
+      get supplies_url, params: {name: "aceite"}
+
+      expect(response.body).to include("Aceite 15W40")
+      expect(response.body).not_to include("BP5-12")
+      expect(response.body).to include('value="aceite"')
+    end
+
+    it "shows an empty message when the name search has no matches" do
+      create(:supply, name: "BP5-12", supply_kind: supply_kind)
+
+      get supplies_url, params: {name: "zzz"}
+
+      expect(response.body).to include("No hay insumos que coincidan con la búsqueda.")
+      expect(response.body).not_to include("BP5-12")
+    end
+
     it "filters by supply kind" do
       oil = create(:supply_kind, name: "Aceite")
       create(:supply, name: "BP5-12", supply_kind: supply_kind)
@@ -155,6 +175,18 @@ RSpec.describe "/supplies", type: :request do
         as: :turbo_stream
 
       expect(response.body).to include("15W40")
+      expect(response.body).not_to include("BP5-12")
+    end
+
+    it "keeps the name search when rerendering the list" do
+      create(:supply, name: "Aceite 15W40", supply_kind: supply_kind)
+
+      post supplies_url,
+        params: {supply: valid_attributes},
+        headers: {"Referer" => supplies_url(name: "aceite")},
+        as: :turbo_stream
+
+      expect(response.body).to include("Aceite 15W40")
       expect(response.body).not_to include("BP5-12")
     end
 
