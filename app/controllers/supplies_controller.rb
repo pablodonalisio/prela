@@ -72,6 +72,7 @@ class SuppliesController < ApplicationController
   def supplies_scope
     policy_scope(Supply.filter(supply_kind_ids: @supply_kind_ids))
       .includes(:supply_kind, replacement_links: :replacement, replaced_by_links: :supply)
+      .with_attached_avatar
       .order(:name)
   end
 

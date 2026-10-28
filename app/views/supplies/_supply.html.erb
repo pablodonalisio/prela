@@ -1,6 +1,16 @@
 <%= turbo_frame_tag supply do %>
   <div class="rounded-xl border border-default bg-neutral-primary p-4">
     <div class="flex flex-col items-start gap-3 md:flex-row md:items-center">
+      <% if supply.avatar.attached? %>
+        <%= image_tag supply.avatar.variant(resize_to_limit: [160, 160]),
+                      alt: "Foto de #{supply.name}",
+                      class: "h-20 w-20 shrink-0 rounded-lg bg-neutral-secondary-medium object-cover" %>
+      <% else %>
+        <%= image_tag "placeholder-img.jpeg",
+                      alt: "Foto de #{supply.name}",
+                      class: "h-20 w-20 shrink-0 rounded-lg bg-neutral-secondary-medium object-cover" %>
+      <% end %>
+
       <div class="min-w-0 flex-1">
         <h5 class="mb-1 font-semibold text-heading"><%= supply.name %></h5>
 

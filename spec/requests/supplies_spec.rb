@@ -28,7 +28,23 @@ RSpec.describe "/supplies", type: :request do
       expect(response.body).to include("Lista")
       expect(response.body).to include("Tipos de Insumos")
       expect(response.body).to include("BP5-12")
+      expect(response.body).to include("Foto de BP5-12")
+      expect(response.body).to include("placeholder-img-")
       expect(response.body).not_to include("Descartada")
+    end
+
+    it "shows the attached avatar" do
+      supply = create(:supply, name: "BP5-12", supply_kind: supply_kind)
+      supply.avatar.attach(
+        io: File.open(Rails.root.join("spec/test_files/placeholder-img.jpeg")),
+        filename: "battery.jpeg",
+        content_type: "image/jpeg"
+      )
+
+      get supplies_url
+
+      expect(response.body).to include("Foto de BP5-12")
+      expect(response.body).to include("battery.jpeg")
     end
 
     it "paginates the list" do
