@@ -57,7 +57,7 @@ es:
       supply:
         name: "Nombre"
         description: "Descripción"
-        reference_url: "Link de referencia"
+        reference_url: "Link de producto"
         supply_kind: "Tipo"
         avatar: "Foto"
       supply_kind:

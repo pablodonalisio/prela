@@ -17,7 +17,7 @@
   <% end %>
   <%= f.input :name, label: "Nombre" %>
   <%= f.input :description, label: "Descripción", input_html: {rows: 3} %>
-  <%= f.input :reference_url, label: "Link de referencia" %>
+  <%= f.input :reference_url, label: "Link de producto" %>
   <% if supply.avatar.attached? %>
     <%= image_tag supply.avatar.variant(resize_to_limit: [300, 300]),
                   alt: "Foto de #{supply.name}",
