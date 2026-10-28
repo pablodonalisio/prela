@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_28_121500) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_28_183000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -245,15 +245,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_121500) do
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
-    t.string "equipmentable_type", null: false
-    t.bigint "equipmentable_id", null: false
-    t.string "suppliable_type", null: false
-    t.bigint "suppliable_id", null: false
-    t.integer "quantity"
+    t.bigint "location_equipment_id", null: false
+    t.bigint "supply_id", null: false
+    t.integer "quantity", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["equipmentable_type", "equipmentable_id"], name: "index_equipment_supplies_on_equipmentable"
-    t.index ["suppliable_type", "suppliable_id"], name: "index_equipment_supplies_on_suppliable"
+    t.index ["location_equipment_id", "supply_id"], name: "index_equipment_supplies_on_location_equipment_and_supply", unique: true
+    t.index ["supply_id"], name: "index_equipment_supplies_on_supply_id"
   end
 
   create_table "failures", force: :cascade do |t|
@@ -452,7 +450,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_121500) do
     t.string "sectionable_type", null: false
     t.bigint "sectionable_id", null: false
     t.index ["sectionable_type", "sectionable_id", "position"], name: "index_sections_on_sectionable_and_position"
-    t.check_constraint "sectionable_type::text = ANY (ARRAY['Report'::character varying::text, 'ReportTemplate'::character varying::text])", name: "sections_sectionable_type"
+    t.check_constraint "sectionable_type::text = ANY (ARRAY['Report'::character varying, 'ReportTemplate'::character varying]::text[])", name: "sections_sectionable_type"
   end
 
   create_table "service_kinds", force: :cascade do |t|
@@ -682,6 +680,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_121500) do
   add_foreign_key "equipment_kinds", "assets_categories"
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
   add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
+  add_foreign_key "equipment_supplies", "location_equipments"
+  add_foreign_key "equipment_supplies", "supplies"
   add_foreign_key "failures", "location_equipments"
   add_foreign_key "image_sections", "sections", on_delete: :cascade
   add_foreign_key "list_items", "list_sections", on_delete: :cascade

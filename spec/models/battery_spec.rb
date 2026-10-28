@@ -31,19 +31,6 @@ RSpec.describe Battery, type: :model do
   context "with associations" do
     let(:battery) { create(:battery) }
 
-    it "can have many equipment_supplies" do
-      equipment_supply1 = create(:equipment_supply, suppliable: battery)
-      equipment_supply2 = create(:equipment_supply, suppliable: battery)
-
-      expect(battery.equipment_supplies).to include(equipment_supply1, equipment_supply2)
-    end
-
-    it "deletes associated equipment_supplies when deleted" do
-      create(:equipment_supply, suppliable: battery)
-
-      expect { battery.destroy }.to change { EquipmentSupply.count }.by(-1)
-    end
-
     it "can have an attached avatar" do
       battery.avatar.attach(io: File.open(Rails.root.join("spec", "test_files", "placeholder-img.jpeg")), filename: "placeholder-img.jpeg", content_type: "image/jpeg")
 

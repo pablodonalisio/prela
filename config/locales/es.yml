@@ -60,6 +60,9 @@ es:
         reference_url: "Link de producto"
         supply_kind: "Tipo"
         avatar: "Foto"
+      equipment_supply:
+        supply_id: "Insumo"
+        quantity: "Cantidad"
       supply_kind:
         name: "Nombre"
         description: "Descripción"

@@ -19,23 +19,6 @@ RSpec.describe Equipment, type: :model do
     end
   end
 
-  context "associations" do
-    let(:equipment) { create(:equipment) }
-    let(:supplies) { create_list(:battery, 2) }
-
-    before do
-      supplies.each { |supply| equipment.equipment_supplies.create(suppliable: supply) }
-    end
-
-    it "should have many supplies" do
-      expect(equipment.equipment_supplies.size).to eq(2)
-    end
-
-    it "should have one battery" do
-      expect(equipment.battery).to be_a(Battery)
-    end
-  end
-
   context "name" do
     it "can be set independently of brand and model" do
       equipment = create(:equipment, name: "Custom Name", brand: "Brand", model: "Model")
@@ -108,5 +91,4 @@ RSpec.describe Equipment, type: :model do
     end
   end
 end
-
 

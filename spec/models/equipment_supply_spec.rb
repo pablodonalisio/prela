@@ -8,48 +8,40 @@ RSpec.describe EquipmentSupply, type: :model do
       expect(equipment_supply).to be_valid
     end
 
-    it "is not valid without a suppliable" do
-      equipment_supply.suppliable = nil
+    it "is not valid without a supply" do
+      equipment_supply.supply = nil
       expect(equipment_supply).not_to be_valid
+    end
+
+    it "is not valid without a location equipment" do
+      equipment_supply.location_equipment = nil
+      expect(equipment_supply).not_to be_valid
+    end
+
+    it "requires a quantity greater than zero" do
+      expect(build(:equipment_supply, quantity: nil)).not_to be_valid
+      expect(build(:equipment_supply, quantity: 0)).not_to be_valid
+      expect(build(:equipment_supply, quantity: 1.5)).not_to be_valid
+      expect(build(:equipment_supply, quantity: 2)).to be_valid
+    end
+
+    it "allows one row per supply on a location equipment" do
+      existing = create(:equipment_supply)
+
+      duplicate = build(:equipment_supply, location_equipment: existing.location_equipment, supply: existing.supply)
+      other_supply = build(:equipment_supply, location_equipment: existing.location_equipment)
+
+      expect(duplicate).not_to be_valid
+      expect(other_supply).to be_valid
     end
   end
 
   context "associations" do
     let(:equipment_supply) { create(:equipment_supply) }
 
-    it "can belong to a battery" do
-      expect(equipment_supply.suppliable).to be_a(Battery)
-    end
-  end
-
-  context "delegations" do
-    let(:equipment_supply) { create(:equipment_supply) }
-
-    it "delegates avatar to suppliable" do
-      expect(equipment_supply.avatar).to eq(equipment_supply.suppliable.avatar)
-    end
-
-    it "delegates model to suppliable" do
-      expect(equipment_supply.model).to eq(equipment_supply.suppliable.model)
-    end
-
-    it "delegates voltage to suppliable" do
-      expect(equipment_supply.voltage).to eq(equipment_supply.suppliable.voltage)
-    end
-
-    it "delegates amps to suppliable" do
-      expect(equipment_supply.amps).to eq(equipment_supply.suppliable.amps)
-    end
-  end
-
-  context "scopes" do
-    let(:equipment_supply) { create(:equipment_supply) }
-
-    xit "returns batteries with the batteries scope" do
-      create_list(:equipment_supply, 3)
-      create(:equipment_supply, suppliable: create(:other_suppliable))
-
-      expect(EquipmentSupply.batteries.count).to eq(3)
+    it "belongs to a location equipment and a supply" do
+      expect(equipment_supply.location_equipment).to be_a(LocationEquipment)
+      expect(equipment_supply.supply).to be_a(Supply)
     end
   end
 end

@@ -1,8 +1,7 @@
 class EquipmentSupply < ApplicationRecord
-  belongs_to :equipmentable, polymorphic: true
-  belongs_to :suppliable, polymorphic: true
+  belongs_to :location_equipment
+  belongs_to :supply
 
-  delegate :avatar, :model, :voltage, :amps, to: :suppliable
-
-  scope :batteries, -> { where(suppliable_type: "Battery") }
+  validates :quantity, numericality: {only_integer: true, greater_than: 0}
+  validates :supply_id, uniqueness: {scope: :location_equipment_id}
 end

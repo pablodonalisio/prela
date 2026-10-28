@@ -23,6 +23,7 @@ RSpec.describe "/equipments", type: :request do
     it "renders a successful response and responds with HTML" do
       get equipment_url(equipment)
       expect(response).to be_successful
+      expect(response.body).not_to include("Insumos por defecto")
     end
   end
 

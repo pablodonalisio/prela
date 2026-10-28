@@ -9,13 +9,3 @@
 <div class="space-y-3 p-4 md:px-6">
   <%= render "field_values", equipment: equipment %>
 </div>
-
-<div class="p-4 md:px-6">
-  <h4 class="mb-3 text-lg font-semibold text-heading">Insumos por defecto</h4>
-  <div>
-    <h5 class="mb-2 text-center text-sm font-medium text-heading">Batería</h5>
-    <%= turbo_frame_tag "equipment_battery" do %>
-      <%= render "equipment_supplies/equipment_battery", equipment: equipment %>
-    <% end %>
-  </div>
-</div>
