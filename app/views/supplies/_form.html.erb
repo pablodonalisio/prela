@@ -24,14 +24,22 @@
                   class: "mb-3 h-32 rounded-lg object-cover" %>
   <% end %>
   <%= f.input :avatar, label: "Foto" %>
-  <% replacement_choices = Supply.visible.order(:name) %>
+  <% replacement_choices = Supply.visible.includes(:supply_kind).order(:name) %>
   <% replacement_choices = replacement_choices.where.not(id: supply.id) if supply.persisted? %>
-  <%= f.input :replacement_ids,
-              label: "Referencias cruzadas",
-              collection: replacement_choices.map { |item| [item.name, item.id] },
-              input_html: {multiple: true},
-              include_hidden: true,
-              required: false,
-              hint: "Opcional. El vínculo también se muestra en el otro insumo." %>
+  <%= render "shared/search_dropdown",
+             label: "Referencias cruzadas",
+             name: "supply[replacement_ids][]",
+             id: "supply-replacements",
+             options: replacement_choices.map { |item| [item.name, item.id, item.supply_kind_id] },
+             kind_options: SupplyKind.visible.order(:name).pluck(:name, :id),
+             kind_id: supply.supply_kind_id,
+             kind_field: "supply[supply_kind_id]",
+             selected: supply.replacement_ids,
+             chips: true,
+             placeholder: "Buscar",
+             search_placeholder: "Buscar insumo",
+             empty_message: "Sin resultados",
+             blank_message: "No hay otros insumos",
+             hint: "Opcional. El vínculo también se muestra en el otro insumo." %>
   <%= f.button :submit, "Aceptar" %>
 <% end %>

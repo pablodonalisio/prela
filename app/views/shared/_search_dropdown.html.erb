@@ -1,11 +1,26 @@
-<%# locals: (label:, name:, options:, selected: [], id: nil, placeholder: nil, search_placeholder: "Buscar", empty_message: "Sin resultados", blank_message: nil, error: nil) %>
+<%# locals: (label:, name:, options:, selected: [], id: nil, placeholder: nil, search_placeholder: "Buscar", empty_message: "Sin resultados", blank_message: nil, error: nil, hint: nil, chips: false, kind_options: [], kind_id: nil, kind_field: nil) %>
 <% dropdown_id = id || "search-dropdown-#{SecureRandom.hex(4)}" %>
 <% placeholder = placeholder || label %>
 <% selected_ids = Array(selected).map(&:to_s) %>
+<% chips = local_assigns.fetch(:chips, false) %>
+<% hint = local_assigns[:hint] %>
+<% error = local_assigns[:error] %>
+<% kind_options = Array(local_assigns[:kind_options]) %>
+<% kind_id = local_assigns[:kind_id].to_s %>
+<% kind_field = local_assigns[:kind_field] %>
 
-<div class="relative mb-5" data-controller="dropdown-search">
+<div class="relative mb-5"
+     data-controller="dropdown-search"
+     data-dropdown-search-chips-value="<%= chips %>"
+     <% if kind_field.present? %>data-dropdown-search-kind-field-value="<%= kind_field %>"<% end %>>
   <p class="mb-2 text-sm font-medium text-heading"><%= label %></p>
   <% if options.any? %>
+    <%= hidden_field_tag name, "" %>
+    <% if chips %>
+      <div class="relative z-[60] mb-2 flex flex-wrap gap-2 empty:mb-0 empty:hidden"
+           data-dropdown-search-target="chips"
+           data-action="click->dropdown-search#remove"></div>
+    <% end %>
     <button type="button"
             class="inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
             data-dropdown-search-target="button"
@@ -19,21 +34,36 @@
     <div id="<%= dropdown_id %>"
          class="z-50 hidden rounded-base border border-default bg-neutral-secondary-medium shadow-sm"
          data-dropdown-search-target="menu">
-      <div class="p-3">
-        <label for="<%= dropdown_id %>-search" class="sr-only"><%= search_placeholder %></label>
-        <div class="relative">
+      <div class="flex gap-2 p-3">
+        <% if kind_options.any? %>
+          <div class="w-36 shrink-0">
+            <label for="<%= dropdown_id %>-kind" class="sr-only">Filtrar por tipo</label>
+            <select id="<%= dropdown_id %>-kind"
+                    data-dropdown-search-target="kind"
+                    data-action="change->dropdown-search#filter"
+                    data-native-select-skip
+                    class="block w-full rounded-lg border border-default bg-neutral-primary p-2 text-sm text-heading focus:border-brand focus:ring-brand">
+              <option value="">Todos</option>
+              <% kind_options.each do |kind_label, kind_value| %>
+                <option value="<%= kind_value %>" <%= "selected" if kind_value.to_s == kind_id %>><%= kind_label %></option>
+              <% end %>
+            </select>
+          </div>
+        <% end %>
+        <div class="relative min-w-0 flex-1">
+          <label for="<%= dropdown_id %>-search" class="sr-only"><%= search_placeholder %></label>
           <input type="search"
                  id="<%= dropdown_id %>-search"
-                 class="block w-full rounded-lg border border-default bg-neutral-primary p-2 ps-16 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand"
+                 class="block w-full rounded-lg border border-default bg-neutral-primary p-2 <%= "ps-16" unless kind_options.any? %> text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand"
                  placeholder="<%= search_placeholder %>"
                  autocomplete="off"
                  data-dropdown-search-target="search">
         </div>
       </div>
       <ul class="h-48 overflow-y-auto px-3 pb-3 text-sm text-heading" aria-labelledby="<%= dropdown_id %>">
-        <% options.each do |option_label, value| %>
+        <% options.each do |option_label, value, option_kind_id| %>
           <% option_id = "#{dropdown_id}_#{value}" %>
-          <li data-dropdown-search-target="item" data-label="<%= option_label %>">
+          <li data-dropdown-search-target="item" data-label="<%= option_label %>" data-kind-id="<%= option_kind_id %>">
             <div class="flex items-center rounded-sm ps-2 hover:bg-neutral-tertiary-medium">
               <%= check_box_tag name,
                                 value,
@@ -51,6 +81,9 @@
     </div>
   <% elsif blank_message.present? %>
     <p class="text-sm text-body-subtle"><%= blank_message %></p>
+  <% end %>
+  <% if hint.present? %>
+    <p class="mt-2 text-sm text-body-subtle"><%= hint %></p>
   <% end %>
   <% if error.present? %>
     <p class="mt-2 text-sm text-fg-danger"><%= error %></p>

@@ -1,11 +1,18 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Flowbite dropdown with search. The button shows the checked item labels,
-// or the label target's data-placeholder when nothing is checked.
+// Flowbite dropdown with search. Without chips, the button shows the checked
+// item labels. With chips, those labels stay on removable chips and the button
+// keeps its placeholder.
 export default class extends Controller {
-  static targets = ["button", "label", "menu", "search", "item", "empty"];
+  static targets = ["button", "label", "menu", "search", "item", "empty", "chips", "kind"];
+  static values = {
+    chips: { type: Boolean, default: false },
+    kindField: { type: String, default: "" }
+  };
 
   connect() {
+    if (!this.hasSearchTarget) return;
+
     this._initDropdown();
 
     this.onSearch = () => this._filter();
@@ -16,15 +23,35 @@ export default class extends Controller {
     this.searchTarget.addEventListener("input", this.onSearch);
     this.searchTarget.addEventListener("keydown", this.onSearchKeydown);
     this.menuTarget.addEventListener("change", this.onChange);
+    this._followKindField();
     this._syncLabel();
   }
 
   disconnect() {
+    if (!this.hasSearchTarget) return;
+
     this.searchTarget.removeEventListener("input", this.onSearch);
     this.searchTarget.removeEventListener("keydown", this.onSearchKeydown);
     this.menuTarget.removeEventListener("change", this.onChange);
+    this.kindSelectElement?.removeEventListener("change", this.onKindFieldChange);
     this.dropdown?.destroyAndRemoveInstance?.();
     this.dropdown = null;
+  }
+
+  filter() {
+    this._filter();
+  }
+
+  remove(event) {
+    const button = event.target.closest("button[data-value]");
+    if (!button || !this.hasChipsTarget || !this.chipsTarget.contains(button)) return;
+
+    event.preventDefault();
+    const checkbox = this.element.querySelector(`input[type="checkbox"][value="${CSS.escape(button.dataset.value)}"]`);
+    if (!checkbox) return;
+
+    checkbox.checked = false;
+    this._syncLabel();
   }
 
   _initDropdown() {
@@ -51,12 +78,33 @@ export default class extends Controller {
     this.menuTarget.style.maxWidth = width;
   }
 
+  _followKindField() {
+    if (!this.hasKindTarget || !this.kindFieldValue) return;
+
+    this.kindSelectElement = this.element.closest("form")?.querySelector(`select[name="${this.kindFieldValue}"]`);
+    if (!this.kindSelectElement) return;
+
+    this.onKindFieldChange = () => this._applyKindFromForm();
+    this.kindSelectElement.addEventListener("change", this.onKindFieldChange);
+    this._applyKindFromForm();
+  }
+
+  _applyKindFromForm() {
+    const value = this.kindSelectElement.value;
+    const known = Array.from(this.kindTarget.options).some((option) => option.value === value);
+    this.kindTarget.value = known ? value : "";
+    this._filter();
+  }
+
   _filter() {
-    const query = this.searchTarget.value.toLowerCase().trim();
+    const tokens = this._normalize(this.searchTarget.value).split(/\s+/).filter(Boolean);
+    const kindId = this.hasKindTarget ? this.kindTarget.value : "";
     let visible = 0;
 
     this.itemTargets.forEach((item) => {
-      const match = item.dataset.label.toLowerCase().includes(query);
+      const kindMatch = !kindId || item.dataset.kindId === kindId;
+      const label = this._normalize(item.dataset.label);
+      const match = kindMatch && tokens.every((token) => label.includes(token));
       item.classList.toggle("hidden", !match);
       if (match) visible += 1;
     });
@@ -64,11 +112,44 @@ export default class extends Controller {
     if (this.hasEmptyTarget) this.emptyTarget.classList.toggle("hidden", visible > 0);
   }
 
+  _normalize(value) {
+    return value.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim();
+  }
+
   _syncLabel() {
-    const selected = this.itemTargets
-      .filter((item) => item.querySelector("input[type='checkbox']")?.checked)
-      .map((item) => item.dataset.label);
-    this.labelTarget.textContent = selected.length ? selected.join(", ") : this.labelTarget.dataset.placeholder;
+    const selected = this.itemTargets.flatMap((item) => {
+      const checkbox = item.querySelector("input[type='checkbox']");
+      return checkbox?.checked ? [{ label: item.dataset.label, value: checkbox.value }] : [];
+    });
+
+    if (this.chipsValue) {
+      this._syncChips(selected);
+      this.labelTarget.textContent = this.labelTarget.dataset.placeholder;
+      this.labelTarget.classList.add("text-body-subtle");
+      return;
+    }
+
+    this.labelTarget.textContent = selected.length ? selected.map((item) => item.label).join(", ") : this.labelTarget.dataset.placeholder;
     this.labelTarget.classList.toggle("text-body-subtle", selected.length === 0);
+  }
+
+  _syncChips(selected) {
+    if (!this.hasChipsTarget) return;
+
+    this.chipsTarget.replaceChildren();
+    selected.forEach(({ label, value }) => {
+      const chip = document.createElement("span");
+      chip.className = "inline-flex items-center gap-1 rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-medium text-fg-brand";
+      chip.append(document.createTextNode(label));
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.value = value;
+      button.setAttribute("aria-label", `Quitar ${label}`);
+      button.className = "leading-none";
+      button.textContent = "×";
+      chip.append(button);
+      this.chipsTarget.append(chip);
+    });
   }
 }

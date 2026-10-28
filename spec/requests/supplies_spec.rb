@@ -134,6 +134,19 @@ RSpec.describe "/supplies", type: :request do
       expect(response.body).to include(supply_kinds_path(open: "new"))
     end
 
+    it "renders a searchable replacement picker" do
+      create(:supply, name: "Aceite hidráulico ISO 68")
+
+      get new_supply_url
+
+      expect(response.body).to include("Referencias cruzadas")
+      expect(response.body).to include('data-dropdown-search-chips-value="true"')
+      expect(response.body).to include("Filtrar por tipo")
+      expect(response.body).to include("Todos")
+      expect(response.body).to include("Aceite hidráulico ISO 68")
+      expect(response.body).to include('name="supply[replacement_ids][]"')
+    end
+
     context "when user is a technician" do
       let(:user) { create(:technician) }
 
@@ -206,6 +219,16 @@ RSpec.describe "/supplies", type: :request do
       expect(supply.reload.name).to eq "BP7-12"
       expect(supply.reference_url).to eq "https://example.com/bp7"
       expect(response).to redirect_to(supplies_url)
+    end
+
+    it "clears replacements when none stay selected" do
+      supply = create(:supply, supply_kind: supply_kind)
+      other = create(:supply)
+      supply.update!(replacement_ids: [other.id])
+
+      patch supply_url(supply), params: {supply: {replacement_ids: [""]}}
+
+      expect(supply.reload.replacement_supplies).to be_empty
     end
 
     it "rerenders the list via turbo stream" do
