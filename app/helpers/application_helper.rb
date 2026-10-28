@@ -14,6 +14,7 @@ module ApplicationHelper
     chevron_down: "fa-solid fa-chevron-down",
     clients: "fa-solid fa-building",
     dot: "fa fa-circle",
+    download: "fa-solid fa-download",
     edit: "fas fa-edit",
     envelope: "fa-solid fa-envelope",
     equipment: "fa-solid fa-wrench",
@@ -107,6 +108,20 @@ module ApplicationHelper
 
   def sidebar_link_visible?(link)
     link[:visible_for].include?(current_user.role.to_sym)
+  end
+
+  # Sanitized HTML from the shared rich text editor. Plain legacy text still
+  # goes through simple_format. Callers that print the result should not mark
+  # the original string html_safe themselves.
+  def format_rich_text(body)
+    sanitized = RichText::Sanitize.call(body)
+    return if sanitized.blank?
+
+    if sanitized.match?(/<\/?[a-z][^>]*>/i)
+      sanitized.html_safe
+    else
+      simple_format(sanitized)
+    end
   end
 
   def schedule_point(value)

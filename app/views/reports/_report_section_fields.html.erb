@@ -5,9 +5,10 @@
 
 <% structure_only = section.owned_by_template? %>
 <% if section.text? %>
-  <textarea class="<%= input_classes %>"
-            name="report[section_inputs][<%= input_key %>][body]"
-            rows="4"><%= structure_only ? nil : section.text_section&.body %></textarea>
+  <%= render "shared/rich_text_editor",
+             name: "report[section_inputs][#{input_key}][body]",
+             body: structure_only ? nil : section.text_section&.body,
+             uid: "text-#{input_key}" %>
 <% elsif section.images? %>
   <% image_section = section.image_section %>
   <% existing_images = !structure_only && image_section&.images&.attached? ? image_section.images.map { |image|

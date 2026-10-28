@@ -156,6 +156,49 @@ RSpec.describe Report, type: :model do
     end
   end
 
+  describe "uploaded report" do
+    it "requires a file" do
+      report = build(:report, uploaded: true)
+
+      expect(report).not_to be_valid
+      expect(report.errors[:files]).to include("no puede estar en blanco")
+    end
+
+    it "rejects a file that is not a PDF or image" do
+      report = build(:report, uploaded: true)
+      report.files.attach(io: StringIO.new("notes"), filename: "notes.txt", content_type: "text/plain")
+
+      expect(report).not_to be_valid
+      expect(report.errors[:files]).to include("debe ser PDF, JPEG o PNG")
+    end
+
+    it "accepts a PDF and a JPEG and does not assign a report number" do
+      report = build(:report, :uploaded)
+      report.files.attach(
+        io: StringIO.new(File.binread(Rails.root.join("app/assets/images/placeholder-img.jpeg"))),
+        filename: "photo.jpg",
+        content_type: "image/jpeg"
+      )
+
+      expect(report).to be_valid
+      report.save!
+
+      expect(report.files.map(&:content_type)).to contain_exactly("application/pdf", "image/jpeg")
+      expect(report.number).to be_nil
+      expect(report.report_code).to be_nil
+    end
+
+    it "rejects more than the maximum number of files" do
+      report = build(:report, uploaded: true)
+      Report::MAX_UPLOADED_FILES.succ.times do |index|
+        report.files.attach(io: StringIO.new("pdf"), filename: "file-#{index}.pdf", content_type: "application/pdf")
+      end
+
+      expect(report).not_to be_valid
+      expect(report.errors[:files]).to include("no puede tener más de #{Report::MAX_UPLOADED_FILES} archivos")
+    end
+  end
+
   describe "image limit" do
     it "rejects more than MAX_IMAGES images" do
       report = build(:report)

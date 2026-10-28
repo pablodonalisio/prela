@@ -36,7 +36,17 @@ class Reports::Header < Reports::Content
   end
 
   def client_image
-    {image: @client_logo.path, fit: [100, 50], position: :center}
+    if @client_logo.present?
+      {image: @client_logo.path, fit: [100, 50], position: :center, vposition: :center}
+    else
+      {
+        content: location_equipment.client.name.to_s,
+        align: :center,
+        valign: :center,
+        font_style: :bold,
+        overflow: :shrink_to_fit
+      }
+    end
   end
 
   def location_data

@@ -18,6 +18,11 @@ export default class extends Controller {
   }
 
   sync() {
+    if (!this.hasTimeTarget) {
+      this.#write(this.#isoDate());
+      return;
+    }
+
     this.#coerceTimeInput();
 
     const iso = this.#isoDate();

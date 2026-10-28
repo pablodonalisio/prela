@@ -12,6 +12,17 @@ RSpec.describe "/contacts", type: :request do
 
   before { sign_in create(:admin) }
 
+  describe "GET /index" do
+    it "shows the actions column" do
+      contact
+      get client_contacts_url(client)
+
+      expect(response).to be_successful
+      expect(response.body).to include("Acciones")
+      expect(response.body).to include("Editar")
+    end
+  end
+
   describe "GET /new" do
     it "renders a successful response" do
       get new_client_contact_url(client)

@@ -45,6 +45,14 @@ RSpec.describe "/equipment_kinds", type: :request do
       expect(response.body).to include("Duplicar")
     end
 
+    it "prepares the new equipment kind modal when open=new" do
+      get equipment_kinds_url, params: {open: "new"}
+
+      expect(response).to be_successful
+      expect(response.body).to include('data-controller="open-remote-modal"')
+      expect(response.body).to include(%(data-open-remote-modal-url-value="#{new_equipment_kind_path}"))
+    end
+
     it "shows the asset type on each card" do
       assets_category = create(:assets_category, name: "Generador")
       EquipmentKind.create! valid_attributes.merge(name: "Tablero", assets_category_id: assets_category.id)

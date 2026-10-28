@@ -1,9 +1,10 @@
 <%= turbo_stream.remove @contact %>
 
+<% show_actions = policy(Contact).update? || policy(Contact).destroy? %>
 <% if @client.contacts.kept.none? %>
   <%= turbo_stream.append "contacts" do %>
     <tr id="empty_contacts">
-      <td colspan="7" class="px-3 py-6 text-center text-sm text-body-subtle">
+      <td colspan="<%= show_actions ? 7 : 6 %>" class="px-3 py-6 text-center text-sm text-body-subtle">
         Todavía no hay contactos cargados.
       </td>
     </tr>
