@@ -1,0 +1,11 @@
+<%= form_with url: supplies_path,
+              method: :get,
+              id: "supply_filters",
+              data: {turbo_frame: "supplies", turbo_action: "advance"} do %>
+  <%= render "shared/multi_select",
+             name: "supply_kind_ids[]",
+             label: "Tipo",
+             placeholder: "Todos",
+             selected: @supply_kind_ids,
+             options: SupplyKind.visible.order(:name).pluck(:name, :id) %>
+<% end %>

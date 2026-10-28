@@ -169,6 +169,8 @@ RSpec.describe "Technician access", type: :policy do
     EquipmentKindPolicy => EquipmentKind.new,
     ReportTemplatePolicy => ReportTemplate.new,
     BatteryPolicy => Battery.new,
+    SupplyPolicy => Supply.new,
+    SupplyKindPolicy => SupplyKind.new,
     LinkPolicy => Link.new,
     LocationEquipmentServicePolicy => LocationEquipmentService.new
   }.each do |policy_class, record|

@@ -46,7 +46,8 @@ Rails.application.routes.draw do
     get :field_inputs, on: :collection
   end
   resources :batteries, except: %i[index]
-  resources :supplies, only: [:index]
+  resources :supplies, except: [:show]
+  resources :supply_kinds, except: [:show]
   resources :users
   resources :signatures, except: %i[show]
   resources :links, only: [:new, :create, :edit, :update, :destroy]

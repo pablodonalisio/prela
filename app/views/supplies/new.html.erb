@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @supply do %>
+  <%= render "shared/remote_modal", title: "Nuevo insumo" do %>
+    <%= render "form", supply: @supply %>
+  <% end %>
+<% end %>

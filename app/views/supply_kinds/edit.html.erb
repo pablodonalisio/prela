@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @supply_kind do %>
+  <%= render "shared/remote_modal", title: "Editar tipo de insumo" do %>
+    <%= render "form", supply_kind: @supply_kind %>
+  <% end %>
+<% end %>

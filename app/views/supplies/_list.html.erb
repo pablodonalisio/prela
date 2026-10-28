@@ -1,0 +1,15 @@
+<%= turbo_frame_tag "supplies", class: "mx-4 mt-4 mb-4 flex flex-col gap-2 md:mx-6" do %>
+  <% if @supplies.any? %>
+    <%= render @supplies %>
+  <% elsif @supply_kind_ids.present? %>
+    <%= render "shared/empty_collection",
+               id: "supplies_empty",
+               message: "No hay insumos para los tipos seleccionados." %>
+  <% else %>
+    <%= render "shared/empty_collection",
+               id: "supplies_empty",
+               message: "No hay insumos todavía.",
+               action_text: policy(Supply).create? ? "Agregar" : nil,
+               action_path: policy(Supply).create? ? new_supply_path : nil %>
+  <% end %>
+<% end %>

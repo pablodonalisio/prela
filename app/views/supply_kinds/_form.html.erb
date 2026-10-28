@@ -1,0 +1,5 @@
+<%= simple_form_for supply_kind do |f| %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :description, label: "Descripción", required: false, input_html: {rows: 3} %>
+  <%= f.button :submit, "Aceptar" %>
+<% end %>

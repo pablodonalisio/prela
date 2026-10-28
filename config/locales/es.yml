@@ -54,6 +54,15 @@ es:
         model: "Modelo"
         voltage: "Voltaje"
         amps: "Amperes"
+      supply:
+        name: "Nombre"
+        description: "Descripción"
+        reference_url: "Link de referencia"
+        supply_kind: "Tipo"
+        avatar: "Foto"
+      supply_kind:
+        name: "Nombre"
+        description: "Descripción"
       user:
         name: "Nombre"
         last_name: "Apellido"

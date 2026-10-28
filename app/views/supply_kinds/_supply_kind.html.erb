@@ -1,0 +1,23 @@
+<%= turbo_frame_tag supply_kind do %>
+  <div class="rounded-xl border border-default bg-neutral-primary p-4">
+    <div class="flex flex-col items-start gap-3 md:flex-row md:items-center">
+      <div class="min-w-0 flex-1">
+        <h5 class="font-semibold text-heading"><%= supply_kind.name %></h5>
+        <% if supply_kind.description.present? %>
+          <p class="mt-1 line-clamp-3 text-sm text-body"><%= supply_kind.description %></p>
+        <% end %>
+      </div>
+
+      <% if policy(supply_kind).update? %>
+        <div class="shrink-0 self-end md:self-center">
+          <%= render "shared/dropdown" do %>
+            <%= render "shared/button_box",
+                       edit_path: edit_supply_kind_path(supply_kind),
+                       delete_path: supply_kind_path(supply_kind),
+                       confirm: "¿Seguro que querés borrar este tipo de insumo?" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

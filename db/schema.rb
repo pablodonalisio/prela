@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_28_121500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -396,24 +396,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
     t.index ["token"], name: "index_qr_tokens_on_token", unique: true
   end
 
-  create_table "report_comments", force: :cascade do |t|
-    t.bigint "report_id", null: false
-    t.text "description", null: false
-    t.integer "position", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["discarded_at"], name: "index_qr_tokens_on_discarded_at"
-    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_kept_scannable", unique: true, where: "(discarded_at IS NULL)"
-    t.index ["scannable_type", "scannable_id"], name: "index_qr_tokens_on_scannable"
-    t.index ["token"], name: "index_qr_tokens_on_token", unique: true
-  end
-
   create_table "report_templates", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "normalized_name"
-    t.jsonb "layout", default: [], null: false
     t.index ["normalized_name"], name: "index_report_templates_on_normalized_name", unique: true
   end
 
@@ -425,7 +412,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
     t.datetime "date"
     t.bigint "report_template_id"
     t.integer "number"
-    t.jsonb "observation_values", default: {}, null: false
     t.boolean "template_based", default: false, null: false
     t.boolean "uploaded", default: false, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
@@ -466,7 +452,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
     t.string "sectionable_type", null: false
     t.bigint "sectionable_id", null: false
     t.index ["sectionable_type", "sectionable_id", "position"], name: "index_sections_on_sectionable_and_position"
-    t.check_constraint "sectionable_type::text = ANY (ARRAY['Report'::character varying, 'ReportTemplate'::character varying]::text[])", name: "sections_sectionable_type"
+    t.check_constraint "sectionable_type::text = ANY (ARRAY['Report'::character varying::text, 'ReportTemplate'::character varying::text])", name: "sections_sectionable_type"
   end
 
   create_table "service_kinds", force: :cascade do |t|
@@ -521,6 +507,42 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
     t.index ["user_id"], name: "index_signatures_on_user_id"
   end
 
+  create_table "supplies", force: :cascade do |t|
+    t.bigint "supply_kind_id", null: false
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.text "description"
+    t.string "reference_url"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_supplies_on_discarded_at"
+    t.index ["normalized_name"], name: "index_supplies_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["supply_kind_id"], name: "index_supplies_on_supply_kind_id"
+  end
+
+  create_table "supply_kinds", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "description"
+    t.index ["discarded_at"], name: "index_supply_kinds_on_discarded_at"
+    t.index ["normalized_name"], name: "index_supply_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+  end
+
+  create_table "supply_replacements", force: :cascade do |t|
+    t.bigint "supply_id", null: false
+    t.bigint "replacement_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["replacement_id"], name: "index_supply_replacements_on_replacement_id"
+    t.index ["supply_id", "replacement_id"], name: "index_supply_replacements_on_pair", unique: true
+    t.index ["supply_id"], name: "index_supply_replacements_on_supply_id"
+    t.check_constraint "supply_id < replacement_id", name: "supply_replacements_ordered_pair"
+  end
+
   create_table "table_cell_options", force: :cascade do |t|
     t.bigint "table_cell_id", null: false
     t.boolean "value", null: false
@@ -563,6 +585,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["section_id"], name: "index_table_sections_on_section_id", unique: true
+    t.check_constraint "row_count >= 1 AND row_count <= 16 AND column_count >= 1 AND column_count <= 12", name: "table_sections_grid_size"
   end
 
   create_table "taggings", force: :cascade do |t|
@@ -680,6 +703,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
   add_foreign_key "service_occurrence_assignments", "users"
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "signatures", "users"
+  add_foreign_key "supplies", "supply_kinds"
+  add_foreign_key "supply_replacements", "supplies"
+  add_foreign_key "supply_replacements", "supplies", column: "replacement_id"
   add_foreign_key "table_cell_options", "table_cells", on_delete: :cascade
   add_foreign_key "table_cells", "table_sections", on_delete: :cascade
   add_foreign_key "table_labels", "table_sections", on_delete: :cascade
