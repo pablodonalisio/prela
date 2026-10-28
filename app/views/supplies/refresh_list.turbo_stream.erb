@@ -2,6 +2,6 @@
   <%= render "layouts/flash" %>
 <% end %>
 
-<%= turbo_stream.replace @supply do %>
-  <%= render @supply %>
+<%= turbo_stream.replace "supplies" do %>
+  <%= render "list" %>
 <% end %>

@@ -12,4 +12,8 @@
                action_text: policy(Supply).create? ? "Agregar" : nil,
                action_path: policy(Supply).create? ? new_supply_path : nil %>
   <% end %>
+
+  <%= render "shared/pagination",
+             pagy: @pagy,
+             anchor_string: %(data-turbo-frame="supplies" data-turbo-action="advance") %>
 <% end %>

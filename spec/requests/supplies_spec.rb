@@ -31,6 +31,22 @@ RSpec.describe "/supplies", type: :request do
       expect(response.body).not_to include("Descartada")
     end
 
+    it "paginates the list" do
+      (1..13).each { |number| create(:supply, name: format("Insumo %02d", number)) }
+
+      get supplies_url
+
+      expect(response.body).to include("Insumo 01")
+      expect(response.body).not_to include("Insumo 13")
+      expect(response.body).to include("Siguiente")
+      expect(response.body).to include('data-turbo-action="advance"')
+
+      get supplies_url, params: {page: 2}
+
+      expect(response.body).to include("Insumo 13")
+      expect(response.body).not_to include("Insumo 01")
+    end
+
     it "filters by supply kind" do
       oil = create(:supply_kind, name: "Aceite")
       create(:supply, name: "BP5-12", supply_kind: supply_kind)
@@ -105,11 +121,25 @@ RSpec.describe "/supplies", type: :request do
       expect(response).to redirect_to(supplies_url)
     end
 
-    it "appends the supply via turbo stream" do
+    it "rerenders the list via turbo stream" do
       post supplies_url, params: {supply: valid_attributes}, as: :turbo_stream
 
       expect(response.media_type).to eq Mime[:turbo_stream]
-      expect(response.body).to include('turbo-stream action="append" target="supplies"')
+      expect(response.body).to include('turbo-stream action="replace" target="supplies"')
+      expect(response.body).to include("BP5-12")
+    end
+
+    it "keeps the current filter when rerendering the list" do
+      oil = create(:supply_kind, name: "Aceite")
+      create(:supply, name: "15W40", supply_kind: oil)
+
+      post supplies_url,
+        params: {supply: valid_attributes},
+        headers: {"Referer" => supplies_url(supply_kind_ids: [oil.id])},
+        as: :turbo_stream
+
+      expect(response.body).to include("15W40")
+      expect(response.body).not_to include("BP5-12")
     end
 
     it "does not create a supply with invalid parameters" do
@@ -129,6 +159,15 @@ RSpec.describe "/supplies", type: :request do
       expect(supply.reference_url).to eq "https://example.com/bp7"
       expect(response).to redirect_to(supplies_url)
     end
+
+    it "rerenders the list via turbo stream" do
+      supply = create(:supply, supply_kind: supply_kind, name: "BP5-12")
+
+      patch supply_url(supply), params: {supply: {name: "BP7-12"}}, as: :turbo_stream
+
+      expect(response.body).to include('turbo-stream action="replace" target="supplies"')
+      expect(response.body).to include("BP7-12")
+    end
   end
 
   describe "DELETE /destroy" do
@@ -140,6 +179,19 @@ RSpec.describe "/supplies", type: :request do
       }.to change(Supply.kept, :count).by(-1)
       expect(supply.reload).to be_discarded
       expect(response).to redirect_to(supplies_url)
+    end
+
+    it "rerenders the last available page via turbo stream" do
+      supplies = (1..13).map { |number| create(:supply, name: format("Insumo %02d", number)) }
+
+      delete supply_url(supplies.last),
+        headers: {"Referer" => supplies_url(page: 2)},
+        as: :turbo_stream
+
+      expect(response).to be_successful
+      expect(response.body).to include('turbo-stream action="replace" target="supplies"')
+      expect(response.body).to include("Insumo 01")
+      expect(response.body).not_to include("Insumo 13")
     end
   end
 end
