@@ -64,7 +64,7 @@ class LocationEquipment < ApplicationRecord
   end
 
   def create_initial_pending_occurrences!
-    location_equipment_services.includes(:service_kind).find_each do |les|
+    location_equipment_services.active.includes(:service_kind).find_each do |les|
       next if les.service_occurrences.open.exists?
       next unless les.recurring?
 
@@ -87,14 +87,14 @@ class LocationEquipment < ApplicationRecord
   end
 
   def available_service_kinds_for_assignment
-    assigned_ids = location_equipment_services.select(:service_kind_id)
+    assigned_ids = location_equipment_services.active.select(:service_kind_id)
     ServiceKind.visible.where.not(id: assigned_ids).order(:name)
   end
 
   def open_service_occurrences
     ServiceOccurrence.open
       .joins(location_equipment_service: :service_kind)
-      .where(location_equipment_services: {location_equipment_id: id})
+      .where(location_equipment_services: {location_equipment_id: id, removed_at: nil})
       .includes(location_equipment_service: :service_kind)
       .order("service_kinds.name")
   end

@@ -30,6 +30,8 @@ class ServiceKind < ApplicationRecord
   has_and_belongs_to_many :equipment_kinds
   has_many :location_equipment_services, dependent: :restrict_with_error
 
+  before_discard :prevent_discard_when_assigned_to_location_equipment
+
   before_validation :normalize_recurring_interval
   before_validation :set_recurring_defaults
   before_validation :set_normalized_name
@@ -133,5 +135,13 @@ class ServiceKind < ApplicationRecord
     scope = scope.where.not(id: id) if persisted?
 
     errors.add(:name, :taken) if scope.exists?
+  end
+
+  def prevent_discard_when_assigned_to_location_equipment
+    assigned = location_equipment_services.where(location_equipment_id: LocationEquipment.visible.select(:id)).exists?
+    return unless assigned
+
+    errors.add(:base, "No se puede eliminar porque está asignado a otros activos")
+    throw(:abort)
   end
 end

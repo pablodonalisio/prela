@@ -32,7 +32,7 @@ class Reports::Equipment::ServiceDateStats < Reports::Content
   end
 
   def assigned_services
-    @assigned_services ||= location_equipment.location_equipment_services.includes(:service_kind).order("service_kinds.name")
+    @assigned_services ||= location_equipment.location_equipment_services.active.includes(:service_kind).order("service_kinds.name")
   end
 
   def dates_header

@@ -11,7 +11,7 @@
     <% end %>
   </div>
 
-  <% services = location_equipment.location_equipment_services.includes(:service_kind).order("service_kinds.name") %>
+  <% services = location_equipment.location_equipment_services.active.includes(:service_kind).order("service_kinds.name") %>
   <% if services.any? %>
     <ul class="mb-3 list-none p-0">
       <% services.each do |les| %>

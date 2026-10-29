@@ -4,6 +4,7 @@ class LocationEquipmentServicesController < ApplicationController
 
   def new
     @location_equipment_service = authorize @location_equipment.location_equipment_services.build
+    @location_equipment_service.assigning = true
     first_kind = @location_equipment.available_service_kinds_for_assignment.first
     if first_kind
       @location_equipment_service.service_kind = first_kind
@@ -13,7 +14,8 @@ class LocationEquipmentServicesController < ApplicationController
   end
 
   def create
-    @location_equipment_service = authorize @location_equipment.location_equipment_services.build(create_params.except(:due_on))
+    @location_equipment_service = location_equipment_service_for_assignment
+    @location_equipment_service.assigning = true
     @location_equipment_service.due_on = create_params[:due_on]
 
     if @location_equipment_service.due_on.blank?
@@ -23,10 +25,11 @@ class LocationEquipmentServicesController < ApplicationController
     end
 
     if @location_equipment_service.save
-      @location_equipment_service.create_pending_occurrence!
+      created_occurrence = @location_equipment_service.create_pending_occurrence!
+      notice = assignment_notice(created_occurrence)
       respond_to do |format|
-        format.html { redirect_to @location_equipment, notice: "El servicio se asignó correctamente." }
-        format.turbo_stream { flash.now[:notice] = "El servicio se asignó correctamente." }
+        format.html { redirect_to @location_equipment, notice: notice }
+        format.turbo_stream { flash.now[:notice] = notice }
       end
     else
       render :new, status: :unprocessable_entity
@@ -48,10 +51,10 @@ class LocationEquipmentServicesController < ApplicationController
   end
 
   def destroy
-    @location_equipment_service.destroy!
+    @location_equipment_service.unassign!
     respond_to do |format|
-      format.html { redirect_to @location_equipment, notice: "El servicio se eliminó correctamente.", status: :see_other }
-      format.turbo_stream { flash.now[:notice] = "El servicio se eliminó correctamente." }
+      format.html { redirect_to @location_equipment, notice: "El servicio se quitó correctamente.", status: :see_other }
+      format.turbo_stream { flash.now[:notice] = "El servicio se quitó correctamente." }
     end
   end
 
@@ -63,6 +66,25 @@ class LocationEquipmentServicesController < ApplicationController
 
   def set_location_equipment_service
     @location_equipment_service = authorize @location_equipment.location_equipment_services.find(params[:id])
+  end
+
+  def location_equipment_service_for_assignment
+    existing = @location_equipment.location_equipment_services.find_by(service_kind_id: create_params[:service_kind_id])
+    if existing&.removed?
+      existing.assign_attributes(create_params.except(:due_on, :service_kind_id))
+      existing.removed_at = nil
+      authorize existing
+    else
+      authorize @location_equipment.location_equipment_services.build(create_params.except(:due_on))
+    end
+  end
+
+  def assignment_notice(created_occurrence)
+    if created_occurrence
+      "El servicio se asignó correctamente."
+    else
+      "El servicio se asignó. Ya hay una ocurrencia abierta, así que no se creó otra."
+    end
   end
 
   def create_params
