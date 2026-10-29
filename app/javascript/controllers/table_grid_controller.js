@@ -6,6 +6,7 @@ const TYPE_LABELS = {
   float: "Número decimal",
   date: "Fecha",
   boolean: "Booleano",
+  dropdown: "Desplegable",
 };
 
 // Rebuilds the visible table when the row or column count changes, and keeps
@@ -87,6 +88,13 @@ export default class extends Controller {
     this.syncCell({target: radio});
   }
 
+  rememberDropdownCell(event) {
+    document.querySelectorAll("[data-pending-dropdown-cell]").forEach((cell) => {
+      delete cell.dataset.pendingDropdownCell;
+    });
+    event.target.closest("[data-cell]")?.setAttribute("data-pending-dropdown-cell", "true");
+  }
+
   syncCell(event) {
     const cell = event.target.closest?.("[data-cell]") || event.target;
     if (!cell?.matches?.("[data-cell]")) return;
@@ -94,11 +102,12 @@ export default class extends Controller {
     const type = this.field(cell, "value_type")?.value;
     const metrics = this.checkbox(cell, "for_metrics");
     const numeric = type === "integer" || type === "float";
+    const metricsAllowed = numeric || type === "dropdown";
     if (metrics) {
-      metrics.disabled = !numeric;
-      if (!numeric) metrics.checked = false;
-      metrics.closest("[data-metrics-row]")?.classList.toggle("cursor-not-allowed", !numeric);
-      metrics.closest("[data-metrics-row]")?.classList.toggle("opacity-50", !numeric);
+      metrics.disabled = !metricsAllowed;
+      if (!metricsAllowed) metrics.checked = false;
+      metrics.closest("[data-metrics-row]")?.classList.toggle("cursor-not-allowed", !metricsAllowed);
+      metrics.closest("[data-metrics-row]")?.classList.toggle("opacity-50", !metricsAllowed);
     }
 
     const fixedInput = this.checkbox(cell, "fixed");
@@ -115,6 +124,16 @@ export default class extends Controller {
       const booleanType = type === "boolean";
       booleanOptions.classList.toggle("hidden", !booleanType);
       booleanOptions.disabled = !booleanType;
+    }
+
+    const dropdownOptions = cell.querySelector("[data-dropdown-options]");
+    if (dropdownOptions) {
+      const dropdownType = type === "dropdown";
+      dropdownOptions.classList.toggle("hidden", !dropdownType);
+      dropdownOptions.disabled = !dropdownType;
+      const select = dropdownOptions.querySelector('[data-name="table_dropdown_id"]');
+      const button = select?.nextElementSibling?.querySelector("button");
+      if (button) button.disabled = !dropdownType;
     }
 
     const fixed = Boolean(fixedInput?.checked);
@@ -135,7 +154,11 @@ export default class extends Controller {
     }
 
     const summary = cell.querySelector("[data-cell-summary]");
-    if (summary) summary.textContent = this.summaryText(cell);
+    if (summary) {
+      const text = this.summaryText(cell);
+      summary.textContent = text;
+      summary.title = text;
+    }
   }
 
   buildTable(rows, columns, cells, labels) {
@@ -225,6 +248,7 @@ export default class extends Controller {
     this.setField(cell, "column_index", String(column));
     this.setField(cell, "_destroy", "0");
     this.setField(cell, "value_type", saved.valueType || "string");
+    this.setField(cell, "table_dropdown_id", saved.tableDropdownId || "");
     this.setField(cell, "value", saved.fixed ? saved.value || "" : "");
     const fixed = Boolean(saved.fixed);
     this.setCheckbox(cell, "fixed", fixed);
@@ -240,6 +264,7 @@ export default class extends Controller {
       cells.set(`${cell.dataset.row}_${cell.dataset.col}`, {
         id: this.field(cell, "id")?.value || "",
         valueType: this.field(cell, "value_type")?.value || "string",
+        tableDropdownId: this.field(cell, "table_dropdown_id")?.value || "",
         value: this.field(cell, "value")?.value || "",
         forMetrics: Boolean(this.checkbox(cell, "for_metrics")?.checked),
         fixed: Boolean(this.checkbox(cell, "fixed")?.checked),
@@ -273,6 +298,14 @@ export default class extends Controller {
   summaryText(cell) {
     const type = this.field(cell, "value_type")?.value || "string";
     const parts = [TYPE_LABELS[type] || type];
+    if (type === "dropdown") {
+      const select = this.field(cell, "table_dropdown_id");
+      const selected = select?.selectedOptions?.[0];
+      const name = selected?.value ? selected.text.trim() : "";
+      if (name) parts.push(name);
+      const labels = selected?.dataset.labels?.trim();
+      if (labels) parts.push(labels);
+    }
     const fixed = Boolean(this.checkbox(cell, "fixed")?.checked);
     const value = this.field(cell, "value")?.value || "";
     if (fixed) {

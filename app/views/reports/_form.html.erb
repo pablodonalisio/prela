@@ -1,7 +1,6 @@
+<% autosave_form = report.new_record? && @report_mode != "template" %>
 <%= simple_form_for [location_equipment, report], html: {
-  data: {
-    auto_save_target: "form",
-  }
+  data: autosave_form ? {auto_save_target: "form"} : {}
 } do |f| %>
   <% if report.new_record? %>
     <div class="mb-4 border-b border-default">

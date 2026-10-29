@@ -48,7 +48,8 @@ module Reports
             value_type: cell.value_type,
             value: cell_value(cell, source.id),
             for_metrics: cell.for_metrics,
-            fixed: cell.fixed
+            fixed: cell.fixed,
+            table_dropdown: dropdown_snapshot(cell.table_dropdown)
           )
           cell.table_cell_options.each do |option|
             copied.table_cell_options.build(value: option.value, label: option.label)
@@ -68,6 +69,19 @@ module Reports
           copied.source_item_id = item.id
         end
       end
+    end
+
+    def dropdown_snapshot(dropdown)
+      return if dropdown.nil?
+
+      @dropdown_snapshots ||= {}
+      return @dropdown_snapshots[dropdown.id] if @dropdown_snapshots.key?(dropdown.id)
+
+      copy = report.table_dropdowns.build(name: dropdown.name)
+      dropdown.table_dropdown_values.each do |value|
+        copy.table_dropdown_values.build(label: value.label, position: value.position)
+      end
+      @dropdown_snapshots[dropdown.id] = copy
     end
 
     def submitted_text_body(source)

@@ -1,0 +1,19 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash" %>
+<% end %>
+
+<% if params[:from] == "cell" %>
+  <%= turbo_stream.append "dropdown_catalog_events" do %>
+    <%= tag.div data: {
+          controller: "dropdown-catalog-option",
+          dropdown_catalog_option_id_value: @table_dropdown.id,
+          dropdown_catalog_option_name_value: @table_dropdown.name,
+          dropdown_catalog_option_labels_value: @table_dropdown.table_dropdown_values.map(&:label).join(", ")
+        } %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "table_dropdowns_empty" %>
+  <%= turbo_stream.append "table_dropdowns" do %>
+    <%= render @table_dropdown %>
+  <% end %>
+<% end %>

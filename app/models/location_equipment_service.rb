@@ -6,7 +6,10 @@ class LocationEquipmentService < ApplicationRecord
   has_one :open_service_occurrence, -> { open }, class_name: "ServiceOccurrence"
   has_one :pending_service_occurrence, -> { pending }, class_name: "ServiceOccurrence"
 
-  attr_accessor :due_on
+  scope :active, -> { where(removed_at: nil) }
+  scope :removed, -> { where.not(removed_at: nil) }
+
+  attr_accessor :due_on, :assigning
 
   enum :interval_unit, {years: 0, months: 1, weeks: 2}, validate: {allow_nil: true}
 
@@ -22,6 +25,27 @@ class LocationEquipmentService < ApplicationRecord
     return if due_on.blank?
 
     service_occurrences.create!(status: :pending, due_on: due_on.to_date)
+  end
+
+  def unassign!
+    transaction do
+      occurrences_removed_with_assignment.destroy_all
+      service_occurrences.reset
+
+      if service_occurrences.exists?
+        update!(removed_at: Time.current)
+      else
+        destroy!
+      end
+    end
+  end
+
+  def active?
+    removed_at.nil?
+  end
+
+  def removed?
+    removed_at.present?
   end
 
   def apply_service_kind_defaults!
@@ -90,5 +114,14 @@ class LocationEquipmentService < ApplicationRecord
 
     errors.add(:interval, :present) if interval.present?
     errors.add(:interval_unit, :present) if interval_unit.present?
+  end
+
+  def occurrences_removed_with_assignment
+    pending_or_scheduled = service_occurrences.where(status: [:pending, :scheduled])
+    future_cancelled_or_suspended = service_occurrences
+      .where(status: [:cancelled, :suspended])
+      .where("due_on > ?", Date.current)
+
+    pending_or_scheduled.or(future_cancelled_or_suspended)
   end
 end

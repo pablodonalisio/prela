@@ -51,7 +51,15 @@
                   <span class="text-heading"><%= format_report_field_value(cell.value_type, cell.value) %></span>
                 <% else %>
                   <% field_name = "report[section_inputs][#{input_key}][cells][#{row}_#{column}][value]" %>
-                  <% if cell.boolean? %>
+                  <% if cell.dropdown? %>
+                    <select class="<%= input_classes %> <%= "border-red-500" if cell.errors[:value].any? %>"
+                            name="<%= field_name %>">
+                      <option value=""></option>
+                      <% cell.dropdown_option_labels.each do |label| %>
+                        <option value="<%= label %>" <%= "selected" if cell.value == label %>><%= label %></option>
+                      <% end %>
+                    </select>
+                  <% elsif cell.boolean? %>
                     <% selected = ActiveModel::Type::Boolean.new.cast(cell.value) %>
                     <% answered = cell.value.present? || cell.value == false %>
                     <input type="hidden" name="<%= field_name %>" value="">

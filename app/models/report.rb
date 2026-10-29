@@ -14,6 +14,7 @@ class Report < ApplicationRecord
   has_one :electrical_panel_report_stat, dependent: :destroy
   has_one :room_report_stat, dependent: :destroy
   has_many :sections, -> { order(:position) }, as: :sectionable, dependent: :destroy, inverse_of: :sectionable, autosave: true
+  has_many :table_dropdowns, dependent: :destroy, autosave: true, inverse_of: :report
   has_and_belongs_to_many :signatures
 
   attr_accessor :allowed_signatures, :section_inputs, :sections_copied_from_template, :removed_file_blob_ids
@@ -46,10 +47,11 @@ class Report < ApplicationRecord
   end
 
   def signature_ids=(ids)
-    @submitted_signature_ids = Array(ids).reject(&:blank?).map(&:to_i)
+    ids = Array(ids).reject(&:blank?).map(&:to_i).uniq
+    @submitted_signature_ids = ids
     remember_linked_signature_ids
     @validate_signatures = true
-    super
+    super(ids)
   end
 
   private

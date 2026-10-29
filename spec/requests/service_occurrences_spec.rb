@@ -193,6 +193,24 @@ RSpec.describe "ServiceOccurrences", type: :request do
       expect(response).to have_http_status(:success)
       expect(response.body).to include("service_occurrences")
     end
+
+    it "updates a completed occurrence after the service is removed" do
+      pending_occurrence.update!(status: :completed, completed_on: Date.current, due_on: Date.current)
+      les.unassign!
+
+      patch location_equipment_service_occurrence_path(location_equipment, pending_occurrence),
+        params: {
+          intent: "completed",
+          service_occurrence: {completed_on: Date.yesterday, notes: "Corregido después de quitar"}
+        },
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      pending_occurrence.reload
+      expect(response).to have_http_status(:success)
+      expect(pending_occurrence.completed_on).to eq(Date.yesterday)
+      expect(pending_occurrence.notes).to eq("Corregido después de quitar")
+      expect(les.reload).to be_removed
+    end
   end
 
   context "when user is a client" do

@@ -50,7 +50,7 @@ module ReportsHelper
   def template_report_maintenance_rows(report)
     location_equipment = report.location_equipment
 
-    location_equipment.location_equipment_services.includes(:service_kind).order("service_kinds.name").map do |les|
+    location_equipment.location_equipment_services.active.includes(:service_kind).order("service_kinds.name").map do |les|
       next_date = les.next_due_on
 
       {

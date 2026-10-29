@@ -203,5 +203,28 @@ RSpec.describe "/service_kinds", type: :request do
       delete service_kind_url(service_kind)
       expect(response).to redirect_to(service_kinds_url)
     end
+
+    it "does not delete a service kind assigned to an asset" do
+      service_kind = create(:service_kind, name: "Termografía")
+      create(:location_equipment_service, location_equipment: create(:location_equipment), service_kind: service_kind)
+
+      delete service_kind_url(service_kind), as: :turbo_stream
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(service_kind.reload).not_to be_discarded
+      expect(response.body).to include("No se puede eliminar porque está asignado a otros activos")
+      expect(response.body).not_to include('action="remove"')
+    end
+
+    it "redirects with an alert when the request is html" do
+      service_kind = create(:service_kind)
+      create(:location_equipment_service, location_equipment: create(:location_equipment), service_kind: service_kind)
+
+      delete service_kind_url(service_kind)
+
+      expect(response).to redirect_to(service_kinds_url)
+      expect(flash[:alert]).to eq("No se puede eliminar porque está asignado a otros activos")
+      expect(service_kind.reload).not_to be_discarded
+    end
   end
 end

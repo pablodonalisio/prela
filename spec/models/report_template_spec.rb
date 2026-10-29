@@ -196,6 +196,33 @@ RSpec.describe ReportTemplate, type: :model do
     expect(boolean_cell.errors[:fixed]).to be_present
   end
 
+  it "requires a table dropdown on a dropdown cell and allows metrics" do
+    dropdown = create(:table_dropdown, name: "Estado")
+    cell = TableCell.new(value_type: "dropdown", row_index: 0, column_index: 0, for_metrics: true, table_dropdown: dropdown)
+    cell.validate
+    expect(cell.errors[:table_dropdown]).to be_empty
+    expect(cell.errors[:for_metrics]).to be_empty
+    expect(cell.errors[:fixed]).to be_empty
+
+    cell.table_dropdown = nil
+    cell.validate
+    expect(cell.errors[:table_dropdown]).to be_present
+  end
+
+  it "rejects a fixed value on a dropdown cell" do
+    dropdown = create(:table_dropdown)
+    cell = TableCell.new(value_type: "dropdown", fixed: true, table_dropdown: dropdown, row_index: 0, column_index: 0)
+    expect(cell).not_to be_valid
+    expect(cell.errors[:fixed]).to be_present
+  end
+
+  it "clears the table dropdown when the type is no longer dropdown" do
+    dropdown = create(:table_dropdown)
+    cell = TableCell.new(value_type: "string", table_dropdown: dropdown, row_index: 0, column_index: 0)
+    cell.validate
+    expect(cell.table_dropdown_id).to be_nil
+  end
+
   it "rejects metrics on a non numeric cell" do
     cell = TableCell.new(value_type: "string", for_metrics: true, row_index: 0, column_index: 0)
     expect(cell).not_to be_valid

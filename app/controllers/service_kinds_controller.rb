@@ -39,11 +39,18 @@ class ServiceKindsController < ApplicationController
   end
 
   def destroy
-    @service_kind.discard!
-
     respond_to do |format|
-      format.html { redirect_to service_kinds_path, notice: "El tipo de servicio a sido eliminado.", status: :see_other }
-      format.turbo_stream { flash.now[:notice] = "El tipo de servicio a sido eliminado." }
+      if @service_kind.discard
+        format.html { redirect_to service_kinds_path, notice: "El tipo de servicio a sido eliminado.", status: :see_other }
+        format.turbo_stream { flash.now[:notice] = "El tipo de servicio a sido eliminado." }
+      else
+        alert = @service_kind.errors.full_messages.to_sentence
+        format.html { redirect_to service_kinds_path, alert: alert, status: :see_other }
+        format.turbo_stream do
+          flash.now[:alert] = alert
+          render :destroy_blocked, status: :unprocessable_entity
+        end
+      end
     end
   end
 

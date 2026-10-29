@@ -8,23 +8,34 @@
 <% choice = f.object.choice %>
 <% type_label = t("activerecord.attributes.equipment_kind.field_types.#{f.object.value_type}", default: "Texto") %>
 <% summary = [type_label] %>
+<% if f.object.dropdown? && f.object.table_dropdown %>
+  <% summary << f.object.table_dropdown.name %>
+  <% item_labels = f.object.table_dropdown.table_dropdown_values.map(&:label) %>
+  <% summary << item_labels.join(", ") if item_labels.any? %>
+<% end %>
 <% if f.object.fixed? %>
   <% summary << "Valor fijo" %>
   <% summary << f.object.value if f.object.value.present? %>
 <% end %>
 <% summary << "Métricas" if f.object.for_metrics? %>
+<% dropdowns = Array(@table_dropdowns) %>
+<% current_dropdown = f.object.table_dropdown %>
+<% dropdowns |= [current_dropdown] if current_dropdown %>
 <div class="relative" data-cell data-row="<%= row_index %>" data-col="<%= column_index %>" data-action="pointerdown->table-grid#prepareRadio click->table-grid#releaseRadio change->table-grid#syncCell input->table-grid#syncCell">
   <%= f.hidden_field :id, data: {name: "id"} %>
   <%= f.hidden_field :row_index, value: row_index, data: {name: "row_index"} %>
   <%= f.hidden_field :column_index, value: column_index, data: {name: "column_index"} %>
   <%= f.hidden_field :_destroy, value: "0", data: {name: "_destroy"} %>
 
-  <button type="button"
-          class="w-full rounded-lg border border-default bg-neutral-secondary-medium px-2 py-1.5 text-left text-sm text-heading <%= "border-red-500" if f.object.errors.any? %>"
-          data-cell-trigger="<%= menu_id %>"
-          data-cell-summary>
-    <%= summary.join(" · ") %>
-  </button>
+  <div class="grid w-full grid-cols-[minmax(0,1fr)]">
+    <button type="button"
+            class="block w-full truncate rounded-lg border border-default bg-neutral-secondary-medium px-2 py-1.5 text-left text-sm text-heading <%= "border-red-500" if f.object.errors.any? %>"
+            title="<%= summary.join(" · ") %>"
+            data-cell-trigger="<%= menu_id %>"
+            data-cell-summary>
+      <%= summary.join(" · ") %>
+    </button>
+  </div>
 
   <div id="<%= menu_id %>"
        class="z-50 hidden w-64 rounded-lg border border-default bg-neutral-primary p-3 shadow-lg"
@@ -55,6 +66,32 @@
                    data-name="label">
           </div>
         <% end %>
+      <% end %>
+    </fieldset>
+
+    <fieldset data-dropdown-options class="mb-3 mt-2 <%= "hidden" unless f.object.dropdown? %>" <%= "disabled" unless f.object.dropdown? %>>
+      <label class="mb-1 block text-xs font-medium text-body">Valores desplegables</label>
+      <select class="<%= input_classes %>"
+              name="<%= f.object_name %>[table_dropdown_id]"
+              data-name="table_dropdown_id">
+        <option value="">Seleccionar</option>
+        <% dropdowns.each do |dropdown| %>
+          <option value="<%= dropdown.id %>"
+                  data-labels="<%= dropdown.table_dropdown_values.map(&:label).join(", ") %>"
+                  <%= "selected" if f.object.table_dropdown_id == dropdown.id %>><%= dropdown.name %></option>
+        <% end %>
+      </select>
+      <% if dropdowns.empty? %>
+        <p class="mt-1 text-xs text-body-subtle" data-dropdown-empty>No hay valores desplegables.</p>
+      <% end %>
+      <p class="mt-0">
+        <%= link_to "Crear lista de valores desplegable",
+              new_table_dropdown_path(from: "cell"),
+              class: "text-xs text-fg-brand hover:underline",
+              data: {turbo_frame: "remote_modal", action: "click->table-grid#rememberDropdownCell"} %>
+      </p>
+      <% if f.object.errors[:table_dropdown].any? %>
+        <p class="mt-1 text-sm text-red-500"><%= f.object.errors[:table_dropdown].to_sentence %></p>
       <% end %>
     </fieldset>
 
@@ -90,15 +127,15 @@
       <% end %>
     </div>
 
-    <div class="flex items-center <%= "cursor-not-allowed opacity-50" unless f.object.numeric? %>" data-metrics-row>
+    <div class="flex items-center <%= "cursor-not-allowed opacity-50" unless f.object.metrics_allowed? %>" data-metrics-row>
       <input id="<%= menu_id %>-metrics"
              class="<%= radio_classes %>"
              type="radio"
              name="<%= f.object_name %>[choice]"
              value="metrics"
              data-name="for_metrics"
-             <%= "checked" if choice == "metrics" %>
-             <%= "disabled" unless f.object.numeric? %>>
+             <%= "checked" if choice == "metrics" && f.object.metrics_allowed? %>
+             <%= "disabled" unless f.object.metrics_allowed? %>>
       <label class="<%= radio_label_classes %>" for="<%= menu_id %>-metrics">Métricas</label>
     </div>
     <% if f.object.errors[:for_metrics].any? %>

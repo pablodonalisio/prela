@@ -1,0 +1,5 @@
+<%= turbo_frame_tag @table_dropdown do %>
+  <%= render "shared/remote_modal", title: "Nuevo listado de valores desplegables" do %>
+    <%= render "form", table_dropdown: @table_dropdown, from: params[:from] %>
+  <% end %>
+<% end %>
