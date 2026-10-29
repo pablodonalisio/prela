@@ -25,18 +25,23 @@ RSpec.describe "Supplies", type: :system do
       fill_in "Nombre", with: "Aceite equivalente"
 
       click_button "Buscar"
-      expect(page).to have_select("Filtrar por tipo", selected: "Aceite")
       expect(page).to have_field("Aceite hidráulico ISO 68")
       expect(page).to have_no_field("BP5-12")
+    end
 
-      select "Todos", from: "Filtrar por tipo"
+    choose_kind "Todos"
+    within("#remote_modal") do
       expect(page).to have_field("BP5-12")
+    end
 
-      select "Batería", from: "Filtrar por tipo"
+    choose_kind "Batería"
+    within("#remote_modal") do
       expect(page).to have_field("BP5-12")
       expect(page).to have_no_field("Aceite hidráulico ISO 68")
+    end
 
-      select "Aceite", from: "Filtrar por tipo"
+    choose_kind "Aceite"
+    within("#remote_modal") do
       fill_in "Buscar insumo", with: "iso 68"
       expect(page).to have_field("Aceite hidráulico ISO 68")
       expect(page).to have_no_field("BP5-12")
@@ -54,5 +59,10 @@ RSpec.describe "Supplies", type: :system do
     end
 
     expect(page).to have_text("Referencias cruzadas: Aceite hidráulico ISO 68")
+  end
+
+  def choose_kind(name)
+    find("label", exact_text: "Filtrar por tipo").find(:xpath, "..").find("button[aria-haspopup='listbox']").click
+    find("[role='listbox'] button", exact_text: name).click
   end
 end

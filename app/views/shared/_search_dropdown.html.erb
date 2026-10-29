@@ -1,8 +1,7 @@
-<%# locals: (label:, name:, options:, selected: [], id: nil, placeholder: nil, search_placeholder: "Buscar", empty_message: "Sin resultados", blank_message: nil, error: nil, hint: nil, chips: false, kind_options: [], kind_id: nil, kind_field: nil) %>
+<%# locals: (label:, name:, options:, selected: [], id: nil, placeholder: nil, search_placeholder: "Buscar", empty_message: "Sin resultados", blank_message: nil, error: nil, hint: nil, kind_options: [], kind_id: nil, kind_field: nil) %>
 <% dropdown_id = id || "search-dropdown-#{SecureRandom.hex(4)}" %>
 <% placeholder = placeholder || label %>
 <% selected_ids = Array(selected).map(&:to_s) %>
-<% chips = local_assigns.fetch(:chips, false) %>
 <% hint = local_assigns[:hint] %>
 <% error = local_assigns[:error] %>
 <% kind_options = Array(local_assigns[:kind_options]) %>
@@ -11,16 +10,13 @@
 
 <div class="relative mb-5"
      data-controller="dropdown-search"
-     data-dropdown-search-chips-value="<%= chips %>"
      <% if kind_field.present? %>data-dropdown-search-kind-field-value="<%= kind_field %>"<% end %>>
   <p class="mb-2 text-sm font-medium text-heading"><%= label %></p>
   <% if options.any? %>
     <%= hidden_field_tag name, "" %>
-    <% if chips %>
-      <div class="relative z-[60] mb-2 flex flex-wrap gap-2 empty:mb-0 empty:hidden"
-           data-dropdown-search-target="chips"
-           data-action="click->dropdown-search#remove"></div>
-    <% end %>
+    <div class="relative z-[60] mb-2 flex flex-wrap gap-2 empty:mb-0 empty:hidden"
+         data-dropdown-search-target="chips"
+         data-action="click->dropdown-search#remove"></div>
     <button type="button"
             class="inline-flex w-full items-center justify-between rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading hover:bg-neutral-tertiary focus:border-brand focus:ring-brand"
             data-dropdown-search-target="button"
@@ -41,8 +37,7 @@
             <select id="<%= dropdown_id %>-kind"
                     data-dropdown-search-target="kind"
                     data-action="change->dropdown-search#filter"
-                    data-native-select-skip
-                    class="block w-full rounded-lg border border-default bg-neutral-primary p-2 text-sm text-heading focus:border-brand focus:ring-brand">
+                    class="block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading focus:border-brand focus:ring-brand">
               <option value="">Todos</option>
               <% kind_options.each do |kind_label, kind_value| %>
                 <option value="<%= kind_value %>" <%= "selected" if kind_value.to_s == kind_id %>><%= kind_label %></option>

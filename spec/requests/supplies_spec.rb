@@ -140,7 +140,7 @@ RSpec.describe "/supplies", type: :request do
       get new_supply_url
 
       expect(response.body).to include("Referencias cruzadas")
-      expect(response.body).to include('data-dropdown-search-chips-value="true"')
+      expect(response.body).to include('data-dropdown-search-target="chips"')
       expect(response.body).to include("Filtrar por tipo")
       expect(response.body).to include("Todos")
       expect(response.body).to include("Aceite hidráulico ISO 68")

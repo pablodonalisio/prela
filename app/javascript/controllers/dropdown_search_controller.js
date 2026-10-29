@@ -1,12 +1,10 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Flowbite dropdown with search. Without chips, the button shows the checked
-// item labels. With chips, those labels stay on removable chips and the button
-// keeps its placeholder.
+// Flowbite dropdown with search. Checked items stay on removable chips and
+// the button keeps its placeholder.
 export default class extends Controller {
   static targets = ["button", "label", "menu", "search", "item", "empty", "chips", "kind"];
   static values = {
-    chips: { type: Boolean, default: false },
     kindField: { type: String, default: "" }
   };
 
@@ -62,12 +60,14 @@ export default class extends Controller {
       placement: "bottom-start",
       triggerType: "click",
       offsetDistance: 8,
+      ignoreClickOutsideClass: "search-dropdown-popover",
       onShow: () => {
         this._matchButtonWidth();
         this.searchTarget.value = "";
         this._filter();
         this.searchTarget.focus();
-      }
+      },
+      onHide: () => this._hideKindMenu()
     });
   }
 
@@ -93,7 +93,15 @@ export default class extends Controller {
     const value = this.kindSelectElement.value;
     const known = Array.from(this.kindTarget.options).some((option) => option.value === value);
     this.kindTarget.value = known ? value : "";
-    this._filter();
+    this.kindTarget.dispatchEvent(new Event("change", {bubbles: true}));
+  }
+
+  _hideKindMenu() {
+    if (!this.menuTarget.id) return;
+
+    document.querySelectorAll(`[data-search-dropdown="${this.menuTarget.id}"]`).forEach((menu) => {
+      window.FlowbiteInstances?.getInstance?.("Dropdown", menu.id)?.hide();
+    });
   }
 
   _filter() {
@@ -122,15 +130,9 @@ export default class extends Controller {
       return checkbox?.checked ? [{ label: item.dataset.label, value: checkbox.value }] : [];
     });
 
-    if (this.chipsValue) {
-      this._syncChips(selected);
-      this.labelTarget.textContent = this.labelTarget.dataset.placeholder;
-      this.labelTarget.classList.add("text-body-subtle");
-      return;
-    }
-
-    this.labelTarget.textContent = selected.length ? selected.map((item) => item.label).join(", ") : this.labelTarget.dataset.placeholder;
-    this.labelTarget.classList.toggle("text-body-subtle", selected.length === 0);
+    this._syncChips(selected);
+    this.labelTarget.textContent = this.labelTarget.dataset.placeholder;
+    this.labelTarget.classList.add("text-body-subtle");
   }
 
   _syncChips(selected) {
