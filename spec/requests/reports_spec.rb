@@ -608,6 +608,24 @@ RSpec.describe "Reports", type: :request do
         expect(response).to have_http_status(:success)
       end
 
+      it "shows the client name in the logo cell when the client has no avatar" do
+        get location_equipment_report_path(location_equipment, template_report)
+
+        expect(response.body).to include("template-report__client-name")
+        expect(response.body).to include(location_equipment.client.name)
+      end
+
+      it "shows the client avatar when one is attached" do
+        location_equipment.client.avatar.attach(
+          Rack::Test::UploadedFile.new(Rails.root.join("app/assets/images/placeholder-img.jpeg"), "image/jpeg")
+        )
+
+        get location_equipment_report_path(location_equipment, template_report)
+
+        expect(response.body).to include("template-report__logo--client")
+        expect(response.body).not_to include("template-report__client-name")
+      end
+      
       it "prints the selected boolean option label" do
         cell = measurement_section.table_section.table_cells.find_by!(row_index: 0, column_index: 1)
         cell.update!(value_type: "boolean", for_metrics: false, fixed: false)
@@ -648,6 +666,7 @@ RSpec.describe "Reports", type: :request do
         expect(response.body).to include("Limpieza general")
         expect(response.body).to include("Verificación de torque")
         expect(response.body).to include("template-report__list-check--on")
+        expect(response.body).not_to include("template-report__list-index")
         expect(response.body).not_to include("Comentarios y recomendaciones técnicas")
       end
     end
@@ -658,6 +677,133 @@ RSpec.describe "Reports", type: :request do
       it "renders a successful response" do
         get edit_location_equipment_report_path(location_equipment, template_report)
         expect(response).to be_successful
+      end
+    end
+  end
+
+  context "uploaded report" do
+    let(:equipment_kind) { "ups" }
+    let(:pdf) { fixture_file_upload(Rails.root.join("spec/fixtures/files/test.pdf"), "application/pdf") }
+
+    describe "GET /new" do
+      it "renders the upload form when report_mode is upload" do
+        get new_location_equipment_report_path(location_equipment, report_mode: "upload")
+
+        expect(response).to be_successful
+        expect(response.body).to include("Subir archivo")
+        expect(response.body).to include("Arrastra archivos aquí o haz click para seleccionar.")
+        expect(response.body).not_to include("Estado de la sala")
+      end
+    end
+
+    describe "POST /create" do
+      let(:image) { fixture_file_upload(Rails.root.join("app/assets/images/placeholder-img.jpeg"), "image/jpeg") }
+
+      it "attaches a PDF and an image and skips generated stats" do
+        expect {
+          post location_equipment_reports_path(location_equipment), params: {
+            report: {date: Date.new(2024, 3, 2), uploaded: true, files: [pdf, image]}
+          }
+        }.to change(Report, :count).by(1)
+
+        report = Report.last
+        expect(report).to be_uploaded
+        expect(report.files.map(&:content_type)).to contain_exactly("application/pdf", "image/jpeg")
+        expect(report.pdf).not_to be_attached
+        expect(report.room_report_stat).to be_nil
+        expect(report.ups_report_stat).to be_nil
+        expect(report.number).to be_nil
+      end
+
+      it "rejects a report without a file" do
+        expect {
+          post location_equipment_reports_path(location_equipment), params: {
+            report: {date: Date.new(2024, 3, 2), uploaded: true}
+          }
+        }.not_to change(Report, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("no puede estar en blanco")
+      end
+
+      it "rejects a disallowed file type" do
+        text_file = Tempfile.new(["notes", ".txt"])
+        text_file.write("not a report")
+        text_file.rewind
+        text = Rack::Test::UploadedFile.new(text_file.path, "text/plain", original_filename: "notes.txt")
+
+        expect {
+          post location_equipment_reports_path(location_equipment), params: {
+            report: {date: Date.new(2024, 3, 2), uploaded: true, files: [text]}
+          }
+        }.not_to change(Report, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("debe ser PDF, JPEG o PNG")
+      end
+    end
+
+    describe "PATCH /update" do
+      let(:uploaded_report) { create(:report, :uploaded, location_equipment: location_equipment) }
+
+      it "changes the date without generating a new PDF" do
+        original_blob_id = uploaded_report.files.first.blob.id
+        expect(Reports::PdfGenerator).not_to receive(:call)
+
+        patch location_equipment_report_path(location_equipment, uploaded_report), params: {
+          report: {date: Date.new(2020, 5, 1)}
+        }
+
+        uploaded_report.reload
+        expect(uploaded_report.date.to_date).to eq(Date.new(2020, 5, 1))
+        expect(uploaded_report.files.map { |file| file.blob.id }).to eq([original_blob_id])
+      end
+    end
+
+    describe "GET /show" do
+      it "lists a single PDF and offers a download" do
+        uploaded_report = create(:report, :uploaded, location_equipment: location_equipment)
+
+        get location_equipment_report_path(location_equipment, uploaded_report)
+
+        expect(response).to be_successful
+        expect(response.body).to include("test.pdf")
+        expect(response.body).to include("uploaded-report-viewer")
+        expect(response.body).to include("flex-col md:flex-row")
+        expect(response.body).to include("/rails/active_storage/blobs/proxy/")
+        expect(response.body).to include("disposition=inline")
+        expect(response.body).to include("disposition=attachment")
+        expect(response.body).to include(uploaded_report.date.strftime("%d/%m/%Y - %H:%M"))
+      end
+
+      it "lists every file and previews the first one" do
+        uploaded_report = create(:report, :uploaded, location_equipment: location_equipment)
+        uploaded_report.files.attach(
+          io: StringIO.new(File.binread(Rails.root.join("app/assets/images/placeholder-img.jpeg"))),
+          filename: "photo.jpg",
+          content_type: "image/jpeg"
+        )
+
+        get location_equipment_report_path(location_equipment, uploaded_report)
+
+        expect(response).to be_successful
+        expect(response.body).to include("uploaded-report-viewer")
+        expect(response.body).to include("test.pdf")
+        expect(response.body).to include("photo.jpg")
+        expect(response.body).to include("absolute inset-0 hidden")
+      end
+    end
+
+    describe "GET /edit" do
+      it "renders the upload dropzone with the saved files" do
+        uploaded_report = create(:report, :uploaded, location_equipment: location_equipment)
+
+        get edit_location_equipment_report_path(location_equipment, uploaded_report)
+
+        expect(response).to be_successful
+        expect(response.body).to include("Arrastra archivos aquí o haz click para seleccionar.")
+        expect(response.body).to include("test.pdf")
+        expect(response.body).not_to include("Estado de la sala")
       end
     end
   end

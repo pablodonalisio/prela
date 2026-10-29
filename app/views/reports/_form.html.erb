@@ -17,11 +17,19 @@
                       class: "inline-block border-b-2 px-4 py-3 #{@report_mode == "template" ? "border-brand text-fg-brand" : "border-transparent text-body hover:border-default hover:text-heading"}",
                       data: { turbo_frame: dom_id(report) } %>
         </li>
+        <li>
+          <%= link_to "Subir archivo",
+                      new_location_equipment_report_path(location_equipment, report_mode: "upload"),
+                      class: "inline-block border-b-2 px-4 py-3 #{@report_mode == "upload" ? "border-brand text-fg-brand" : "border-transparent text-body hover:border-default hover:text-heading"}",
+                      data: { turbo_frame: dom_id(report) } %>
+        </li>
       </ul>
     </div>
   <% end %>
 
-  <% if report.template_based? || (@report_mode == "template" && report.new_record?) %>
+  <% if report.uploaded? || (@report_mode == "upload" && report.new_record?) %>
+    <%= render "upload_form", f: f, report: report %>
+  <% elsif report.template_based? || (@report_mode == "template" && report.new_record?) %>
     <%= render "template_form", f: f, report: report, location_equipment: location_equipment %>
   <% else %>
     <%= render "legacy_form", f: f, report: report, location_equipment: location_equipment %>

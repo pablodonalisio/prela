@@ -62,7 +62,10 @@
                                                        action: "change->location-equipment-form#displayInputsForEquipmentKind"}} %>
       <p class="mb-3 text-sm text-body">
         ¿No encontrás el equipo?
-        <%= link_to "Crear uno nuevo", new_equipment_path, class: "text-fg-brand hover:underline" %>.
+        <%= link_to "Crear uno nuevo",
+                    equipment_index_path(open: "new"),
+                    class: "text-fg-brand hover:underline",
+                    data: {turbo_frame: "_top"} %>.
       </p>
 
       <%= f.input :avatar, label: "Foto",

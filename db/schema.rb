@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_22_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -427,6 +427,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_22_130000) do
     t.integer "number"
     t.jsonb "observation_values", default: {}, null: false
     t.boolean "template_based", default: false, null: false
+    t.boolean "uploaded", default: false, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
     t.index ["report_template_id"], name: "index_reports_on_report_template_id"
