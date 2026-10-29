@@ -214,6 +214,13 @@ RSpec.describe Report, type: :model do
       expect(report.errors[:signatures]).to include("incluye una firma que no se puede usar")
     end
 
+    it "stores a duplicated signature id once" do
+      report.signature_ids = [shared_signature.id, shared_signature.id.to_s, ""]
+
+      expect(report.save).to be true
+      expect(report.reload.signatures).to contain_exactly(shared_signature)
+    end
+
     it "keeps a signature already linked to the report" do
       report.save!
       report.signatures << other_signature

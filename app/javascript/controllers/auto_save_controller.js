@@ -23,18 +23,22 @@ export default class extends Controller {
 
   getFormData() {
     const form = new FormData(this.formTarget);
-    let data = [];
+    const data = {};
 
-    for (var pair of form.entries()) {
-      const name = pair[0];
-      const value = pair[1];
+    for (const [name, value] of form.entries()) {
+      if (!this.field_to_save(name, value)) continue;
 
-      if (this.field_to_save(name, value)) {
-        data.push([name, value]);
+      if (name.endsWith("[]")) {
+        if (value === "") continue;
+
+        data[name] ||= [];
+        data[name].push(value);
+      } else {
+        data[name] = value;
       }
     }
 
-    return Object.fromEntries(data);
+    return data;
   }
 
   field_to_save(name, value) {
@@ -51,18 +55,30 @@ export default class extends Controller {
   }
 
   setFormData() {
-    if (localStorage.getItem(this.localStorageKey) != null) {
-      const data = JSON.parse(localStorage.getItem(this.localStorageKey));
+    if (localStorage.getItem(this.localStorageKey) == null) return;
+    if (!this.hasFormTarget) return;
 
-      const form = this.formTarget;
+    const data = JSON.parse(localStorage.getItem(this.localStorageKey));
+    const form = this.formTarget;
 
-      Object.entries(data).forEach((entry) => {
-        let name = entry[0];
-        let value = entry[1];
-        let input = form.querySelector(`[name='${name}']`);
-        input && (input.value = value);
-      });
-    }
+    Object.entries(data).forEach(([name, value]) => {
+      if (name.endsWith("[]")) {
+        this.restoreCheckboxes(form, name, value);
+        return;
+      }
+
+      const input = form.querySelector(`[name='${name}']`);
+      if (input) input.value = value;
+    });
+  }
+
+  restoreCheckboxes(form, name, value) {
+    const values = (Array.isArray(value) ? value : [value]).map(String).filter((item) => item !== "");
+    const inputs = form.querySelectorAll(`[name='${name}']`);
+
+    inputs.forEach((input) => {
+      if (input.type === "checkbox") input.checked = values.includes(input.value);
+    });
   }
 
   deleteLocalStorage() {

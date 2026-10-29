@@ -46,10 +46,11 @@ class Report < ApplicationRecord
   end
 
   def signature_ids=(ids)
-    @submitted_signature_ids = Array(ids).reject(&:blank?).map(&:to_i)
+    ids = Array(ids).reject(&:blank?).map(&:to_i).uniq
+    @submitted_signature_ids = ids
     remember_linked_signature_ids
     @validate_signatures = true
-    super
+    super(ids)
   end
 
   private
