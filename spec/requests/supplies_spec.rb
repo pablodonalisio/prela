@@ -215,7 +215,7 @@ RSpec.describe "/supplies", type: :request do
 
       expect {
         post supplies_url,
-             params: {supply: valid_attributes.merge(reference_url: "www.mercadolibre.com.ar", avatar: avatar)},
+             params: {supply: valid_attributes.merge(name: nil, avatar: avatar)},
              as: :turbo_stream
       }.not_to change(Supply, :count)
 

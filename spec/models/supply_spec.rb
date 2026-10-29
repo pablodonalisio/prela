@@ -51,8 +51,11 @@ RSpec.describe Supply, type: :model do
     expect(build(:supply, reference_url: "  ")).to be_valid
   end
 
-  it "rejects a reference url that is not http or https" do
-    expect(build(:supply, reference_url: "ftp://example.com/oil")).not_to be_valid
+  it "stores a reference url as written" do
+    supply = build(:supply, reference_url: " www.mercadolibre.com.ar ")
+
+    expect(supply).to be_valid
+    expect(supply.reference_url).to eq("www.mercadolibre.com.ar")
   end
 
   it "stores a replacement once and shows it from both supplies" do

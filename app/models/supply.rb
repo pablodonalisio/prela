@@ -2,8 +2,6 @@ class Supply < ApplicationRecord
   include Discard::Model
   include Filterable
 
-  REFERENCE_URL_FORMAT = URI::DEFAULT_PARSER.make_regexp(%w[http https])
-
   belongs_to :supply_kind
   has_one_attached :avatar
   has_many :replacement_links, class_name: "SupplyReplacement", foreign_key: :supply_id, inverse_of: :supply, dependent: :destroy
@@ -15,7 +13,6 @@ class Supply < ApplicationRecord
   after_save :sync_replacements, if: :replacement_ids_assigned?
 
   validates :name, presence: true
-  validates :reference_url, format: {with: REFERENCE_URL_FORMAT}, allow_blank: true
   validate :name_must_be_unique
   validate :supply_kind_must_be_visible
 
