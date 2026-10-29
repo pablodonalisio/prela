@@ -417,6 +417,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
     t.integer "number"
     t.jsonb "observation_values", default: {}, null: false
     t.boolean "template_based", default: false, null: false
+    t.boolean "uploaded", default: false, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
     t.index ["location_equipment_id"], name: "index_reports_on_location_equipment_id"
     t.index ["report_template_id"], name: "index_reports_on_report_template_id"

@@ -1,10 +1,13 @@
 class Report < ApplicationRecord
   MAX_IMAGES = 10
+  MAX_UPLOADED_FILES = 20
+  UPLOADED_CONTENT_TYPES = %w[application/pdf image/jpeg image/jpg image/png].freeze
 
   belongs_to :location_equipment
   belongs_to :report_template, optional: true
 
   has_one_attached :pdf
+  has_many_attached :files
   has_many_attached :images
   has_one :ups_report_stat, dependent: :destroy
   has_one :power_unit_report_stat, dependent: :destroy
@@ -13,7 +16,7 @@ class Report < ApplicationRecord
   has_many :sections, -> { order(:position) }, as: :sectionable, dependent: :destroy, inverse_of: :sectionable, autosave: true
   has_and_belongs_to_many :signatures
 
-  attr_accessor :allowed_signatures, :section_inputs, :sections_copied_from_template
+  attr_accessor :allowed_signatures, :section_inputs, :sections_copied_from_template, :removed_file_blob_ids
 
   accepts_nested_attributes_for :ups_report_stat, :power_unit_report_stat, :electrical_panel_report_stat, :room_report_stat
 
@@ -27,6 +30,9 @@ class Report < ApplicationRecord
   validate :images_count_within_limit
   validate :number_unique_for_equipment_and_year, if: -> { number.present? && date.present? }
   validate :signatures_must_be_selectable, if: :validate_signatures?
+  validate :uploaded_files_must_be_present, if: :uploaded?
+  validate :uploaded_files_must_be_documents, if: :uploaded?
+  validate :uploaded_files_count_within_limit, if: :uploaded?
 
   def report_code
     return unless template_based? && number.present? && date.present?
@@ -94,6 +100,27 @@ class Report < ApplicationRecord
     return unless images.attached?
 
     errors.add(:images, "no puede tener más de #{MAX_IMAGES} imágenes.") if images.count > MAX_IMAGES
+  end
+
+  def uploaded_files_must_be_present
+    errors.add(:files, :blank) if kept_uploaded_files.empty?
+  end
+
+  def uploaded_files_must_be_documents
+    return if kept_uploaded_files.all? { |file| UPLOADED_CONTENT_TYPES.include?(file.content_type) }
+
+    errors.add(:files, "debe ser PDF, JPEG o PNG")
+  end
+
+  def uploaded_files_count_within_limit
+    return if kept_uploaded_files.size <= MAX_UPLOADED_FILES
+
+    errors.add(:files, "no puede tener más de #{MAX_UPLOADED_FILES} archivos")
+  end
+
+  def kept_uploaded_files
+    removed_ids = Array(removed_file_blob_ids).map(&:to_i)
+    files.reject { |file| removed_ids.include?(file.blob_id) }
   end
 
   def validate_signatures?

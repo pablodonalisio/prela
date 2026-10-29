@@ -13,8 +13,59 @@
       </div>
       <%= render "template_report", report: report %>
     </div>
+  <% elsif report.uploaded? %>
+    <% files = report.files.select { |file| file.blob.present? } %>
+    <% if files.any? %>
+      <div class="uploaded-report flex h-full min-h-0 flex-col md:flex-row" data-controller="uploaded-report-viewer">
+        <aside class="flex max-h-[40%] w-full shrink-0 flex-col border-b border-default md:max-h-none md:w-56 md:border-b-0 md:border-r">
+          <% if report.date.present? %>
+            <p class="shrink-0 border-b border-default px-3 py-3 text-sm font-medium text-heading">
+              Fecha del informe: <%= report.date.strftime("%d/%m/%Y - %H:%M") %>
+            </p>
+          <% end %>
+          <ul class="min-h-0 flex-1 overflow-y-auto">
+          <% files.each_with_index do |file, index| %>
+            <li class="flex items-center">
+              <button type="button"
+                      class="min-w-0 flex-1 truncate px-3 py-2 text-left text-sm text-body hover:bg-neutral-tertiary hover:text-heading aria-selected:bg-neutral-secondary-medium aria-selected:font-medium aria-selected:text-heading"
+                      data-uploaded-report-viewer-target="tab"
+                      data-action="uploaded-report-viewer#show"
+                      aria-selected="<%= index.zero? %>"
+                      title="<%= file.filename %>">
+                <%= file.filename %>
+              </button>
+              <%= link_to rails_blob_path(file, disposition: "attachment"),
+                          class: "inline-flex h-8 w-8 shrink-0 items-center justify-center text-body hover:bg-neutral-tertiary hover:text-heading",
+                          data: {turbo: false},
+                          title: "Descargar",
+                          aria: {label: "Descargar #{file.filename}"} do %>
+                <%= icon(:download) %>
+              <% end %>
+            </li>
+          <% end %>
+          </ul>
+        </aside>
+        <div class="relative min-h-0 flex-1">
+          <% files.each_with_index do |file, index| %>
+            <div class="absolute inset-0 <%= "hidden" unless index.zero? %>" data-uploaded-report-viewer-target="panel">
+              <% if file.image? %>
+                <div class="flex h-full items-center justify-center p-3 md:p-4">
+                  <%= image_tag rails_storage_proxy_path(file), class: "max-h-full max-w-full object-contain", alt: file.filename.to_s %>
+                </div>
+              <% elsif file.content_type == "application/pdf" %>
+                <%= tag.iframe src: rails_storage_proxy_path(file, disposition: "inline"),
+                               class: "h-full w-full border-0",
+                               title: file.filename.to_s %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <p class="px-5 py-4">No hay archivos adjuntos a este informe.</p>
+    <% end %>
   <% elsif report.pdf.attached? %>
-    <%= tag.iframe src: rails_blob_path(report.pdf, disposition: "inline"), class: "h-full w-full border-0" %>
+    <%= tag.iframe src: rails_storage_proxy_path(report.pdf, disposition: "inline"), class: "h-full w-full border-0" %>
   <% else %>
     <p>No hay un PDF adjunto a este informe.</p>
   <% end %>
