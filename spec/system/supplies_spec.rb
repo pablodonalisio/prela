@@ -23,38 +23,35 @@ RSpec.describe "Supplies", type: :system do
 
     within("#remote_modal") do
       fill_in "Nombre", with: "Aceite equivalente"
-
       click_button "Buscar"
-      expect(page).to have_field("Aceite hidráulico ISO 68")
-      expect(page).to have_no_field("BP5-12")
     end
+
+    expect(page).to have_field("Aceite hidráulico ISO 68")
+    expect(page).to have_no_field("BP5-12")
 
     choose_kind "Todos"
-    within("#remote_modal") do
-      expect(page).to have_field("BP5-12")
-    end
+    expect(page).to have_field("BP5-12")
 
     choose_kind "Batería"
-    within("#remote_modal") do
-      expect(page).to have_field("BP5-12")
-      expect(page).to have_no_field("Aceite hidráulico ISO 68")
-    end
+    expect(page).to have_field("BP5-12")
+    expect(page).to have_no_field("Aceite hidráulico ISO 68")
 
     choose_kind "Aceite"
+    fill_in "Buscar insumo", with: "iso 68"
+    expect(page).to have_field("Aceite hidráulico ISO 68")
+    expect(page).to have_no_field("BP5-12")
+
+    check "Aceite hidráulico ISO 68"
+    expect(page).to have_button("Quitar Aceite hidráulico ISO 68")
+
+    click_button "Quitar Aceite hidráulico ISO 68"
+    expect(page).to have_no_button("Quitar Aceite hidráulico ISO 68")
+
+    click_button "Buscar" unless page.has_field?("Aceite hidráulico ISO 68", wait: 0)
+    expect(page).to have_unchecked_field("Aceite hidráulico ISO 68")
+    check "Aceite hidráulico ISO 68"
+    click_button "Buscar"
     within("#remote_modal") do
-      fill_in "Buscar insumo", with: "iso 68"
-      expect(page).to have_field("Aceite hidráulico ISO 68")
-      expect(page).to have_no_field("BP5-12")
-
-      check "Aceite hidráulico ISO 68"
-      expect(page).to have_button("Quitar Aceite hidráulico ISO 68")
-
-      click_button "Quitar Aceite hidráulico ISO 68"
-      expect(page).to have_no_button("Quitar Aceite hidráulico ISO 68")
-
-      click_button "Buscar" unless page.has_field?("Aceite hidráulico ISO 68", wait: 0)
-      expect(page).to have_unchecked_field("Aceite hidráulico ISO 68")
-      check "Aceite hidráulico ISO 68"
       click_on "Aceptar"
     end
 

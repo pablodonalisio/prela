@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Flowbite dropdown with search. Checked items stay on removable chips and
-// the button keeps its placeholder.
+// Searchable checkbox menu. It stays in normal flow under the button so a modal
+// can scroll to it. Checked items stay on removable chips.
 export default class extends Controller {
   static targets = ["button", "label", "menu", "search", "item", "empty", "chips", "kind"];
   static values = {
@@ -9,7 +9,12 @@ export default class extends Controller {
   };
 
   connect() {
-    if (!this.hasSearchTarget) return;
+    if (!this.hasMenuTarget || !this.hasSearchTarget) return;
+
+    this.menu = this.menuTarget;
+    this.searchInput = this.searchTarget;
+    this.kindSelect = this.hasKindTarget ? this.kindTarget : null;
+    this.emptyMessage = this.hasEmptyTarget ? this.emptyTarget : null;
 
     this._initDropdown();
 
@@ -18,22 +23,25 @@ export default class extends Controller {
       if (event.key === "Enter") event.preventDefault();
     };
     this.onChange = () => this._syncLabel();
-    this.searchTarget.addEventListener("input", this.onSearch);
-    this.searchTarget.addEventListener("keydown", this.onSearchKeydown);
-    this.menuTarget.addEventListener("change", this.onChange);
+    this.onKindChange = () => this._filter();
+    this.searchInput.addEventListener("input", this.onSearch);
+    this.searchInput.addEventListener("keydown", this.onSearchKeydown);
+    this.menu.addEventListener("change", this.onChange);
+    this.kindSelect?.addEventListener("change", this.onKindChange);
     this._followKindField();
     this._syncLabel();
   }
 
   disconnect() {
-    if (!this.hasSearchTarget) return;
+    if (!this.searchInput) return;
 
-    this.searchTarget.removeEventListener("input", this.onSearch);
-    this.searchTarget.removeEventListener("keydown", this.onSearchKeydown);
-    this.menuTarget.removeEventListener("change", this.onChange);
+    this.searchInput.removeEventListener("input", this.onSearch);
+    this.searchInput.removeEventListener("keydown", this.onSearchKeydown);
+    this.menu.removeEventListener("change", this.onChange);
+    this.kindSelect?.removeEventListener("change", this.onKindChange);
     this.kindSelectElement?.removeEventListener("change", this.onKindFieldChange);
-    this.dropdown?.destroyAndRemoveInstance?.();
-    this.dropdown = null;
+    this.buttonTarget.removeEventListener("click", this.onButtonClick);
+    document.removeEventListener("click", this.onDocumentClick);
   }
 
   filter() {
@@ -45,7 +53,7 @@ export default class extends Controller {
     if (!button || !this.hasChipsTarget || !this.chipsTarget.contains(button)) return;
 
     event.preventDefault();
-    const checkbox = this.element.querySelector(`input[type="checkbox"][value="${CSS.escape(button.dataset.value)}"]`);
+    const checkbox = this.menu.querySelector(`input[type="checkbox"][value="${CSS.escape(button.dataset.value)}"]`);
     if (!checkbox) return;
 
     checkbox.checked = false;
@@ -53,33 +61,64 @@ export default class extends Controller {
   }
 
   _initDropdown() {
-    const Dropdown = window.Flowbite?.Dropdown ?? window.Flowbite?.default?.Dropdown ?? window.Dropdown;
-    if (!Dropdown) return;
+    this.onButtonClick = () => {
+      if (this.menu.classList.contains("hidden")) this._show();
+      else this._hide();
+    };
+    this.onDocumentClick = (event) => {
+      if (this.menu.classList.contains("hidden")) return;
+      if (this.element.contains(event.target)) return;
+      if (event.target.closest?.(".search-dropdown-popover")) return;
 
-    this.dropdown = new Dropdown(this.menuTarget, this.buttonTarget, {
-      placement: "bottom-start",
-      triggerType: "click",
-      offsetDistance: 8,
-      ignoreClickOutsideClass: "search-dropdown-popover",
-      onShow: () => {
-        this._matchButtonWidth();
-        this.searchTarget.value = "";
-        this._filter();
-        this.searchTarget.focus();
-      },
-      onHide: () => this._hideKindMenu()
-    });
+      this._hide();
+    };
+    this.buttonTarget.addEventListener("click", this.onButtonClick);
+    document.addEventListener("click", this.onDocumentClick);
   }
 
-  _matchButtonWidth() {
-    const width = `${this.buttonTarget.offsetWidth}px`;
-    this.menuTarget.style.width = width;
-    this.menuTarget.style.minWidth = width;
-    this.menuTarget.style.maxWidth = width;
+  _show() {
+    this.menu.classList.remove("hidden");
+    this.searchInput.value = "";
+    this._filter();
+    this.searchInput.focus({preventScroll: true});
+    this._revealMenu();
+  }
+
+  _hide() {
+    this.menu.classList.add("hidden");
+    this._hideKindMenu();
+  }
+
+  // The menu stays in the modal, under the button. Scroll the modal so the
+  // whole list is reachable instead of hanging off the screen.
+  _revealMenu() {
+    const scroller = this._scrollParent();
+    if (!scroller) {
+      this.menu.scrollIntoView({block: "nearest"});
+      return;
+    }
+
+    const menuRect = this.menu.getBoundingClientRect();
+    const scrollerRect = scroller.getBoundingClientRect();
+    const hiddenBelow = menuRect.bottom - scrollerRect.bottom + 8;
+    if (hiddenBelow <= 0) return;
+
+    const roomUntilMenuTop = menuRect.top - scrollerRect.top;
+    scroller.scrollBy({top: Math.min(hiddenBelow, Math.max(0, roomUntilMenuTop))});
+  }
+
+  _scrollParent() {
+    let node = this.buttonTarget.parentElement;
+    while (node && node !== document.body) {
+      const overflow = getComputedStyle(node).overflowY;
+      if (overflow === "auto" || overflow === "scroll") return node;
+      node = node.parentElement;
+    }
+    return null;
   }
 
   _followKindField() {
-    if (!this.hasKindTarget || !this.kindFieldValue) return;
+    if (!this.kindSelect || !this.kindFieldValue) return;
 
     this.kindSelectElement = this.element.closest("form")?.querySelector(`select[name="${this.kindFieldValue}"]`);
     if (!this.kindSelectElement) return;
@@ -91,25 +130,25 @@ export default class extends Controller {
 
   _applyKindFromForm() {
     const value = this.kindSelectElement.value;
-    const known = Array.from(this.kindTarget.options).some((option) => option.value === value);
-    this.kindTarget.value = known ? value : "";
-    this.kindTarget.dispatchEvent(new Event("change", {bubbles: true}));
+    const known = Array.from(this.kindSelect.options).some((option) => option.value === value);
+    this.kindSelect.value = known ? value : "";
+    this.kindSelect.dispatchEvent(new Event("change", {bubbles: true}));
   }
 
   _hideKindMenu() {
-    if (!this.menuTarget.id) return;
+    if (!this.menu.id) return;
 
-    document.querySelectorAll(`[data-search-dropdown="${this.menuTarget.id}"]`).forEach((menu) => {
+    document.querySelectorAll(`[data-search-dropdown="${this.menu.id}"]`).forEach((menu) => {
       window.FlowbiteInstances?.getInstance?.("Dropdown", menu.id)?.hide();
     });
   }
 
   _filter() {
-    const tokens = this._normalize(this.searchTarget.value).split(/\s+/).filter(Boolean);
-    const kindId = this.hasKindTarget ? this.kindTarget.value : "";
+    const tokens = this._normalize(this.searchInput.value).split(/\s+/).filter(Boolean);
+    const kindId = this.kindSelect?.value || "";
     let visible = 0;
 
-    this.itemTargets.forEach((item) => {
+    this.menu.querySelectorAll("[data-dropdown-search-target='item']").forEach((item) => {
       const kindMatch = !kindId || item.dataset.kindId === kindId;
       const label = this._normalize(item.dataset.label);
       const match = kindMatch && tokens.every((token) => label.includes(token));
@@ -117,7 +156,7 @@ export default class extends Controller {
       if (match) visible += 1;
     });
 
-    if (this.hasEmptyTarget) this.emptyTarget.classList.toggle("hidden", visible > 0);
+    this.emptyMessage?.classList.toggle("hidden", visible > 0);
   }
 
   _normalize(value) {
@@ -125,7 +164,7 @@ export default class extends Controller {
   }
 
   _syncLabel() {
-    const selected = this.itemTargets.flatMap((item) => {
+    const selected = [...this.menu.querySelectorAll("[data-dropdown-search-target='item']")].flatMap((item) => {
       const checkbox = item.querySelector("input[type='checkbox']");
       return checkbox?.checked ? [{ label: item.dataset.label, value: checkbox.value }] : [];
     });
