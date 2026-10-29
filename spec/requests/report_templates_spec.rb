@@ -32,6 +32,7 @@ RSpec.describe "/report_templates", type: :request do
       expect(response).to be_successful
       expect(response.body).to include("Lista")
       expect(response.body).to include("Valores Desplegables")
+      expect(response.body).to include("Duplicar")
     end
 
     it "renders only the template list on the lista tab" do
@@ -92,6 +93,53 @@ RSpec.describe "/report_templates", type: :request do
 
       it "redirects to the root path" do
         get new_report_template_url
+        expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe "GET /duplicate" do
+    it "renders a new form prefilled from the source template" do
+      report_template = create(:report_template, :with_measurements, :with_list, name: "Preventivo UPS")
+      dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno", "Malo"])
+      cell = report_template.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      cell.update!(value_type: "dropdown", for_metrics: false, fixed: false, table_dropdown: dropdown)
+
+      expect {
+        get duplicate_report_template_url(report_template)
+      }.not_to change(ReportTemplate, :count)
+
+      expect(response).to be_successful
+      document = Nokogiri::HTML(response.body)
+      expect(document.text).to include("Duplicar plantilla de informe de control")
+      expect(document.at_css("input[name='report_template[name]']")["value"]).to eq("Preventivo UPS (copia)")
+      expect(document.css("input[name$='[title]']").map { |input| input["value"] }).to include("Notas", "Tensión L1", "Fotos", "Protocolo")
+      expect(document.at_css("input[name$='[value]'][value='L1']")).to be_present
+      expect(document.css("input[name$='[name]']").map { |input| input["value"] }).to include("Limpieza general", "Verificación de torque")
+      expect(document.css("option[value='#{dropdown.id}'][selected]")).not_to be_empty
+      form = document.at_css("form#new_report_template")
+      expect(form["action"]).to eq(report_templates_path)
+      expect(form["method"]).to eq("post")
+      expect(form.at_css("input[name='_method']")).to be_nil
+    end
+
+    it "uses the next available copy name" do
+      report_template = create(:report_template, name: "Preventivo UPS")
+      create(:report_template, name: "Preventivo UPS (copia)")
+
+      get duplicate_report_template_url(report_template)
+
+      document = Nokogiri::HTML(response.body)
+      expect(document.at_css("input[name='report_template[name]']")["value"]).to eq("Preventivo UPS (copia) 2")
+    end
+
+    context "when user is not admin" do
+      let(:user) { create(:user) }
+
+      it "redirects to the root path" do
+        report_template = create(:report_template)
+        get duplicate_report_template_url(report_template)
         expect(flash[:alert]).to eq "No estás autorizado para realizar esta acción."
         expect(response).to redirect_to(root_path)
       end

@@ -256,6 +256,56 @@ RSpec.describe ReportTemplate, type: :model do
     expect(table.errors[:column_count]).to be_present
   end
 
+  describe ".build_copy" do
+    it "builds an unsaved template with the same sections" do
+      source = create(:report_template, :with_measurements, :with_list, name: "Preventivo UPS")
+      dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno"])
+      table = source.sections.find_by!(title: "Tensión L1").table_section
+      metric = table.table_cells.find_by!(row_index: 0, column_index: 1)
+      metric.update!(value_type: "boolean", for_metrics: false, fixed: false)
+      metric.table_cell_options.find_by!(value: true).update!(label: "Aprobado")
+      metric.table_cell_options.find_by!(value: false).update!(label: "Rechazado")
+      fixed = table.table_cells.find_by!(row_index: 0, column_index: 0)
+      fixed.update!(value_type: "dropdown", fixed: false, for_metrics: true, value: nil, table_dropdown: dropdown)
+      location_equipment = create(:location_equipment)
+      source.location_equipments << location_equipment
+
+      copy = ReportTemplate.build_copy(source)
+
+      expect(copy).to be_new_record
+      expect(copy.name).to eq("Preventivo UPS (copia)")
+      expect(copy.location_equipments).to be_empty
+      expect(copy.sections.map { |section| [section.title, section.kind, section.position] }).to eq(
+        source.sections.order(:position).map { |section| [section.title, section.kind, section.position] }
+      )
+
+      copied_table = copy.sections.find { |section| section.title == "Tensión L1" }.table_section
+      copied_fixed = copied_table.cell_at(0, 0)
+      expect(copied_fixed.value_type).to eq("dropdown")
+      expect(copied_fixed.table_dropdown_id).to eq(dropdown.id)
+      expect(copied_fixed).to be_for_metrics
+      copied_metric = copied_table.cell_at(0, 1)
+      expect(copied_metric.option_label(true)).to eq("Aprobado")
+      expect(copied_metric.option_label(false)).to eq("Rechazado")
+      expect(copied_table.label_at("column", 0).label).to eq("Fase")
+      expect(copied_table.label_at("row", 0).label).to eq("Línea 1")
+
+      copied_list = copy.sections.find { |section| section.title == "Protocolo" }.list_section
+      expect(copied_list.list_items.map(&:name)).to eq(["Limpieza general", "Verificación de torque"])
+
+      expect(copy.save).to be true
+      expect(copy.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 0).table_dropdown).to eq(dropdown)
+      expect(source.reload.location_equipments).to contain_exactly(location_equipment)
+    end
+
+    it "picks the next name when a copy already exists" do
+      source = create(:report_template, name: "Preventivo UPS")
+      create(:report_template, name: "Preventivo UPS (copia)")
+
+      expect(ReportTemplate.build_copy(source).name).to eq("Preventivo UPS (copia) 2")
+    end
+  end
+
   describe "#location_equipments_count" do
     it "returns the number of associated visible location equipments" do
       report_template = create(:report_template, :with_measurements)

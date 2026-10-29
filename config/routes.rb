@@ -57,7 +57,9 @@ Rails.application.routes.draw do
   end
   resources :assets_categories, only: [:create, :update, :destroy]
   resources :service_kinds, except: %i[show]
-  resources :report_templates, except: [:show]
+  resources :report_templates, except: [:show] do
+    get "duplicate", on: :member
+  end
   resources :table_dropdowns, except: [:show]
   resources :tags, except: [:show]
 end

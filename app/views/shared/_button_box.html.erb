@@ -9,7 +9,7 @@
   <li>
     <%= link_to "Duplicar", duplicate_path,
                 class: "block px-4 py-2 hover:bg-neutral-tertiary-medium hover:text-heading",
-                data: {turbo_frame: "remote_modal"} %>
+                data: {turbo_frame: local_assigns.fetch(:duplicate_frame, "remote_modal")} %>
   </li>
 <% end %>
 <% if local_assigns[:qr_label_path].present? %>

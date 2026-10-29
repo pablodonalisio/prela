@@ -38,8 +38,81 @@ class ReportTemplate < ApplicationRecord
   end
 
   class << self
+    def build_copy(source)
+      copy = new(name: available_copy_name(source.name))
+      source.sections.with_details.each do |section|
+        copy_section(copy, section)
+      end
+      copy
+    end
+
+    def available_copy_name(name)
+      base = "#{name} (copia)"
+      candidate = base
+      suffix = 2
+
+      while exists?(normalized_name: normalize_name(candidate))
+        candidate = "#{base} #{suffix}"
+        suffix += 1
+      end
+
+      candidate
+    end
+
     def normalize_name(value)
       ActiveSupport::Inflector.transliterate(value.to_s.strip.downcase)
+    end
+
+    private
+
+    def copy_section(copy, source)
+      section = copy.sections.build(
+        title: source.title,
+        position: source.position,
+        kind: source.kind
+      )
+
+      case source.kind
+      when "text"
+        section.build_text_section
+      when "images"
+        section.build_image_section
+      when "table"
+        copy_table_section(section, source.table_section)
+      when "list"
+        copy_list_section(section, source.list_section)
+      end
+    end
+
+    def copy_table_section(section, source)
+      table = section.build_table_section(
+        row_count: source.row_count,
+        column_count: source.column_count
+      )
+      source.table_cells.each do |cell|
+        copied = table.table_cells.build(
+          row_index: cell.row_index,
+          column_index: cell.column_index,
+          value_type: cell.value_type,
+          value: cell.value,
+          for_metrics: cell.for_metrics,
+          fixed: cell.fixed,
+          table_dropdown_id: cell.table_dropdown_id
+        )
+        cell.table_cell_options.each do |option|
+          copied.table_cell_options.build(value: option.value, label: option.label)
+        end
+      end
+      source.table_labels.each do |label|
+        table.table_labels.build(axis: label.axis, position: label.position, label: label.label)
+      end
+    end
+
+    def copy_list_section(section, source)
+      list = section.build_list_section
+      source.list_items.each do |item|
+        list.list_items.build(name: item.name, position: item.position)
+      end
     end
   end
 end

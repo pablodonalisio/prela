@@ -29,5 +29,9 @@ RSpec.describe ReportTemplatesController, type: :routing do
     it "routes to #destroy" do
       expect(delete: "/report_templates/1").to route_to("report_templates#destroy", id: "1")
     end
+
+    it "routes to #duplicate" do
+      expect(get: "/report_templates/1/duplicate").to route_to("report_templates#duplicate", id: "1")
+    end
   end
 end

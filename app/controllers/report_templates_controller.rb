@@ -1,6 +1,6 @@
 class ReportTemplatesController < ApplicationController
-  before_action :set_report_template, only: %i[edit update destroy]
-  before_action :set_table_dropdowns, only: %i[new create edit update]
+  before_action :set_report_template, only: %i[edit update destroy duplicate]
+  before_action :set_table_dropdowns, only: %i[new create edit update duplicate]
 
   def index
     @tab = params[:tab].to_s == "valores" ? "valores" : "lista"
@@ -16,6 +16,12 @@ class ReportTemplatesController < ApplicationController
   end
 
   def edit
+  end
+
+  def duplicate
+    @page_title = "Duplicar plantilla de informe de control"
+    @report_template = ReportTemplate.build_copy(@report_template)
+    render :new
   end
 
   def create
