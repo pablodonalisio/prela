@@ -1,0 +1,17 @@
+<div class="flex justify-end px-4 pt-4 md:px-6">
+  <% if current_user.admin? %>
+    <%= render "shared/button_link", text: "Agregar", path: new_table_dropdown_path %>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "table_dropdowns", class: "mx-4 mt-4 flex flex-col gap-2 md:mx-6" do %>
+  <% if @table_dropdowns.any? %>
+    <%= render @table_dropdowns %>
+  <% else %>
+    <%= render "shared/empty_collection",
+               id: "table_dropdowns_empty",
+               message: "No hay valores desplegables todavía.",
+               action_text: current_user.admin? ? "Agregar" : nil,
+               action_path: current_user.admin? ? new_table_dropdown_path : nil %>
+  <% end %>
+<% end %>

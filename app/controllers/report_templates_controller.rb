@@ -1,8 +1,14 @@
 class ReportTemplatesController < ApplicationController
   before_action :set_report_template, only: %i[edit update destroy]
+  before_action :set_table_dropdowns, only: %i[new create edit update]
 
   def index
-    @report_templates = policy_scope(ReportTemplate).includes(:sections)
+    @tab = params[:tab].to_s == "valores" ? "valores" : "lista"
+    if @tab == "valores"
+      @table_dropdowns = policy_scope(TableDropdown).includes(:table_dropdown_values).order(:name)
+    else
+      @report_templates = policy_scope(ReportTemplate).includes(:sections)
+    end
   end
 
   def new
@@ -45,6 +51,10 @@ class ReportTemplatesController < ApplicationController
     @report_template = authorize ReportTemplate.find(params.expect(:id))
   end
 
+  def set_table_dropdowns
+    @table_dropdowns = policy_scope(TableDropdown).includes(:table_dropdown_values).order(:name).to_a
+  end
+
   def report_template_params
     params.require(:report_template).permit(
       :name,
@@ -59,7 +69,7 @@ class ReportTemplatesController < ApplicationController
         table_section_attributes: [
           :id, :row_count, :column_count, :_destroy,
           table_cells_attributes: [
-            :id, :row_index, :column_index, :value_type, :value, :for_metrics, :fixed, :choice, :_destroy,
+            :id, :row_index, :column_index, :value_type, :value, :for_metrics, :fixed, :choice, :table_dropdown_id, :_destroy,
             {table_cell_options_attributes: %i[id value label _destroy]}
           ],
           table_labels_attributes: %i[id axis position label _destroy]

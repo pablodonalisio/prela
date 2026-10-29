@@ -30,6 +30,38 @@ RSpec.describe "/report_templates", type: :request do
       create(:report_template, :with_measurements)
       get report_templates_url
       expect(response).to be_successful
+      expect(response.body).to include("Lista")
+      expect(response.body).to include("Valores Desplegables")
+    end
+
+    it "renders only the template list on the lista tab" do
+      create(:report_template, name: "Plantilla visible")
+      create(:table_dropdown, name: "Set oculto")
+      get report_templates_url
+      expect(response.body).to include("Plantilla visible")
+      expect(response.body).not_to include("Set oculto")
+    end
+
+    it "renders only dropdown sets on the valores tab" do
+      create(:report_template, name: "Plantilla oculta")
+      create(:table_dropdown, name: "Set visible", values: ["Bueno"])
+      get report_templates_url, params: {tab: "valores"}
+      expect(response.body).to include("Set visible")
+      expect(response.body).to include("Bueno")
+      expect(response.body).not_to include("Plantilla oculta")
+    end
+
+    it "does not list a set copied onto a report" do
+      dropdown = create(:table_dropdown, name: "Estado catalogo", values: ["Unico"])
+      template = create(:report_template, :with_measurements)
+      cell = template.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      cell.update!(value_type: "dropdown", for_metrics: false, fixed: false, table_dropdown: dropdown)
+      report = create(:report, :template_based, report_template: template)
+
+      get report_templates_url, params: {tab: "valores"}
+
+      expect(response.body).to include(%(id="table_dropdown_#{dropdown.id}"))
+      expect(response.body).not_to include(%(id="table_dropdown_#{report.table_dropdowns.pick(:id)}"))
     end
 
     context "when user is not admin" do
@@ -85,6 +117,9 @@ RSpec.describe "/report_templates", type: :request do
       expect(response.body).to include(%(data-table-grid-max-columns-value="#{TableSection::MAX_COLUMNS}"))
       expect(response.body).to include(%(max="#{TableSection::MAX_ROWS}"))
       expect(response.body).to include(%(max="#{TableSection::MAX_COLUMNS}"))
+      expect(response.body).to include("Crear lista de valores desplegable")
+      expect(response.body).to include('data-turbo-frame="remote_modal"')
+      expect(response.body).to include('id="dropdown_catalog_events"')
     end
 
     it "renders boolean option inputs only for a boolean cell" do
@@ -104,6 +139,19 @@ RSpec.describe "/report_templates", type: :request do
       expect(response.body).to include('value="Rechazado"')
       expect(response.body).to include('data-boolean-options class="mb-3 mt-2 space-y-2 "')
       expect(response.body).to include('data-boolean-options class="mb-3 mt-2 space-y-2 hidden" disabled')
+    end
+
+    it "shows the dropdown item names on the cell" do
+      dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno", "Malo"])
+      report_template = create(:report_template, :with_measurements)
+      cell = report_template.sections.find_by!(title: "Tensión L1").table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+      cell.update!(value_type: "dropdown", for_metrics: false, fixed: false, table_dropdown: dropdown)
+
+      get edit_report_template_url(report_template)
+
+      expect(response.body).to include("Desplegable · Estado · Bueno, Malo")
+      expect(response.body).to include('data-labels="Bueno, Malo"')
+      expect(response.body).to include("truncate")
     end
 
     it "renders the invalid cell message" do
@@ -233,6 +281,46 @@ RSpec.describe "/report_templates", type: :request do
         cell = ReportTemplate.find_by!(name: "Estados").sections.first.table_section.table_cells.first
         expect(cell.option_label(true)).to eq("Aprobado")
         expect(cell.option_label(false)).to eq("Rechazado")
+      end
+
+      it "saves a dropdown cell bound to a set" do
+        dropdown = create(:table_dropdown, name: "Estado")
+        post report_templates_url, params: {
+          report_template: {
+            name: "Con desplegable",
+            sections_attributes: {
+              "0" => {
+                title: "Resultado",
+                position: 0,
+                kind: "table",
+                table_section_attributes: {
+                  row_count: 1,
+                  column_count: 1,
+                  table_labels_attributes: {
+                    "0" => {axis: "column", position: 0, label: "Estado"},
+                    "1" => {axis: "row", position: 0, label: "Resultado"}
+                  },
+                  table_cells_attributes: {
+                    "0" => {
+                      row_index: 0,
+                      column_index: 0,
+                      value_type: "dropdown",
+                      table_dropdown_id: dropdown.id,
+                      choice: "metrics"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        cell = ReportTemplate.find_by!(name: "Con desplegable").sections.first.table_section.table_cells.first
+        expect(cell.value_type).to eq("dropdown")
+        expect(cell.table_dropdown).to eq(dropdown)
+        expect(cell).to be_for_metrics
+        expect(cell).not_to be_fixed
+        expect(cell.value).to be_nil
       end
     end
 

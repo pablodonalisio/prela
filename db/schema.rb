@@ -531,8 +531,32 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
     t.boolean "fixed", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "table_dropdown_id"
+    t.index ["table_dropdown_id"], name: "index_table_cells_on_table_dropdown_id"
     t.index ["table_section_id", "row_index", "column_index"], name: "index_table_cells_on_position", unique: true
     t.index ["table_section_id"], name: "index_table_cells_on_table_section_id"
+  end
+
+  create_table "table_dropdown_values", force: :cascade do |t|
+    t.bigint "table_dropdown_id", null: false
+    t.string "label", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_dropdown_id", "position"], name: "index_table_dropdown_values_on_table_dropdown_id_and_position"
+    t.index ["table_dropdown_id"], name: "index_table_dropdown_values_on_table_dropdown_id"
+  end
+
+  create_table "table_dropdowns", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "report_id"
+    t.index ["discarded_at"], name: "index_table_dropdowns_on_discarded_at"
+    t.index ["normalized_name"], name: "index_table_dropdowns_on_normalized_name", unique: true, where: "((discarded_at IS NULL) AND (report_id IS NULL))"
+    t.index ["report_id"], name: "index_table_dropdowns_on_report_id"
   end
 
   create_table "table_labels", force: :cascade do |t|
@@ -672,7 +696,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "signatures", "users"
   add_foreign_key "table_cell_options", "table_cells", on_delete: :cascade
+  add_foreign_key "table_cells", "table_dropdowns", on_delete: :restrict
   add_foreign_key "table_cells", "table_sections", on_delete: :cascade
+  add_foreign_key "table_dropdown_values", "table_dropdowns", on_delete: :cascade
+  add_foreign_key "table_dropdowns", "reports", on_delete: :restrict
   add_foreign_key "table_labels", "table_sections", on_delete: :cascade
   add_foreign_key "table_sections", "sections", on_delete: :cascade
   add_foreign_key "taggings", "tags"

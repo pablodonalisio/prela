@@ -278,6 +278,20 @@ RSpec.describe "Reports", type: :request do
     end
 
     describe "GET /template_fields" do
+      it "returns a select with the dropdown set labels" do
+        dropdown = create(:table_dropdown, name: "Estado", values: ["Bueno", "Malo"])
+        cell = measurement_section.table_section.table_cells.find_by!(row_index: 0, column_index: 1)
+        cell.update!(value_type: "dropdown", for_metrics: true, fixed: false, table_dropdown: dropdown)
+
+        get template_fields_location_equipment_reports_path(location_equipment, report_template_id: report_template.id)
+
+        expect(response.body).to include('<option value=""></option>')
+        expect(response.body).not_to include("Seleccionar")
+        expect(response.body).to include("Bueno")
+        expect(response.body).to include("Malo")
+        expect(response.body).to include("<select")
+      end
+
       it "returns boolean option labels for a boolean cell" do
         cell = measurement_section.table_section.table_cells.find_by!(row_index: 0, column_index: 1)
         cell.update!(value_type: "boolean", for_metrics: false, fixed: false)
