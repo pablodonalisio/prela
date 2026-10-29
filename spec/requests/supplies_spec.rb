@@ -209,6 +209,19 @@ RSpec.describe "/supplies", type: :request do
       }.not_to change(Supply, :count)
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "rerenders the form when a new supply with a photo is invalid" do
+      avatar = fixture_file_upload(Rails.root.join("spec/test_files/placeholder-img.jpeg"), "image/jpeg")
+
+      expect {
+        post supplies_url,
+             params: {supply: valid_attributes.merge(reference_url: "www.mercadolibre.com.ar", avatar: avatar)},
+             as: :turbo_stream
+      }.not_to change(Supply, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Foto")
+    end
   end
 
   describe "PATCH /update" do
