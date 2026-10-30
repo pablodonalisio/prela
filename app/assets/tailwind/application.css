@@ -218,3 +218,9 @@ html.theme-transitioning *::after {
 .service-date-tree:has(> h3 > [aria-expanded="true"]) > h3 > [aria-expanded="false"] {
   color: var(--color-body);
 }
+
+/* The Flowbite spinner is the only loading indicator. Turbo injects this bar
+   at runtime with a max z-index, which would stack a second cue on top. */
+.turbo-progress-bar {
+  display: none;
+}
