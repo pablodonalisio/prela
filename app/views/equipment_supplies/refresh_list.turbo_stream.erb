@@ -1,0 +1,7 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash" %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@location_equipment, :supplies) do %>
+  <%= render "equipment_supplies/list", location_equipment: @location_equipment %>
+<% end %>

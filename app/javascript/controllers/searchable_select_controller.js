@@ -10,17 +10,27 @@ import {
 // The original <select> is kept hidden and stays the real form field,
 // so all existing change-event listeners keep working.
 export default class extends Controller {
+  static values = {
+    kindFilter: { type: String, default: "" }
+  };
+
   connect() {
     this.options = Array.from(this.element.options)
       .filter((o) => o.value !== "")
-      .map((o) => ({ value: o.value, label: o.text }));
+      .map((o) => ({ value: o.value, label: o.text, kindId: o.dataset.kindId || "" }));
 
     this._buildUI();
     this._setDisplayFromSelect();
     this.element.style.display = "none";
+    this._followKindFilter();
   }
 
   disconnect() {
+    this.kindFilterElement?.removeEventListener("change", this.onKindFilterChange);
+    this.scrollParent?.removeEventListener("scroll", this.onReposition, true);
+    window.removeEventListener("resize", this.onReposition);
+    document.removeEventListener("click", this._onDocClick, true);
+    this.dropdown?.remove();
     this.wrapper?.remove();
     this.element.style.display = "";
   }
@@ -48,8 +58,15 @@ export default class extends Controller {
 
     this.dropdown = document.createElement("ul");
     this.dropdown.className =
-      `combobox-dropdown absolute left-0 top-full mt-1 w-full list-none p-0 ${SELECT_MENU_CLASSES} ${SELECT_LIST_CLASSES}`;
-    this.wrapper.appendChild(this.dropdown);
+      `combobox-dropdown fixed z-[80] list-none p-0 ${SELECT_MENU_CLASSES} ${SELECT_LIST_CLASSES}`;
+    document.body.appendChild(this.dropdown);
+
+    this.onReposition = () => {
+      if (!this.dropdown.classList.contains("hidden")) this._positionDropdown();
+    };
+    this.scrollParent = this._scrollParent();
+    this.scrollParent.addEventListener("scroll", this.onReposition, true);
+    window.addEventListener("resize", this.onReposition);
 
     this.input.addEventListener("input", () => this._onInput());
     this.input.addEventListener("focus", () => this._showDropdown(this.input.value));
@@ -63,11 +80,31 @@ export default class extends Controller {
     if (this.input.value === "") this._clear();
   }
 
+  _followKindFilter() {
+    if (!this.kindFilterValue) return;
+
+    this.kindFilterElement = document.getElementById(this.kindFilterValue);
+    if (!this.kindFilterElement) return;
+
+    this.onKindFilterChange = () => {
+      const kindId = this.kindFilterElement.value;
+      const selected = this.options.find((option) => option.value === this.element.value);
+      if (selected && kindId && selected.kindId !== kindId) this._clear();
+      if (this.dropdown && !this.dropdown.classList.contains("hidden")) {
+        this._showDropdown(this.input.value);
+      }
+    };
+    this.kindFilterElement.addEventListener("change", this.onKindFilterChange);
+  }
+
   _showDropdown(query) {
+    const kindId = this.kindFilterElement?.value || "";
     const q = query.toLowerCase().trim();
-    const filtered = q
-      ? this.options.filter((o) => o.label.toLowerCase().includes(q))
-      : this.options;
+    const filtered = this.options.filter((option) => {
+      const kindMatch = !kindId || option.kindId === kindId;
+      const textMatch = !q || option.label.toLowerCase().includes(q);
+      return kindMatch && textMatch;
+    });
 
     this.dropdown.innerHTML = "";
     if (filtered.length === 0) {
@@ -90,7 +127,41 @@ export default class extends Controller {
         this.dropdown.appendChild(li);
       });
     }
+    this._positionDropdown();
     this.dropdown.classList.remove("hidden");
+  }
+
+  _positionDropdown() {
+    const rect = this.input.getBoundingClientRect();
+    const gap = 4;
+    const preferred = 224;
+    const spaceBelow = window.innerHeight - rect.bottom - gap - 8;
+    const spaceAbove = rect.top - gap - 8;
+    const openUp = spaceBelow < 160 && spaceAbove > spaceBelow;
+    const maxHeight = Math.max(80, Math.min(preferred, openUp ? spaceAbove : spaceBelow));
+
+    this.dropdown.style.zIndex = "80";
+    this.dropdown.style.left = `${rect.left}px`;
+    this.dropdown.style.width = `${rect.width}px`;
+    this.dropdown.style.maxHeight = `${maxHeight}px`;
+
+    if (openUp) {
+      this.dropdown.style.top = "auto";
+      this.dropdown.style.bottom = `${window.innerHeight - rect.top + gap}px`;
+    } else {
+      this.dropdown.style.bottom = "auto";
+      this.dropdown.style.top = `${rect.bottom + gap}px`;
+    }
+  }
+
+  _scrollParent() {
+    let node = this.input.parentElement;
+    while (node && node !== document.body) {
+      const overflow = getComputedStyle(node).overflowY;
+      if (overflow === "auto" || overflow === "scroll") return node;
+      node = node.parentElement;
+    }
+    return window;
   }
 
   _select(opt) {
@@ -153,6 +224,7 @@ export default class extends Controller {
   }
 
   _onDocClick = (e) => {
-    if (!this.wrapper?.contains(e.target)) this._hideDropdown();
+    if (this.wrapper?.contains(e.target) || this.dropdown?.contains(e.target)) return;
+    this._hideDropdown();
   };
 }

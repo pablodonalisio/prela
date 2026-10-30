@@ -1,10 +1,27 @@
+<% location_equipment = equipment_supply.location_equipment %>
+<% assigned_ids = location_equipment.equipment_supplies.where.not(id: equipment_supply.id).select(:supply_id) %>
+<% supply_choices = Supply.visible.joins(:supply_kind).includes(:supply_kind).where.not(id: assigned_ids).order("supply_kinds.name", "supplies.name") %>
+<% kinds = supply_choices.map(&:supply_kind).uniq.sort_by(&:name) %>
+<% selected_kind_id = equipment_supply.supply&.supply_kind_id %>
 <%= simple_form_for equipment_supply do |f| %>
-  <%= f.hidden_field :equipmentable_id, value: equipment_supply.equipmentable_id %>
-  <%= f.hidden_field :equipmentable_type, value: equipment_supply.equipmentable_type %>
-  <%= f.hidden_field :suppliable_type, value: equipment_supply.suppliable_type %>
-  <%= f.input :suppliable_id, label: "Insumo",
-                              collection: equipment_supply.suppliable_type.constantize.pluck(:model, :id),
-                              prompt: "Seleccione un insumo" %>
-  <%= f.input :quantity %>
+  <%= f.hidden_field :location_equipment_id %>
+  <div class="mb-5">
+    <label for="equipment-supply-kind-filter" class="mb-2 block text-sm font-medium text-heading">Tipo</label>
+    <select id="equipment-supply-kind-filter"
+            data-native-select-skip
+            class="block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 text-sm text-heading focus:border-brand focus:ring-brand">
+      <option value="">Todos</option>
+      <% kinds.each do |kind| %>
+        <option value="<%= kind.id %>" <%= "selected" if kind.id == selected_kind_id %>><%= kind.name %></option>
+      <% end %>
+    </select>
+  </div>
+  <%= f.input :supply_id, label: "Insumo" do %>
+    <%= f.select :supply_id,
+                 options_for_select(supply_choices.map { |item| [item.name, item.id, {data: {kind_id: item.supply_kind_id}}] }, equipment_supply.supply_id),
+                 {include_blank: "Seleccione un insumo"},
+                 data: {controller: "searchable-select", searchable_select_kind_filter_value: "equipment-supply-kind-filter"} %>
+  <% end %>
+  <%= f.input :quantity, label: "Cantidad" %>
   <%= f.button :submit, "Aceptar" %>
 <% end %>

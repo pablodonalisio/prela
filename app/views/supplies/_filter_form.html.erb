@@ -1,0 +1,32 @@
+<%= form_with url: supplies_path,
+              method: :get,
+              id: "supply_filters",
+              data: {turbo_frame: "supplies", turbo_action: "advance", controller: "filter-search", action: "submit->filter-search#cancel"} do %>
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+    <div class="w-full sm:max-w-xs">
+      <%= render "shared/multi_select",
+                 name: "supply_kind_ids[]",
+                 label: "Tipo",
+                 placeholder: "Todos",
+                 selected: @supply_kind_ids,
+                 options: SupplyKind.visible.order(:name).pluck(:name, :id) %>
+    </div>
+
+    <div class="w-full sm:max-w-xs">
+      <label for="supply-name-search" class="mb-2 block text-sm font-medium text-heading">Nombre</label>
+      <div class="relative">
+        <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+          <%= icon(:search, class: "text-sm text-body-subtle") %>
+        </div>
+        <input type="search"
+               id="supply-name-search"
+               name="name"
+               value="<%= @name %>"
+               placeholder="Buscar"
+               autocomplete="off"
+               class="block w-full rounded-lg border border-default bg-neutral-secondary-medium p-2.5 ps-10 text-sm text-heading placeholder:text-body-subtle focus:border-brand focus:ring-brand"
+               data-action="input->filter-search#search">
+      </div>
+    </div>
+  </div>
+<% end %>

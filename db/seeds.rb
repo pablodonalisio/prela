@@ -394,3 +394,68 @@ puts "  Demo Org 20: #{large.contacts.kept.count} contacts, #{large.locations.ke
 puts "Done. Open clients 'Demo Org 5' and 'Demo Org 20'."
 puts "Look for multi-sede contacts (e.g. Gerente General, Coordinador de Mantenimiento)"
 puts "and distance_above spacers: disconnected roots and gaps under Operaciones."
+
+def ensure_supply_kind!(name, description:)
+  kind = SupplyKind.kept.find_by(normalized_name: SupplyKind.normalize_name(name)) || SupplyKind.new
+  kind.update!(name:, description:)
+  kind
+end
+
+def ensure_supply!(kind, name, description:, reference_url: nil)
+  supply = Supply.kept.find_by(normalized_name: Supply.normalize_name(name)) || Supply.new
+  supply.update!(supply_kind: kind, name:, description:, reference_url:)
+  supply
+end
+
+puts "Seeding supplies..."
+
+kinds = {
+  "Batería" => ensure_supply_kind!("Batería", description: "Baterías de UPS y arranque"),
+  "Aceite" => ensure_supply_kind!("Aceite", description: "Lubricantes de motor, hidráulicos y de compresor"),
+  "Correa" => ensure_supply_kind!("Correa", description: "Correas de transmisión"),
+  "Filtro" => ensure_supply_kind!("Filtro", description: "Filtros de aceite, aire y combustible"),
+  "Fusible" => ensure_supply_kind!("Fusible", description: "Fusibles de protección")
+}
+
+supplies = [
+  ["Batería", "BP5-12", "12 V, 5 Ah", "https://example.com/bp5-12"],
+  ["Batería", "BP7-12", "12 V, 7 Ah", "https://example.com/bp7-12"],
+  ["Batería", "BP12-12", "12 V, 12 Ah", "https://example.com/bp12-12"],
+  ["Batería", "CSB GP1272", "12 V, 7.2 Ah", "https://example.com/gp1272"],
+  ["Batería", "Yuasa NP7-12", "12 V, 7 Ah", nil],
+  ["Aceite", "Aceite 15W40", "Aceite de motor mineral", "https://example.com/15w40"],
+  ["Aceite", "Aceite 10W30", "Aceite de motor sintético", "https://example.com/10w30"],
+  ["Aceite", "Aceite hidráulico ISO 68", "Para sistemas hidráulicos", nil],
+  ["Aceite", "Aceite para compresor", "Lubricante de compresores de aire", nil],
+  ["Correa", "Correa A-42", "Correa clásica perfil A, 42 pulgadas", nil],
+  ["Correa", "Correa A-44", "Correa clásica perfil A, 44 pulgadas", nil],
+  ["Correa", "Correa B-60", "Correa clásica perfil B, 60 pulgadas", nil],
+  ["Correa", "Correa 5PK1130", "Correa poly-V de accesorios", "https://example.com/5pk1130"],
+  ["Filtro", "Filtro de aceite", "Filtro de aceite de motor", nil],
+  ["Filtro", "Filtro de aire", "Filtro de admisión", nil],
+  ["Filtro", "Filtro de combustible", "Filtro de gasoil", nil],
+  ["Filtro", "Filtro de cabina", "Filtro de habitáculo", nil],
+  ["Fusible", "Fusible 10 A", "Fusible de cuchilla 10 A", nil],
+  ["Fusible", "Fusible 20 A", "Fusible de cuchilla 20 A", nil],
+  ["Fusible", "Fusible 32 A", "Fusible de cuchilla 32 A", nil]
+]
+
+supplies.each do |kind_name, name, description, reference_url|
+  ensure_supply!(kinds.fetch(kind_name), name, description:, reference_url:)
+end
+
+{
+  "BP5-12" => ["BP7-12", "CSB GP1272"],
+  "BP7-12" => ["Yuasa NP7-12"],
+  "Aceite 15W40" => ["Aceite 10W30"],
+  "Correa A-42" => ["Correa A-44"]
+}.each do |name, partner_names|
+  supply = Supply.kept.find_by!(normalized_name: Supply.normalize_name(name))
+  partner_ids = partner_names.map { |partner_name|
+    Supply.kept.find_by!(normalized_name: Supply.normalize_name(partner_name)).id
+  }
+  supply.update!(replacement_ids: partner_ids)
+end
+
+puts "  #{SupplyKind.kept.count} supply kinds, #{Supply.kept.count} supplies"
+puts "Open Insumos → Lista. The catalog has more than one page."

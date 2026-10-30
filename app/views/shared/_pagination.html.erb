@@ -3,7 +3,7 @@
     tag; the current page and gaps are rendered as spans instead of links. %>
 <% if pagy.pages > 1 %>
   <%
-    anchor = pagy_anchor(pagy)
+    anchor = pagy_anchor(pagy, anchor_string: local_assigns[:anchor_string])
     base = "flex h-9 items-center justify-center border border-default px-3 leading-tight transition-colors"
     link_classes = "#{base} bg-neutral-primary text-body hover:bg-neutral-tertiary hover:text-heading"
     current_classes = "#{base} border-brand bg-brand text-white"

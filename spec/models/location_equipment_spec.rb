@@ -136,19 +136,25 @@ RSpec.describe LocationEquipment, type: :model do
     end
 
     it "has many equipment supplies" do
-      create_list(:equipment_supply, 3, equipmentable: location_equipment)
+      create_list(:equipment_supply, 3, location_equipment: location_equipment)
       expect(location_equipment.equipment_supplies.size).to eq(3)
     end
 
-    it "has one equipment battery" do
-      create(:equipment_supply, equipmentable: location_equipment)
-      expect(location_equipment.equipment_battery).to be_a(EquipmentSupply)
-    end
+    it "groups kept supplies by kind" do
+      oil = create(:supply_kind, name: "Aceite")
+      battery_kind = create(:supply_kind, name: "Batería")
+      first_oil = create(:supply, supply_kind: oil, name: "Aceite 15W40")
+      second_oil = create(:supply, supply_kind: oil, name: "Aceite 10W30")
+      battery = create(:supply, supply_kind: battery_kind, name: "BP5-12")
+      create(:equipment_supply, location_equipment: location_equipment, supply: second_oil)
+      create(:equipment_supply, location_equipment: location_equipment, supply: battery)
+      create(:equipment_supply, location_equipment: location_equipment, supply: first_oil)
 
-    it "has one battery through equipment battery" do
-      battery = create(:battery)
-      create(:equipment_supply, equipmentable: location_equipment, suppliable: battery)
-      expect(location_equipment.battery).to eq(battery)
+      grouped = location_equipment.equipment_supplies_by_kind
+
+      expect(grouped.keys.map(&:name)).to eq(["Aceite", "Batería"])
+      expect(grouped[oil].map { |row| row.supply.name }).to eq(["Aceite 10W30", "Aceite 15W40"])
+      expect(grouped[battery_kind].map { |row| row.supply.name }).to eq(["BP5-12"])
     end
 
     it "has many documents" do

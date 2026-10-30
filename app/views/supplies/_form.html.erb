@@ -1,0 +1,43 @@
+<%= simple_form_for supply do |f| %>
+  <%= f.association :supply_kind,
+                    label: "Tipo",
+                    collection: SupplyKind.visible.order(:name),
+                    label_method: :name,
+                    value_method: :id,
+                    prompt: "Seleccione un tipo",
+                    wrapper_html: {class: ("!mb-0" if policy(SupplyKind).new?)} %>
+  <% if policy(SupplyKind).new? %>
+    <p class="-mt-1 mb-5 text-sm text-body-subtle">
+      ¿No encontrás el tipo de insumo?
+      <%= link_to "Crear uno nuevo",
+                  supply_kinds_path(open: "new"),
+                  class: "text-fg-brand hover:underline",
+                  data: {turbo_frame: "_top"} %>.
+    </p>
+  <% end %>
+  <%= f.input :name, label: "Nombre" %>
+  <%= f.input :description, label: "Descripción", input_html: {rows: 3} %>
+  <%= f.input :reference_url, label: "Link de producto" %>
+  <% if supply.avatar.blob&.persisted? %>
+    <%= image_tag supply.avatar.variant(resize_to_limit: [300, 300]),
+                  alt: "Foto de #{supply.name}",
+                  class: "mb-3 h-32 rounded-lg object-cover" %>
+  <% end %>
+  <%= f.input :avatar, label: "Foto" %>
+  <% replacement_choices = Supply.visible.includes(:supply_kind).order(:name) %>
+  <% replacement_choices = replacement_choices.where.not(id: supply.id) if supply.persisted? %>
+  <%= render "shared/search_dropdown",
+             label: "Referencias cruzadas",
+             name: "supply[replacement_ids][]",
+             id: "supply-replacements",
+             options: replacement_choices.map { |item| [item.name, item.id, item.supply_kind_id] },
+             kind_options: SupplyKind.visible.order(:name).pluck(:name, :id),
+             kind_id: supply.supply_kind_id,
+             kind_field: "supply[supply_kind_id]",
+             selected: supply.replacement_ids,
+             placeholder: "Buscar",
+             search_placeholder: "Buscar insumo",
+             empty_message: "Sin resultados",
+             blank_message: "No hay otros insumos" %>
+  <%= f.button :submit, "Aceptar" %>
+<% end %>

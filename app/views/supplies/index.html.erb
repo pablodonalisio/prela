@@ -1,14 +1,21 @@
 <%= turbo_frame_tag "main_content" do %>
-  <%= render "shared/content_header", title: "Insumos" %>
+  <% if params[:open] == "new" && policy(Supply).new? %>
+    <div hidden
+         data-controller="open-remote-modal"
+         data-open-remote-modal-url-value="<%= new_supply_path %>"></div>
+  <% end %>
 
-  <div class="m-4 rounded-xl border border-default bg-neutral-primary p-4 md:mx-6">
-    <div class="mb-4 flex items-center justify-between gap-3">
-      <h2 class="min-w-0 truncate text-lg font-semibold text-heading">Baterías</h2>
-      <% if policy(Battery).create? %>
-        <%= render "shared/button_link", text: "Agregar", path: new_battery_path %>
-      <% end %>
-    </div>
+  <%= render "shared/insumos_nav", active: "supplies" %>
 
-    <%= render "shared/items", collection: @batteries %>
+  <%= render "shared/content_header", title: "Lista" do %>
+    <% if policy(Supply).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: new_supply_path %>
+    <% end %>
+  <% end %>
+
+  <div class="mx-4 mt-4 md:mx-6">
+    <%= render "filter_form" %>
   </div>
+
+  <%= render "list" %>
 <% end %>

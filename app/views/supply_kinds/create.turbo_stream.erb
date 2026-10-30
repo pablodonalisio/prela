@@ -1,0 +1,8 @@
+<%= turbo_stream.update "flash" do %>
+  <%= render "layouts/flash" %>
+<% end %>
+
+<%= turbo_stream.remove "supply_kinds_empty" %>
+<%= turbo_stream.append "supply_kinds" do %>
+  <%= render @supply_kind %>
+<% end %>

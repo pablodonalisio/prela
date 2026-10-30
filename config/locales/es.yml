@@ -50,10 +50,18 @@ es:
         statuses:
           active: "En servicio"
           out_of_service: "Fuera de servicio"
-      battery:
-        model: "Modelo"
-        voltage: "Voltaje"
-        amps: "Amperes"
+      supply:
+        name: "Nombre"
+        description: "Descripción"
+        reference_url: "Link de producto"
+        supply_kind: "Tipo"
+        avatar: "Foto"
+      equipment_supply:
+        supply_id: "Insumo"
+        quantity: "Cantidad"
+      supply_kind:
+        name: "Nombre"
+        description: "Descripción"
       user:
         name: "Nombre"
         last_name: "Apellido"

@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "main_content" do %>
+  <% if params[:open] == "new" && policy(SupplyKind).new? %>
+    <div hidden
+         data-controller="open-remote-modal"
+         data-open-remote-modal-url-value="<%= new_supply_kind_path %>"></div>
+  <% end %>
+
+  <%= render "shared/insumos_nav", active: "supply_kinds" %>
+
+  <%= render "shared/content_header", title: "Tipos de Insumos" do %>
+    <% if policy(SupplyKind).create? %>
+      <%= render "shared/button_link", text: "Agregar", path: new_supply_kind_path %>
+    <% end %>
+  <% end %>
+
+  <%= turbo_frame_tag "supply_kinds", class: "mx-4 mt-4 mb-4 flex flex-col gap-2 md:mx-6" do %>
+    <% if @supply_kinds.any? %>
+      <%= render @supply_kinds %>
+    <% else %>
+      <%= render "shared/empty_collection",
+                 id: "supply_kinds_empty",
+                 message: "No hay tipos de insumo todavía.",
+                 action_text: policy(SupplyKind).create? ? "Agregar" : nil,
+                 action_path: policy(SupplyKind).create? ? new_supply_kind_path : nil %>
+    <% end %>
+  <% end %>
+<% end %>

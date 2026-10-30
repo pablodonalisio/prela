@@ -125,6 +125,12 @@ class NativeSelectUpgrade {
       this.menu.classList.add("cell-panel-popover");
       this.menu.dataset.cellPanel = panel.id;
     }
+    const searchMenu = this.select.closest("[data-dropdown-search-target='menu']");
+    if (searchMenu) {
+      this.menu.classList.add("search-dropdown-popover");
+      this.menu.style.setProperty("z-index", "90", "important");
+      if (searchMenu.id) this.menu.dataset.searchDropdown = searchMenu.id;
+    }
     this.list = document.createElement("ul");
     this.list.className = SELECT_LIST_CLASSES;
     this.list.setAttribute("role", "listbox");

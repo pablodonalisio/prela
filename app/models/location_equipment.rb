@@ -22,9 +22,7 @@ class LocationEquipment < ApplicationRecord
   has_one_attached :avatar
   belongs_to :location
   belongs_to :equipment
-  has_many :equipment_supplies, dependent: :destroy, as: :equipmentable
-  has_one :equipment_battery, dependent: :destroy, as: :equipmentable, class_name: "EquipmentSupply"
-  has_one :battery, through: :equipment_battery, source: :suppliable, source_type: "Battery"
+  has_many :equipment_supplies, dependent: :destroy
   has_and_belongs_to_many :report_templates
   has_many :reports, dependent: :destroy
   has_many :activities, dependent: :destroy
@@ -54,6 +52,15 @@ class LocationEquipment < ApplicationRecord
 
   def display_avatar
     avatar.attached? ? avatar : equipment.avatar
+  end
+
+  def equipment_supplies_by_kind
+    equipment_supplies
+      .joins(supply: :supply_kind)
+      .where(supplies: {discarded_at: nil})
+      .includes(supply: [:supply_kind, {avatar_attachment: :blob}, {replacement_links: :replacement}, {replaced_by_links: :supply}])
+      .order("supply_kinds.name", "supplies.name")
+      .group_by { |equipment_supply| equipment_supply.supply.supply_kind }
   end
 
   def associate_report_template!(report_template)

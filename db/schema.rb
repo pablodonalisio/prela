@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_28_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,14 +60,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_assets_categories_on_discarded_at"
     t.index ["normalized_name"], name: "index_assets_categories_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
-  end
-
-  create_table "batteries", force: :cascade do |t|
-    t.string "model"
-    t.float "voltage"
-    t.float "amps"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "clients", force: :cascade do |t|
@@ -245,15 +237,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
   end
 
   create_table "equipment_supplies", force: :cascade do |t|
-    t.string "equipmentable_type", null: false
-    t.bigint "equipmentable_id", null: false
-    t.string "suppliable_type", null: false
-    t.bigint "suppliable_id", null: false
-    t.integer "quantity"
+    t.bigint "location_equipment_id", null: false
+    t.bigint "supply_id", null: false
+    t.integer "quantity", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["equipmentable_type", "equipmentable_id"], name: "index_equipment_supplies_on_equipmentable"
-    t.index ["suppliable_type", "suppliable_id"], name: "index_equipment_supplies_on_suppliable"
+    t.index ["location_equipment_id", "supply_id"], name: "index_equipment_supplies_on_location_equipment_and_supply", unique: true
+    t.index ["supply_id"], name: "index_equipment_supplies_on_supply_id"
   end
 
   create_table "failures", force: :cascade do |t|
@@ -403,7 +393,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "normalized_name"
-    t.jsonb "layout", default: [], null: false
     t.index ["normalized_name"], name: "index_report_templates_on_normalized_name", unique: true
   end
 
@@ -415,7 +404,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
     t.datetime "date"
     t.bigint "report_template_id"
     t.integer "number"
-    t.jsonb "observation_values", default: {}, null: false
     t.boolean "template_based", default: false, null: false
     t.boolean "uploaded", default: false, null: false
     t.index "location_equipment_id, EXTRACT(year FROM date), number", name: "index_reports_on_location_equipment_year_and_number", unique: true, where: "(number IS NOT NULL)"
@@ -509,6 +497,42 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
     t.bigint "user_id"
     t.index ["discarded_at"], name: "index_signatures_on_discarded_at"
     t.index ["user_id"], name: "index_signatures_on_user_id"
+  end
+
+  create_table "supplies", force: :cascade do |t|
+    t.bigint "supply_kind_id", null: false
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.text "description"
+    t.string "reference_url"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_supplies_on_discarded_at"
+    t.index ["normalized_name"], name: "index_supplies_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+    t.index ["supply_kind_id"], name: "index_supplies_on_supply_kind_id"
+  end
+
+  create_table "supply_kinds", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "description"
+    t.index ["discarded_at"], name: "index_supply_kinds_on_discarded_at"
+    t.index ["normalized_name"], name: "index_supply_kinds_on_normalized_name", unique: true, where: "(discarded_at IS NULL)"
+  end
+
+  create_table "supply_replacements", force: :cascade do |t|
+    t.bigint "supply_id", null: false
+    t.bigint "replacement_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["replacement_id"], name: "index_supply_replacements_on_replacement_id"
+    t.index ["supply_id", "replacement_id"], name: "index_supply_replacements_on_pair", unique: true
+    t.index ["supply_id"], name: "index_supply_replacements_on_supply_id"
+    t.check_constraint "supply_id < replacement_id", name: "supply_replacements_ordered_pair"
   end
 
   create_table "table_cell_options", force: :cascade do |t|
@@ -674,6 +698,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
   add_foreign_key "equipment_kinds", "assets_categories"
   add_foreign_key "equipment_kinds_service_kinds", "equipment_kinds"
   add_foreign_key "equipment_kinds_service_kinds", "service_kinds"
+  add_foreign_key "equipment_supplies", "location_equipments"
+  add_foreign_key "equipment_supplies", "supplies"
   add_foreign_key "failures", "location_equipments"
   add_foreign_key "image_sections", "sections", on_delete: :cascade
   add_foreign_key "list_items", "list_sections", on_delete: :cascade
@@ -695,6 +721,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_27_160000) do
   add_foreign_key "service_occurrence_assignments", "users"
   add_foreign_key "service_occurrences", "location_equipment_services"
   add_foreign_key "signatures", "users"
+  add_foreign_key "supplies", "supply_kinds"
+  add_foreign_key "supply_replacements", "supplies"
+  add_foreign_key "supply_replacements", "supplies", column: "replacement_id"
   add_foreign_key "table_cell_options", "table_cells", on_delete: :cascade
   add_foreign_key "table_cells", "table_dropdowns", on_delete: :restrict
   add_foreign_key "table_cells", "table_sections", on_delete: :cascade

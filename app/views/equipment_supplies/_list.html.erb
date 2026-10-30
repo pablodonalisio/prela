@@ -1,0 +1,29 @@
+<%= turbo_frame_tag dom_id(location_equipment, :supplies) do %>
+  <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+    <h3 class="text-sm font-semibold uppercase tracking-wide text-heading">Insumos</h3>
+    <% if policy(EquipmentSupply).create? %>
+      <%= render "shared/button_link",
+                 icon: :add,
+                 text: "Agregar",
+                 path: new_equipment_supply_path(equipment_supply: {location_equipment_id: location_equipment.id}) %>
+    <% end %>
+  </div>
+
+  <% grouped = location_equipment.equipment_supplies_by_kind %>
+  <% if grouped.empty? %>
+    <p class="text-sm text-body-subtle">No hay insumos todavía.</p>
+  <% else %>
+    <div class="space-y-6">
+      <% grouped.each do |kind, rows| %>
+        <section>
+          <h4 class="mb-2 text-sm font-semibold text-heading"><%= kind.name %></h4>
+          <div class="space-y-3">
+            <% rows.each do |equipment_supply| %>
+              <%= render "equipment_supplies/equipment_supply", equipment_supply: equipment_supply %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

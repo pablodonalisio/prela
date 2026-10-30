@@ -228,10 +228,30 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include(location_equipment.equipment.equipment_kind.name)
     end
 
+    it "lists supplies grouped by kind" do
+      oil = create(:supply_kind, name: "Aceite")
+      battery_kind = create(:supply_kind, name: "Batería")
+      hydraulic = create(:supply, supply_kind: oil, name: "Aceite hidráulico ISO 68")
+      alternative = create(:supply, supply_kind: oil, name: "Aceite 15W40")
+      hydraulic.update!(replacement_ids: [alternative.id])
+      battery = create(:supply, supply_kind: battery_kind, name: "BP5-12")
+      create(:equipment_supply, location_equipment: location_equipment, supply: hydraulic, quantity: 2)
+      create(:equipment_supply, location_equipment: location_equipment, supply: battery, quantity: 1)
+
+      get location_equipment_url(location_equipment)
+
+      expect(response.body).to include("Aceite")
+      expect(response.body).to include("Aceite hidráulico ISO 68")
+      expect(response.body).to include("Cantidad: 2")
+      expect(response.body).to include("Referencias cruzadas: Aceite 15W40")
+      expect(response.body).to include("Batería")
+      expect(response.body).to include("BP5-12")
+      expect(response.body).to include("Agregar")
+    end
+
     it "renders content tabs with Controles as the default active tab" do
       get location_equipment_url(location_equipment)
 
-      expect(response.body).to include("content-tabs")
       expect(response.body).to include("Controles")
       expect(response.body).to include("Servicios")
       expect(response.body).to include("Fallas")
@@ -239,7 +259,7 @@ RSpec.describe "/location_equipments", type: :request do
       expect(response.body).to include("Documentos")
       expect(response.body).to include("Comentarios")
       expect(response.body).to include("Insumos")
-      expect(response.body).to match(/class="tab-pane fade show active"[^>]*id="tab_location_equipment_#{location_equipment.id}-controles"/)
+      expect(response.body).to match(/id="tab_location_equipment_#{location_equipment.id}-controles-tab"[^>]*aria-selected="true"/)
     end
 
     it "shows Controles for building equipment" do
