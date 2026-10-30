@@ -9,16 +9,16 @@
   <td class="whitespace-nowrap px-4 py-3 align-middle text-heading">
     <%= schedule_point(service_occurrence.planned_on_finish) %>
   </td>
-  <td class="px-4 py-3 align-middle text-body"><%= location_equipment.client.name %></td>
-  <td class="px-4 py-3 align-middle text-body"><%= location_equipment.location.name %></td>
-  <td class="px-4 py-3 align-middle">
+  <td class="whitespace-nowrap px-4 py-3 align-middle text-body"><%= location_equipment.client.name %></td>
+  <td class="whitespace-nowrap px-4 py-3 align-middle text-body"><%= location_equipment.location.name %></td>
+  <td class="whitespace-nowrap px-4 py-3 align-middle">
     <%= link_to location_equipment.model.capitalize,
                 location_equipment_path(location_equipment),
                 class: "font-medium text-fg-brand hover:underline",
                 data: {turbo_frame: :_top} %>
   </td>
-  <td class="px-4 py-3 align-middle text-body"><%= service_occurrence.service_kind.name %></td>
-  <td class="px-4 py-3 align-middle text-body">
+  <td class="whitespace-nowrap px-4 py-3 align-middle text-body"><%= service_occurrence.service_kind.name %></td>
+  <td class="whitespace-nowrap px-4 py-3 align-middle text-body">
     <span class="inline-flex items-center gap-1">
       <%= service_occurrence.priority_label %>
       <% if current_user.admin? || current_user.editor? %>
@@ -34,7 +34,7 @@
   </td>
   <td class="max-w-xs px-4 py-3 align-middle text-sm text-body-subtle"><%= service_occurrence.notes.presence || "—" %></td>
   <td class="max-w-xs px-4 py-3 align-middle text-sm text-body"><%= service_occurrence.technicians.map(&:display_name).sort.join(", ").presence || "—" %></td>
-  <td class="px-4 py-3 align-middle">
+  <td class="whitespace-nowrap px-4 py-3 align-middle">
     <% if service_occurrence.scheduled? %>
       <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">Programado</span>
     <% elsif service_occurrence.suspended? %>
