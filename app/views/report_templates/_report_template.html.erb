@@ -27,6 +27,8 @@
           <%= render "shared/dropdown" do %>
             <%= render "shared/button_box",
                        edit_path: edit_report_template_path(report_template),
+                       duplicate_path: duplicate_report_template_path(report_template),
+                       duplicate_frame: "_top",
                        delete_path: report_template_path(report_template),
                        confirm: "¿Seguro que querés borrar esta plantilla de informe?",
                        turbo_frame: "_top" %>
